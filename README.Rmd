@@ -1,20 +1,14 @@
 ---
-title: "Introducing the package `sfnetworks`"
+title: "Introducing the sfnetworks package"
 author: "Luuk van der Meer"
-date: "`r Sys.Date()`"
 output: github_document
 ---
 
 `sfnetworks` is an R package for creating, analyzing and visualizing spatial networks. The package can be seen as the connecting edge between the package [`sf`](https://cran.r-project.org/web/packages/sf/index.html), focused on analyzing spatial vector data, and the package [`igraph`](https://cran.r-project.org/web/packages/igraph/index.html), which is the R implementation of the igraph library, focused on analyzing graph structures. The functionalities `sfnetworks` make use of several functions from these two packages. Furhtermore, the package enables to convert sf objects to igraph objects.
 
-This introduction has four chapters:
+The package is still in development. Currently, it has the following functionalities
 
-* [1. Creating spatial networks](#ch1)
-* [2. Analyzing spatial networks](#ch2)
-* [3. Visualizing spatial networks](#ch3)
-* [4. Future work](#ch4)
-
-## 1. Creating spatial networks {#ch1}
+## 1. Creating spatial networks
 Spatial networks can be created using the function `sfn_asnetwork`, which is a generic function with S3 methods for a handful of classes. The returned value is always an object of class `sfn_network`.
 
 ### The `sfn_network` class
@@ -101,7 +95,7 @@ Important to note here that the quality of OpenStreetMap data is not always very
 ### Other methods
 Besides the methods for objects of class `sf` and objects of class `osmdata`, the `sfn_asnetwork` generic function also has a method for objects of class `SpatialLinesDataFrame`, which is the class for spatial data with linestring geometry in the `sp` package. Finally, there exists a method for objects of class `sfn_route`, which is a class in the `sfnetworks` package for routes in a spatial network. This class will be introduced later in this vignette.
 
-## 2. Analyzing spatial networks {#ch2}
+## 2. Analyzing spatial networks
 The `sfnetworks` has a few built-in functions to analyze spatial networks. For further analysis, there is the possibility to convert the network of class `sfn_network` into a graph object of class `igraph`, after which the vast range of analytic functions from the `igraph` package can be used. 
 
 ### Calculate shortest paths
@@ -218,7 +212,7 @@ igraph::degree(g, v = V(g), mode = 'all') %>% head()
 igraph::betweenness(g, v = V(g), directed = FALSE) %>% head()
 ```
 
-## 3. Visualization of a spatial network {#ch3}
+## 3. Visualization of a spatial network
 The `sfnetworks` package contains plot methods for both of its classes (i.e. class `sfn_network` and class `sfn_route`).
 
 ### Plot method for class `sfn_network`
@@ -249,7 +243,7 @@ roxel %>%
 
 It is also possible to color the edges by an attribute from the edges element of the network. To do so, the name of the column needs to be assigned to the `attribute` parameter. Then, only the edges element will be plotted, as an `sf` object with one attribute column.
 
-```{r plot_3, fig.width = 7, fig.height = 6, fig.align = 'center'}
+```{r plot_3, fig.width = 7, fig.height = 6, fig.align = 'center', warning=FALSE}
 # Plot sfn_network colored by attribute
 roxel %>%
   sfn_asnetwork() %>%
@@ -287,8 +281,8 @@ roxel %>%
   )
 ```
 
-## 4. Future work {#ch4}
-The package `sfnetworks` as presented in this vignette is still in development. The following functionalities are planned to be added to the package:
+## 4. Future work
+The package `sfnetworks` is still in development. The following functionalities are planned to be added to the package:
 
 * Add a column specifying the direction of each edge to the edges element of an object of class `sfn_network`. This could for example be values of 1 for an edge that can only be travelled from startpoint to endpoint, -1 for an edge that can only be travelled from endpoint to startpoint, and 0 for an edge that can be travelled in both ways. The user can assign this direction values to each edge. In the case of an `osmdata` object as input, lines with a `oneway` label will be assigned a value of 1 for direction automatically.
 * Give the option to not only assign weights to edges, but also to nodes. For example, when calculating shortest paths based on travel time, he may have information about average waiting time on a crossing. This information can then be added as weights to the nodes, and taken into account when calculating shortest paths.

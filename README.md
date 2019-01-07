@@ -1,16 +1,10 @@
-Introducing the package `sfnetworks`
+Introducing the sfnetworks package
 ================
 Luuk van der Meer
-2019-01-07
 
 `sfnetworks` is an R package for creating, analyzing and visualizing spatial networks. The package can be seen as the connecting edge between the package [`sf`](https://cran.r-project.org/web/packages/sf/index.html), focused on analyzing spatial vector data, and the package [`igraph`](https://cran.r-project.org/web/packages/igraph/index.html), which is the R implementation of the igraph library, focused on analyzing graph structures. The functionalities `sfnetworks` make use of several functions from these two packages. Furhtermore, the package enables to convert sf objects to igraph objects.
 
-This introduction has four chapters:
-
--   [1. Creating spatial networks](#ch1)
--   [2. Analyzing spatial networks](#ch2)
--   [3. Visualizing spatial networks](#ch3)
--   [4. Future work](#ch4)
+The package is still in development. Currently, it has the following functionalities
 
 1. Creating spatial networks
 ----------------------------
@@ -374,7 +368,7 @@ vec = roxel %>%
 head(vec)
 ```
 
-    ## [1] 0.1667320 0.7108380 0.2724432 0.3774762 0.7495173 0.9610519
+    ## [1] 0.02358652 0.27596723 0.32328779 0.48491675 0.23858638 0.73370355
 
 ``` r
 # Calculate the shortest path between node 90 and node 51, with directed to FALSE
@@ -422,7 +416,7 @@ roxel %>%
     ## 3     51 POINT (7.525749 51.94671)
     ## 
     ## --> Weight element; the total weight of the route
-    ## 0.542488434817642
+    ## 0.893741030711681
 
 ### Total length of a network or route
 
@@ -489,9 +483,9 @@ roxel %>%
   sfn_network2graph()
 ```
 
-    ## IGRAPH 5f0c425 UNW- 701 851 -- 
+    ## IGRAPH 2f92861 UNW- 701 851 -- 
     ## + attr: name (v/c), weight (e/n)
-    ## + edges from 5f0c425 (vertex names):
+    ## + edges from 2f92861 (vertex names):
     ##  [1] 316--305 279--263 283--287 568--489 463--455 677--674 572--562
     ##  [8] 489--455 568--670 646--615 364--369 357--356 361--332 681--701
     ## [15] 273--303 512--565 561--531 183--169 206--188 262--219 290--274
@@ -591,12 +585,6 @@ roxel %>%
   )
 ```
 
-    ## Warning in title(...): "key.size" is not a graphical parameter
-
-    ## Warning in title(...): "add" is not a graphical parameter
-
-    ## Warning in title(...): "key.size" is not a graphical parameter
-
 <img src="README_files/figure-markdown_github/plot_3-1.png" style="display: block; margin: auto;" />
 
 ### Plot method for class `sfn_route`
@@ -632,7 +620,7 @@ roxel %>%
 4. Future work
 --------------
 
-The package `sfnetworks` as presented in this vignette is still in development. The following functionalities are planned to be added to the package:
+The package `sfnetworks` is still in development. The following functionalities are planned to be added to the package:
 
 -   Add a column specifying the direction of each edge to the edges element of an object of class `sfn_network`. This could for example be values of 1 for an edge that can only be travelled from startpoint to endpoint, -1 for an edge that can only be travelled from endpoint to startpoint, and 0 for an edge that can be travelled in both ways. The user can assign this direction values to each edge. In the case of an `osmdata` object as input, lines with a `oneway` label will be assigned a value of 1 for direction automatically.
 -   Give the option to not only assign weights to edges, but also to nodes. For example, when calculating shortest paths based on travel time, he may have information about average waiting time on a crossing. This information can then be added as weights to the nodes, and taken into account when calculating shortest paths.
