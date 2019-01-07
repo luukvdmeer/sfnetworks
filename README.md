@@ -1,0 +1,291 @@
+# sfnetworks
+An R package for creating, analyzing and visualizing spatial networks. The package can be seen as the connecting edge between the package [`sf`](https://cran.r-project.org/web/packages/sf/index.html), focused on analyzing spatial vector data, and the package [`igraph`](https://cran.r-project.org/web/packages/igraph/index.html), which is the R implementation of the igraph library, focused on analyzing graph structures. The functionalities `sfnetworks` make use of several functions from these two packages. Furhtermore, the package enables to convert sf objects to igraph objects.
+
+This introduction has four sections:
+
+* [1. Creating spatial networks](#ch1)
+* [2. Analyzing spatial networks](#ch2)
+* [3. Visualizing spatial networks](#ch3)
+* [4. Future work](#ch4)
+
+## 1. Creating spatial networks {#ch1}
+Spatial networks can be created using the function `sfn_asnetwork`, which is a generic function with S3 methods for a handful of classes. The returned value is always an object of class `sfn_network`.
+
+### The `sfn_network` class
+The `sfn_network` class is a S3 class for spatial networks. An object of class `sfn_network` is a list with two elements: 
+
+* *The edges element:* an sf object with linestring geometry, representing the edges of the spatial network
+* *The nodes element:* an sf object with point geometry, representing the nodes of the spatial network
+
+The edges element always has five core columns:
+
+* *EdgeID:* a unique identification number for each edge
+* *nodeID_source:* the unique identification number of the source node of each edge
+* *nodeID_target:* the unique identification number of the target node of each edge
+* *length:* the length of each edge in meters
+* *geometry:* the sf geometry list column
+
+Besides the core columns, the edges element can have additional attribute columns (e.g. streetname, maximum speed, et cetera), which are copied from the input data.
+
+The nodes element always has two core columns:
+
+* *nodeID:* the unique identification number of each node
+* *geometry:* the sf geometry list column
+
+### Method for objects of class `sf`
+The `sfn_asnetwork.sf` method converts objects of class `sf` with a linestring geometry to objects of class `sfn_network`. The lines of the inputted object form the edges of the network. The nodes are the startpoints and endpoints of the lines. In networks, startpoints and/or endpoints are usually shared by two or more lines. These shared points will be one single node in the nodes element of the `sfn_network` object.
+
+Let's show an example using the `roxel` dataset, which is an sf object representing the road network of the Roxel neighborhood in Münster, Germany. This dataset is attached as LazyData to the `sfnetworks` package, and can be loaded as follows.
+
+```{r method_sf_1, message = FALSE, warning = FALSE}
+# Loading the sfnetworks package
+library(sfnetworks)
+
+# Loading the tidyverse package
+# To use for coding inside the vignette
+library(tidyverse)
+
+# Loading the roxel dataset
+roxel
+```
+
+The sf object - with linestring geometry - can then be converted to a spatial network of class `sfn_network`.
+
+```{r method_sf_2, message = FALSE, warning = FALSE}
+# Convert sf object to sfn_network object
+sfn_asnetwork(roxel)
+```
+
+### Method for objects of class `osmdata`
+One who says 'mapping' and 'open source', automatically says 'OpenStreetMap'. The project allows free access to their map and all of the underlying map data, and is therefore extremly popular by those who analyze spatial data. The R implementation of automatically downloading and importingOpenStreetMap data is the package [`osmdata`](https://cran.r-project.org/web/packages/osmdata/index.html). Using this package, a user can download the OpenStreetMap data for an area inside a given bounding box, and also query for a specific type of data. Road infrastructure in OpenStreetMap has the tag `highway`. When working with spatial road networks, this is the data of interest.
+
+Let's show an example of importing a road network with the `osmdata` package, using a bounding box for the neighborhood of Handorf in Münster, Germany, and then converting it to an spatial network of class `sfn_network` with the `sfnetworks` package.
+
+```{r method_osmdata_1, warning = FALSE}
+# Load the osmdata package
+library(osmdata)
+
+# Define the bounding box for Handorf
+handorf_bbox = c(7.696474, 51.9816336, 7.7100898, 51.994452)
+
+# Download and import the OpenStreetMap data
+handorf = opq(bbox = handorf_bbox) %>%
+  add_osm_feature(key = 'highway') %>%
+  osmdata_sf()
+
+handorf
+```
+
+As can be seen, the data comes as an object of class `osmdata`, which is a list containing several sf objects with different geometry types. The point geometries with the `highway` tag in OpenStreetMap are things like bus stops, zebra crossings, lampposts, stop signs, speed bumps, et cetera. In other words, they are not roads, neither road intersections. That is, they will not be included in the spatial network of class `sfn_network`. The sf object with the line geometry are all roads and pathes, and will form the edges element in the `sfn_network` object.However, squares, roundabouts and roads that have the same start as endpoint, are often stored as polygons. The `sfn_asnetwork.osmdata` method therefore first transforms the polygons of the `osmdata` object into lines, then exracts all the lines as an sf object with line geometry, and converts that to spatial network of class `sfn_network`.
+
+```{r method_osmdata_2}
+# Convert osmdata object to sfn_network object
+sfn_asnetwork(handorf)
+```
+
+OpenStreetMap data comes with a lot of attribute columns. For users who are not interested in these attributes, but only in the geometry of the network, the `sfn_asnetwork` function has a parameter `attributes`, which is by default set to `TRUE`, but can be changed to `FALSE`. If that is the case, all attribute columns from the input object will be dropped, and the resulting `sfn_network` object will only contain the core columns.
+
+```{r method_osmdata_3}
+# Convert osmdata object to sfn_network, with attrbutes set to FALSE
+sfn_asnetwork(handorf, attributes = FALSE)
+```
+
+Important to note here that the quality of OpenStreetMap data is not always very high. It often happens that lines are not cut at intersections, lines don't touch when they should, et cetera. The best way is to manually fix these topology errors. However, in large networks this will be a very labour intensive operation. The `v.clean` (see [here](https://grass.osgeo.org/grass70/manuals/v.clean.html)) tool in GRASS GIS is then an alternative. It is highly recommended to first run this tool on the OpenStreetMap data before analysing it. This cleaning operation was also performed on the `roxel` dataset that is attached to this package. 
+
+### Other methods
+Besides the methods for objects of class `sf` and objects of class `osmdata`, the `sfn_asnetwork` generic function also has a method for objects of class `SpatialLinesDataFrame`, which is the class for spatial data with linestring geometry in the `sp` package. Finally, there exists a method for objects of class `sfn_route`, which is a class in the `sfnetworks` package for routes in a spatial network. This class will be introduced later in this vignette.
+
+## 2. Analyzing spatial networks {#ch2}
+The `sfnetworks` has a few built-in functions to analyze spatial networks. For further analysis, there is the possibility to convert the network of class `sfn_network` into a graph object of class `igraph`, after which the vast range of analytic functions from the `igraph` package can be used. 
+
+### Calculate shortest paths
+With the function `sfn_shortestpath`, the shortest path between two nodes in a spatial network can be calculated. The function returns an object of class `sfn_route`, a S3 class specially designed for routes in a spatial network. A route is different from a network in the sense that the nodes and edges in a route have a specific order. In an object of class `sfn_route`, this order is defined in the route element. The route element consists of one feature that contains both the nodes and edges in a geometrycollection (class `sfc_GEOMETRYCOLLECTION`), in the right order. The features in the edges element and/or the nodes element can now be ordered in any way the user wants (e.g. from longest edge to shortest edge), without disturbing the right order of the route. Finally, an object of class `sfn_route` also contains a weights element, representing the total weight (i.e. sum of the edges weights) of the route.
+
+To summarize, an object of class `sfn_route` is a list with four elements:
+
+* *The route element:* an sf object of one feature with a geometrycollection geometry, containing both the nodes and edges of the route, in the right order
+* *The edges element:* an sf object with linestring geometry, representing the edges of which the route is made up
+* *The nodes element:* an sf object with point geometry, representing the nodes of which the route is made up
+* *The weights element:* a value representing the total weight of the route (i.e. sum of the edges weights)
+
+Just as in the class `sfn_network`, the edges elements has five core columns (edgeID, nodeID_source, nodeID_target, length and geometry), with optionally additional attributes columns. The nodes element has two core columns (nodeID, geometry).
+
+As inputs, the `sfn_shortestpath` function takes the spatial network of class `sfn_network` (parameter `x`), the nodeID of the node where the shortest path should calculated from (parameter `start`) and the nodeID of the node where the shortest path should lead to (parameter `end`). 
+
+Additionally, the weight of each edge should be given (parameter `weights`). This can be done by specifying the name of the column in the edges element of the inputted `sfn_network` object which values should be used as edge weights. By default, the length column - one of the core columns of the edges element - is used for the edge weights. That mean that literally the shortest path is calculated. However, if someone for example has a column in their data with the duration of each edge, this column could be used for edge weights, and the fastest path is calculated. Another example could be a column with the average slope of each edge, which would lead to calculating the flattest path.
+
+Let's show an example with the `roxel` dataset. Below, the shortest path between the node with nodeID 195 (in the southwest of Münster Roxel) and the node with nodeID 676 (in the northeast of Münster Roxel). For the weights, the default value ('length') will be used.
+
+```{r shortestpath_1}
+# Calculate the shortest path between node 195 and node 676
+roxel %>% 
+  sfn_asnetwork() %>% 
+  sfn_shortestpath(start = 195, end = 676)
+```
+
+Instead of passing a column name to the `weights` parameter, it is also possible to give a numeric vector of the same length as the edges element in the inputted network. The values of this vector will then be used as weights. Furthermore, one can define if the network should be considered a directed network (parameter `directed`). That is, if each edge can only be travelled from source to target, and not in the opposite direction. By default, this is set to `FALSE`, meaning that each edge can be travelled in both directions. 
+
+Let's show another example, that may not make a lot of sense, but does show how the functions works. The parameter `weights` will now be a numeric vector of random numbers, and the parameter `directed` will be set to `TRUE`. Keep in mind that setting `directed` to `TRUE` while working with a network that is not designed as a directional network, like the `roxel` dataset, is never a good idea. Here, it is just done to show the functionalities of the `sfn_shortestpath` function.
+
+```{r shortestpath_2}
+# Create a vector with random numbers
+# Length equal to the number of edges in the sfn_network
+vec = roxel %>%
+  sfn_asnetwork() %>%
+  pluck('edges') %>%
+  nrow() %>%
+  runif()
+
+head(vec)
+
+# Calculate the shortest path between node 90 and node 51, with directed to FALSE
+roxel %>% 
+  sfn_asnetwork() %>% 
+  sfn_shortestpath(start = 90, end = 51, weights = vec, directed = TRUE)
+```
+
+### Total length of a network or route
+The function `sfn_length` is a generic function with S3 methods for objects of class `sfn_network` or class `sfn_route`. It uses the `st_length` function from the `sf` package to calculate the total length of respectively a spatial network or a route in a spatial network.
+
+```{r length}
+# Calculate the total length of a spatial network
+roxel %>%
+  sfn_asnetwork() %>%
+  sfn_length()
+
+# Calculate the total length of a route in a spatial network
+roxel %>%
+  sfn_asnetwork() %>%
+  sfn_shortestpath(start = 195, end = 676) %>%
+  sfn_length()
+```
+
+### Transform or convert the CRS of a network or route
+The function `sfn_length` is a generic function with S3 methods for objects of class `sfn_network` or class `sfn_route`. It uses the `st_transform` function from the `sf` package to transform or convert the coordinate reference system of a spatial network or a route in a spatial network. When doing this, the `st_transform` function is applied to all the geographic elements of the input object (`nodes` and `edges` for an `sfn_network` object and `route`, `nodes` and `edges` for an `sfn_route` object).
+
+```{r transform}
+# Original sfn_network
+roxel %>%
+  sfn_asnetwork() %>%
+  summary()
+
+# Transform from WGS84 (EPSG 4326) to Gauss-Kruger Zone 2 (EPSG 31466)
+roxel %>%
+  sfn_asnetwork() %>%
+  sfn_transform(crs = 31466) %>%
+  summary()
+```
+
+### Convert to `igraph` object
+The function `sfn_network2graph` converts a spatial network of class `sfn_network` to a graph object of class `igraph`. After this conversion, one can apply the wide range of functions for graph analysis from the `igraph` package. When converting to an `igraph` object, the geometry of the edges and nodes is not preserved. The resulting graph is simply a set of weighted connections between unlocated nodes. By default, this weights are the lengths of the edges. However, just as in the `sfn_shortestpath` function - that actually uses a conversion to a graph inside the function -, the user can set any column from the edges element as weight column, or give a numeric vector of the same length as the edges element.
+
+```{r graph_1}
+# Convert sfn_network to igraph object
+roxel %>%
+  sfn_asnetwork() %>%
+  sfn_network2graph()
+```
+
+Let's show some examples of measures that can now be calculated with the `igraph` package. For a full description of the functions in this package, please see its [website](http://igraph.org/r/).
+
+```{r graph_2, message = FALSE, warning = FALSE}
+# Load the igraph package
+library(igraph)
+
+# Create the graph
+g = roxel %>%
+  sfn_asnetwork() %>%
+  sfn_network2graph()
+
+# Calculate network diameter
+# This is the longest shortest path between two nodes in the network
+igraph::diameter(g, directed = FALSE)
+
+# Calculate the degree centrality of the nodes
+# This is the number of edges that a specific node has
+# Show only the first 6 results
+igraph::degree(g, v = V(g), mode = 'all') %>% head()
+
+# Calculate the betweenness centrality of the nodes
+# This is the number of shortest paths that pass through a node
+# Show only the first 6 results
+igraph::betweenness(g, v = V(g), directed = FALSE) %>% head()
+```
+
+## 3. Visualization of a spatial network {#ch3}
+The `sfnetworks` package contains plot methods for both of its classes (i.e. class `sfn_network` and class `sfn_route`).
+
+### Plot method for class `sfn_network`
+The plot method for objects of class `sfn_network` plots the geometry of the edges with `plot.sf` and adds the geometry of the nodes on top of it.
+
+```{r plot_1, fig.width = 7, fig.height = 6, fig.align = 'center'}
+# Plot sfn_network
+roxel %>%
+  sfn_asnetwork() %>%
+  plot()
+```
+
+The user can change several parameters regarding the layout of the plot, for example the color in which the edges are plot, the linewidth of the edges, the color in which the nodes are plot and the symbol type and size of the nodes. Additional parameters are passed on to the plot function for `sf` objects.
+
+```{r plot_2, fig.width = 7, fig.height = 6, fig.align = 'center'}
+# Plot sfn_network in different style
+roxel %>%
+  sfn_asnetwork() %>%
+  plot(
+    col_edges = 'black',
+    lwd = 2,
+    col_nodes = 'red',
+    pch = 21,
+    cex = 1.1,
+    main = "Road Network of Münster Roxel"
+  ) 
+```
+
+It is also possible to color the edges by an attribute from the edges element of the network. To do so, the name of the column needs to be assigned to the `attribute` parameter. Then, only the edges element will be plotted, as an `sf` object with one attribute column.
+
+```{r plot_3, fig.width = 7, fig.height = 6, fig.align = 'center'}
+# Plot sfn_network colored by attribute
+roxel %>%
+  sfn_asnetwork() %>%
+  plot(
+    lwd = 2,
+    attribute = 'type',
+    pal = rainbow,
+    key.size = lcm(3.5),
+    main = "Road types in Münster Roxel"
+  )
+```
+
+### Plot method for class `sfn_route`
+The plot method for objects of class `sfn_route` plots the geometry of the edges with `plot.sf` and adds the geometry of the nodes on top of it.
+
+```{r plot_4, fig.width = 7, fig.height = 6, fig.align = 'center'}
+# Plot sfn_route
+roxel %>%
+  sfn_asnetwork() %>%
+  sfn_shortestpath(start = 195, end = 676) %>%
+  plot()
+```
+
+This is not very informative though. Therefore, the plot methods for objects of class `sfn_route` has the parameter `network`. By default it is set to `NULL`, but the user can assign it the spatial network of class `sfn_network` on which the shortest path is created. Then, the network will be plotted in grayscale on the background.
+
+```{r plot_5, fig.width = 7, fig.height = 6, fig.align = 'center'}
+# Plot sfn_route with network on background
+roxel %>%
+  sfn_asnetwork() %>%
+  sfn_shortestpath(start = 195, end = 676) %>%
+  plot(
+    col_edges = "Red",
+    lwd = 2,
+    network = roxel %>% sfn_asnetwork()
+  )
+```
+
+## 4. Future work {#ch4}
+The package `sfnetworks` as presented in this vignette is still in development. The following functionalities are planned to be added to the package:
+
+* Add a column specifying the direction of each edge to the edges element of an object of class `sfn_network`. This could for example be values of 1 for an edge that can only be travelled from startpoint to endpoint, -1 for an edge that can only be travelled from endpoint to startpoint, and 0 for an edge that can be travelled in both ways. The user can assign this direction values to each edge. In the case of an `osmdata` object as input, lines with a `oneway` label will be assigned a value of 1 for direction automatically.
+* Give the option to not only assign weights to edges, but also to nodes. For example, when calculating shortest paths based on travel time, he may have information about average waiting time on a crossing. This information can then be added as weights to the nodes, and taken into account when calculating shortest paths.
+* Give the option to calculate shortest paths from one node to several other nodes. Now, it is only possible to calculate shortest paths between two nodes at a time.
+* Import the v.clean function for cleaning vector topology from GRASS GIS, making use of the `rgrass7` package, the bridge between R and GRASS GIS.
+* Enable users to not only calculate clusters of nodes based on betweenness centrality (which can already be done after converting the `sfn_network` object to an `igraph` object) but also visualize them (which can not be done yet since the converted `igraph` object has no geometry).
