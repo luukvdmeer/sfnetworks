@@ -1,6 +1,7 @@
+**IMPORTANT NOTE:** The `sfnetworks` package is currently under active development, and breaking changes will be made in the coming months. The current version as described here is released as `v0.1.0`, but will soon be succeeded by a new version. 
+
 Introducing the sfnetworks package
 ================
-Luuk van der Meer
 
 `sfnetworks` is an R package for creating, analyzing and visualizing spatial networks. The package can be seen as the connecting edge between the package [`sf`](https://cran.r-project.org/web/packages/sf/index.html), focused on analyzing spatial vector data, and the package [`igraph`](https://cran.r-project.org/web/packages/igraph/index.html), which is the R implementation of the igraph library, focused on analyzing graph structures. The functionalities `sfnetworks` make use of several functions from these two packages. Furhtermore, the package enables to convert sf objects to igraph objects.
 
