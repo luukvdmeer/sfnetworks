@@ -1,4 +1,4 @@
-**IMPORTANT NOTE:** The `sfnetworks` package is currently under active development, and breaking changes will be made in the coming months. The current version as described here is released as `v0.1.0`, but will soon be succeeded by a new version, with different classes and functions.
+**IMPORTANT NOTE:** The `sfnetworks` package is currently under active development, and breaking changes will be made in the coming months. The current version as described here is released as `v0.1.0`, but will soon be succeeded by a new version, with different classes and functions. Feel free to already open issues containing ideas of what functionalities you think should be included in the new package version (please label such issues with the `feature` label).
 
 Introducing the sfnetworks package
 ================
