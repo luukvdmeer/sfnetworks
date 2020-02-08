@@ -1,32 +1,33 @@
 Package: sfnetworks
-Version: 0.0.0.9000
-Title: Creating and Analyzing Spatial Networks
-Description: Creates a spatial network of class sfn_networks out of either an 
-    sf object with linestring geometry, a SpatialLinesDataFrame or an osmdata 
-    object. The package contains functions to calculate shortest pathes between 
-    nodes in the network and to transform or convert its coordinate reference 
-    systems. Also, it includes a function to convert the spatial network to an
-    igraph object, after which all kinds of graph analyses can be performed on 
-    the network. Finally, the spatial network can be visualized in several ways, 
-    both statically and interactively.
-Authors@R: person("Luuk", "van der Meer", , "l_vand09@uni-muenster.de", c("aut", "cre"))
-Depends: R (>= 2.10)
-License: GPL-2
+Version: 0.2.0
+Title: Tidy Spatial Networks in R
+Description: The sfnetworks package provides a tidy approach to spatial network
+    analysis, in the form of classes and functions that enable a seamless interaction 
+    between the network analysis package 'tidygraph' and the spatial analysis package 'sf'.
+Authors@R: 
+    c(person(given = "Lucas",
+             family = "van der Meer",
+             role = c("aut", "cre"),
+             email = "luukvandermeer@live.nl"),
+      person(given = "Andrea",
+             family = "Gilardi",
+             role = "aut",
+             email = "andrea.gilardi@unimib.it"),
+      person(given = "Lorena",
+             family = "Abad",
+             role = "aut",
+             email = "lore.abad6@gmail.com"),
+      person(given = "Robin",
+             family = "Lovelace",
+             email = "r.lovelace@leeds.ac.uk"))
+Depends: R (>= 3.6)
+License: Apache License
 Encoding: UTF-8
 LazyData: true
 ByteCompile: true
 Imports:
     sf,
-    purrr,
-    dplyr,
-    magrittr,
-    igraph,
-    stats,
-    rlang
-Suggests:
-    osmdata,
-    knitr,
-    rmarkdown,
-    tidyverse
+    tidygraph
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
+BugReports: https://github.com/luukvdmeer/sfnetworks/issues/
