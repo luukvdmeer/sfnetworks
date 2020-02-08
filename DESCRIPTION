@@ -28,6 +28,6 @@ ByteCompile: true
 Imports:
     sf,
     tidygraph
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 VignetteBuilder: knitr
 BugReports: https://github.com/luukvdmeer/sfnetworks/issues/
