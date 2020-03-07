@@ -19,15 +19,19 @@ Authors@R:
              email = "lore.abad6@gmail.com"),
       person(given = "Robin",
              family = "Lovelace",
+             role = "aut",
              email = "r.lovelace@leeds.ac.uk"))
 Depends: R (>= 3.6)
-License: Apache License
+License: file LICENSE
 Encoding: UTF-8
 LazyData: true
 ByteCompile: true
 Imports:
-    sf,
-    tidygraph
+  igraph,
+  sf,
+  tidygraph
+Suggests:
+  knitr
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr
 BugReports: https://github.com/luukvdmeer/sfnetworks/issues/
