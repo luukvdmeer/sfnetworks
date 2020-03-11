@@ -118,7 +118,7 @@ as_sfnetwork.default = function(x, ...) {
 #' edges instead of nodes?
 #' Defaults to \code{TRUE}.
 #'
-#' @importFrom sf st_as_sf st_cast st_centroid st_geometry st_sfc st_union
+#' @importFrom sf st_as_sf st_cast st_centroid st_crs st_geometry st_sfc st_union
 #' @export
 as_sfnetwork.sf = function(x, directed = TRUE, lines_as_edges = TRUE, ...) {
   if (class(sf::st_geometry(x))[1] == "sfc_LINESTRING" & lines_as_edges) {
