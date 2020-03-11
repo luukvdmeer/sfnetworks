@@ -58,7 +58,7 @@ sfnetwork = function(nodes, edges, directed = TRUE, ...) {
   }
 
   x = tidygraph::tbl_graph(nodes, edges, directed = directed)
-  class(x) = c("sfnetwork", "tbl_graph", "igraph")
+  class(x) = c("sfnetwork", class(x))
   x
 }
 
