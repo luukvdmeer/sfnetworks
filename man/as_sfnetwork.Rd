@@ -3,6 +3,7 @@
 \name{as_sfnetwork}
 \alias{as_sfnetwork}
 \alias{as_sfnetwork.default}
+\alias{as_sfnetwork.sf}
 \alias{as_sfnetwork.tbl_graph}
 \title{Convert a foreign object to an sfnetwork object}
 \usage{
@@ -10,12 +11,22 @@ as_sfnetwork(x, ...)
 
 \method{as_sfnetwork}{default}(x, ...)
 
+\method{as_sfnetwork}{sf}(x, directed = TRUE, lines_as_edges = TRUE,
+  ...)
+
 \method{as_sfnetwork}{tbl_graph}(x, ...)
 }
 \arguments{
 \item{x}{object to be converted into an \code{sfnetwork} object.}
 
 \item{...}{arguments passed on to construction function.}
+
+\item{directed}{Should the constructed network be directed? Defaults to
+\code{TRUE}.}
+
+\item{lines_as_edges}{Should \code{LINESTRING} geometries be considered
+edges instead of nodes?
+Defaults to \code{TRUE}.}
 }
 \value{
 An object of class \code{sfnetwork}.
