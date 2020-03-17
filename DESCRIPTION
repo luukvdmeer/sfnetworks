@@ -28,7 +28,9 @@ LazyData: true
 ByteCompile: true
 Imports:
   igraph,
+  magrittr,
   sf,
+  tibble,
   tidygraph
 Suggests:
   knitr
