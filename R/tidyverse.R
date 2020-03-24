@@ -23,21 +23,17 @@ as_tibble.sfnetwork = function(x, active = NULL, ...) {
   )
 }
 
-#' @importFrom sf st_as_sf
 node_tibble = function(x) {
-  sf::st_as_sf(as_tibble(as_tbl_graph(x), active = "nodes"))
+  as_sf(x, active = "nodes")
 }
 
-#' @importFrom sf st_as_sf
 edge_tibble <- function(x) {
-  edges = as_tibble(as_tbl_graph(x), active = "edges")
-
   tryCatch(
     expr = {
-      sf::st_as_sf(edges)
+      as_sf(x, active = "edges")
     },
     error = function(e) {
-      edges
+      as_tibble(as_tbl_graph(x), active = "edges")
     }
   )
 }

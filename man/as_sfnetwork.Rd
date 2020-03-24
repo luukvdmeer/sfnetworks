@@ -25,8 +25,7 @@ as_sfnetwork(x, ...)
 \code{TRUE}.}
 
 \item{lines_as_edges}{Should \code{LINESTRING} geometries be considered
-edges instead of nodes?
-Defaults to \code{TRUE}.}
+edges instead of nodes? Defaults to \code{TRUE}.}
 }
 \value{
 An object of class \code{sfnetwork}.
@@ -36,7 +35,7 @@ An object of class \code{sfnetwork}.
 the graph manipulation functionalities of the
 \code{\link[tidygraph]{tidygraph-package}} package into the domain of geospatial
 networks, where nodes are embedded in geographical space. It subclasses
-\code{\link[tidygraph]{tbl_graph}}, and therefore all of tidygraph's functions
+\code{\link[tidygraph]{tbl_graph}}, and therefore all of tidygraphs functions
 should work as expected, without any conversion. Just as with a
 \code{\link[tidygraph]{tbl_graph}}, the nodes are activated by default. The
 context can be changed using the \code{\link[tidygraph]{activate}} verb

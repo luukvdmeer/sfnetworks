@@ -9,7 +9,7 @@
 #' \code{\link[tidygraph]{tbl_graph}}, the nodes are activated by default. The
 #' context can be changed using the \code{\link[tidygraph]{activate}} verb
 #' and affects all subsequent operations. In \code{sfnetworks}, the nodes are
-#' handled as being an \code{\link[sf]{sf}} object, and can always be extracted
+#' handled as being an \code{\link[sf]{sf}} object , and can always be extracted
 #' with \code{\link[sf]{st_as_sf}} when activated. The edges can be handled as
 #' being an \code{sf} object with \code{LINESTRING} geometry, but this is optional.
 #' When the edges do not have an explicit spatial component, they can always be
@@ -17,7 +17,7 @@
 #'
 #' @param nodes An object containing information about the nodes in the network.
 #' The nodes should contain spatial information, either by being an \code{sf}
-#' object, or by being convertable to an \code{sf} object with
+#' object, or by being convertable to an \code{sf}  object with
 #' \code{\link[sf]{st_as_sf}}.
 #'
 #' @param edges An object containing information about the edges in the network.
@@ -40,7 +40,7 @@
 #' @export
 sfnetwork = function(nodes, edges, directed = TRUE, ...) {
   # If nodes is not an sf object, try to convert it to an sf object.
-  if (! inherits(nodes, "sf")) {
+  if (! is.sf(nodes)) {
     tryCatch(
       expr = {
         nodes = sf::st_as_sf(nodes, ...)
@@ -53,7 +53,7 @@ sfnetwork = function(nodes, edges, directed = TRUE, ...) {
 
   # If edges is an sf object, tidygraph cannot handle it due to sticky geometry.
   # Therefore it has to be converted into a regular data frame (or tibble).
-  if (inherits(edges, "sf")) {
+  if (is.sf(edges)) {
     edges = structure(edges, class = setdiff(class(edges), "sf"))
   }
 
@@ -68,7 +68,7 @@ sfnetwork = function(nodes, edges, directed = TRUE, ...) {
 #' the graph manipulation functionalities of the
 #' \code{\link[tidygraph]{tidygraph-package}} package into the domain of geospatial
 #' networks, where nodes are embedded in geographical space. It subclasses
-#' \code{\link[tidygraph]{tbl_graph}}, and therefore all of tidygraph's functions
+#' \code{\link[tidygraph]{tbl_graph}}, and therefore all of tidygraphs functions
 #' should work as expected, without any conversion. Just as with a
 #' \code{\link[tidygraph]{tbl_graph}}, the nodes are activated by default. The
 #' context can be changed using the \code{\link[tidygraph]{activate}} verb
@@ -115,8 +115,7 @@ as_sfnetwork.default = function(x, ...) {
 #' \code{TRUE}.
 #'
 #' @param lines_as_edges Should \code{LINESTRING} geometries be considered
-#' edges instead of nodes?
-#' Defaults to \code{TRUE}.
+#' edges instead of nodes? Defaults to \code{TRUE}.
 #'
 #' @importFrom sf st_as_sf st_cast st_centroid st_crs st_geometry st_sfc st_union
 #' @export
@@ -208,4 +207,13 @@ as_tbl_graph.sfnetwork = function(x, ...) {
 #' @export
 print.sfnetwork = function(x, ...) {
   print(as_tbl_graph(x))
+}
+
+#' Check if an object is an sfnetwork
+#'
+#' @param x Object to be checked.
+#'
+#' @export
+is.sfnetwork = function(x) {
+  inherits(x, "sfnetwork")
 }
