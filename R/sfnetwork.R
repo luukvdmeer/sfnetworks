@@ -56,9 +56,9 @@ sfnetwork = function(nodes, edges, directed = TRUE, ...) {
   if (is.sf(edges)) {
     edges = structure(edges, class = setdiff(class(edges), "sf"))
   }
-
   x = tidygraph::tbl_graph(nodes, edges, directed = directed)
   class(x) = c("sfnetwork", class(x))
+
   x
 }
 
@@ -117,75 +117,24 @@ as_sfnetwork.default = function(x, ...) {
 #' @param lines_as_edges Should \code{LINESTRING} geometries be considered
 #' edges instead of nodes? Defaults to \code{TRUE}.
 #'
-#' @importFrom sf st_as_sf st_cast st_centroid st_crs st_geometry st_sfc st_union
+#' @importFrom sf st_geometry
 #' @export
 as_sfnetwork.sf = function(x, directed = TRUE, lines_as_edges = TRUE, ...) {
   if (class(sf::st_geometry(x))[1] == "sfc_LINESTRING" & lines_as_edges) {
-    edges = x
-    coords = sf::st_coordinates(edges)
-    all_x_coords = split(coords[, "X"], f = as.factor(coords[, "L1"]))
-    all_y_coords = split(coords[, "Y"], f = as.factor(coords[, "L1"]))
-    node_x_coords = do.call(
-      "rbind",
-      lapply(
-        all_x_coords,
-        function(x) data.frame(X = c(x[1], x[length(x)]))
-      )
-    )
-    node_y_coords = do.call(
-      "rbind",
-      lapply(
-        all_y_coords,
-        function(x) data.frame(Y = c(x[1], x[length(x)]))
-      )
-    )
-    nodes = cbind(node_x_coords, node_y_coords)
-    nodes$XY = paste(nodes$X, nodes$Y)
-    nodes$ID = match(nodes$XY, unique(nodes$XY))
-    nodes$source = rep(c(TRUE, FALSE), nrow(nodes) / 2)
-    if ("from" %in% colnames(edges)) {
-      warning("Overwriting column 'from'")
-    }
-    edges$from = nodes[nodes$source, "ID"]
-    paste('hey!')
-    if ("to" %in% colnames(edges)) {
-      warning("Overwriting column 'to'")
-    }
-    edges$to = nodes[!nodes$source, "ID"]
-    nodes = nodes[!duplicated(nodes$ID), ]
-    nodes = sf::st_as_sf(
-      nodes[, c("X", "Y")],
-      coords = c("X", "Y"),
-      crs = sf::st_crs(edges)
-    )
-    class(nodes) = class(edges)
+    # Workflow:
+    # It is assumed that the given LINESTRING geometries form the edges.
+    # Nodes need to be created at the endpoints of the edges.
+    # Identical endpoints need to be the same node.
+    network = create_nodes_from_edges(x)
   } else {
-    nodes = x
-    if (class(sf::st_geometry(x))[1] == "sfc_POINT") {
-      node_pts = nodes
-    } else {
-      node_pts = sf::st_centroid(nodes)
-    }
-    sources = node_pts[1:(nrow(node_pts)-1), ]
-    targets = node_pts[2:nrow(node_pts), ]
-    edges = sf::st_as_sf(
-      data.frame(
-        from = 1:(nrow(node_pts)-1),
-        to = 2:nrow(node_pts),
-        geometry = sf::st_sfc(
-          mapply(
-            function (a,b) sf::st_cast(sf::st_union(a,b), "LINESTRING"),
-            sf::st_geometry(sources),
-            sf::st_geometry(targets),
-            SIMPLIFY=FALSE
-          )
-        )
-      ),
-      crs = sf::st_crs(nodes)
-    )
-    class(edges) = class(nodes)
+    # Workflow:
+    # It is assumed that the given geometries form the nodes.
+    # Edges need to be created as linestrings between those nodes.
+    # It is assumed that the given nodes are connected sequentially.
+    # Centroids will be used as nodes if non-point geometries are given.
+    network = create_edges_from_nodes(x)
   }
-  sfnetwork(nodes, edges, directed = directed, ...)
+  sfnetwork(network$nodes, network$edges, directed = directed, ...)
 }
 
 #' @name as_sfnetwork
