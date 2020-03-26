@@ -34,6 +34,6 @@ Imports:
   tidygraph
 Suggests:
   knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 VignetteBuilder: knitr
 BugReports: https://github.com/luukvdmeer/sfnetworks/issues/

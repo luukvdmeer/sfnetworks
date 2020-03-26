@@ -11,8 +11,7 @@ as_sfnetwork(x, ...)
 
 \method{as_sfnetwork}{default}(x, ...)
 
-\method{as_sfnetwork}{sf}(x, directed = TRUE, lines_as_edges = TRUE,
-  ...)
+\method{as_sfnetwork}{sf}(x, directed = TRUE, lines_as_edges = TRUE, ...)
 
 \method{as_sfnetwork}{tbl_graph}(x, ...)
 }

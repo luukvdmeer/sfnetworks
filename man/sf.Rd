@@ -5,6 +5,8 @@
 \alias{st_as_sf.sfnetwork}
 \alias{st_bbox.sfnetwork}
 \alias{st_crs.sfnetwork}
+\alias{st_set_crs.sfnetwork}
+\alias{st_geometry.sfnetwork}
 \alias{st_make_grid.sfnetwork}
 \alias{st_contains.sfnetwork}
 \alias{st_contains_properly.sfnetwork}
@@ -26,6 +28,10 @@
 \method{st_bbox}{sfnetwork}(x, ...)
 
 \method{st_crs}{sfnetwork}(x, ...)
+
+st_set_crs.sfnetwork(x, ...)
+
+\method{st_geometry}{sfnetwork}(x, ...)
 
 st_make_grid.sfnetwork(x, ...)
 

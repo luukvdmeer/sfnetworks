@@ -53,6 +53,20 @@ st_crs.sfnetwork = function(x, ...) {
 }
 
 #' @name sf
+#' @importFrom sf st_set_crs
+#' @export
+st_set_crs.sfnetwork = function(x, ...) {
+  sf::st_set_crs(as_sf(x), ...)
+}
+
+#' @name sf
+#' @importFrom sf st_geometry
+#' @export
+st_geometry.sfnetwork = function(x, ...) {
+  sf::st_geometry(as_sf(x), ...)
+}
+
+#' @name sf
 #' @importFrom sf st_make_grid
 #' @export
 st_make_grid.sfnetwork = function(x, ...) {
