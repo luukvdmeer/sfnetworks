@@ -148,6 +148,15 @@ get_endpoints = function(x) {
   cbind(get_endpoint_coords(x, "X"), get_endpoint_coords(x, "Y"))
 }
 
+#' Check if a table has spatial information stored in a geometry list column
+#'
+#' @param x Object to check for spatial explicitness
+#'
+#' @export
+is_spatially_explicit = function(x) {
+  any(sapply(x, function(y) inherits(y, "sfc")), na.rm = TRUE)
+}
+
 #' Draw lines between points
 #'
 #' @param sources An object of class \code{\link[sf]{sf}} with \code{POINT}
