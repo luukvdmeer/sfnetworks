@@ -163,3 +163,17 @@ get_endpoints = function(x) {
 points_to_lines = function(sources, targets) {
   sf::st_cast(sf::st_union(sources, targets), "LINESTRING")
 }
+
+#' Check if the CRS of two sf objects are the same
+#'
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
+#'
+#' @param y An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
+#'
+#' @return \code{TRUE} when the CRS of x and y are the same, \code{FALSE}
+#' otherwise.
+#'
+#' @importFrom sf st_crs
+same_crs = function(x, y) {
+  sf::st_crs(x) == sf::st_crs(y)
+}

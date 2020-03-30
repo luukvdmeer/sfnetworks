@@ -53,7 +53,11 @@ sfnetwork = function(nodes, edges, directed = TRUE, ...) {
 
   # If edges is an sf object, tidygraph cannot handle it due to sticky geometry.
   # Therefore it has to be converted into a regular data frame (or tibble).
+  # First we need to check if the CRS of the edges is the same as the nodes.
   if (is.sf(edges)) {
+    if (! same_crs(nodes, edges)) {
+      stop("Nodes and edges do not have the same CRS")
+    }
     edges = structure(edges, class = setdiff(class(edges), "sf"))
   }
   x = tidygraph::tbl_graph(nodes, edges, directed = directed)
