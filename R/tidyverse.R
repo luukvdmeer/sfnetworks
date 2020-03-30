@@ -2,6 +2,22 @@
 #' @export
 tidygraph::activate
 
+#' @importFrom tidygraph active
+#' @export
+tidygraph::active
+
+#' @importFrom tidygraph .E
+#' @export
+tidygraph::`.E`
+
+#' @importFrom tidygraph .G
+#' @export
+tidygraph::`.G`
+
+#' @importFrom tidygraph .N
+#' @export
+tidygraph::`.N`
+
 #' @importFrom magrittr %>%
 #' @export
 magrittr::`%>%`
