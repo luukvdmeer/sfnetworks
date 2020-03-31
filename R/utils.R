@@ -1,45 +1,27 @@
-#' Represent any geometry as a point
-#'
-#' @param x An object of class \code{\link[sf]{sf}}.
-#'
-#' @details Centroids will be calculated for geometries that are not points.
-#'
-#' @importFrom sf st_centroid st_geometry
-as_points = function(x) {
-  if (class(sf::st_geometry(x))[1] == "sfc_POINT") {
-    return(x)
-  } else {
-    sf::st_centroid(x)
-  }
-}
-
 #' Create edges from nodes
 #'
-#' @param nodes An object of class \code{\link[sf]{sf}}.
+#' @param nodes An object of class \code{\link[sf]{sf}} with \code{POINT}
+#' geometries.
 #'
-#' @details It is assumed that the given geometries form the nodes. Edges need
-#' to be created as linestrings between those nodes. It is assumed that the
-#' given nodes are connected sequentially. Centroids will be used as nodes if
-#' non-point geometries are given.
+#' @details It is assumed that the given POINT geometries form the nodes. Edges
+#' need to be created as linestrings between those nodes. It is assumed that
+#' the given nodes are connected sequentially.
 #'
 #' @return A list with the nodes as an object of class \code{\link[sf]{sf}}
-#' and the created edges as an object of class \code{\link[sf]{sf}} with
-#' \code{LINESTRING} geometries.
+#' with \code{POINT} geometries and the created edges as an object of class
+#' \code{\link[sf]{sf}} with \code{LINESTRING} geometries.
 #'
 #' @importFrom sf st_as_sf st_crs st_geometry st_sfc
 create_edges_from_nodes = function(nodes) {
-  # Calculate centroids if geometries are not points.
-  node_pts = as_points(nodes)
-
   # Create separate tables for source and target nodes.
-  sources = node_pts[1:(nrow(node_pts)-1), ]
-  targets = node_pts[2:nrow(node_pts), ]
+  sources = nodes[1:(nrow(nodes)-1), ]
+  targets = nodes[2:nrow(nodes), ]
 
   # Create linestrings between the source and target nodes.
   edges = sf::st_as_sf(
     data.frame(
-      from = 1:(nrow(node_pts)-1),
-      to = 2:nrow(node_pts),
+      from = 1:(nrow(nodes)-1),
+      to = 2:nrow(nodes),
       geometry = sf::st_sfc(
         mapply(
           function (a,b) points_to_lines(a,b),
