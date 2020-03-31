@@ -118,6 +118,15 @@ get_coords = function(x, XY) {
   split(coords[, XY], f = as.factor(coords[, "L1"]))
 }
 
+#' Point to the edges in an sfnetwork
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @return An object of class \code{\link{sfnetwork}} with activated edges.
+get_edges = function(x) {
+  activate(x, "edges")
+}
+
 #' Get the X or Y coordinates of the endpoints of LINESTRING geometries
 #'
 #' @param x An object of class \code{\link[sf]{sf}} with \code{LINESTRING}
@@ -148,13 +157,56 @@ get_endpoints = function(x) {
   cbind(get_endpoint_coords(x, "X"), get_endpoint_coords(x, "Y"))
 }
 
+#' Retrieve the name of the geometry list column in an sf object
+#'
+#' @param x An object of class \code{\link[sf]{sf}}.
+#'
+#' @return The name of the geometry list column as a string.
+get_geometry_colname = function(x) {
+  attr(x, "sf_column")
+}
+
+#' Check if an sfnetwork has spatially explicit edges
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @return \code{TRUE} if the network has spatially explicit edges, \code{FALSE}
+#' otherwise.
+has_spatially_explicit_edges = function(x) {
+  is.sf(as_tibble(x, "edges"))
+}
+
+#' Point to the nodes in an sfnetwork
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @return An object of class \code{\link{sfnetwork}} with activated nodes.
+get_nodes = function(x) {
+  activate(x, "nodes")
+}
+
 #' Check if a table has spatial information stored in a geometry list column
 #'
 #' @param x Object to check for spatial explicitness
 #'
-#' @export
+#' @return \code{TRUE} if the table has a geometry list column, \code{FALSE}
+#' otherwise.
 is_spatially_explicit = function(x) {
   any(sapply(x, function(y) inherits(y, "sfc")), na.rm = TRUE)
+}
+
+#' Check if the geometries of an sf object are all of a specific type
+#'
+#' @param x An object of class \code{\link[sf]{sf}}.
+#'
+#' @param type The geometry type to check for, as a string.
+#'
+#' @return \code{TRUE} when all geometries are of the given type, \code{FALSE}
+#' otherwise.
+#'
+#' @importFrom sf st_geometry_type
+all_geometries_of_same_type = function(x, type) {
+  all(sf::st_geometry_type(x) == type)
 }
 
 #' Draw lines between points
@@ -173,16 +225,34 @@ points_to_lines = function(sources, targets) {
   sf::st_cast(sf::st_union(sources, targets), "LINESTRING")
 }
 
-#' Check if the CRS of two sf objects are the same
+#' Replace a geometry list column with another geometry list column
 #'
-#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
+#' @param x An object of class \code{\link{sfnetwork}} \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}.
 #'
-#' @param y An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
+#' @param y An object of class \code{\link[sf]{sfc}}.
+#'
+#' @return An object of the same class as x, but with a replaced geometry list
+#' column
+#'
+#' @importFrom rlang !! :=
+#' @importFrom tidygraph mutate
+replace_geometry = function(x, y) {
+  tidygraph::mutate(x, !!get_geometry_colname(as_sf(x)) := y)
+}
+
+#' Check if the CRS of two objects are the same
+#'
+#' @param x An object of class \code{\link{sfnetwork}} \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}.
+#'
+#' @param y An object of class \code{\link{sfnetwork}} \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}.
 #'
 #' @return \code{TRUE} when the CRS of x and y are the same, \code{FALSE}
 #' otherwise.
 #'
 #' @importFrom sf st_crs
 same_crs = function(x, y) {
-  sf::st_crs(x) == sf::st_crs(y)
+  st_crs(x) == st_crs(y)
 }
