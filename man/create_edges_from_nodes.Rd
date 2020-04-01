@@ -7,19 +7,19 @@
 create_edges_from_nodes(nodes)
 }
 \arguments{
-\item{nodes}{An object of class \code{\link[sf]{sf}}.}
+\item{nodes}{An object of class \code{\link[sf]{sf}} with \code{POINT}
+geometries.}
 }
 \value{
 A list with the nodes as an object of class \code{\link[sf]{sf}}
-and the created edges as an object of class \code{\link[sf]{sf}} with
-\code{LINESTRING} geometries.
+with \code{POINT} geometries and the created edges as an object of class
+\code{\link[sf]{sf}} with \code{LINESTRING} geometries.
 }
 \description{
 Create edges from nodes
 }
 \details{
-It is assumed that the given geometries form the nodes. Edges need
-to be created as linestrings between those nodes. It is assumed that the
-given nodes are connected sequentially. Centroids will be used as nodes if
-non-point geometries are given.
+It is assumed that the given POINT geometries form the nodes. Edges
+need to be created as linestrings between those nodes. It is assumed that
+the given nodes are connected sequentially.
 }

@@ -4,6 +4,10 @@
 \name{reexports}
 \alias{reexports}
 \alias{activate}
+\alias{active}
+\alias{.E}
+\alias{.G}
+\alias{.N}
 \alias{\%>\%}
 \alias{as_tibble}
 \title{Objects exported from other packages}
@@ -17,6 +21,6 @@ below to see their documentation.
 
   \item{tibble}{\code{\link[tibble]{as_tibble}}}
 
-  \item{tidygraph}{\code{\link[tidygraph]{activate}}}
+  \item{tidygraph}{\code{\link[tidygraph]{activate}}, \code{\link[tidygraph]{active}}, \code{\link[tidygraph]{.E}}, \code{\link[tidygraph]{.G}}, \code{\link[tidygraph]{.N}}}
 }}
 

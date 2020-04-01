@@ -9,15 +9,17 @@ sfnetwork(nodes, edges, directed = TRUE, ...)
 \arguments{
 \item{nodes}{An object containing information about the nodes in the network.
 The nodes should contain spatial information, either by being an \code{sf}
-object, or by being convertable to an \code{sf}  object with
-\code{\link[sf]{st_as_sf}}.}
+object with only \code{POINT} geometries, or by being convertable to such an
+object with \code{\link[sf]{st_as_sf}}.}
 
 \item{edges}{An object containing information about the edges in the network.
 This object may contain explicit spatial information by being an \code{sf}
-object with \code{LINESTRING} geometry. However, this is optional. It may also
-be a regular \code{data.frame} object. In any case, the terminal nodes of each
-edge must either be encoded in a \code{to} and \code{from} column, or in the
-two first columns, as integers. These integers refer to nodes indices.}
+object with only \code{LINESTRING} geometries. However, this is optional. It
+may also be a regular \code{data.frame} or \code{tbl_df} object. In any case,
+the terminal nodes of each edge must either be encoded in a \code{to} and
+\code{from} column, or in the two first columns, as integers. These integers
+refer to nodes indices, which in turn refer to the position of a node in the
+nodes table.}
 
 \item{directed}{Should the constructed network be directed? Defaults to
 \code{TRUE}.}
@@ -31,16 +33,17 @@ An object of class \code{sfnetwork}.
 \description{
 \code{sfnetwork} is a tidy data structure for spatial networks. It extends
 the graph manipulation functionalities of the
-\code{\link[tidygraph]{tidygraph-package}} package into the domain of geospatial
-networks, where nodes are embedded in geographical space. It subclasses
-\code{\link[tidygraph]{tbl_graph}}, and therefore all of tidygraphs functions
-should work as expected, without any conversion. Just as with a
+\code{\link[tidygraph]{tidygraph-package}} package into the domain of
+geospatial networks, where nodes are embedded in geographical space. It
+subclasses \code{\link[tidygraph]{tbl_graph}}, and therefore all of tidygraphs
+functions should work as expected, without any conversion. Just as with a
 \code{\link[tidygraph]{tbl_graph}}, the nodes are activated by default. The
 context can be changed using the \code{\link[tidygraph]{activate}} verb
 and affects all subsequent operations. In \code{sfnetworks}, the nodes are
-handled as being an \code{\link[sf]{sf}} object , and can always be extracted
-with \code{\link[sf]{st_as_sf}} when activated. The edges can be handled as
-being an \code{sf} object with \code{LINESTRING} geometry, but this is optional.
-When the edges do not have an explicit spatial component, they can always be
-extracted with \code{\link[tidygraph]{as_tibble}} when activated.
+handled as being an \code{\link[sf]{sf}} object with only \code{POINT}
+geometries, and can always be extracted with \code{\link[sf]{st_as_sf}} when
+activated. The edges can be handled as being an \code{sf} object with only
+\code{LINESTRING} geometries, but this is optional. When the edges do not
+have an explicit spatial component, they can always be extracted with
+\code{\link[tidygraph]{as_tibble}} when activated.
 }

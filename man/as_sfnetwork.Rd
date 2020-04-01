@@ -9,9 +9,9 @@
 \usage{
 as_sfnetwork(x, ...)
 
-\method{as_sfnetwork}{default}(x, ...)
+\method{as_sfnetwork}{default}(x, directed = TRUE, ...)
 
-\method{as_sfnetwork}{sf}(x, directed = TRUE, lines_as_edges = TRUE, ...)
+\method{as_sfnetwork}{sf}(x, directed = TRUE, ...)
 
 \method{as_sfnetwork}{tbl_graph}(x, ...)
 }
@@ -22,9 +22,6 @@ as_sfnetwork(x, ...)
 
 \item{directed}{Should the constructed network be directed? Defaults to
 \code{TRUE}.}
-
-\item{lines_as_edges}{Should \code{LINESTRING} geometries be considered
-edges instead of nodes? Defaults to \code{TRUE}.}
 }
 \value{
 An object of class \code{sfnetwork}.
@@ -32,18 +29,19 @@ An object of class \code{sfnetwork}.
 \description{
 \code{sfnetwork} is a tidy data structure for spatial networks. It extends
 the graph manipulation functionalities of the
-\code{\link[tidygraph]{tidygraph-package}} package into the domain of geospatial
-networks, where nodes are embedded in geographical space. It subclasses
-\code{\link[tidygraph]{tbl_graph}}, and therefore all of tidygraphs functions
-should work as expected, without any conversion. Just as with a
+\code{\link[tidygraph]{tidygraph-package}} package into the domain of
+geospatial networks, where nodes are embedded in geographical space. It
+subclasses \code{\link[tidygraph]{tbl_graph}}, and therefore all of tidygraphs
+functions should work as expected, without any conversion. Just as with a
 \code{\link[tidygraph]{tbl_graph}}, the nodes are activated by default. The
 context can be changed using the \code{\link[tidygraph]{activate}} verb
 and affects all subsequent operations. In \code{sfnetworks}, the nodes are
-handled as being an \code{\link[sf]{sf}} object , and can always be extracted
-with \code{\link[sf]{st_as_sf}} when activated. The edges can be handled as
-being an \code{sf} object with \code{LINESTRING} geometry, but this is optional.
-When the edges do not have an explicit spatial component, they can always be
-extracted with \code{\link[tidygraph]{as_tibble}} when activated.
+handled as being an \code{\link[sf]{sf}} object with only \code{POINT}
+geometries, and can always be extracted with \code{\link[sf]{st_as_sf}} when
+activated. The edges can be handled as being an \code{sf} object with only
+\code{LINESTRING} geometries, but this is optional. When the edges do not
+have an explicit spatial component, they can always be extracted with
+\code{\link[tidygraph]{as_tibble}} when activated.
 }
 \details{
 If an object can be read by \code{\link[tidygraph]{as_tbl_graph}} and the

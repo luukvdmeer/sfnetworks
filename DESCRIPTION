@@ -29,6 +29,7 @@ ByteCompile: true
 Imports:
   igraph,
   magrittr,
+  rlang,
   sf,
   tibble,
   tidygraph
