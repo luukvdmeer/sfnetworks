@@ -53,13 +53,13 @@ sfnetwork = function(nodes, edges, directed = TRUE, ...) {
       }
     )
   }
-  if (! all_geometries_of_same_type(nodes, "POINT")) {
+  if (! st_is_all(nodes, "POINT")) {
     stop("Only geometries of type POINT are allowed as nodes")
   }
   # If edges is an sf object, tidygraph cannot handle it due to sticky geometry.
   # Therefore it has to be converted into a regular data frame (or tibble).
   if (is.sf(edges)) {
-    if (! all_geometries_of_same_type(edges, "LINESTRING")) {
+    if (! st_is_all(edges, "LINESTRING")) {
       stop("Only geometries of type LINESTRING are allowed as edges")
     }
     if (! same_crs(nodes, edges)) {
@@ -127,13 +127,13 @@ as_sfnetwork.default = function(x, directed = TRUE, ...) {
 #' @importFrom sf st_geometry
 #' @export
 as_sfnetwork.sf = function(x, directed = TRUE, ...) {
-  if (all_geometries_of_same_type(x, "LINESTRING")) {
+  if (st_is_all(x, "LINESTRING")) {
     # Workflow:
     # It is assumed that the given LINESTRING geometries form the edges.
     # Nodes need to be created at the endpoints of the edges.
     # Identical endpoints need to be the same node.
     network = create_nodes_from_edges(x)
-  } else if (all_geometries_of_same_type(x, "POINT")) {
+  } else if (st_is_all(x, "POINT")) {
     # Workflow:
     # It is assumed that the given POINT geometries form the nodes.
     # Edges need to be created as linestrings between those nodes.

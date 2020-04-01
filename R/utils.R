@@ -177,18 +177,15 @@ is_spatially_explicit = function(x) {
   any(sapply(x, function(y) inherits(y, "sfc")), na.rm = TRUE)
 }
 
-#' Check if the geometries of an sf object are all of a specific type
+#' Check if the output of an st_join operation has multiple matches
 #'
-#' @param x An object of class \code{\link[sf]{sf}}.
+#' @param x The output of an st_join(a,b) operation where the original row
+#' indices of a are stored in a column names \code{.sfnetwork_index}.
 #'
-#' @param type The geometry type to check for, as a string.
-#'
-#' @return \code{TRUE} when all geometries are of the given type, \code{FALSE}
+#' @return \code{TRUE} when there where multiple matches, \code{FALSE}
 #' otherwise.
-#'
-#' @importFrom sf st_geometry_type
-all_geometries_of_same_type = function(x, type) {
-  all(sf::st_geometry_type(x) == type)
+multiple_matches = function(x) {
+  any(table(x$.sfnetwork_index) > 1)
 }
 
 #' Draw lines between points
@@ -237,4 +234,18 @@ replace_geometry = function(x, y) {
 #' @importFrom sf st_crs
 same_crs = function(x, y) {
   st_crs(x) == st_crs(y)
+}
+
+#' Check if the geometries of an sf object are all of a specific type
+#'
+#' @param x An object of class \code{\link[sf]{sf}}.
+#'
+#' @param type The geometry type to check for, as a string.
+#'
+#' @return \code{TRUE} when all geometries are of the given type, \code{FALSE}
+#' otherwise.
+#'
+#' @importFrom sf st_is
+st_is_all = function(x, type) {
+  all(sf::st_is(x, type))
 }
