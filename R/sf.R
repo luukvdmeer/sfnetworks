@@ -58,12 +58,12 @@ st_as_sf.sfnetwork = function(x, ...) {
 # =============================================================================
 
 #' @importFrom sf st_geometry
-change_crs_of_element = function(x, what, set, op, value, ...) {
+change_element_crs = function(x, what, set, op, val, ...) {
   if (what == "nodes") x = activate(x, "nodes")
   if (what == "edges") x = activate(x, "edges")
   xsf = as_sf(x)
   if (set) {
-    st_crs(xsf) = value
+    st_crs(xsf) = val
     x = replace_geometry(x, sf::st_geometry(xsf))
   } else {
     n_tmp = do.call(match.fun(op), list(xsf, ...))
@@ -72,16 +72,16 @@ change_crs_of_element = function(x, what, set, op, value, ...) {
   x
 }
 
-change_crs_of_network = function(x, set, op, val, ...) {
+change_network_crs = function(x, set, op, val, ...) {
   if (active(x) == "nodes") {
     if (has_spatially_explicit_edges(x)) {
-      x = change_crs_of_element(x, "edges", set = set, op = op, val = val, ...)
+      x = change_element_crs(x, "edges", set = set, op = op, val = val, ...)
     }
-    x = change_crs_of_element(x, "nodes", set = set, op = op, val = val, ...)
+    x = change_element_crs(x, "nodes", set = set, op = op, val = val, ...)
   }
   if (active(x) == "edges") {
-    x = change_crs_of_element(x, "nodes", set = set, op = op, val = val, ...)
-    x = change_crs_of_element(x, "edges", set = set, op = op, val = val, ...)
+    x = change_element_crs(x, "nodes", set = set, op = op, val = val, ...)
+    x = change_element_crs(x, "edges", set = set, op = op, val = val, ...)
   }
   x
 }
@@ -97,7 +97,7 @@ st_crs.sfnetwork = function(x, ...) {
 #' @importFrom sf st_crs<- st_geometry
 #' @export
 `st_crs<-.sfnetwork` = function(x, value) {
-  change_crs_of_network(x, set = TRUE, op = NULL, val = value)
+  change_network_crs(x, set = TRUE, op = NULL, val = value)
 }
 
 #' @name sf
@@ -112,21 +112,21 @@ st_set_crs.sfnetwork = function(x, value) {
 #' @importFrom sf st_shift_longitude
 #' @export
 st_shift_longitude.sfnetwork = function(x, ...) {
-  change_crs_of_network(x, set = FALSE, op = sf::st_shift_longitude, val = NULL, ...)
+  change_network_crs(x, set = FALSE, op = sf::st_shift_longitude, val = NULL, ...)
 }
 
 #' @name sf
 #' @importFrom sf st_transform
 #' @export
 st_transform.sfnetwork = function(x, crs, ...) {
-  change_crs_of_network(x, set = FALSE, op = sf::st_transform, val = NULL, crs, ...)
+  change_network_crs(x, set = FALSE, op = sf::st_transform, val = NULL, crs, ...)
 }
 
 #' @name sf
 #' @importFrom sf st_wrap_dateline
 #' @export
 st_wrap_dateline.sfnetwork = function(x, ...) {
-  change_crs_of_network(x, set = FALSE, op = sf::st_wrap_dateline, val = NULL, ...)
+  change_network_crs(x, set = FALSE, op = sf::st_wrap_dateline, val = NULL, ...)
 }
 
 # =============================================================================
