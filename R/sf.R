@@ -374,13 +374,21 @@ st_geometry.sfnetwork = function(x, ...) {
 #' @export
 `st_geometry<-.sfnetwork` = function(x, value) {
   stopifnot(inherits(value, "sfc") || is.null(value))
-  if (has_spatially_explicit_edges(x) && !same_crs(x, value) && !is.null(value)) {
-    stop(
-      paste(
-        "This caused a discrepancy in CRS between nodes and edges.",
-        "First transform the network before replacing the geometry."
+  if (!is.null(value)) {
+    if (active(x) == "nodes" && !st_is_all(value, "POINT")) {
+      stop("Only geometries of type POINT are allowed as nodes")
+    }
+    if (active(x) == "edges" && !st_is_all(value, "LINESTRING")) {
+      stop("Only geometries of type LINESTRING are allowed as edges")
+    }
+    if (has_spatially_explicit_edges(x) && !same_crs(x, value)) {
+      stop(
+        paste(
+          "This caused a discrepancy in CRS between nodes and edges.",
+          "First transform the network before replacing the geometry."
+        )
       )
-    )
+    }
   }
   x = replace_geometry(x, value)
   if (active(x) == "nodes" && is.null(value)) {
