@@ -439,8 +439,10 @@ st_join.sfnetwork = function(x, y, join = st_intersects, ..., left = TRUE) {
   }
   xsf$.sfnetwork_index = seq_len(nrow(xsf))
   d_tmp = sf::st_join(xsf, ysf, join = join, ..., left = left)
-  if (multiple_matches(d_tmp)) {
-    stop("Multiple matches are not allowed when using st_join on an sfnetwork")
+  if (active(x) == "nodes") {
+    if (multiple_matches(d_tmp)) {
+      stop("Multiple matches are not allowed when using st_join on the nodes")
+    }
   }
   if (! left) {
     keep_ind = d_tmp$.sfnetwork_index
