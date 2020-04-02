@@ -365,18 +365,22 @@ st_geometry.sfnetwork = function(x, ...) {
     if (active(x) == "edges" && !st_is_all(value, "LINESTRING")) {
       stop("Only geometries of type LINESTRING are allowed as edges")
     }
-    if (has_spatially_explicit_edges(x) && !same_crs(x, value)) {
-      stop(
-        paste(
-          "This caused a discrepancy in CRS between nodes and edges.",
-          "First transform the network before replacing the geometry."
-        )
-      )
+    if (has_spatially_explicit_edges(x)) {
+      if (active(x) == "nodes") {
+        stop("Node geometries cannot be replaced when edges are spatially explicit")
+      }
+      if (active(x) == "edges") {
+        if (! same_crs(x, value)) {
+          stop("Edge geometries can only be replaced when the CRS doesn't change")
+        }
+        if (! same_endpoints(as_sf(x), value)) {
+          stop("Edge geometries can only be replaced when the endpoints don't change")
+        }
+      }
     }
-  }
-  x = replace_geometry(x, value)
-  if (active(x) == "nodes" && is.null(value)) {
-    class(x) = setdiff(class(x), "sfnetwork")
+    x = replace_geometry(x, value)
+  } else {
+    x = drop_geometry(x, what = active(x))
   }
   x
 }

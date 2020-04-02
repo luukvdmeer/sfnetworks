@@ -7,10 +7,10 @@
 same_crs(x, y)
 }
 \arguments{
-\item{x}{An object of class \code{\link{sfnetwork}} \code{\link[sf]{sf}} or
+\item{x}{An object of class \code{\link{sfnetwork}}, \code{\link[sf]{sf}} or
 \code{\link[sf]{sfc}}.}
 
-\item{y}{An object of class \code{\link{sfnetwork}} \code{\link[sf]{sf}} or
+\item{y}{An object of class \code{\link{sfnetwork}}, \code{\link[sf]{sf}} or
 \code{\link[sf]{sfc}}.}
 }
 \value{

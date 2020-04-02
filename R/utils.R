@@ -88,6 +88,25 @@ create_nodes_from_edges = function(edges) {
   list(nodes = nodes, edges = edges)
 }
 
+#' Drop the geometry of a network element
+#'
+#' @param x An object of class \code{\link{sfnetwork}}
+#'
+#' @param what Either 'nodes' or 'edges'.
+#'
+#' @return An object of class \code{\link{sfnetwork}} when what = 'edges', and
+#' an object of class \code{\link[tidygraph]{tbl_graph}} when what = 'nodes'.
+#'
+#' @importFrom rlang !! :=
+#' @importFrom tidygraph mutate
+drop_geometry = function(x, what) {
+  x = tidygraph::mutate(as_tbl_graph(x), !!get_geometry_colname(as_sf(x)) := NULL)
+  if (what == "edges") {
+    x = as_sfnetwork(x)
+  }
+  x
+}
+
 #' Get the X or Y coordinates of geometries
 #'
 #' @param x An object of class \code{\link[sf]{sf}}.
@@ -222,10 +241,10 @@ replace_geometry = function(x, y) {
 
 #' Check if the CRS of two objects are the same
 #'
-#' @param x An object of class \code{\link{sfnetwork}} \code{\link[sf]{sf}} or
+#' @param x An object of class \code{\link{sfnetwork}}, \code{\link[sf]{sf}} or
 #' \code{\link[sf]{sfc}}.
 #'
-#' @param y An object of class \code{\link{sfnetwork}} \code{\link[sf]{sf}} or
+#' @param y An object of class \code{\link{sfnetwork}}, \code{\link[sf]{sf}} or
 #' \code{\link[sf]{sfc}}.
 #'
 #' @return \code{TRUE} when the CRS of x and y are the same, \code{FALSE}
@@ -234,6 +253,22 @@ replace_geometry = function(x, y) {
 #' @importFrom sf st_crs
 same_crs = function(x, y) {
   st_crs(x) == st_crs(y)
+}
+
+#' Check if two sf objects have the same LINESTRING endpoints
+#'
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+#' with \code{LINESTRING} geometries.
+#'
+#' @param y An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+#' with \code{LINESTRING} geometries.
+#'
+#' @return \code{TRUE} when the endpoints are the same, \code{FALSE} otherwise.
+#'
+#' @details This is a pairwise check. Each row in x is compared to its
+#' corresponding row in y. Hence, x and y should be of the same length.
+same_endpoints = function(x, y) {
+  identical(get_endpoints(x), get_endpoints(y))
 }
 
 #' Check if the geometries of an sf object are all of a specific type
