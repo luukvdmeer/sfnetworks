@@ -5,7 +5,6 @@
 \alias{st_as_sf.sfnetwork}
 \alias{st_crs.sfnetwork}
 \alias{st_crs<-.sfnetwork}
-\alias{st_set_crs.sfnetwork}
 \alias{st_shift_longitude.sfnetwork}
 \alias{st_transform.sfnetwork}
 \alias{st_wrap_dateline.sfnetwork}
@@ -34,12 +33,10 @@
 \alias{st_simplify.sfnetwork}
 \alias{st_bbox.sfnetwork}
 \alias{st_coordinates.sfnetwork}
-\alias{st_drop_geometry.sfnetwork}
 \alias{st_geometry.sfnetwork}
 \alias{st_geometry<-.sfnetwork}
 \alias{st_geometry_type.sfnetwork}
 \alias{st_is.sfnetwork}
-\alias{st_set_geometry.sfnetwork}
 \alias{st_crop.sfnetwork}
 \alias{st_filter.sfnetwork}
 \alias{st_join.sfnetwork}
@@ -52,8 +49,6 @@
 \method{st_crs}{sfnetwork}(x, ...)
 
 \method{st_crs}{sfnetwork}(x) <- value
-
-st_set_crs.sfnetwork(x, value)
 
 \method{st_shift_longitude}{sfnetwork}(x, ...)
 
@@ -111,8 +106,6 @@ st_length.sfnetwork(x)
 
 \method{st_coordinates}{sfnetwork}(x, ...)
 
-st_drop_geometry.sfnetwork(x)
-
 \method{st_geometry}{sfnetwork}(x, ...)
 
 \method{st_geometry}{sfnetwork}(x) <- value
@@ -120,8 +113,6 @@ st_drop_geometry.sfnetwork(x)
 st_geometry_type.sfnetwork(x, ...)
 
 \method{st_is}{sfnetwork}(x, ...)
-
-st_set_geometry.sfnetwork(x, value)
 
 \method{st_crop}{sfnetwork}(x, y, ...)
 

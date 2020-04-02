@@ -101,14 +101,6 @@ st_crs.sfnetwork = function(x, ...) {
 }
 
 #' @name sf
-#' @importFrom sf st_set_crs
-#' @export
-st_set_crs.sfnetwork = function(x, value) {
-  st_crs(x) = value
-  x
-}
-
-#' @name sf
 #' @importFrom sf st_shift_longitude
 #' @export
 st_shift_longitude.sfnetwork = function(x, ...) {
@@ -353,14 +345,6 @@ st_coordinates.sfnetwork = function(x, ...) {
 }
 
 #' @name sf
-#' @importFrom sf st_drop_geometry
-#' @export
-st_drop_geometry.sfnetwork = function(x) {
-  st_geometry(x) = NULL
-  x
-}
-
-#' @name sf
 #' @importFrom sf st_geometry
 #' @export
 st_geometry.sfnetwork = function(x, ...) {
@@ -409,14 +393,6 @@ st_geometry_type.sfnetwork = function(x, ...) {
 #' @export
 st_is.sfnetwork = function(x, ...) {
   sf::st_is(as_sf(x), ...)
-}
-
-#' @name sf
-#' @importFrom sf st_set_geometry
-#' @export
-st_set_geometry.sfnetwork = function(x, value) {
-  st_geometry(x) = value
-  x
 }
 
 # =============================================================================
