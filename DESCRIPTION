@@ -28,12 +28,11 @@ LazyData: true
 ByteCompile: true
 Imports:
   igraph,
-  magrittr,
   rlang,
   sf,
-  tibble,
   tidygraph
 Suggests:
+  tidyverse,
   knitr
 RoxygenNote: 7.1.0
 VignetteBuilder: knitr

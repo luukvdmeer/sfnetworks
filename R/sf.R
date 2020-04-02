@@ -400,7 +400,7 @@ st_is.sfnetwork = function(x, ...) {
 # =============================================================================
 
 #' @importFrom tidygraph slice
-filter_sfnetwork = function(op, x, y, ...) {
+filter_network = function(op, x, y, ...) {
   xsf = as_sf(x)
   ysf = as_sf(y)
   if (".sfnetwork_index" %in% names(xsf)) {
@@ -416,14 +416,14 @@ filter_sfnetwork = function(op, x, y, ...) {
 #' @importFrom sf st_crop
 #' @export
 st_crop.sfnetwork = function(x, y, ...) {
-  filter_sfnetwork(sf::st_crop, x, y, ...)
+  filter_network(sf::st_crop, x, y, ...)
 }
 
 #' @name sf
 #' @importFrom sf st_filter
 #' @export
 st_filter.sfnetwork = function(x, y, ..., .predicate = st_intersects) {
-  filter_sfnetwork(sf::st_filter, x, y, ..., .predicate = .predicate)
+  filter_network(sf::st_filter, x, y, ..., .predicate = .predicate)
 }
 
 #' @name sf

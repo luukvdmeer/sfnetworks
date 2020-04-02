@@ -17,10 +17,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{magrittr}{\code{\link[magrittr]{\%>\%}}}
-
-  \item{tibble}{\code{\link[tibble]{as_tibble}}}
-
-  \item{tidygraph}{\code{\link[tidygraph]{activate}}, \code{\link[tidygraph]{active}}, \code{\link[tidygraph]{.E}}, \code{\link[tidygraph]{.G}}, \code{\link[tidygraph]{.N}}}
+  \item{tidygraph}{\code{\link[tidygraph]{\%>\%}}, \code{\link[tidygraph]{activate}}, \code{\link[tidygraph]{active}}, \code{\link[tidygraph]{as_tibble}}, \code{\link[tidygraph]{.E}}, \code{\link[tidygraph]{.G}}, \code{\link[tidygraph]{.N}}}
 }}
 

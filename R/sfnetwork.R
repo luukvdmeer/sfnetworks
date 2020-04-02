@@ -154,13 +154,6 @@ as_sfnetwork.tbl_graph = function(x, ...) {
   sfnetwork(xls[[1]], xls[[2]], directed = directed, ...)
 }
 
-#' @importFrom tidygraph as_tbl_graph
-#' @export
-as_tbl_graph.sfnetwork = function(x, ...) {
-  class(x) = setdiff(class(x), "sfnetwork")
-  x
-}
-
 #' @export
 print.sfnetwork = function(x, ...) {
   print(as_tbl_graph(x))
