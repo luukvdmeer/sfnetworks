@@ -438,7 +438,7 @@ st_join.sfnetwork = function(x, y, join = st_intersects, ..., left = TRUE) {
     stop("The attribute name '.sfnetwork_index' is reserved")
   }
   xsf$.sfnetwork_index = seq_len(nrow(xsf))
-  d_tmp = sf::st_join(xsf, ysf, join = join, ...)
+  d_tmp = sf::st_join(xsf, ysf, join = join, ..., left = left)
   if (multiple_matches(d_tmp)) {
     stop("Multiple matches are not allowed when using st_join on an sfnetwork")
   }
