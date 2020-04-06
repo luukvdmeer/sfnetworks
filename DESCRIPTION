@@ -30,7 +30,9 @@ Imports:
   igraph,
   rlang,
   sf,
-  tidygraph
+  tidygraph,
+  utils,
+  pillar
 Suggests:
   tidyverse,
   knitr

@@ -154,9 +154,52 @@ as_sfnetwork.tbl_graph = function(x, ...) {
   sfnetwork(xls[[1]], xls[[2]], directed = directed, ...)
 }
 
+#' @importFrom utils capture.output
+#' @importFrom pillar style_subtle
+#' @importFrom tidygraph as_tbl_graph
+#' @importFrom sf st_as_sf
 #' @export
 print.sfnetwork = function(x, ...) {
-  print(as_tbl_graph(x))
+  capture_plain = function(p, start, end, prefix = '', sep = "\n") {
+    cat(paste0(prefix, p[start:end]), sep = sep)
+  }
+  capture_subtle = function(p, start, end, prefix = '', sep = "\n") {
+    cat(pillar::style_subtle(paste0(prefix, p[start:end])), sep = sep)
+  }
+  cat_subtle <- function(...) cat(pillar::style_subtle(...))
+
+  graph = utils::capture.output(tidygraph::as_tbl_graph(x))
+  sf_nodes = utils::capture.output(sf::st_as_sf(activate(x, 'nodes')))
+  sf_edges = utils::capture.output(sf::st_as_sf(activate(x, 'edges')))
+
+  # Header
+  cat_subtle(c('# A sfnetwork with', nrow(sf_nodes),
+               'nodes and', nrow(sf_edges), 'edges\n'))
+  cat_subtle('#\n')
+  capture_subtle(sf_nodes, 5, 5, prefix = '# ')
+  capture_subtle(graph, 2, 3)
+
+  # Node data info
+  capture_subtle(graph, 4, 5)
+  if (active(x) == 'nodes') {
+    capture_subtle(sf_nodes, 2, 4, prefix = '# ')
+  } else {
+    capture_subtle(sf_edges, 2, 4, prefix = '# ')
+  }
+  capture_subtle(graph, 6, 7)
+  capture_plain(graph, 8, 13)
+  capture_subtle(graph, 14, 14)
+
+  # Edge data info
+  capture_subtle(graph, 15, 16)
+  if (active(x) == 'nodes') {
+    capture_subtle(sf_edges, 2, 4, prefix = '# ')
+  } else {
+    capture_subtle(sf_nodes, 2, 4, prefix = '# ')
+  }
+  capture_subtle(graph, 17, 18)
+  capture_plain(graph, 19, 21)
+  capture_subtle(graph, 22, 22)
 }
 
 #' Check if an object is an sfnetwork
