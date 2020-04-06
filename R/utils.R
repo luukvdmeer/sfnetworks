@@ -102,7 +102,7 @@ create_nodes_from_edges = function(edges) {
 drop_geometry = function(x, what) {
   x = tidygraph::mutate(as_tbl_graph(x), !!get_geometry_colname(as_sf(x)) := NULL)
   if (what == "edges") {
-    x = as_sfnetwork(x)
+    x = activate(as_sfnetwork(x), "edges")
   }
   x
 }
