@@ -34,8 +34,9 @@ Imports:
   utils,
   pillar
 Suggests:
-  tidyverse,
-  knitr
+    tidyverse,
+    knitr,
+    testthat
 RoxygenNote: 7.1.0
 VignetteBuilder: knitr
 BugReports: https://github.com/luukvdmeer/sfnetworks/issues/
