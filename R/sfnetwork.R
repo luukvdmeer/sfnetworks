@@ -169,12 +169,14 @@ print.sfnetwork = function(x, ...) {
   cat_subtle <- function(...) cat(pillar::style_subtle(...))
 
   graph = utils::capture.output(tidygraph::as_tbl_graph(x))
-  sf_nodes = utils::capture.output(sf::st_as_sf(activate(x, 'nodes')))
-  sf_edges = utils::capture.output(sf::st_as_sf(activate(x, 'edges')))
+  sfn = sf::st_as_sf(activate(x, 'nodes'))
+  sfe = sf::st_as_sf(activate(x, 'edges'))
+  sf_nodes = utils::capture.output(sfn)
+  sf_edges = utils::capture.output(sfe)
 
   # Header
-  cat_subtle(c('# A sfnetwork with', nrow(sf_nodes),
-               'nodes and', nrow(sf_edges), 'edges\n'))
+  cat_subtle(c('# A sfnetwork with', nrow(sfn),
+               'nodes and', nrow(sfe), 'edges\n'))
   cat_subtle('#\n')
   capture_subtle(sf_nodes, 5, 5, prefix = '# ')
   capture_subtle(graph, 2, 3)
