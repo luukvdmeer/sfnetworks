@@ -44,17 +44,17 @@
 \alias{st_relate.sfnetwork}
 \title{sf methods for sfnetwork objects}
 \usage{
-\method{st_as_sf}{sfnetwork}(x, ...)
+st_as_sf.sfnetwork(x, ...)
 
-\method{st_crs}{sfnetwork}(x, ...)
+st_crs.sfnetwork(x, ...)
 
-\method{st_crs}{sfnetwork}(x) <- value
+st_crs.sfnetwork(x) <- value
 
-\method{st_shift_longitude}{sfnetwork}(x, ...)
+st_shift_longitude.sfnetwork(x, ...)
 
-\method{st_transform}{sfnetwork}(x, crs, ...)
+st_transform.sfnetwork(x, crs, ...)
 
-\method{st_wrap_dateline}{sfnetwork}(x, ...)
+st_wrap_dateline.sfnetwork(x, ...)
 
 st_dimension.sfnetwork(x, ...)
 
@@ -80,7 +80,7 @@ st_equals.sfnetwork(x, y = x, ...)
 
 st_equals_exact.sfnetwork(x, y = x, ...)
 
-\method{st_intersects}{sfnetwork}(x, y = x, ...)
+st_intersects.sfnetwork(x, y = x, ...)
 
 st_is_within_distance.sfnetwork(x, y = x, ...)
 
@@ -90,35 +90,35 @@ st_touches.sfnetwork(x, y = x, ...)
 
 st_within.sfnetwork(x, y = x, ...)
 
-\method{st_area}{sfnetwork}(x)
+st_area.sfnetwork(x)
 
 st_distance.sfnetwork(x, y = x, ...)
 
 st_length.sfnetwork(x)
 
-\method{st_reverse}{sfnetwork}(x, ...)
+st_reverse.sfnetwork(x, ...)
 
-\method{st_segmentize}{sfnetwork}(x, ...)
+st_segmentize.sfnetwork(x, ...)
 
-\method{st_simplify}{sfnetwork}(x, ...)
+st_simplify.sfnetwork(x, ...)
 
-\method{st_bbox}{sfnetwork}(x, ...)
+st_bbox.sfnetwork(x, ...)
 
-\method{st_coordinates}{sfnetwork}(x, ...)
+st_coordinates.sfnetwork(x, ...)
 
-\method{st_geometry}{sfnetwork}(x, ...)
+st_geometry.sfnetwork(x, ...)
 
-\method{st_geometry}{sfnetwork}(x) <- value
+st_geometry.sfnetwork(x) <- value
 
 st_geometry_type.sfnetwork(x, ...)
 
-\method{st_is}{sfnetwork}(x, ...)
+st_is.sfnetwork(x, ...)
 
-\method{st_crop}{sfnetwork}(x, y, ...)
+st_crop.sfnetwork(x, y, ...)
 
-\method{st_filter}{sfnetwork}(x, y, ..., .predicate = st_intersects)
+st_filter.sfnetwork(x, y, ..., .predicate = st_intersects)
 
-\method{st_join}{sfnetwork}(x, y, join = st_intersects, ..., left = TRUE)
+st_join.sfnetwork(x, y, join = st_intersects, ..., left = TRUE)
 
 st_nearest_feature.sfnetwork(x, y)
 
