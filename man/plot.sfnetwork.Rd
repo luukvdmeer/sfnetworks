@@ -7,10 +7,11 @@
 \method{plot}{sfnetwork}(x, ...)
 }
 \arguments{
-\item{x}{object of class sfnetwork}
+\item{x}{Object of class \code{\link{sfnetwork}}.}
 
-\item{...}{further parameters passed to \code{\link[sf]{plot}}}
+\item{...}{Arguments passed on to \code{\link[sf]{plot}}.}
 }
 \description{
-Plot spatially explicit graph components (nodes and edges) of an sfnetwork on a map
+Plot spatially explicit graph components (nodes and edges) of an sfnetwork
+on a map.
 }
