@@ -178,33 +178,35 @@ print.sfnetwork = function(x, ...) {
     c("# A sfnetwork with", nrow(nodes),"nodes and", nrow(edges), "edges\n")
   )
   cat_subtle("#\n")
-  capture_subtle(nsf, 5, 5, prefix = "# ")
-  capture_subtle(graph, 2, 3)
+  capture_cat(nsf, 5, 5, prefix = "# ", style = "subtle")
+  capture_cat(graph, 2, 3, style = "subtle")
   if (has_spatially_explicit_edges(x)) {
     cat_subtle("# and spatially explicit edges\n")
   } else {
     cat_subtle("# and spatially implicit edges\n")
   }
   # Active data info.
-  capture_subtle(graph, 4, 5)
+  capture_cat(graph, 4, 5, style = "subtle")
   if (active(x) == "nodes") {
-    capture_subtle(nsf, 2, 4, prefix = "# ")
+    capture_cat(nsf, 2, 4, prefix = "# ", style = "subtle")
   } else if (has_spatially_explicit_edges(x)) {
-    capture_subtle(esf, 2, 4, prefix = "# ")
+    capture_cat(esf, 2, 4, prefix = "# ", style = "subtle")
   }
-  capture_subtle(graph, 6, 7)
-  capture_plain(graph, 8, 13)
-  capture_subtle(graph, 14, 14)
+  capture_cat(graph, 6, 6, style = "subtle")
+  capture_cat(graph, 7, 7, style = "subtle_italic")
+  capture_cat(graph, 8, 13)
+  capture_cat(graph, 14, 14, style = "subtle")
   # Inactive data info.
-  capture_subtle(graph, 15, 16)
+  capture_cat(graph, 15, 16, style = "subtle")
   if (active(x) == "nodes" && has_spatially_explicit_edges(x)) {
-    capture_subtle(esf, 2, 4, prefix = "# ")
+    capture_cat(esf, 2, 4, prefix = "# ", style = "subtle")
   } else {
-    capture_subtle(nsf, 2, 4, prefix = "# ")
+    capture_cat(nsf, 2, 4, prefix = "# ", style = "subtle")
   }
-  capture_subtle(graph, 17, 18)
-  capture_plain(graph, 19, 21)
-  capture_subtle(graph, 22, 22)
+  capture_cat(graph, 17, 17,  style = "subtle")
+  capture_cat(graph, 18, 18, style = "subtle_italic")
+  capture_cat(graph, 19, 21)
+  capture_cat(graph, 22, 22, style = "subtle")
 }
 
 #' Check if an object is an sfnetwork

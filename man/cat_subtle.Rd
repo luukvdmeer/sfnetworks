@@ -2,7 +2,11 @@
 % Please edit documentation in R/utils.R
 \name{cat_subtle}
 \alias{cat_subtle}
+<<<<<<< HEAD
 \title{Print a string with a subtle style.}
+=======
+\title{Print a string with a subtle style (silver color).}
+>>>>>>> styling
 \usage{
 cat_subtle(...)
 }
@@ -10,8 +14,15 @@ cat_subtle(...)
 \item{...}{A string to print.}
 }
 \value{
+<<<<<<< HEAD
 A printed string to console with subtle style.
 }
 \description{
 Print a string with a subtle style.
+=======
+A printed string to console with subtle style (silver color).
+}
+\description{
+Print a string with a subtle style (silver color).
+>>>>>>> styling
 }
