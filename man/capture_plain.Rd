@@ -2,7 +2,8 @@
 % Please edit documentation in R/utils.R
 \name{capture_plain}
 \alias{capture_plain}
-\title{Subset and modify the result of \code{capture.output} to pass onto print method}
+\title{Subset and modify the result of \code{capture.output} to pass onto print
+method}
 \usage{
 capture_plain(p, start, end, prefix = "", sep = "\\n")
 }
@@ -21,5 +22,6 @@ capture_plain(p, start, end, prefix = "", sep = "\\n")
 A modified subset of the original captured output.
 }
 \description{
-Subset and modify the result of \code{capture.output} to pass onto print method
+Subset and modify the result of \code{capture.output} to pass onto print
+method
 }

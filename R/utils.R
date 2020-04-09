@@ -1,3 +1,52 @@
+#' Subset and modify the result of \code{capture.output} to pass onto print
+#' method
+#'
+#' @param p The result of \code{capture.output}.
+#'
+#' @param start From which line to start subsetting.
+#'
+#' @param end From which line to finish subsetting.
+#'
+#' @param prefix A string that should be passed before printing each line.
+#'
+#' @param sep How to separate each line for printing.
+#'
+#' @return A modified subset of the original captured output.
+capture_plain = function(p, start, end, prefix = "", sep = "\n") {
+  cat(paste0(prefix, p[start:end]), sep = sep)
+}
+
+#' Subset and modify the result of \code{capture.output} to pass onto
+#' print method with subtle style
+#'
+#' @param p The result of \code{capture.output}.
+#'
+#' @param start From which line to start subsetting.
+#'
+#' @param end From which line to finish subsetting.
+#'
+#' @param prefix A string that should be passed before printing each line.
+#'
+#' @param sep How to separate each line for printing.
+#'
+#' @return A modified subset of the original captured output with subtle style.
+#'
+#' @importFrom pillar style_subtle
+capture_subtle = function(p, start, end, prefix = "", sep = "\n") {
+  cat(pillar::style_subtle(paste0(prefix, p[start:end])), sep = sep)
+}
+
+#' Print a string with a subtle style.
+#'
+#' @param ... A string to print.
+#'
+#' @return A printed string to console with subtle style.
+#'
+#' @importFrom pillar style_subtle
+cat_subtle = function(...) {
+  cat(pillar::style_subtle(...))
+}
+
 #' Create edges from nodes
 #'
 #' @param nodes An object of class \code{\link[sf]{sf}} with \code{POINT}
@@ -295,49 +344,3 @@ same_endpoints = function(x, y) {
 st_is_all = function(x, type) {
   all(sf::st_is(x, type))
 }
-
-#' Subset and modify the result of \code{capture.output} to pass onto print method
-#'
-#' @param p The result of \code{capture.output}.
-#'
-#' @param start From which line to start subsetting.
-#'
-#' @param end From which line to finish subsetting.
-#'
-#' @param prefix A string that should be passed before printing each line.
-#'
-#' @param sep How to separate each line for printing.
-#'
-#' @return A modified subset of the original captured output.
-capture_plain = function(p, start, end, prefix = "", sep = "\n") {
-  cat(paste0(prefix, p[start:end]), sep = sep)
-}
-
-#' Subset and modify the result of \code{capture.output} to pass onto
-#' print method with subtle style
-#'
-#' @param p The result of \code{capture.output}.
-#'
-#' @param start From which line to start subsetting.
-#'
-#' @param end From which line to finish subsetting.
-#'
-#' @param prefix A string that should be passed before printing each line.
-#'
-#' @param sep How to separate each line for printing.
-#'
-#' @return A modified subset of the original captured output with subtle style.
-#'
-#' @importFrom pillar style_subtle
-capture_subtle = function(p, start, end, prefix = "", sep = "\n") {
-  cat(pillar::style_subtle(paste0(prefix, p[start:end])), sep = sep)
-}
-
-#' Print a string with a subtle style.
-#'
-#' @param ... A string to print.
-#'
-#' @return A printed string to console with subtle style.
-#'
-#' @importFrom pillar style_subtle
-cat_subtle = function(...) cat(pillar::style_subtle(...))
