@@ -170,14 +170,14 @@ print.sfnetwork = function(x, ...) {
   cat_subtle(
     c("# A sfnetwork with", nrow(nodes),"nodes and", nrow(edges), "edges\n")
   )
-  if (has_spatially_explicit_edges(x)) {
-    cat_subtle("# With spatially explicit edges\n")
-  } else {
-    cat_subtle("# Without spatially explicit edges\n")
-  }
   cat_subtle("#\n")
   capture_subtle(nsf, 5, 5, prefix = "# ")
   capture_subtle(graph, 2, 3)
+  if (has_spatially_explicit_edges(x)) {
+    cat_subtle("# and spatially explicit edges\n")
+  } else {
+    cat_subtle("# and spatially implicit edges\n")
+  }
   # Active data info.
   capture_subtle(graph, 4, 5)
   if (active(x) == "nodes") {
