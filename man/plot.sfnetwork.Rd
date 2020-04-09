@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{Object of class \code{\link{sfnetwork}}.}
 
-\item{...}{Arguments passed on to \code{\link[sf]{plot}}.}
+\item{...}{Arguments passed on to \code{\link[sf]{plot}}}
 }
 \description{
 Plot spatially explicit graph components (nodes and edges) of an sfnetwork
