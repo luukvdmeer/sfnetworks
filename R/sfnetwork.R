@@ -146,12 +146,10 @@ as_sfnetwork.sf = function(x, directed = TRUE, ...) {
 }
 
 #' @name as_sfnetwork
-#' @importFrom igraph is_directed
 #' @export
 as_sfnetwork.tbl_graph = function(x, ...) {
   xls = as.list(x)
-  directed = igraph::is_directed(x)
-  sfnetwork(xls[[1]], xls[[2]], directed = directed, ...)
+  sfnetwork(xls[[1]], xls[[2]], directed = is_directed(x), ...)
 }
 
 #' @importFrom sf st_as_sf

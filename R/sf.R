@@ -295,7 +295,6 @@ geom_unary_ops = function(op, x, ...) {
 }
 
 #' @name sf
-#' @importFrom igraph is_directed
 #' @importFrom sf st_reverse
 #' @export
 st_reverse.sfnetwork = function(x, ...) {
@@ -306,7 +305,7 @@ st_reverse.sfnetwork = function(x, ...) {
     to = edges$to
     edges$to = from
     edges$from = to
-    x = sfnetwork(as_sf(x, "nodes"), edges, directed = igraph::is_directed(x))
+    x = sfnetwork(as_sf(x, "nodes"), edges, directed = is_directed(x))
     x = activate(x, "edges")
   }
   geom_unary_ops(sf::st_reverse, x, ...)
@@ -431,7 +430,6 @@ st_filter.sfnetwork = function(x, y, ..., .predicate = st_intersects) {
 }
 
 #' @name sf
-#' @importFrom igraph is_directed
 #' @importFrom sf st_join
 #' @importFrom tidygraph slice
 #' @export
@@ -461,7 +459,7 @@ st_join.sfnetwork = function(x, y, join = st_intersects, ..., left = TRUE) {
     n_tmp = as_tibble(activate(x, "nodes"))
     e_tmp = d_tmp
   }
-  sfnetwork(nodes = n_tmp, edges = e_tmp, directed = igraph::is_directed(x))
+  sfnetwork(nodes = n_tmp, edges = e_tmp, directed = is_directed(x))
 }
 
 # =============================================================================

@@ -186,6 +186,17 @@ get_nodes = function(x) {
   activate(x, "nodes")
 }
 
+#' Check if a graph is directed.
+#'
+#' @param x An object of \code{\link{sfnetwork}} or \code{tbl_graph}.
+#'
+#' @return \code{TRUE} when the given graph is directed, \code{FALSE} otherwise.
+#'
+#' @importFrom tidygraph graph_is_directed with_graph
+is_directed = function(x) {
+  tidygraph::with_graph(x, tidygraph::graph_is_directed())
+}
+
 #' Check if a table has spatial information stored in a geometry list column
 #'
 #' @param x Object to check for spatial explicitness

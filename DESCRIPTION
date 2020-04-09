@@ -27,7 +27,6 @@ Encoding: UTF-8
 LazyData: true
 ByteCompile: true
 Imports:
-  igraph,
   rlang,
   sf,
   tidygraph,
@@ -35,9 +34,9 @@ Imports:
   pillar,
   graphics
 Suggests:
-    tidyverse,
-    knitr,
-    testthat
+  tidyverse,
+  knitr,
+  testthat
 RoxygenNote: 7.1.0
 VignetteBuilder: knitr
 BugReports: https://github.com/luukvdmeer/sfnetworks/issues/
