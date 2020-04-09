@@ -2,16 +2,16 @@
 % Please edit documentation in R/utils.R
 \name{cat_subtle}
 \alias{cat_subtle}
-\title{Print a string with a subtle style}
+\title{Print a string with a subtle style (silver color).}
 \usage{
 cat_subtle(...)
 }
 \arguments{
-\item{...}{A string to print}
+\item{...}{A string to print.}
 }
 \value{
-A printed string to console with subtle style
+A printed string to console with subtle style (silver color).
 }
 \description{
-Print a string with a subtle style
+Print a string with a subtle style (silver color).
 }

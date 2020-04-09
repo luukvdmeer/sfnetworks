@@ -32,7 +32,7 @@ Imports:
   sf,
   tidygraph,
   utils,
-  pillar,
+  crayon,
   graphics
 Suggests:
     tidyverse,

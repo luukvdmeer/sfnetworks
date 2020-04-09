@@ -285,7 +285,7 @@ st_is_all = function(x, type) {
   all(sf::st_is(x, type))
 }
 
-#' Subset and modify the result of \code{capture.output} to pass onto print method
+#' Subset and modify the result of \code{capture.output} to pass onto print method.
 #'
 #' @param p The result of \code{capture.output}.
 #'
@@ -296,37 +296,31 @@ st_is_all = function(x, type) {
 #' @param prefix A string that should be passed before printing each line.
 #'
 #' @param sep How to separate each line for printing.
+#'
+#' @param style Whic style to print to console. Options are 'plain' (default),
+#' 'subtle' which makes it silver color, and 'subtle_italic' which makes it
+#' silver color and italic.
+#'
+#' @importFrom crayon silver italic
 #'
 #' @return A modified subset of the original captured output.
-capture_plain = function(p, start, end, prefix = "", sep = "\n") {
-  cat(paste0(prefix, p[start:end]), sep = sep)
+capture_cat = function(p, start, end, prefix = "", sep = "\n", style = "plain") {
+  captured_string = paste0(prefix, p[start:end])
+  if (style == "plain") {
+    cat(captured_string, sep = sep)
+  } else if (style == "subtle") {
+    cat(crayon::silver(captured_string), sep = sep)
+  } else if (style == "subtle_italic") {
+    cat(crayon::silver(crayon::italic(captured_string)), sep = sep)
+  }
+
 }
 
-#' Subset and modify the result of \code{capture.output} to pass onto
-#' print method with subtle style
-#'
-#' @param p The result of \code{capture.output}.
-#'
-#' @param start From which line to start subsetting.
-#'
-#' @param end From which line to finish subsetting.
-#'
-#' @param prefix A string that should be passed before printing each line.
-#'
-#' @param sep How to separate each line for printing.
-#'
-#' @return A modified subset of the original captured output with subtle style.
-#'
-#' @importFrom pillar style_subtle
-capture_subtle = function(p, start, end, prefix = "", sep = "\n") {
-  cat(pillar::style_subtle(paste0(prefix, p[start:end])), sep = sep)
-}
-
-#' Print a string with a subtle style.
+#' Print a string with a subtle style (silver color).
 #'
 #' @param ... A string to print.
 #'
-#' @return A printed string to console with subtle style.
+#' @return A printed string to console with subtle style (silver color).
 #'
-#' @importFrom pillar style_subtle
-cat_subtle = function(...) cat(pillar::style_subtle(...))
+#' @importFrom crayon silver
+cat_subtle = function(...) cat(crayon::silver(...))
