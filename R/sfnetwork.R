@@ -124,9 +124,13 @@ as_sfnetwork.default = function(x, directed = TRUE, ...) {
 
 #' @name as_sfnetwork
 #'
+#' @param edges_as_lines Should the edges be spatially explict (i.e. have a
+#' \code{LINESTRING} geometries stored in a geometry list column)? Defaults to
+#' \code{TRUE}.
+#'
 #' @importFrom sf st_geometry
 #' @export
-as_sfnetwork.sf = function(x, directed = TRUE, ...) {
+as_sfnetwork.sf = function(x, directed = TRUE, edges_as_lines = TRUE, ...) {
   if (st_is_all(x, "LINESTRING")) {
     # Workflow:
     # It is assumed that the given LINESTRING geometries form the edges.
@@ -141,6 +145,9 @@ as_sfnetwork.sf = function(x, directed = TRUE, ...) {
     network = create_edges_from_nodes(x)
   } else {
     stop("Only geometries of type LINESTRING or POINT are allowed")
+  }
+  if (! edges_as_lines) {
+    sf::st_geometry(network$edges) = NULL
   }
   sfnetwork(network$nodes, network$edges, directed = directed, ...)
 }

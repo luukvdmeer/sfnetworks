@@ -11,7 +11,7 @@ as_sfnetwork(x, ...)
 
 \method{as_sfnetwork}{default}(x, directed = TRUE, ...)
 
-\method{as_sfnetwork}{sf}(x, directed = TRUE, ...)
+\method{as_sfnetwork}{sf}(x, directed = TRUE, edges_as_lines = TRUE, ...)
 
 \method{as_sfnetwork}{tbl_graph}(x, ...)
 }
@@ -21,6 +21,10 @@ as_sfnetwork(x, ...)
 \item{...}{arguments passed on to construction function.}
 
 \item{directed}{Should the constructed network be directed? Defaults to
+\code{TRUE}.}
+
+\item{edges_as_lines}{Should the edges be spatially explict (i.e. have a
+\code{LINESTRING} geometries stored in a geometry list column)? Defaults to
 \code{TRUE}.}
 }
 \value{
