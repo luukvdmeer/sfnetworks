@@ -4,8 +4,11 @@
 #' on a map.
 #'
 #' @param x Object of class \code{\link{sfnetwork}}.
-#' @param ... Arguments passed on to \code{\link[sf]{plot}}.
+#'
+#' @param ... Arguments passed on to \code{\link[sf]{plot}}
+#'
 #' @importFrom graphics plot
+#' @importFrom sf st_as_sf st_geometry
 #' @export
 plot.sfnetwork = function(x, ...) {
   dots = list(...)

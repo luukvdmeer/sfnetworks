@@ -154,56 +154,48 @@ as_sfnetwork.tbl_graph = function(x, ...) {
   sfnetwork(xls[[1]], xls[[2]], directed = directed, ...)
 }
 
-#' @importFrom tidygraph as_tbl_graph
 #' @importFrom sf st_as_sf
+#' @importFrom utils capture.output
 #' @export
 print.sfnetwork = function(x, ...) {
-
-  # Capture graph output
-  tbl_nodes = as_tibble(x, "nodes")
-  tbl_edges = as_tibble(x, "edges")
-  graph = utils::capture.output(tidygraph::as_tbl_graph(x))
-
-  # Nodes as sf
-  sfn = sf::st_as_sf(activate(x, "nodes"))
-  # Capture sf nodes output
-  sf_nodes = utils::capture.output(sfn)
-
-  # Edges
+  # Capture graph output.
+  nodes = as_tibble(x, "nodes")
+  edges = as_tibble(x, "edges")
+  graph = utils::capture.output(as_tbl_graph(x))
+  # Capture sf output of nodes.
+  nsf = utils::capture.output(sf::st_as_sf(activate(x, "nodes")))
+  # Capture sf output of edges (if spatially explicit).
   if (has_spatially_explicit_edges(x)) {
-    sfe = sf::st_as_sf(activate(x, "edges"))
-    sf_edges = utils::capture.output(sfe)
+    esf = utils::capture.output(sf::st_as_sf(activate(x, "edges")))
   }
-
-  # Header
-  cat_subtle(c("# A sfnetwork with", nrow(tbl_nodes),
-               "nodes and", nrow(tbl_edges), "edges\n"))
+  # Header.
+  cat_subtle(
+    c("# A sfnetwork with", nrow(nodes),"nodes and", nrow(edges), "edges\n")
+  )
   if (has_spatially_explicit_edges(x)) {
-    cat_subtle("# with spatially explicit edges\n")
+    cat_subtle("# With spatially explicit edges\n")
   } else {
-    cat_subtle("# without spatially explicit edges\n")
+    cat_subtle("# Without spatially explicit edges\n")
   }
   cat_subtle("#\n")
-  capture_subtle(sf_nodes, 5, 5, prefix = "# ")
+  capture_subtle(nsf, 5, 5, prefix = "# ")
   capture_subtle(graph, 2, 3)
-
-  # Active data info
+  # Active data info.
   capture_subtle(graph, 4, 5)
   if (active(x) == "nodes") {
-    capture_subtle(sf_nodes, 2, 4, prefix = "# ")
+    capture_subtle(nsf, 2, 4, prefix = "# ")
   } else if (has_spatially_explicit_edges(x)) {
-    capture_subtle(sf_edges, 2, 4, prefix = "# ")
+    capture_subtle(esf, 2, 4, prefix = "# ")
   }
   capture_subtle(graph, 6, 7)
   capture_plain(graph, 8, 13)
   capture_subtle(graph, 14, 14)
-
-  # Not active data info
+  # Inactive data info.
   capture_subtle(graph, 15, 16)
   if (active(x) == "nodes" && has_spatially_explicit_edges(x)) {
-    capture_subtle(sf_edges, 2, 4, prefix = "# ")
+    capture_subtle(esf, 2, 4, prefix = "# ")
   } else {
-    capture_subtle(sf_nodes, 2, 4, prefix = "# ")
+    capture_subtle(nsf, 2, 4, prefix = "# ")
   }
   capture_subtle(graph, 17, 18)
   capture_plain(graph, 19, 21)
