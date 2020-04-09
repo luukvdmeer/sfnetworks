@@ -1,0 +1,119 @@
+---
+title: "Tidy Geospatial Networks in R" 
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Tidy Geospatial Networks in R}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Thanks to active developer and user communities, R is becoming an increasingly popular language for interactive geographic data analysis. Large steps forward include the release and continued evolution of `sf`, which provides classes for representing and manipulating spatial vector data (points, lines and polygons). Unlike its predecessors, `sf` is compatible with the popular data science oriented packages that form the `tidyverse`, most notably the data manipulation toolbox `dplyr`, and more generally with the concept of [tidy data](https://vita.had.co.nz/papers/tidy-data.pdf).
+
+R is also well-suited for network analysis, thanks to the R interface of the `igraph` library. The `tidygraph` package extends `igraph` into the domain of the `tidyverse`, enabling `dplyr` compatibility by treating a graph as a collection of two tidy data frames describing respectively the nodes and edges.
+
+Given the strength of R in spatial *and* network analysis, one would expect it to be an ideal language for analysis of geospatial networks. Geospatial networks are simultaneously graph and spatial objects, with nodes and edges embedded in geographic space. Well known examples include transport networks, river basins, power grids, ecological networks and geolocated social networks. 
+
+Although several R packages exist that address geospatial networks, they often focus on a specific application within the broader domain of geospatial network analysis, or complicate `tidyverse` compability, for example by using S4 classes or relying on the older `sp` package for spatial data handling. Hence, at present, no generally applicable, `tidyverse` compatible classes exist for geospatial network data, representing a gap in R's spatial and network analysis ecosystems (see the [`gRaphical Models`](https://cran.r-project.org/web/views/gR.html) and [`Spatial`](https://cran.r-project.org/web/views/Spatial.html) task views). `sfnetworks` is created to fill this gap.
+
+## The sfnetwork data structure
+The core of the `sfnetworks` package is the `sfnetwork` data structure. This is a class that subclasses the main data structure of the `tidygraph` package, `tbl_graph`, which itself subclasses `igraph`. Therefore, `sfnetwork` objects are recognized by all network analysis algorithms that `igraph` offers, as well as by the tidy wrappers that `tidygraph` has built around them.
+
+### Philosophy
+The philosophy of a `tbl_graph` is best decribed by the following paragraph from the tidygraph introduction: "Relational data cannot in any meaningful way be encoded as a single tidy data frame. On the other hand, both node and edge data by itself fits very well within the tidy concept as each node and edge is, in a sense, a single observation. Thus, a close approximation of tidyness for relational data is two tidy data frames, one describing the node data and one describing the edge data." 
+
+Since `sfnetwork` sublcasses `tbl_graph`, it shares the same philsophy. However, it extends it into the domain of geospatial data analysis, where each observation has a location in geographical space. For that, it brings `sf` into the game. An `sf` object stores the geographical coordinates of each observation in standardized format in a geometry list column, which has a Coordinate Reference System associated with it. Thus, in `sfnetworks`, we re-formulate the last sentence of the paragraph above to the following. "A close approximation of tidyness for relational *geospatial data* is two *sf objects*, one describing the node data and one describing the edge data."
+
+We do need to make a note here. In a spatial network, the nodes *always* have spatial coordinates, and thus, are always described by an sf object. The edges, however, can also be described by just the indices of its end-nodes. This still makes them spatial, because they start and end at specific points in space, but the spatial information is not *explicitly* attached to them. In road networks, for example, it makes sense to explicitly draw a line geometry between two nodes, while in geolocated social networks, it probably does not. An `sfnetwork` supports both types. It can either have edges with a geometry stored in a geometry list column, described by an sf object, or edges that only refer to node indices, described by a regular data frame. We refer to these types of edges as respectively *spatially explicit edges* and *spatially implicit edges*. In this vignette, we mainly focus on the first type.
+
+### Construction
+An `sfnetwork` object can be constructed with the `sfnetwork()` function. This function expects the nodes and edges data as arguments, meeting the following requirements:
+
+- The nodes should be an object of class `sf`, solely containing features with `POINT` geometries.
+- When creating a network with spatially explicit edges, the edges should be an object of class `sf`, solely containing features with `LINESTRING` geometries. Otherwise, they can be a `data.frame` or `tibble`. In both cases, they should contain the indices of their end-nodes in a to and from column, or in the two first columns, as integers. Every node index refers to the *position* (i.e. the rownumber) of the node in the nodes table.
+- When creating a network with spatially explicit edges, the coordinates of the endpoints of the edge linestrings should match with the coordinates of the respective end-nodes. Otherwise, the network structure is not valid.
+- When creating a network with spatially explicit edges, the two provided sf objects should have the same CRS.
+
+Additionally, one can set the `directed` argument, defining if the created network should be directed or not. This defaults to `TRUE`.
+
+See below a small toy example.
+
+```{r}
+library(sfnetworks)
+library(sf)
+library(tidygraph)
+
+p1 = st_point(c(7, 51))
+p2 = st_point(c(7, 52))
+p3 = st_point(c(8, 52))
+nodes = st_as_sf(st_sfc(p1, p2, p3, crs = 4326))
+
+e1 = st_cast(st_union(p1,p2), "LINESTRING")
+e2 = st_cast(st_union(p1,p3), "LINESTRING")
+e3 = st_cast(st_union(p2,p3), "LINESTRING")
+edges = st_as_sf(st_sfc(e1, e2, e3, crs = 4326))
+edges$from = c(1, 1, 2)
+edges$to = c(2, 3, 3)
+
+sfnetwork(nodes, edges, directed = FALSE)
+```
+
+
+---
+
+
+
+Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+
+- Never uses retina figures
+- Has a smaller default figure size
+- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+
+## Vignette Info
+
+Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+
+## Styles
+
+The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+
+    output: 
+      rmarkdown::html_vignette:
+        css: mystyles.css
+
+## Figures
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))
