@@ -154,19 +154,10 @@ as_sfnetwork.tbl_graph = function(x, ...) {
   sfnetwork(xls[[1]], xls[[2]], directed = directed, ...)
 }
 
-#' @importFrom utils capture.output
-#' @importFrom pillar style_subtle
 #' @importFrom tidygraph as_tbl_graph
 #' @importFrom sf st_as_sf
 #' @export
 print.sfnetwork = function(x, ...) {
-  capture_plain = function(p, start, end, prefix = "", sep = "\n") {
-    cat(paste0(prefix, p[start:end]), sep = sep)
-  }
-  capture_subtle = function(p, start, end, prefix = "", sep = "\n") {
-    cat(pillar::style_subtle(paste0(prefix, p[start:end])), sep = sep)
-  }
-  cat_subtle = function(...) cat(pillar::style_subtle(...))
 
   # Capture graph output
   tbl_nodes = as_tibble(x, "nodes")
