@@ -2,24 +2,24 @@
 % Please edit documentation in R/utils.R
 \name{capture_plain}
 \alias{capture_plain}
-\title{Capture output from console to pass onto print method}
+\title{Subset and modify the result of \code{capture.output} to pass onto print method}
 \usage{
 capture_plain(p, start, end, prefix = "", sep = "\\n")
 }
 \arguments{
-\item{p}{The result of a print method on any class object.}
+\item{p}{The result of \code{capture.output}.}
 
-\item{start}{from which line to start capturing output.}
+\item{start}{From which line to start subsetting.}
 
-\item{end}{from which line to finish capturing output.}
+\item{end}{From which line to finish subsetting.}
 
-\item{prefix}{A string that should be passed before printing each line}
+\item{prefix}{A string that should be passed before printing each line.}
 
-\item{sep}{How to separate each line for printing}
+\item{sep}{How to separate each line for printing.}
 }
 \value{
-A subset of the original printed object passed to the console
+A modified subset of the original captured output.
 }
 \description{
-Capture output from console to pass onto print method
+Subset and modify the result of \code{capture.output} to pass onto print method
 }
