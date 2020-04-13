@@ -159,54 +159,65 @@ as_sfnetwork.tbl_graph = function(x, ...) {
   sfnetwork(xls[[1]], xls[[2]], directed = is_directed(x), ...)
 }
 
-#' @importFrom sf st_as_sf
-#' @importFrom utils capture.output
+#' @importFrom sf st_as_sf st_crs st_geometry
+#' @importFrom rlang !!
+#' @importFrom tibble trunc_mat
+#' @importFrom utils capture.output modifyList
+#' @importFrom tools toTitleCase
 #' @export
 print.sfnetwork = function(x, ...) {
   # Capture graph output.
   nodes = as_tibble(x, "nodes")
   edges = as_tibble(x, "edges")
   graph = utils::capture.output(as_tbl_graph(x))
-  # Capture sf output of nodes.
-  nsf = utils::capture.output(sf::st_as_sf(activate(x, "nodes")))
-  # Capture sf output of edges (if spatially explicit).
-  if (has_spatially_explicit_edges(x)) {
-    esf = utils::capture.output(sf::st_as_sf(activate(x, "edges")))
+  # Truncate nodes and edges tibbles for printing
+  arg_list = list(...)
+  not_active = if (active(x) == "nodes") "edges" else "nodes"
+  top = do.call(trunc_mat, utils::modifyList(arg_list, list(x = as_tibble(x), n = 6)))
+  top$summary[1] = paste0(top$summary[1], " (active)")
+  if (active(x) == "edges" && !has_spatially_explicit_edges(x)) {
+    names(top$summary)[1] = tools::toTitleCase(paste0(substr(active(x), 1, 4), " data"))
+  } else {
+    active_geom = sf::st_geometry(sf::st_as_sf(x))
+    top$summary[2] = substr(class(active_geom)[1], 5, nchar(class(active_geom)[1]))
+    bb = signif(attr(active_geom, "bbox"), options("digits")$digits)
+    top$summary[3] = class(active_geom[[1]])[1]
+    top$summary[4] = paste(paste(names(bb), bb[], sep = ": "), collapse = " ")
+    names(top$summary) = c(
+      tools::toTitleCase(paste0(substr(active(x), 1, 4), " data")),
+      "Geometry type", "Dimension", "Bounding box"
+    )
+  }
+  bottom = do.call(trunc_mat, modifyList(arg_list, list(x = as_tibble(x, active = not_active), n = 3)))
+  if (active(x) == "nodes" && !has_spatially_explicit_edges(x)) {
+    names(bottom$summary)[1] = tools::toTitleCase(paste0(substr(not_active, 1, 4), " data"))
+  } else {
+    inactive_geom = sf::st_geometry(sf::st_as_sf(activate(x, !!not_active)))
+    bottom$summary[2] = substr(class(inactive_geom)[1], 5, nchar(class(inactive_geom)[1]))
+    bbi = signif(attr(inactive_geom, "bbox"), options("digits")$digits)
+    bottom$summary[3] = class(inactive_geom[[1]])[1]
+    bottom$summary[4] = paste(paste(names(bbi), bbi[], sep = ": "), collapse = " ")
+    names(bottom$summary) = c(
+      tools::toTitleCase(paste0(substr(not_active, 1, 4), " data")),
+      "Geometry type", "Dimension", "Bounding box"
+    )
   }
   # Header.
-  cat_subtle(
-    c("# A sfnetwork with", nrow(nodes),"nodes and", nrow(edges), "edges\n")
-  )
+  cat_subtle(c("# A sfnetwork with", nrow(nodes),"nodes and", nrow(edges), "edges\n"))
   cat_subtle("#\n")
-  capture_cat(nsf, 5, 5, prefix = "# ", style = "subtle")
+  cat_subtle(c("# CRS: ", sf::st_crs(sf::st_as_sf(activate(x,"nodes")))$input, "\n"))
   capture_cat(graph, 2, 3, style = "subtle")
   if (has_spatially_explicit_edges(x)) {
     cat_subtle("# and spatially explicit edges\n")
   } else {
     cat_subtle("# and spatially implicit edges\n")
   }
+  cat_subtle("#\n")
   # Active data info.
-  capture_cat(graph, 4, 5, style = "subtle")
-  if (active(x) == "nodes") {
-    capture_cat(nsf, 2, 4, prefix = "# ", style = "subtle")
-  } else if (has_spatially_explicit_edges(x)) {
-    capture_cat(esf, 2, 4, prefix = "# ", style = "subtle")
-  }
-  capture_cat(graph, 6, 6, style = "subtle")
-  capture_cat(graph, 7, 7, style = "subtle_italic")
-  capture_cat(graph, 8, 13)
-  capture_cat(graph, 14, 14, style = "subtle")
+  print(top)
+  cat_subtle("#\n")
   # Inactive data info.
-  capture_cat(graph, 15, 16, style = "subtle")
-  if (active(x) == "nodes" && has_spatially_explicit_edges(x)) {
-    capture_cat(esf, 2, 4, prefix = "# ", style = "subtle")
-  } else {
-    capture_cat(nsf, 2, 4, prefix = "# ", style = "subtle")
-  }
-  capture_cat(graph, 17, 17,  style = "subtle")
-  capture_cat(graph, 18, 18, style = "subtle_italic")
-  capture_cat(graph, 19, 21)
-  capture_cat(graph, 22, 22, style = "subtle")
+  print(bottom)
 }
 
 #' Check if an object is an sfnetwork

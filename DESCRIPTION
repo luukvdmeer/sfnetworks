@@ -27,16 +27,17 @@ Encoding: UTF-8
 LazyData: true
 ByteCompile: true
 Imports:
+  crayon,
+  graphics,
   rlang,
   sf,
+  tibble,
   tidygraph,
-  utils,
-  crayon,
-  graphics
+  utils
 Suggests:
-  tidyverse,
   knitr,
-  testthat
+  testthat,
+  tidyverse
 RoxygenNote: 7.1.0
 VignetteBuilder: knitr
 BugReports: https://github.com/luukvdmeer/sfnetworks/issues/
