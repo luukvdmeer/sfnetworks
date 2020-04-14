@@ -51,7 +51,9 @@ jobs:
       - name: Install dependencies
         run: |
           install.packages("remotes")
-          remotes::install_deps(dependencies = TRUE)
+          deps <- readRDS("depends.Rds")
+          deps[["installed"]] <- vapply(deps[["package"]], remotes:::local_sha, character(1))
+          update(deps)
           remotes::install_dev("pkgdown")
         shell: Rscript {0}
 
