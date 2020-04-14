@@ -1,7 +1,4 @@
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
-# sfnetworks
+# Tidy Geospatial Networks in R
 
 <!-- badges: start -->
 
@@ -12,17 +9,7 @@
 ![R-CMD-check-develop](https://github.com/luukvdmeer/sfnetworks/workflows/R-CMD-check/badge.svg?branch=develop)
 <!-- badges: end -->
 
-The goal of sfnetworks is to fill a missing block in R’s provision for
-spatial network analysis.
-
-The `sfnetworks` package is currently under active development, and
-breaking changes will be made in the coming months. The current master
-branch is released as `v0.1.0`, but will soon be succeeded by a new
-version, with different classes and functions. These classes and
-functions are developed in the develop branch, which you are currently
-viewing. Feel free to already open issues containing ideas of what
-functionalities you think should be included in the new package version
-(please use the `feature` issue template for this).
+The goal of sfnetworks is to fill a missing block in R’s provision for spatial network analysis. Read more about the idea and the currently implemented functionalities in the [introductory vignette]().
 
 ## Installation
 
@@ -34,18 +21,21 @@ functionalities you think should be included in the new package version
 
 <!-- ``` -->
 
+The `sfnetworks` package is still in very active development, Therefore, the package is also not on CRAN yet. Install it directly from GitHub using the `remotes` package in R.
+
 Install the more stable master branch with:
 
-``` r
-# install.packages("devtools")
-devtools::install_github("luukvdmeer/sfnetworks")
+```r
+remotes::install_github("luukvdmeer/sfnetworks")
 ```
 
-Install the `develop` branch, where most of the development takes place
-and where PRs should be directed, as follows:
+Install the `develop` branch, where most of the development takes place and where PRs should be directed, as follows:
 
-``` r
-devtools::install_github("luukvdmeer/sfnetworks", ref = "develop")
+```r
+remotes::install_github("luukvdmeer/sfnetworks", ref = "develop")
 ```
 
-Re-add key content below\!
+## Contribution
+We look very much forward to contributions to the package. This can be in the form of pull requests (please direct them to the `develop` branch), but also by opening issues in the [issue tracker](https://github.com/luukvdmeer/sfnetworks/issues). Such issues can be specific feature requests labeled with the `feature` label (e.g. "I would like to see a function `f(x)` that accepts an object `x` of class `foo` and returns ..."). It can also be a more generic description of problems that you deal with when working with spatial networks in R (e.g. "I usually find it impossible/confusing/complicated to do <this> and <this>"). Please label such issues with the `hackathon` label, since we will be organising a spatial networks hackathon in which we hope to solve these kind of problems. For more information on that event, see [here](https://www.eventbrite.co.uk/e/erum2020-satellite-event-hackathon-on-spatial-networks-tickets-90976873277) (and join!).
+
+We strive to follow the [tidyverse styleguide](https://style.tidyverse.org/) in the source code of the package. An exception to that is the usage of `=` instead of `<-` (see [here](https://github.com/Robinlovelace/geocompr/issues/319) for some reasons why).
