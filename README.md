@@ -9,7 +9,7 @@
 ![R-CMD-check-develop](https://github.com/luukvdmeer/sfnetworks/workflows/R-CMD-check/badge.svg?branch=develop)
 <!-- badges: end -->
 
-The goal of sfnetworks is to fill a missing block in R’s provision for spatial network analysis. Read more about the idea and the currently implemented functionalities in the [introductory vignette]().
+The goal of sfnetworks is to fill a missing block in R’s provision for spatial network analysis. Read more about the idea and the currently implemented functionalities in the [introductory vignette](https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/intro.Rmd).
 
 ## Installation
 
