@@ -35,9 +35,12 @@ Imports:
   tidygraph,
   utils
 Suggests:
+  dplyr,
+  fansi,
+  ggplot2,
+  igraph,
   knitr,
-  testthat,
-  tidyverse
+  testthat
 RoxygenNote: 7.1.0
 VignetteBuilder: knitr
 BugReports: https://github.com/luukvdmeer/sfnetworks/issues/
