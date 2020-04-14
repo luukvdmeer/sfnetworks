@@ -7,10 +7,10 @@
 draw_lines(x, y)
 }
 \arguments{
-\item{sources}{An object of class \code{\link[sf]{sf}} with \code{POINT}
+\item{x}{An object of class \code{\link[sf]{sf}} with \code{POINT}
 geometries, representing the points where lines need to start from.}
 
-\item{targets}{An object of class \code{\link[sf]{sf}} with \code{POINT}
+\item{y}{An object of class \code{\link[sf]{sf}} with \code{POINT}
 geometries, representing the points where lines need to end at.}
 }
 \value{

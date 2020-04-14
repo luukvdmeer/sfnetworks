@@ -117,10 +117,10 @@ create_nodes_from_edges = function(edges) {
 
 #' Draw lines between two sf objects, row-wise
 #'
-#' @param sources An object of class \code{\link[sf]{sf}} with \code{POINT}
+#' @param x An object of class \code{\link[sf]{sf}} with \code{POINT}
 #' geometries, representing the points where lines need to start from.
 #'
-#' @param targets An object of class \code{\link[sf]{sf}} with \code{POINT}
+#' @param y An object of class \code{\link[sf]{sf}} with \code{POINT}
 #' geometries, representing the points where lines need to end at.
 #'
 #' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
@@ -273,9 +273,9 @@ multiple_matches = function(x) {
 
 #' Draw a line between two points
 #'
-#' @param sources A \code{POINT} geometry.
+#' @param x A \code{POINT} geometry.
 #'
-#' @param targets A \code{POINT} geometry.
+#' @param y A \code{POINT} geometry.
 #'
 #' @return A \code{LINESTRING} geometry.
 #'

@@ -38,7 +38,7 @@ remotes::install_github("luukvdmeer/sfnetworks", ref = "develop")
 Originally, `sfnetworks` was created as a homework assignment for an R course. Some people actually started using that version of the package in their work. Note that the new package is completely different! If you still want to install the original version, use:
 
 ```r
-remote::install_github("luukvdmeer/sfnetworks@v0.1")
+remotes::install_github("luukvdmeer/sfnetworks@v0.1")
 ```
 
 ## Contribution

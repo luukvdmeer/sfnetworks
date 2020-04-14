@@ -7,9 +7,9 @@
 points_to_line(x, y)
 }
 \arguments{
-\item{sources}{A \code{POINT} geometry.}
+\item{x}{A \code{POINT} geometry.}
 
-\item{targets}{A \code{POINT} geometry.}
+\item{y}{A \code{POINT} geometry.}
 }
 \value{
 A \code{LINESTRING} geometry.
