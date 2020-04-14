@@ -318,13 +318,6 @@ st_reverse.sfnetwork = function(x, ...) {
 }
 
 #' @name sf
-#' @importFrom sf st_segmentize
-#' @export
-st_segmentize.sfnetwork = function(x, ...) {
-  geom_unary_ops(sf::st_segmentize, x, ...)
-}
-
-#' @name sf
 #' @importFrom sf st_simplify
 #' @export
 st_simplify.sfnetwork = function(x, ...) {
