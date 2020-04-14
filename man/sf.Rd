@@ -29,7 +29,6 @@
 \alias{st_distance.sfnetwork}
 \alias{st_length.sfnetwork}
 \alias{st_reverse.sfnetwork}
-\alias{st_segmentize.sfnetwork}
 \alias{st_simplify.sfnetwork}
 \alias{st_bbox.sfnetwork}
 \alias{st_coordinates.sfnetwork}
@@ -97,8 +96,6 @@ st_distance.sfnetwork(x, y = x, ...)
 st_length.sfnetwork(x)
 
 \method{st_reverse}{sfnetwork}(x, ...)
-
-\method{st_segmentize}{sfnetwork}(x, ...)
 
 \method{st_simplify}{sfnetwork}(x, ...)
 
