@@ -299,7 +299,11 @@ geom_unary_ops = function(op, x, ...) {
 #' @export
 st_reverse.sfnetwork = function(x, ...) {
   if (active(x) == "edges") {
-    warning("Reversing the edges exchanges the 'to' and 'from' columns")
+    if (! is_directed(x)) {
+      warning("st_reverse has no effect on undirected edges")
+      return(x)
+    }
+    warning("Reversing edges swaps columns 'to' and 'from'")
     edges = as_sf(x)
     from = edges$from
     to = edges$to
@@ -307,6 +311,8 @@ st_reverse.sfnetwork = function(x, ...) {
     edges$from = to
     x = sfnetwork(as_sf(x, "nodes"), edges, directed = is_directed(x))
     x = activate(x, "edges")
+  } else {
+    warning("st_reverse has no effect on nodes. Maybe you want to activate edges?")
   }
   geom_unary_ops(sf::st_reverse, x, ...)
 }
