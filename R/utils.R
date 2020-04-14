@@ -53,29 +53,20 @@ cat_subtle = function(...) {
 #' with \code{POINT} geometries and the created edges as an object of class
 #' \code{\link[sf]{sf}} with \code{LINESTRING} geometries.
 #'
-#' @importFrom sf st_as_sf st_crs st_geometry st_sfc
+#' @importFrom sf st_as_sf st_crs
 create_edges_from_nodes = function(nodes) {
   # Create separate tables for source and target nodes.
   sources = nodes[1:(nrow(nodes)-1), ]
   targets = nodes[2:nrow(nodes), ]
-
   # Create linestrings between the source and target nodes.
   edges = sf::st_as_sf(
     data.frame(
       from = 1:(nrow(nodes)-1),
       to = 2:nrow(nodes),
-      geometry = sf::st_sfc(
-        mapply(
-          function (a,b) points_to_lines(a,b),
-          sf::st_geometry(sources),
-          sf::st_geometry(targets),
-          SIMPLIFY=FALSE
-        )
-      )
+      geometry = draw_lines(sources, targets)
     ),
     crs = sf::st_crs(nodes)
   )
-
   class(edges) = class(nodes)
   list(nodes = nodes, edges = edges)
 }
@@ -97,14 +88,11 @@ create_edges_from_nodes = function(nodes) {
 create_nodes_from_edges = function(edges) {
   # Get the endpoints of the edges.
   nodes = get_endpoints(edges)
-
   # Give each unique coordinate combination a unique ID.
   nodes$XY = paste(nodes$X, nodes$Y)
   nodes$ID = match(nodes$XY, unique(nodes$XY))
-
   # Define for each endpoint if it is a source or target node.
   nodes$source = rep(c(TRUE, FALSE), nrow(nodes) / 2)
-
   # Define for each edges which node is its source and target node.
   if ("from" %in% colnames(edges)) {
     warning("Overwriting column 'from'")
@@ -115,19 +103,42 @@ create_nodes_from_edges = function(edges) {
     warning("Overwriting column 'to'")
   }
   edges$to = nodes[!nodes$source, "ID"]
-
   # Remove duplicated nodes from the nodes table.
   nodes = nodes[!duplicated(nodes$ID), ]
-
   # Convert nodes to sf and keep only necessary columns.
   nodes = sf::st_as_sf(
     nodes[, c("X", "Y")],
     coords = c("X", "Y"),
     crs = sf::st_crs(edges)
   )
-
   class(nodes) = class(edges)
   list(nodes = nodes, edges = edges)
+}
+
+#' Draw lines between two sf objects, row-wise
+#'
+#' @param sources An object of class \code{\link[sf]{sf}} with \code{POINT}
+#' geometries, representing the points where lines need to start from.
+#'
+#' @param targets An object of class \code{\link[sf]{sf}} with \code{POINT}
+#' geometries, representing the points where lines need to end at.
+#'
+#' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
+#' geometries.
+#'
+#' @details Lines are drawn row-wise. That is, between point 1 in x and point 1
+#' in y, point 2 in x and point 2 in y, et cetera.
+#'
+#' @importFrom sf st_geometry st_sfc
+draw_lines = function(x, y) {
+  sf::st_sfc(
+    mapply(
+      function (a,b) points_to_line(a,b),
+      sf::st_geometry(x),
+      sf::st_geometry(y),
+      SIMPLIFY=FALSE
+    )
+  )
 }
 
 #' Drop the geometry of a network element
@@ -260,20 +271,17 @@ multiple_matches = function(x) {
   any(table(x$.sfnetwork_index) > 1)
 }
 
-#' Draw lines between points
+#' Draw a line between two points
 #'
-#' @param sources An object of class \code{\link[sf]{sf}} with \code{POINT}
-#' geometries, representing the points where lines need to start from.
+#' @param sources A \code{POINT} geometry.
 #'
-#' @param targets An object of class \code{\link[sf]{sf}} with \code{POINT}
-#' geometries, representing the points where lines need to end at.
+#' @param targets A \code{POINT} geometry.
 #'
-#' @return An object of class \code{\link[sf]{sf}} with \code{LINESTRING}
-#' geometries.
+#' @return A \code{LINESTRING} geometry.
 #'
 #' @importFrom sf st_cast st_union
-points_to_lines = function(sources, targets) {
-  sf::st_cast(sf::st_union(sources, targets), "LINESTRING")
+points_to_line = function(x, y) {
+  sf::st_cast(sf::st_union(x, y), "LINESTRING")
 }
 
 #' Replace a geometry list column with another geometry list column

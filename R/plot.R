@@ -16,17 +16,10 @@ plot.sfnetwork = function(x, ...) {
   if (has_spatially_explicit_edges(x)) {
     esf = sf::st_geometry(sf::st_as_sf(activate(x, "edges"))) # Edges
   } else {
+    # Create edges when not spatially explicit
     sources = sf::st_as_sf(get_nodes(x))[as_tibble(get_edges(x))$from,]
     targets = sf::st_as_sf(get_nodes(x))[as_tibble(get_edges(x))$to,]
-    # Create edges when not spatially explicit
-    esf = sf::st_sfc(
-      mapply(
-        function (a,b) points_to_lines(a,b),
-        sf::st_geometry(sources),
-        sf::st_geometry(targets),
-        SIMPLIFY=FALSE
-      )
-    )
+    esf = draw_lines(sources, targets)
   }
   # Bind nodes and edges into one sf object if edges are spatially explicit.
   gsf = c(nsf, esf) # Full graph
