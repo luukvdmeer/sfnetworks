@@ -11,6 +11,8 @@ jobs:
       - uses: actions/checkout@v2
 
       - uses: r-lib/actions/setup-r@master
+        with:
+          r-version: devel
 
       - uses: r-lib/actions/setup-pandoc@master
 
@@ -45,12 +47,12 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: macOS-r-3.6-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: macOS-r-3.6-
+          key: macOS-r-devel-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: macOS-r-devel-
 
       - name: Install dependencies
         run: |
-          install.packages("remotes")
+          library(remotes)
           deps <- readRDS("depends.Rds")
           deps[["installed"]] <- vapply(deps[["package"]], remotes:::local_sha, character(1))
           update(deps)
