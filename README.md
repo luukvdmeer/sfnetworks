@@ -35,6 +35,12 @@ Install the `develop` branch, where most of the development takes place and wher
 remotes::install_github("luukvdmeer/sfnetworks", ref = "develop")
 ```
 
+Originally, `sfnetworks` was created as a homework assignment for an R course. Some people actually started using that version of the package in their work. Note that the new package is completely different! If you still want to install the original version, use:
+
+```r
+remote::install_github("luukvdmeer/sfnetworks@v0.1")
+```
+
 ## Contribution
 We look very much forward to contributions to the package. This can be in the form of pull requests (please direct them to the `develop` branch), but also by opening issues in the [issue tracker](https://github.com/luukvdmeer/sfnetworks/issues). Such issues can be specific feature requests labeled with the `feature` label (e.g. "I would like to see a function `f(x)` that accepts an object `x` of class `foo` and returns ..."). It can also be a more generic description of problems that you deal with when working with spatial networks in R (e.g. "I usually find it impossible/confusing/complicated to do <this> and <this>"). Please label such issues with the `hackathon` label, since we will be organising a spatial networks hackathon in which we hope to solve these kind of problems. For more information on that event, see [here](https://www.eventbrite.co.uk/e/erum2020-satellite-event-hackathon-on-spatial-networks-tickets-90976873277) (and join!).
 
