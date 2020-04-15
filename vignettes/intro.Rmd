@@ -48,14 +48,14 @@ The philosophy of a `tbl_graph` is best described by the following paragraph fro
 
 Since `sfnetwork` subclasses `tbl_graph`, it shares the same philosophy. However, it extends it into the domain of geospatial data analysis, where each observation has a location in geographical space. For that, it brings `sf` into the game. An `sf` object stores the geographical coordinates of each observation in standardized format in a geometry list column, which has a Coordinate Reference System associated with it. Thus, in `sfnetworks`, we re-formulate the last sentence of the paragraph above to the following. "A close approximation of tidyness for relational *geospatial data* is two *sf objects*, one describing the node data and one describing the edge data."
 
-We do need to make a note here. In a geospatial network, the nodes *always* have coordinates in geographic space, and thus, are always described by an sf object. The edges, however, can also be described by just the indices of its end-nodes. This still makes them geospatial, because they start and end at specific points in space, but the spatial information is not *explicitly* attached to them. Both representations can be useful. In road networks, for example, it makes sense to explicitly draw a line geometry between two nodes, while in geolocated social networks, it probably does not. An `sfnetwork` supports both types. It can either have edges with a geometry stored in a geometry list column, described by an sf object, or edges that only refer to node indices, described by a regular data frame. We refer to these types of edges as respectively *spatially explicit edges* and *spatially implicit edges*. In this vignette, we mainly focus on the first type.
+We do need to make a note here. In a geospatial network, the nodes *always* have coordinates in geographic space, and thus, are always described by an sf object. The edges, however, can also be described by just the indices of its end-nodes. This still makes them geospatial, because they start and end at specific points in space, but the spatial information is not *explicitly* attached to them. Both representations can be useful. In road networks, for example, it makes sense to explicitly draw a line geometry between two nodes, while in geolocated social networks, it probably does not. An `sfnetwork` supports both types. It can either have edges with a geometry stored in a geometry list column, described by an sf object, or edges that only refer to node indices, described by a regular data frame. We refer to these types of edges as *spatially explicit edges* and *spatially implicit edges* respectively. In this vignette, we mainly focus on the first type.
 
 ### Construction
 An `sfnetwork` object can be constructed with the `sfnetwork()` function. This function expects the nodes and edges data as arguments, meeting the following requirements:
 
 - The nodes should be an object of class `sf`, solely containing features with `POINT` geometries.
 - When creating a network with spatially explicit edges, the edges should be an object of class `sf`, solely containing features with `LINESTRING` geometries. Otherwise, they can be a `data.frame` or `tibble`. In any case, they should contain the indices of their end-nodes in a to and from column, or in the two first columns, as integers. Every node index refers to the *position* (i.e. the rownumber) of the node in the nodes table.
-- When creating a network with spatially explicit edges, the coordinates of the endpoints of the edge linestrings should match with the coordinates of the respective end-nodes. Otherwise, the network structure is not valid.
+- When creating a network with spatially explicit edges, the coordinates of the endpoints of the edge linestrings should match with the coordinates of the respective end-nodes. Otherwise, the network structure is not valid. Note that this also depends on the precision of the coordinates.
 - When creating a network with spatially explicit edges, the two provided sf objects should have the same CRS.
 
 Additionally, one can set the `directed` argument, defining if the created network should be directed or not. This defaults to `TRUE`.
@@ -89,7 +89,7 @@ Converting foreign objects into an `sfnetwork` can be done with the `as_sfnetwor
 - The object is a `tbl_graph` or convertible to a `tbl_graph` with `as_tbl_graph()`. See the [tidygraph documentation](https://tidygraph.data-imaginist.com/reference/tbl_graph.html) for all objects that are supported.
 - At least the nodes are convertible to an `sf` object with `st_as_sf()`.
 
-Additionally, `as_sfnetwork()` has a method that directly converts an `sf` object into a network. Of course, a single `sf` object does not contain any explicit network information, so assumptions have to made. This functionality should therefore be seen as a convenience function, and will not be suited for all possible use-cases. It works as follows:
+Additionally, `as_sfnetwork()` has a method that directly converts an `sf` object into a network. Of course, a single `sf` object does not contain any explicit network information, so assumptions have to be made. This functionality should therefore be seen as a convenience function, and will not be suited for all possible use-cases. It works as follows:
 
 - When given an `sf` object with `LINESTRING` geometries: the lines are considered edges, and nodes are created at the endpoints of the lines. Identical endpoints become one single node. This addresses the use-case that was presented in this [r-spatial blogpost](https://www.r-spatial.org/r/2019/09/26/spatial-networks.html).
 - When given an `sf` object with `POINT` geometries: the points are considered nodes, and edges are created between them, in a sequential way. With that we mean: node 1 will be connected to node 2, node 2 to node 3, et cetera. This addresses the use-case that was presented in this [stackoverflow thread](https://stackoverflow.com/questions/57833905/how-to-convert-a-list-of-sf-spatial-points-into-a-routable-graph).
@@ -178,9 +178,9 @@ plot(net_f)
 ```
 
 ### Spatial joins
-Additional attributes can be joined spatially into the network with `st_join`, which is also based on spatial predicates. By default, this join is a left join, meaning that all features (i.e. nodes or edges) of `x` remain. If changed to a inner join (by adding `left = FALSE`), features get removed if they don't have a match with any row in `y`.
+Additional attributes can be joined spatially into the network with `st_join`, which is also based on spatial predicates. By default, this join is a left join, meaning that all features (i.e. nodes or edges) of `x` remain. If changed to an inner join (by adding `left = FALSE`), features get removed if they don't have a match with any row in `y`.
 
-The `sfnetwork` method for `st_join` has an important restriction. When the nodes are the active element of the network, only joins where there is at most one match per feature are allowed. Allowing multiple matches is a problem when joining on the nodes. For example, if node 1 in `x` has two matches in `y`, this creates two rows for node 1 in the resulting object. Firstly, this messes up the network structure: if the end-nodes of edge A where node 1 and node 2, these indices now suddenly refer to the same node, while the original node 2 became node 3. Secondly, if we manage to update the `from` and `to` columns of the edges accordingly, should edge A go from the new node 1 to the new node 3, or from the new node 2 to the new node 3? In the future we might remove the restriction, but only after we decide on a good way to deal with multiple matches per node.
+The `sfnetwork` method for `st_join` has an important restriction. When the nodes are the active element of the network, only joins where there is at most one match per feature are allowed. Allowing multiple matches is a problem when joining on the nodes. For example, if node 1 in `x` has two matches in `y`, this creates two rows for node 1 in the resulting object. Firstly, this messes up the network structure: if the end-nodes of edge A where node 1 and node 2, these indices now suddenly refer to the same node, while the original node 2 becomes node 3. Secondly, if we manage to update the `from` and `to` columns of the edges accordingly, should edge A go from the new node 1 to the new node 3, or from the new node 2 to the new node 3? In the future we might remove the restriction, but only after we decide on a good way to deal with multiple matches per node.
 
 For the edges this problem does not exist, because the same nodes can be connected by multiple edges. Multiple matches will cause edges to be duplicated, which might not be so useful, but at least it does not break the network structure.
 
@@ -189,7 +189,6 @@ An example of a spatial join:
 ```{r}
 net_a = net %>% slice(1:3)
 net_b = net %>% slice(2:4) %>% mutate(foo = "bar")
-
 net_a %>%
   st_join(net_b, join = st_equals)
 ```
@@ -203,7 +202,7 @@ net %>%
 ```
 
 ### Setting or transforming CRS
-Also the CRS functions technically are applied to the active element of the network. However, when changing the CRS of the active element (either by setting or transforming), the same operation is applied to the other element (of course this does not apply for spatially implicit edges). This is because `sfnetwork` objects have the restriction that nodes and edges should always be in the same CRS.
+Also the CRS functions technically are applied to the active element of the network. However, when changing the CRS of the active element (either by setting or transforming), the same operation is applied to the other element (of course this does not apply for spatially implicit edges). This is because `sfnetwork` objects have the restriction that nodes and edges should always have the same CRS.
 
 ```{r}
 st_crs(net)
@@ -214,14 +213,14 @@ st_transform(net, 3035)
 ```
 
 ### Setting or replacing geometries
-Replacing the geometry of nodes or edges comes with restrictions. First, there is for now a general restriction for `sfnetwork` objects that nodes can only be points, and edges (if spatially explicit) only lines. This is to keep things simple at first. If there are use-cases where other geometry types as nodes or edges make sense, we can always loosen this restriction further down the road.
+Replacing the geometry of nodes or edges comes with restrictions. First, there is for now a general restriction for `sfnetwork` objects where nodes can only be points, and edges (if spatially explicit) can only be lines. This is to keep things simple at first. If there are use-cases where other geometry types as nodes or edges make sense, we can always loosen this restriction further down the road.
 
 Additionally:
 
 - You cannot replace the geometry of the nodes when edges are spatially explicit. This would mean that the coordinates of the nodes don't match anymore with the endpoints of the edges. Hence, the network structure is broken.
 - You can only replace the geometry of spatially explicit edges when 1) the CRS of the geometries doesn't change (otherwise you would create a network with different CRS for nodes and edges, which is restricted) and 2) the endpoints of the geometries don't change (otherwise you would have endpoints of edges that don't match the node coordinates anymore, and thus break the network structure).
 
-Geometries can replaced also by using [geometry unary operations](https://r-spatial.github.io/sf/reference/geos_unary.html), as long as they don't break the restrictions mentioned above. This basically means that only `st_reverse` and `st_simplify` are supported. When calling `st_reverse` on the edges of a directed network, not only the geometries will be reversed, but the `to` and `from` columns of the edges will also be swapped. In the case of undirected networks the geometries are not reversed at all.
+Geometries can be replaced also by using [geometry unary operations](https://r-spatial.github.io/sf/reference/geos_unary.html), as long as they don't break the restrictions mentioned above. This basically means that only `st_reverse` and `st_simplify` are supported. When calling `st_reverse` on the edges of a directed network, not only the geometries will be reversed, but the `to` and `from` columns of the edges will also be swapped. In the case of undirected networks the geometries are not reversed at all.
 
 ```{r}
 st_geometry(net)
@@ -294,9 +293,9 @@ net %>%
 Everything presented in this vignette is only a first glance at what `sfnetworks` will offer. The package is currently in very active development, and several features are planned to be introduced soon.
 
 ### Better tidygraph integration
-The fact that `sfnetwork` subclasses `tbl_graph`, makes that they are recognized by all of `tidygraphs` functions. However, not all of these functions already run without errors. This is because of the geometry list column, which causes some operations to fail. Examples are the `morph` and `bind` functionalities. These issues should be solved, such that the integration of `sfnetworks` with `tidygraph` becomes - approximately - flawless.
+The fact that `sfnetwork` subclasses `tbl_graph`, makes that they are recognized by all of `tidygraph`'s functions. However, not all of these functions already run without errors. This is because of the geometry list column, which causes some operations to fail. Examples are the `morph` and `bind` functionalities. These issues should be solved, such that the integration of `sfnetworks` with `tidygraph` becomes - approximately - flawless.
 
-### Extending the functionalites of tidygraph and sf
+### Extending the functionalities of tidygraph and sf
 Right now, `sfnetworks` serves as a connection between `tidygraph` and `sf`, in the sense that objects of class `sfnetwork` are recognized by functions of both packages. However, there might be problems that are so specific to spatial networks, that they can neither be solved by `tidygraph` nor `sf`. It is the goal of `sfnetworks` to provide analytical functions by itself, that address such problems. Think of snapping spatial points to the edges of a network, or finding the nearest node to a given spatial feature. We want to prevent that `sfnetworks` goes too much into a single application - it should remain a lower-level package - but basic, widely used spatial network operations should be supported.
 
 ### Adding more methods to as_sfnetwork
