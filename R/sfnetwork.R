@@ -162,14 +162,13 @@ as_sfnetwork.tbl_graph = function(x, ...) {
 #' @importFrom sf st_as_sf st_crs st_geometry
 #' @importFrom rlang !!
 #' @importFrom tibble trunc_mat
-#' @importFrom utils capture.output modifyList
+#' @importFrom utils modifyList
 #' @importFrom tools toTitleCase
 #' @export
 print.sfnetwork = function(x, ...) {
   # Capture graph output.
   nodes = as_tibble(x, "nodes")
   edges = as_tibble(x, "edges")
-  graph = utils::capture.output(as_tbl_graph(x))
   # Truncate nodes and edges tibbles for printing
   arg_list = list(...)
   not_active = if (active(x) == "nodes") "edges" else "nodes"
@@ -203,10 +202,11 @@ print.sfnetwork = function(x, ...) {
     )
   }
   # Header.
-  cat_subtle(c("# A sfnetwork with", nrow(nodes),"nodes and", nrow(edges), "edges\n"))
+  cat_subtle(c("# An sfnetwork with", nrow(nodes),"nodes and", nrow(edges), "edges\n"))
   cat_subtle("#\n")
   cat_subtle(c("# CRS: ", sf::st_crs(sf::st_as_sf(activate(x,"nodes")))$input, "\n"))
-  capture_cat(graph, 2, 3, style = "subtle")
+  cat_subtle("#\n")
+  cat_subtle("#", tidygraph:::describe_graph(as_tbl_graph(x)), "\n")
   if (has_spatially_explicit_edges(x)) {
     cat_subtle("# and spatially explicit edges\n")
   } else {
