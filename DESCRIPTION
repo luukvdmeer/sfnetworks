@@ -40,7 +40,6 @@ Suggests:
   ggplot2,
   igraph,
   knitr,
-  pkgdown,
   testthat
 RoxygenNote: 7.1.0
 VignetteBuilder: knitr

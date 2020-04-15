@@ -57,6 +57,7 @@ jobs:
       - name: Install dependencies
         run: |
           library(remotes)
+          remotes::install_github("r-lib/xml2")
           deps <- readRDS(".github/depends.Rds")
           deps[["installed"]] <- vapply(deps[["package"]], remotes:::local_sha, character(1))
           update(deps)
