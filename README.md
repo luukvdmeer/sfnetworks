@@ -46,4 +46,4 @@ We look very much forward to contributions to the package. This can be in the fo
 
 We strive to follow the [tidyverse styleguide](https://style.tidyverse.org/) in the source code of the package. An exception to that is the assignment operator: we use `=` instead of `<-` (see [here](https://github.com/Robinlovelace/geocompr/issues/319) for some reasons why).
 
-This project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
+This project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.  
