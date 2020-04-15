@@ -43,4 +43,5 @@ Suggests:
   testthat
 RoxygenNote: 7.1.0
 VignetteBuilder: knitr
+URL: https://luukvdmeer.github.io/sfnetworks/
 BugReports: https://github.com/luukvdmeer/sfnetworks/issues/
