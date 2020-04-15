@@ -18,6 +18,7 @@
 #' @importFrom crayon silver italic
 #'
 #' @return A modified subset of the original captured output.
+#' @noRd
 capture_cat = function(p, start, end, prefix = "", sep = "\n", style = "plain") {
   captured_string = paste0(prefix, p[start:end])
   if (style == "plain") {
@@ -36,6 +37,7 @@ capture_cat = function(p, start, end, prefix = "", sep = "\n", style = "plain") 
 #' @return A printed string to console with subtle style.
 #'
 #' @importFrom crayon silver
+#' @noRd
 cat_subtle = function(...) {
   cat(crayon::silver(...))
 }
@@ -54,6 +56,7 @@ cat_subtle = function(...) {
 #' \code{\link[sf]{sf}} with \code{LINESTRING} geometries.
 #'
 #' @importFrom sf st_as_sf st_crs
+#' @noRd
 create_edges_from_nodes = function(nodes) {
   # Create separate tables for source and target nodes.
   sources = nodes[1:(nrow(nodes)-1), ]
@@ -85,6 +88,7 @@ create_edges_from_nodes = function(nodes) {
 #' class \code{\link[sf]{sf}} with \code{POINT} geometries.
 #'
 #' @importFrom sf st_as_sf st_crs
+#' @noRd
 create_nodes_from_edges = function(edges) {
   # Get the endpoints of the edges.
   nodes = get_endpoints(edges)
@@ -130,6 +134,7 @@ create_nodes_from_edges = function(edges) {
 #' in y, point 2 in x and point 2 in y, et cetera.
 #'
 #' @importFrom sf st_geometry st_sfc
+#' @noRd
 draw_lines = function(x, y) {
   sf::st_sfc(
     mapply(
@@ -152,6 +157,7 @@ draw_lines = function(x, y) {
 #'
 #' @importFrom rlang !! :=
 #' @importFrom tidygraph mutate
+#' @noRd
 drop_geometry = function(x, what) {
   x = tidygraph::mutate(as_tbl_graph(x), !!get_geometry_colname(as_sf(x)) := NULL)
   if (what == "edges") {
@@ -167,6 +173,7 @@ drop_geometry = function(x, what) {
 #' @param XY Which coordinates do you want to get? Either "X" or "Y".
 #'
 #' @importFrom sf st_coordinates
+#' @noRd
 get_coords = function(x, XY) {
   coords = sf::st_coordinates(x)
   split(coords[, XY], f = as.factor(coords[, "L1"]))
@@ -177,6 +184,7 @@ get_coords = function(x, XY) {
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @return An object of class \code{\link{sfnetwork}} with activated edges.
+#' @noRd
 get_edges = function(x) {
   activate(x, "edges")
 }
@@ -187,12 +195,14 @@ get_edges = function(x) {
 #' geometries.
 #'
 #' @param XY Which coordinates do you want to get? Either "X" or "Y".
+#' @noRd
 get_endpoint_coords = function(x, XY) {
   all_coords = get_coords(x, XY)
   endpoint_coords = do.call(
     "rbind",
     lapply(
       all_coords,
+      #' @noRd
       function(x) data.frame(c(x[1], x[length(x)]))
     )
   )
@@ -207,6 +217,7 @@ get_endpoint_coords = function(x, XY) {
 #'
 #' @return An object of class \code{data.frame} with an "X" and "Y" column,
 #' containing respectively the X and Y coordinates of the endpoints.
+#' @noRd
 get_endpoints = function(x) {
   cbind(get_endpoint_coords(x, "X"), get_endpoint_coords(x, "Y"))
 }
@@ -216,6 +227,7 @@ get_endpoints = function(x) {
 #' @param x An object of class \code{\link[sf]{sf}}.
 #'
 #' @return The name of the geometry list column as a string.
+#' @noRd
 get_geometry_colname = function(x) {
   attr(x, "sf_column")
 }
@@ -226,6 +238,7 @@ get_geometry_colname = function(x) {
 #'
 #' @return \code{TRUE} if the network has spatially explicit edges, \code{FALSE}
 #' otherwise.
+#' @noRd
 has_spatially_explicit_edges = function(x) {
   is.sf(as_tibble(x, "edges"))
 }
@@ -235,6 +248,7 @@ has_spatially_explicit_edges = function(x) {
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @return An object of class \code{\link{sfnetwork}} with activated nodes.
+#' @noRd
 get_nodes = function(x) {
   activate(x, "nodes")
 }
@@ -246,6 +260,7 @@ get_nodes = function(x) {
 #' @return \code{TRUE} when the given graph is directed, \code{FALSE} otherwise.
 #'
 #' @importFrom tidygraph graph_is_directed with_graph
+#' @noRd
 is_directed = function(x) {
   tidygraph::with_graph(x, tidygraph::graph_is_directed())
 }
@@ -256,7 +271,9 @@ is_directed = function(x) {
 #'
 #' @return \code{TRUE} if the table has a geometry list column, \code{FALSE}
 #' otherwise.
+#' @noRd
 is_spatially_explicit = function(x) {
+  #' @noRd
   any(sapply(x, function(y) inherits(y, "sfc")), na.rm = TRUE)
 }
 
@@ -267,6 +284,7 @@ is_spatially_explicit = function(x) {
 #'
 #' @return \code{TRUE} when there where multiple matches, \code{FALSE}
 #' otherwise.
+#' @noRd
 multiple_matches = function(x) {
   any(table(x$.sfnetwork_index) > 1)
 }
@@ -280,6 +298,7 @@ multiple_matches = function(x) {
 #' @return A \code{LINESTRING} geometry.
 #'
 #' @importFrom sf st_cast st_union
+#' @noRd
 points_to_line = function(x, y) {
   sf::st_cast(sf::st_union(x, y), "LINESTRING")
 }
@@ -296,6 +315,7 @@ points_to_line = function(x, y) {
 #'
 #' @importFrom rlang !! :=
 #' @importFrom tidygraph mutate
+#' @noRd
 replace_geometry = function(x, y) {
   tidygraph::mutate(x, !!get_geometry_colname(as_sf(x)) := y)
 }
@@ -312,6 +332,7 @@ replace_geometry = function(x, y) {
 #' otherwise.
 #'
 #' @importFrom sf st_crs
+#' @noRd
 same_crs = function(x, y) {
   st_crs(x) == st_crs(y)
 }
@@ -328,6 +349,7 @@ same_crs = function(x, y) {
 #'
 #' @details This is a pairwise check. Each row in x is compared to its
 #' corresponding row in y. Hence, x and y should be of the same length.
+#' @noRd
 same_endpoints = function(x, y) {
   identical(get_endpoints(x), get_endpoints(y))
 }
@@ -342,6 +364,7 @@ same_endpoints = function(x, y) {
 #' otherwise.
 #'
 #' @importFrom sf st_is
+#' @noRd
 st_is_all = function(x, type) {
   all(sf::st_is(x, type))
 }
