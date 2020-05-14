@@ -9,18 +9,19 @@ Authors@R:
              family = "van der Meer",
              role = c("aut", "cre"),
              email = "luukvandermeer@live.nl"),
-      person(given = "Andrea",
-             family = "Gilardi",
-             role = "aut",
-             email = "andrea.gilardi@unimib.it"),
       person(given = "Lorena",
              family = "Abad",
              role = "aut",
              email = "lore.abad6@gmail.com"),
+      person(given = "Andrea",
+             family = "Gilardi",
+             role = "aut",
+             email = "andrea.gilardi@unimib.it"),
       person(given = "Robin",
              family = "Lovelace",
              role = "aut",
              email = "r.lovelace@leeds.ac.uk"))
+Date: 2020-04-15
 Depends: R (>= 3.6)
 License: file LICENSE
 Encoding: UTF-8
