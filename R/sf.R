@@ -284,8 +284,8 @@ st_length.sfnetwork = function(x) {
 # for example st_reverse on POINT geometries).
 # Or:
 # The geometry type of y is LINESTRING when the geometry type of x is LINESTRING
-# and the LINESTRING geometries in y have the same endpoints (source and target
-# may be switched) as their corresponding LINESTRING geometries in x.
+# and the LINESTRING geometries in y have the same boundary points (source and 
+# target may be switched) as their corresponding LINESTRING geometries in x.
 
 #' @importFrom sf st_geometry
 geom_unary_ops = function(op, x, ...) {
@@ -371,7 +371,7 @@ st_geometry.sfnetwork = function(x, ...) {
         if (! same_crs(x, value)) {
           stop("Edge geometries can only be replaced when the CRS doesn't change")
         }
-        if (! same_endpoints(as_sf(x), value)) {
+        if (! same_boundary_points(as_sf(x), value)) {
           stop("Edge geometries can only be replaced when the endpoints don't change")
         }
       }

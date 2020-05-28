@@ -38,6 +38,7 @@ create_edges_from_nodes = function(nodes) {
     ),
     crs = sf::st_crs(nodes)
   )
+  # Return a list with both the nodes and edges.
   class(edges) = class(nodes)
   list(nodes = nodes, edges = edges)
 }
@@ -48,41 +49,37 @@ create_edges_from_nodes = function(nodes) {
 #' geometries.
 #'
 #' @details It is assumed that the given LINESTRING geometries form the edges.
-#' Nodes need to be created at the endpoints of the edges. Identical endpoints
-#' need to be the same node.
+#' Nodes need to be created at the boundary points of the edges. Identical 
+#' boundary points should become the same node.
 #'
 #' @return A list with the edges as an object of class \code{\link[sf]{sf}}
 #' with \code{LINESTRING} geometries and the created nodes as an object of
 #' class \code{\link[sf]{sf}} with \code{POINT} geometries.
 #'
-#' @importFrom sf st_as_sf st_crs
+#' @importFrom sf st_as_sf st_geometry
 #' @noRd
 create_nodes_from_edges = function(edges) {
-  # Get the endpoints of the edges.
-  nodes = get_endpoints(edges)
-  # Give each unique coordinate combination a unique ID.
-  nodes$XY = paste(nodes$X, nodes$Y)
-  nodes$ID = match(nodes$XY, unique(nodes$XY))
-  # Define for each endpoint if it is a source or target node.
-  nodes$source = rep(c(TRUE, FALSE), nrow(nodes) / 2)
+  # Get the boundary points of the edges.
+  nodes = get_boundaries(edges)
+  # Give each unique location a unique ID.
+  nodes$index = match(sf::st_geometry(nodes), unique(sf::st_geometry(nodes)))
+  print(nodes)
   # Define for each edges which node is its source and target node.
   if ("from" %in% colnames(edges)) {
     warning("Overwriting column 'from'")
   }
-  edges$from = nodes[nodes$source, "ID"]
+  edges$from = nodes$index[nodes$source]
 
   if ("to" %in% colnames(edges)) {
     warning("Overwriting column 'to'")
   }
-  edges$to = nodes[!nodes$source, "ID"]
+  edges$to = nodes$index[!nodes$source]
   # Remove duplicated nodes from the nodes table.
-  nodes = nodes[!duplicated(nodes$ID), ]
-  # Convert nodes to sf and keep only necessary columns.
-  nodes = sf::st_as_sf(
-    nodes[, c("X", "Y")],
-    coords = c("X", "Y"),
-    crs = sf::st_crs(edges)
-  )
+  nodes = nodes[!duplicated(nodes$index), ]
+  # Drop the index and source columns.
+  nodes$index = NULL
+  nodes$source = NULL
+  # Return a list with both the nodes and edges.
   class(nodes) = class(edges)
   list(nodes = nodes, edges = edges)
 }
@@ -154,20 +151,25 @@ drop_geometry = function(x, active = NULL) {
   xnew
 }
 
-#' Get the X or Y coordinates of geometries
+#' Get the boundary points of LINESTRING geometries
 #'
-#' @param x An object of class \code{\link[sf]{sf}}.
+#' @param x An object of class \code{\link[sf]{sf}} with \code{LINESTRING}
+#' geometries.
 #'
-#' @param XY Which coordinates do you want to get? Either "X" or "Y".
-#'
-#' @importFrom sf st_coordinates
+#' @return An object of class \code{\link[sf]{sf}} with \code{POINT} 
+#' geometries. An additional column 'source' specifies for each boundary point
+#' if it is a startpoint (source = TRUE) or an endpoint (source = FALSE).
+#' 
+#' @importFrom sf st_as_sf st_crs
 #' @noRd
-get_coords = function(x, XY) {
-  coords = sf::st_coordinates(x)
-  split(coords[, XY], f = as.factor(coords[, "L1"]))
+get_boundaries = function(x) {
+  rbind(
+    sf::st_as_sf(data.frame(get_startpoints(x), source = TRUE), crs = sf::st_crs(x)),
+    sf::st_as_sf(data.frame(get_endpoints(x), source = FALSE), crs = sf::st_crs(x))
+  )
 }
 
-#' Directly retrieve the edges from an sfnetwork
+#' Directly extract the edges from an sfnetwork
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -178,36 +180,19 @@ get_edges = function(x) {
   as_tibble(x, "edges")
 }
 
-#' Get the X or Y coordinates of the endpoints of LINESTRING geometries
-#'
-#' @param x An object of class \code{\link[sf]{sf}} with \code{LINESTRING}
-#' geometries.
-#'
-#' @param XY Which coordinates do you want to get? Either "X" or "Y".
-#' @noRd
-get_endpoint_coords = function(x, XY) {
-  all_coords = get_coords(x, XY)
-  endpoint_coords = do.call(
-    "rbind",
-    lapply(
-      all_coords,
-      function(x) data.frame(c(x[1], x[length(x)]))
-    )
-  )
-  colnames(endpoint_coords) = XY
-  endpoint_coords
-}
-
 #' Get the endpoints of LINESTRING geometries
 #'
 #' @param x An object of class \code{\link[sf]{sf}} with \code{LINESTRING}
 #' geometries.
 #'
-#' @return An object of class \code{data.frame} with an "X" and "Y" column,
-#' containing respectively the X and Y coordinates of the endpoints.
+#' @return An object of class \code{\link[sf]{sfc}} with \code{POINT} 
+#' geometries.
+#' 
+#' @importFrom lwgeom st_endpoint
+#' @importFrom sf st_geometry
 #' @noRd
 get_endpoints = function(x) {
-  cbind(get_endpoint_coords(x, "X"), get_endpoint_coords(x, "Y"))
+  do.call("c", lapply(sf::st_geometry(x), function(y) lwgeom::st_endpoint(y)))
 }
 
 #' Retrieve the name of the geometry list column in an sf object
@@ -231,7 +216,7 @@ has_spatially_explicit_edges = function(x) {
   is.sf(get_edges(x))
 }
 
-#' Directly retrieve the nodes of an sfnetwork.
+#' Directly extract the nodes of an sfnetwork.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -239,6 +224,41 @@ has_spatially_explicit_edges = function(x) {
 #' @noRd
 get_nodes = function(x) {
   as_sf(x, "nodes")
+}
+
+#' Extract the source nodes of an sfnetwork.
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @return An object of class \code{\link[sf]{sf}}.
+#' @noRd
+get_source_nodes = function(x) {
+  get_nodes(x)[get_edges(x)$from,]
+}
+
+#' Get the startpoints of LINESTRING geometries
+#'
+#' @param x An object of class \code{\link[sf]{sf}} with \code{LINESTRING}
+#' geometries.
+#'
+#' @return An object of class \code{\link[sf]{sfc}} with \code{POINT} 
+#' geometries.
+#' 
+#' @importFrom lwgeom st_startpoint
+#' @importFrom sf st_geometry
+#' @noRd
+get_startpoints = function(x) {
+  do.call("c", lapply(sf::st_geometry(x), function(y) lwgeom::st_startpoint(y)))
+}
+
+#' Extract the target nodes of an sfnetwork.
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @return An object of class \code{\link[sf]{sf}}.
+#' @noRd
+get_target_nodes = function(x) {
+  get_nodes(x)[get_edges(x)$to,]
 }
 
 #' Check if a graph is directed.
@@ -324,7 +344,7 @@ same_crs = function(x, y) {
   st_crs(x) == st_crs(y)
 }
 
-#' Check if two sf objects have the same LINESTRING endpoints
+#' Check if two sf objects have the same LINESTRING boundary points
 #'
 #' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 #' with \code{LINESTRING} geometries.
@@ -332,13 +352,25 @@ same_crs = function(x, y) {
 #' @param y An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 #' with \code{LINESTRING} geometries.
 #'
-#' @return \code{TRUE} when the endpoints are the same, \code{FALSE} otherwise.
+#' @return \code{TRUE} when the boundary points are the same, \code{FALSE} 
+#' otherwise.
 #'
 #' @details This is a pairwise check. Each row in x is compared to its
 #' corresponding row in y. Hence, x and y should be of the same length.
+#' 
+#' @importFrom sf st_equals st_geometry
 #' @noRd
-same_endpoints = function(x, y) {
-  identical(get_endpoints(x), get_endpoints(y))
+same_boundary_points = function(x, y) {
+  all(
+    do.call(
+      "c", 
+      mapply(
+        function(x,y) sf::st_equals(x,y), 
+        sf::st_geometry(x), 
+        sf::st_geometry(y)
+      )
+    )
+  )
 }
 
 #' Check if the geometries of an sf object are all of a specific type
@@ -375,9 +407,7 @@ to_spatially_explicit_edges = function(x, sf_column_name = "geometry") {
   if (has_spatially_explicit_edges(x)) {
     return(x)
   } else {
-    sources = get_nodes(x)[get_edges(x)$from,]
-    targets = get_nodes(x)[get_edges(x)$to,]
-    edge_geoms = draw_lines(sources, targets)
+    edge_geoms = draw_lines(get_source_nodes(x), get_target_nodes(x))
     xnew = tidygraph::mutate(activate(x, "edges"), !!sf_column_name := edge_geoms)
     switch(
       active(x),

@@ -140,8 +140,8 @@ as_sfnetwork.sf = function(x, directed = TRUE, edges_as_lines = TRUE, ...) {
   if (st_is_all(x, "LINESTRING")) {
     # Workflow:
     # It is assumed that the given LINESTRING geometries form the edges.
-    # Nodes need to be created at the endpoints of the edges.
-    # Identical endpoints need to be the same node.
+    # Nodes need to be created at the boundary points of the edges.
+    # Identical boundary points should become the same node.
     network = create_nodes_from_edges(x)
   } else if (st_is_all(x, "POINT")) {
     # Workflow:
@@ -152,6 +152,7 @@ as_sfnetwork.sf = function(x, directed = TRUE, edges_as_lines = TRUE, ...) {
   } else {
     stop("Only geometries of type LINESTRING or POINT are allowed")
   }
+  print(network)
   sfnetwork(network$nodes, network$edges, directed, edges_as_lines, ...)
 }
 
