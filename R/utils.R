@@ -56,13 +56,15 @@ create_edges_from_nodes = function(nodes) {
 #' with \code{LINESTRING} geometries and the created nodes as an object of
 #' class \code{\link[sf]{sf}} with \code{POINT} geometries.
 #'
-#' @importFrom sf st_as_sf st_geometry
+#' @importFrom sf st_as_sf st_crs st_geometry
 #' @noRd
 create_nodes_from_edges = function(edges) {
   # Get the boundary points of the edges.
-  nodes = get_boundaries(edges)
+  nodes = sf::st_as_sf(get_boundaries(edges), crs = sf::st_crs(edges))
   # Give each unique location a unique ID.
   nodes$index = match(sf::st_geometry(nodes), unique(sf::st_geometry(nodes)))
+  # Define for each endpoint if it is a source or target node.
+  nodes$source = rep(c(TRUE, FALSE), nrow(nodes) / 2)
   # Define for each edges which node is its source and target node.
   if ("from" %in% colnames(edges)) {
     warning("Overwriting column 'from'")
@@ -155,16 +157,19 @@ drop_geometry = function(x, active = NULL) {
 #' @param x An object of class \code{\link[sf]{sf}} with \code{LINESTRING}
 #' geometries.
 #'
-#' @return An object of class \code{\link[sf]{sf}} with \code{POINT}
-#' geometries. An additional column 'source' specifies for each boundary point
-#' if it is a startpoint (source = TRUE) or an endpoint (source = FALSE).
+#' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
+#' geometries.
 #'
-#' @importFrom sf st_as_sf st_crs
+#' @importFrom lwgeom st_endpoint st_startpoint
+#' @importFrom sf st_geometry
 #' @noRd
 get_boundaries = function(x) {
-  rbind(
-    sf::st_as_sf(data.frame(get_startpoints(x), source = TRUE), crs = sf::st_crs(x)),
-    sf::st_as_sf(data.frame(get_endpoints(x), source = FALSE), crs = sf::st_crs(x))
+  do.call(
+    "c",
+    lapply(
+      st_geometry(x),
+      function(y) c(lwgeom::st_startpoint(y), lwgeom::st_endpoint(y))
+    )
   )
 }
 

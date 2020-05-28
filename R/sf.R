@@ -284,7 +284,7 @@ st_length.sfnetwork = function(x) {
 # for example st_reverse on POINT geometries).
 # Or:
 # The geometry type of y is LINESTRING when the geometry type of x is LINESTRING
-# and the LINESTRING geometries in y have the same boundary points (source and 
+# and the LINESTRING geometries in y have the same boundary points (source and
 # target may be switched) as their corresponding LINESTRING geometries in x.
 
 #' @importFrom sf st_geometry
@@ -458,7 +458,9 @@ st_join.sfnetwork = function(x, y, join = st_intersects, ..., left = TRUE) {
     n_tmp = as_tibble(activate(x, "nodes"))
     e_tmp = d_tmp
   }
-  sfnetwork(nodes = n_tmp, edges = e_tmp, directed = is_directed(x))
+  print(n_tmp)
+  print(e_tmp)
+  construct_sfnetwork(nodes = n_tmp, edges = e_tmp, directed = is_directed(x))
 }
 
 # =============================================================================

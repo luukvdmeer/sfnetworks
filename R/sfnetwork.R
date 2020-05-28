@@ -52,17 +52,18 @@ sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = TRUE, ...) 
   if (! st_is_all(get_nodes(net), "POINT")) {
     stop("Only geometries of type POINT are allowed as nodes")
   }
-  if (has_spatially_explicit_edges(xsn)) {
-    if (! st_is_all(get_edges(xsn), "LINESTRING")) {
+  if (has_spatially_explicit_edges(net)) {
+    if (! st_is_all(get_edges(net), "LINESTRING")) {
       stop("Only geometries of type LINESTRING are allowed as edges")
     }
-    if (! same_crs(get_nodes(xsn), get_edges(xsn))) {
+    if (! same_crs(get_nodes(net), get_edges(net))) {
       stop("Nodes and edges do not have the same CRS")
     }
-    if (! nodes_match_edge_boundaries(xsn)) {
+    if (! nodes_match_edge_boundaries(net)) {
       stop("Boundary points of edges should match their corresponding nodes")
     }
   }
+  net
 }
 
 construct_sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = TRUE, ...) {
@@ -175,8 +176,13 @@ as_sfnetwork.tbl_graph = function(x, edges_as_lines = TRUE, ...) {
 
 tblgraph_to_sfnetwork = function(x, edges_as_lines = TRUE, run_checks = FALSE, ...) {
   xls = as.list(x)
-  args = list(xls[[1]], xls[[2]], is_directed(x), edges_as_lines, ...)
-  ifelse(checks, do.call("sfnetwork", args), do.call("construct_sfnetwork", args))
+  # args = list(xls[[1]], xls[[2]], is_directed(x), edges_as_lines, ...)
+  # ifelse(run_checks, do.call("sfnetwork", args), do.call("construct_sfnetwork", args))
+  if (run_checks) {
+    sfnetwork(xls[[1]], xls[[2]], is_directed(x), edges_as_lines, ...)
+  } else {
+    construct_sfnetwork(xls[[1]], xls[[2]], is_directed(x), edges_as_lines, ...)
+  }
 }
 
 #' @importFrom sf st_as_sf st_crs st_geometry
