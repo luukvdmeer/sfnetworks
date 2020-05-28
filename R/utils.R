@@ -336,3 +336,29 @@ same_endpoints = function(x, y) {
 st_is_all = function(x, type) {
   all(sf::st_is(x, type))
 }
+
+#' Convert spatially implicit edges to spatially explicit edges
+#'
+#' @param x An object of class \code{\link{sfnetwork}} with spatially implicit
+#' edges.
+#'
+#' @return An object of class \code{\link{sfnetwork}} with spatially explicit
+#' edges.
+#' @noRd
+to_spatially_explicit_edges = function(x) {
+  if (has_spatially_explicit_edges(x)) {
+    return(x)
+  } else {
+    sources = sf::st_as_sf(get_nodes(x))[as_tibble(get_edges(x))$from,]
+    targets = sf::st_as_sf(get_nodes(x))[as_tibble(get_edges(x))$to,]
+    edge_geoms = draw_lines(sources, targets)
+    xnew = tidygraph::mutate(activate(x, "edges"), "geometry" = edge_geoms)
+    active = active(x)
+    switch(
+      active,
+      nodes = activate(xnew, "nodes"),
+      edges = xnew,
+      stop("Unknown active element: ", active, ". Only nodes and edges supported")
+    )
+  }
+}
