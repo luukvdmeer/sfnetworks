@@ -46,6 +46,26 @@
 #' @importFrom tidygraph tbl_graph .N
 #' @export
 sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = TRUE, ...) {
+  # Construct the network.
+  net = construct_sfnetwork(nodes, edges, directed, edges_as_lines, ...)
+  # Run checks to guarantee a valid network structure.
+  if (! st_is_all(get_nodes(net), "POINT")) {
+    stop("Only geometries of type POINT are allowed as nodes")
+  }
+  if (has_spatially_explicit_edges(xsn)) {
+    if (! st_is_all(get_edges(xsn), "LINESTRING")) {
+      stop("Only geometries of type LINESTRING are allowed as edges")
+    }
+    if (! same_crs(get_nodes(xsn), get_edges(xsn))) {
+      stop("Nodes and edges do not have the same CRS")
+    }
+    if (! nodes_match_edge_boundaries(xsn)) {
+      stop("Boundary points of edges should match their corresponding nodes")
+    }
+  }
+}
+
+construct_sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = TRUE, ...) {
   # If nodes is not an sf object, try to convert it to an sf object.
   if (! is.sf(nodes)) {
     tryCatch(
@@ -57,9 +77,6 @@ sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = TRUE, ...) 
       }
     )
   }
-  if (! st_is_all(nodes, "POINT")) {
-    stop("Only geometries of type POINT are allowed as nodes")
-  }
   # If edges is an sf object, tidygraph cannot handle it due to sticky geometry.
   # Therefore it has to be converted into a regular data frame (or tibble).
   if (is.sf(edges)) {
@@ -68,20 +85,9 @@ sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = TRUE, ...) 
   # Create the network with the nodes and edges.
   xtg = tidygraph::tbl_graph(nodes, edges, directed = directed)
   xsn = structure(xtg, class = c("sfnetwork", class(xtg)))
+  # Add or remove edge geometries if needed.
   if (edges_as_lines) {
-    if (has_spatially_explicit_edges(xsn)) {
-      if (! st_is_all(get_edges(xsn), "LINESTRING")) {
-        stop("Only geometries of type LINESTRING are allowed as edges")
-      }
-      if (! same_crs(get_nodes(xsn), get_edges(xsn))) {
-        stop("Nodes and edges do not have the same CRS")
-      }
-      if (! nodes_match_edge_boundaries(xsn)) {
-        stop("Boundary points of edges should match their corresponding nodes")
-      }
-    } else {
-      xsn = to_spatially_explicit_edges(xsn)
-    }
+    xsn = to_spatially_explicit_edges(xsn)
   } else {
     if (has_spatially_explicit_edges(xsn)) {
       xsn = drop_geometry(xsn, "edges")
@@ -158,14 +164,19 @@ as_sfnetwork.sf = function(x, directed = TRUE, edges_as_lines = TRUE, ...) {
   } else {
     stop("Only geometries of type LINESTRING or POINT are allowed")
   }
-  sfnetwork(network$nodes, network$edges, directed, edges_as_lines, ...)
+  construct_sfnetwork(network$nodes, network$edges, directed, edges_as_lines, ...)
 }
 
 #' @name as_sfnetwork
 #' @export
 as_sfnetwork.tbl_graph = function(x, edges_as_lines = TRUE, ...) {
+  tblgraph_to_sfnetwork(x, edges_as_lines, run_checks = TRUE, ...)
+}
+
+tblgraph_to_sfnetwork = function(x, edges_as_lines = TRUE, run_checks = FALSE, ...) {
   xls = as.list(x)
-  sfnetwork(xls[[1]], xls[[2]], is_directed(x), edges_as_lines, ...)
+  args = list(xls[[1]], xls[[2]], is_directed(x), edges_as_lines, ...)
+  ifelse(checks, do.call("sfnetwork", args), do.call("construct_sfnetwork", args))
 }
 
 #' @importFrom sf st_as_sf st_crs st_geometry
