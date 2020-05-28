@@ -167,14 +167,15 @@ get_coords = function(x, XY) {
   split(coords[, XY], f = as.factor(coords[, "L1"]))
 }
 
-#' Point to the edges in an sfnetwork
+#' Directly retrieve the edges from an sfnetwork
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @return An object of class \code{\link{sfnetwork}} with activated edges.
+#' @return An object of class \code{\link[sf]{sf}} when x has spatially
+#' explicit edges, and object of class \code{\link[tibble]{tbl_df}} otherwise.
 #' @noRd
 get_edges = function(x) {
-  activate(x, "edges")
+  as_tibble(x, "edges")
 }
 
 #' Get the X or Y coordinates of the endpoints of LINESTRING geometries
@@ -190,7 +191,6 @@ get_endpoint_coords = function(x, XY) {
     "rbind",
     lapply(
       all_coords,
-      #' @noRd
       function(x) data.frame(c(x[1], x[length(x)]))
     )
   )
@@ -228,17 +228,17 @@ get_geometry_colname = function(x) {
 #' otherwise.
 #' @noRd
 has_spatially_explicit_edges = function(x) {
-  is.sf(as_tibble(x, "edges"))
+  is.sf(get_edges(x))
 }
 
-#' Point to the nodes in an sfnetwork
+#' Directly retrieve the nodes of an sfnetwork.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @return An object of class \code{\link{sfnetwork}} with activated nodes.
+#' @return An object of class \code{\link[sf]{sf}}.
 #' @noRd
 get_nodes = function(x) {
-  activate(x, "nodes")
+  as_sf(x, "nodes")
 }
 
 #' Check if a graph is directed.
@@ -255,20 +255,19 @@ is_directed = function(x) {
 
 #' Check if a table has spatial information stored in a geometry list column
 #'
-#' @param x Object to check for spatial explicitness
+#' @param x Object to check for spatial explicitness.
 #'
 #' @return \code{TRUE} if the table has a geometry list column, \code{FALSE}
 #' otherwise.
 #' @noRd
 is_spatially_explicit = function(x) {
-  #' @noRd
   any(sapply(x, function(y) inherits(y, "sfc")), na.rm = TRUE)
 }
 
 #' Check if the output of an st_join operation has multiple matches
 #'
 #' @param x The output of an st_join(a,b) operation where the original row
-#' indices of a are stored in a column names \code{.sfnetwork_index}.
+#' indices of a are stored in a column named \code{.sfnetwork_index}.
 #'
 #' @return \code{TRUE} when there where multiple matches, \code{FALSE}
 #' otherwise.
@@ -362,20 +361,26 @@ st_is_all = function(x, type) {
 #' @param x An object of class \code{\link{sfnetwork}} with spatially implicit
 #' edges.
 #'
+#'
+#' @param sf_column_name Name of the sf geometry column that will be created
+#' in the edges table. Defaults to "geometry".
+#'
 #' @return An object of class \code{\link{sfnetwork}} with spatially explicit
 #' edges.
+#'
+#' @importFrom rlang !! :=
+#' @importFrom tidygraph mutate
 #' @noRd
-to_spatially_explicit_edges = function(x) {
+to_spatially_explicit_edges = function(x, sf_column_name = "geometry") {
   if (has_spatially_explicit_edges(x)) {
     return(x)
   } else {
-    sources = sf::st_as_sf(get_nodes(x))[as_tibble(get_edges(x))$from,]
-    targets = sf::st_as_sf(get_nodes(x))[as_tibble(get_edges(x))$to,]
+    sources = get_nodes(x)[get_edges(x)$from,]
+    targets = get_nodes(x)[get_edges(x)$to,]
     edge_geoms = draw_lines(sources, targets)
-    xnew = tidygraph::mutate(activate(x, "edges"), "geometry" = edge_geoms)
-    active = active(x)
+    xnew = tidygraph::mutate(activate(x, "edges"), !!sf_column_name := edge_geoms)
     switch(
-      active,
+      active(x),
       nodes = activate(xnew, "nodes"),
       edges = xnew
     )

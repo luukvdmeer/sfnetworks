@@ -43,7 +43,7 @@
 #' @return An object of class \code{sfnetwork}.
 #'
 #' @importFrom sf st_as_sf
-#' @importFrom tidygraph tbl_graph
+#' @importFrom tidygraph tbl_graph .N
 #' @export
 sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = TRUE, ...) {
   # If nodes is not an sf object, try to convert it to an sf object.
@@ -62,24 +62,19 @@ sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = TRUE, ...) 
   }
   # If edges is an sf object, tidygraph cannot handle it due to sticky geometry.
   # Therefore it has to be converted into a regular data frame (or tibble).
-  # If edges_as_lines is set to FALSE, the geometry has to be dropped completely.
   if (is.sf(edges)) {
-    if (! st_is_all(edges, "LINESTRING")) {
-      stop("Only geometries of type LINESTRING are allowed as edges")
-    }
-    if (! same_crs(nodes, edges)) {
-      stop("Nodes and edges do not have the same CRS")
-    }
     edges = structure(edges, class = setdiff(class(edges), "sf"))
-    # if (! edges_as_lines) {
-    #   edges = sf::st_drop_geometry(edges)
-    # } else {
-    #   edges = structure(edges, class = setdiff(class(edges), "sf"))
-    # }
   }
+  # Create the network with the nodes and edges.
   xtg = tidygraph::tbl_graph(nodes, edges, directed = directed)
   xsn = structure(xtg, class = c("sfnetwork", class(xtg)))
   if (edges_as_lines) {
+    if (! st_is_all(get_edges(xsn), "LINESTRING")) {
+      stop("Only geometries of type LINESTRING are allowed as edges")
+    }
+    if (! same_crs(get_nodes(xsn), get_edges(xsn))) {
+      stop("Nodes and edges do not have the same CRS")
+    }
     xsn = to_spatially_explicit_edges(xsn)
   } else {
     if (has_spatially_explicit_edges(xsn)) {
