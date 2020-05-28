@@ -1,28 +1,22 @@
 #' Plot sfnetwork object
 #'
-#' Plot spatially explicit graph components (nodes and edges) of an sfnetwork
-#' on a map.
+#' Plot the geometries of an object of class \code{\link{sfnetwork}}.
 #'
 #' @param x Object of class \code{\link{sfnetwork}}.
 #'
 #' @param ... Arguments passed on to \code{\link[sf]{plot}}
 #'
 #' @importFrom graphics plot
-#' @importFrom sf st_as_sf st_geometry st_sfc
+#' @importFrom sf st_geometry
 #' @export
 plot.sfnetwork = function(x, ...) {
   dots = list(...)
-  nsf = sf::st_geometry(sf::st_as_sf(activate(x, "nodes"))) # Nodes
-  if (has_spatially_explicit_edges(x)) {
-    esf = sf::st_geometry(sf::st_as_sf(activate(x, "edges"))) # Edges
-  } else {
-    # Create edges when not spatially explicit
-    sources = sf::st_as_sf(get_nodes(x))[as_tibble(get_edges(x))$from,]
-    targets = sf::st_as_sf(get_nodes(x))[as_tibble(get_edges(x))$to,]
-    esf = draw_lines(sources, targets)
+  nsf = sf::st_geometry(activate(x, "nodes")) # Nodes.
+  if (! has_spatially_explicit_edges(x)) {
+    x = to_spatially_explicit_edges(x) # Draw edges if not spatially explicit.
   }
-  # Bind nodes and edges into one sf object if edges are spatially explicit.
-  gsf = c(nsf, esf) # Full graph
+  esf = sf::st_geometry(activate(x, "edges")) # Edges.
+  gsf = c(nsf, esf) # Full graph.
   dots$x = gsf
   # Use pch of 20 by default.
   pch_missing = is.null(dots$pch)

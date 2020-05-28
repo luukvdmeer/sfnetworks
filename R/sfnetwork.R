@@ -33,15 +33,40 @@
 #' @param directed Should the constructed network be directed? Defaults to
 #' \code{TRUE}.
 #'
+#' @param edges_as_lines Should the edges be spatially explicit, i.e. have
+#' \code{LINESTRING} geometries stored in a geometry list column? Defaults to
+#' \code{TRUE}.
+#'
 #' @param ... Arguments passed on to \code{\link[sf]{st_as_sf}}, when
 #' converting the nodes to an \code{sf} object.
 #'
 #' @return An object of class \code{sfnetwork}.
 #'
 #' @importFrom sf st_as_sf
-#' @importFrom tidygraph tbl_graph
+#' @importFrom tidygraph tbl_graph .N
 #' @export
-sfnetwork = function(nodes, edges, directed = TRUE, ...) {
+sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = TRUE, ...) {
+  # Construct the network.
+  net = construct_sfnetwork(nodes, edges, directed, edges_as_lines, ...)
+  # Run checks to guarantee a valid network structure.
+  if (! st_is_all(get_nodes(net), "POINT")) {
+    stop("Only geometries of type POINT are allowed as nodes")
+  }
+  if (has_spatially_explicit_edges(net)) {
+    if (! st_is_all(get_edges(net), "LINESTRING")) {
+      stop("Only geometries of type LINESTRING are allowed as edges")
+    }
+    if (! same_crs(get_nodes(net), get_edges(net))) {
+      stop("Nodes and edges do not have the same CRS")
+    }
+    if (! nodes_match_edge_boundaries(net)) {
+      stop("Boundary points of edges should match their corresponding nodes")
+    }
+  }
+  net
+}
+
+construct_sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = TRUE, ...) {
   # If nodes is not an sf object, try to convert it to an sf object.
   if (! is.sf(nodes)) {
     tryCatch(
@@ -53,22 +78,23 @@ sfnetwork = function(nodes, edges, directed = TRUE, ...) {
       }
     )
   }
-  if (! st_is_all(nodes, "POINT")) {
-    stop("Only geometries of type POINT are allowed as nodes")
-  }
   # If edges is an sf object, tidygraph cannot handle it due to sticky geometry.
   # Therefore it has to be converted into a regular data frame (or tibble).
   if (is.sf(edges)) {
-    if (! st_is_all(edges, "LINESTRING")) {
-      stop("Only geometries of type LINESTRING are allowed as edges")
-    }
-    if (! same_crs(nodes, edges)) {
-      stop("Nodes and edges do not have the same CRS")
-    }
     edges = structure(edges, class = setdiff(class(edges), "sf"))
   }
-  x = tidygraph::tbl_graph(nodes, edges, directed = directed)
-  structure(x, class = c("sfnetwork", class(x)))
+  # Create the network with the nodes and edges.
+  xtg = tidygraph::tbl_graph(nodes, edges, directed = directed)
+  xsn = structure(xtg, class = c("sfnetwork", class(xtg)))
+  # Add or remove edge geometries if needed.
+  if (edges_as_lines) {
+    xsn = to_spatially_explicit_edges(xsn)
+  } else {
+    if (has_spatially_explicit_edges(xsn)) {
+      xsn = drop_geometry(xsn, "edges")
+    }
+  }
+  xsn
 }
 
 #' Convert a foreign object to an sfnetwork object
@@ -99,6 +125,10 @@ sfnetwork = function(nodes, edges, directed = TRUE, ...) {
 #' @param directed Should the constructed network be directed? Defaults to
 #' \code{TRUE}.
 #'
+#' @param edges_as_lines Should the edges be spatially explicit, i.e. have
+#' \code{LINESTRING} geometries stored in a geometry list column? Defaults to
+#' \code{TRUE}.
+#'
 #' @param ... arguments passed on to construction function.
 #'
 #' @return An object of class \code{sfnetwork}.
@@ -111,31 +141,20 @@ as_sfnetwork = function(x, ...) {
 #' @name as_sfnetwork
 #' @importFrom tidygraph as_tbl_graph
 #' @export
-as_sfnetwork.default = function(x, directed = TRUE, ...) {
-  tryCatch(
-    expr = {
-      as_sfnetwork(tidygraph::as_tbl_graph(x, directed = directed), ...)
-    },
-    error = function(e) {
-      stop("No support for ", class(x)[1], " objects")
-    }
-  )
+as_sfnetwork.default = function(x, directed = TRUE, edges_as_lines = TRUE, ...) {
+  xtg = tidygraph::as_tbl_graph(x, directed = directed)
+  as_sfnetwork(xtg, edges_as_lines = edges_as_lines, ...)
 }
 
 #' @name as_sfnetwork
-#'
-#' @param edges_as_lines Should the edges be spatially explict (i.e. have a
-#' \code{LINESTRING} geometries stored in a geometry list column)? Defaults to
-#' \code{TRUE}.
-#'
 #' @importFrom sf st_geometry
 #' @export
 as_sfnetwork.sf = function(x, directed = TRUE, edges_as_lines = TRUE, ...) {
   if (st_is_all(x, "LINESTRING")) {
     # Workflow:
     # It is assumed that the given LINESTRING geometries form the edges.
-    # Nodes need to be created at the endpoints of the edges.
-    # Identical endpoints need to be the same node.
+    # Nodes need to be created at the boundary points of the edges.
+    # Identical boundary points should become the same node.
     network = create_nodes_from_edges(x)
   } else if (st_is_all(x, "POINT")) {
     # Workflow:
@@ -146,17 +165,24 @@ as_sfnetwork.sf = function(x, directed = TRUE, edges_as_lines = TRUE, ...) {
   } else {
     stop("Only geometries of type LINESTRING or POINT are allowed")
   }
-  if (! edges_as_lines) {
-    sf::st_geometry(network$edges) = NULL
-  }
-  sfnetwork(network$nodes, network$edges, directed = directed, ...)
+  construct_sfnetwork(network$nodes, network$edges, directed, edges_as_lines, ...)
 }
 
 #' @name as_sfnetwork
 #' @export
-as_sfnetwork.tbl_graph = function(x, ...) {
+as_sfnetwork.tbl_graph = function(x, edges_as_lines = TRUE, ...) {
+  tblgraph_to_sfnetwork(x, edges_as_lines, run_checks = TRUE, ...)
+}
+
+tblgraph_to_sfnetwork = function(x, edges_as_lines = TRUE, run_checks = FALSE, ...) {
   xls = as.list(x)
-  sfnetwork(xls[[1]], xls[[2]], directed = is_directed(x), ...)
+  # args = list(xls[[1]], xls[[2]], is_directed(x), edges_as_lines, ...)
+  # ifelse(run_checks, do.call("sfnetwork", args), do.call("construct_sfnetwork", args))
+  if (run_checks) {
+    sfnetwork(xls[[1]], xls[[2]], is_directed(x), edges_as_lines, ...)
+  } else {
+    construct_sfnetwork(xls[[1]], xls[[2]], is_directed(x), edges_as_lines, ...)
+  }
 }
 
 #' @importFrom sf st_as_sf st_crs st_geometry
@@ -206,11 +232,11 @@ print.sfnetwork = function(x, ...) {
   cat_subtle("#\n")
   cat_subtle(c("# CRS: ", sf::st_crs(sf::st_as_sf(activate(x,"nodes")))$input, "\n"))
   cat_subtle("#\n")
-  cat_subtle("#", tidygraph:::describe_graph(as_tbl_graph(x)), "\n")
+  cat_subtle("#", tidygraph:::describe_graph(as_tbl_graph(x)))
   if (has_spatially_explicit_edges(x)) {
-    cat_subtle("# and spatially explicit edges\n")
+    cat_subtle(" and spatially explicit edges\n")
   } else {
-    cat_subtle("# and spatially implicit edges\n")
+    cat_subtle(" and spatially implicit edges\n")
   }
   cat_subtle("#\n")
   # Active data info.

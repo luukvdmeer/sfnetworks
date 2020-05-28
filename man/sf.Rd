@@ -61,7 +61,7 @@ st_is_empty.sfnetwork(x)
 
 st_is_simple.sfnetwork(x)
 
-st_is_valid.sfnetwork(x, ...)
+\method{st_is_valid}{sfnetwork}(x, ...)
 
 st_contains.sfnetwork(x, y = x, ...)
 
