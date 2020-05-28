@@ -112,14 +112,8 @@ as_sfnetwork = function(x, ...) {
 #' @importFrom tidygraph as_tbl_graph
 #' @export
 as_sfnetwork.default = function(x, directed = TRUE, ...) {
-  tryCatch(
-    expr = {
-      as_sfnetwork(tidygraph::as_tbl_graph(x, directed = directed), ...)
-    },
-    error = function(e) {
-      stop("No support for ", class(x)[1], " objects")
-    }
-  )
+  xtg = tidygraph::as_tbl_graph(x, directed = directed)
+  as_sfnetwork(xtg, ...)
 }
 
 #' @name as_sfnetwork
