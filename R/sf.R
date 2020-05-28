@@ -378,7 +378,7 @@ st_geometry.sfnetwork = function(x, ...) {
     }
     x = replace_geometry(x, value)
   } else {
-    x = drop_geometry(x, what = active(x))
+    x = drop_geometry(x)
   }
   x
 }

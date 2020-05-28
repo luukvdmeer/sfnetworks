@@ -114,11 +114,12 @@ draw_lines = function(x, y) {
   )
 }
 
-#' Drop the geometry of a network element
+#' Drop the geometry of a network component
 #'
 #' @param x An object of class \code{\link{sfnetwork}}
 #'
-#' @param what Either 'nodes' or 'edges'.
+#' @param active Either 'nodes' or 'edges'. If NULL, the active component of x
+#' will be used.
 #'
 #' @return An object of class \code{\link{sfnetwork}} when what = 'edges', and
 #' an object of class \code{\link[tidygraph]{tbl_graph}} when what = 'nodes'.
@@ -126,12 +127,32 @@ draw_lines = function(x, y) {
 #' @importFrom rlang !! :=
 #' @importFrom tidygraph mutate
 #' @noRd
-drop_geometry = function(x, what) {
-  x = tidygraph::mutate(as_tbl_graph(x), !!get_geometry_colname(as_sf(x)) := NULL)
-  if (what == "edges") {
-    x = activate(as_sfnetwork(x), "edges")
+drop_geometry = function(x, active = NULL) {
+  active_x = active(x)
+  if (is.null(active)) {
+    active = active_x
+  } else {
+    if (active != active_x) {
+      x = switch(
+        active,
+        nodes = activate(x, "nodes"),
+        edges = activate(x, "edges"),
+        stop("Unknown active element: ", active, ". Only nodes and edges supported")
+      )
+    }
   }
-  x
+  xnew = tidygraph::mutate(as_tbl_graph(x), !!get_geometry_colname(as_sf(x)) := NULL)
+  if (active == "edges") {
+    xnew = as_sfnetwork(xnew, edges_as_lines = FALSE)
+  }
+  if (active != active_x) {
+    xnew = switch(
+      active_x,
+      nodes = activate(xnew, "nodes"),
+      edges = activate(xnew, "edges")
+    )
+  }
+  xnew
 }
 
 #' Get the X or Y coordinates of geometries
@@ -357,8 +378,7 @@ to_spatially_explicit_edges = function(x) {
     switch(
       active,
       nodes = activate(xnew, "nodes"),
-      edges = xnew,
-      stop("Unknown active element: ", active, ". Only nodes and edges supported")
+      edges = xnew
     )
   }
 }
