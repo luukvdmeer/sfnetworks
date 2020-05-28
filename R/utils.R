@@ -128,11 +128,10 @@ draw_lines = function(x, y) {
 #' @importFrom tidygraph mutate
 #' @noRd
 drop_geometry = function(x, active = NULL) {
-  active_x = active(x)
   if (is.null(active)) {
-    active = active_x
+    active = active(x)
   } else {
-    if (active != active_x) {
+    if (active != active(x)) {
       x = switch(
         active,
         nodes = activate(x, "nodes"),
@@ -145,9 +144,9 @@ drop_geometry = function(x, active = NULL) {
   if (active == "edges") {
     xnew = as_sfnetwork(xnew, edges_as_lines = FALSE)
   }
-  if (active != active_x) {
+  if (active(xnew) != active(x)) {
     xnew = switch(
-      active_x,
+      active(x),
       nodes = activate(xnew, "nodes"),
       edges = activate(xnew, "edges")
     )
