@@ -63,7 +63,6 @@ create_nodes_from_edges = function(edges) {
   nodes = get_boundaries(edges)
   # Give each unique location a unique ID.
   nodes$index = match(sf::st_geometry(nodes), unique(sf::st_geometry(nodes)))
-  print(nodes)
   # Define for each edges which node is its source and target node.
   if ("from" %in% colnames(edges)) {
     warning("Overwriting column 'from'")
@@ -175,6 +174,7 @@ get_boundaries = function(x) {
 #'
 #' @return An object of class \code{\link[sf]{sf}} when x has spatially
 #' explicit edges, and object of class \code{\link[tibble]{tbl_df}} otherwise.
+#' 
 #' @noRd
 get_edges = function(x) {
   as_tibble(x, "edges")
@@ -200,6 +200,7 @@ get_endpoints = function(x) {
 #' @param x An object of class \code{\link[sf]{sf}}.
 #'
 #' @return The name of the geometry list column as a string.
+#' 
 #' @noRd
 get_geometry_colname = function(x) {
   attr(x, "sf_column")
@@ -211,6 +212,7 @@ get_geometry_colname = function(x) {
 #'
 #' @return \code{TRUE} if the network has spatially explicit edges, \code{FALSE}
 #' otherwise.
+#' 
 #' @noRd
 has_spatially_explicit_edges = function(x) {
   is.sf(get_edges(x))
@@ -221,6 +223,7 @@ has_spatially_explicit_edges = function(x) {
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @return An object of class \code{\link[sf]{sf}}.
+#' 
 #' @noRd
 get_nodes = function(x) {
   as_sf(x, "nodes")
@@ -231,6 +234,7 @@ get_nodes = function(x) {
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @return An object of class \code{\link[sf]{sf}}.
+#' 
 #' @noRd
 get_source_nodes = function(x) {
   get_nodes(x)[get_edges(x)$from,]
@@ -256,6 +260,7 @@ get_startpoints = function(x) {
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @return An object of class \code{\link[sf]{sf}}.
+#' 
 #' @noRd
 get_target_nodes = function(x) {
   get_nodes(x)[get_edges(x)$to,]
@@ -279,6 +284,7 @@ is_directed = function(x) {
 #'
 #' @return \code{TRUE} if the table has a geometry list column, \code{FALSE}
 #' otherwise.
+#' 
 #' @noRd
 is_spatially_explicit = function(x) {
   any(sapply(x, function(y) inherits(y, "sfc")), na.rm = TRUE)
@@ -291,6 +297,7 @@ is_spatially_explicit = function(x) {
 #'
 #' @return \code{TRUE} when there where multiple matches, \code{FALSE}
 #' otherwise.
+#' 
 #' @noRd
 multiple_matches = function(x) {
   any(table(x$.sfnetwork_index) > 1)
@@ -358,9 +365,26 @@ same_crs = function(x, y) {
 #' @details This is a pairwise check. Each row in x is compared to its
 #' corresponding row in y. Hence, x and y should be of the same length.
 #' 
-#' @importFrom sf st_equals st_geometry
 #' @noRd
 same_boundary_points = function(x, y) {
+  same_geometries(get_boundaries(x), get_boundaries(y))
+}
+
+#' Check if two sf objects have the same geometries
+#' 
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
+#'
+#' @param y An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
+#'
+#' @return \code{TRUE} when the geometries are the same, \code{FALSE} 
+#' otherwise.
+#'
+#' @details This is a pairwise check. Each row in x is compared to its
+#' corresponding row in y. Hence, x and y should be of the same length.
+#' 
+#' @importFrom sf st_equals st_geometry
+#' @noRd
+same_geometries = function(x, y) {
   all(
     do.call(
       "c", 
@@ -371,6 +395,28 @@ same_boundary_points = function(x, y) {
       )
     )
   )
+}
+
+#' Check if edge boundaries of an sfnetwork equal to their corresponding nodes
+#'
+#' @param x An object of class \code{\link{sfnetwork}} with spatially explicit
+#' edges.
+#'
+#' @return \code{TRUE} if everything matches, \code{FALSE} otherwise.
+#'
+#' @noRd
+nodes_match_edge_boundaries = function(x) {
+  source_eq_start = same_geometries(
+    get_source_nodes(x), 
+    get_startpoints(get_edges(x))
+  )
+
+  target_eq_end = same_geometries(
+    get_target_nodes(x), 
+    get_endpoints(get_edges(x))
+  )
+
+  source_eq_start && target_eq_end
 }
 
 #' Check if the geometries of an sf object are all of a specific type
@@ -392,7 +438,6 @@ st_is_all = function(x, type) {
 #'
 #' @param x An object of class \code{\link{sfnetwork}} with spatially implicit
 #' edges.
-#'
 #'
 #' @param sf_column_name Name of the sf geometry column that will be created
 #' in the edges table. Defaults to "geometry".

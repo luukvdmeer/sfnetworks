@@ -372,7 +372,7 @@ st_geometry.sfnetwork = function(x, ...) {
           stop("Edge geometries can only be replaced when the CRS doesn't change")
         }
         if (! same_boundary_points(as_sf(x), value)) {
-          stop("Edge geometries can only be replaced when the endpoints don't change")
+          stop("Edge geometries can only be replaced when their boundary points don't change")
         }
       }
     }

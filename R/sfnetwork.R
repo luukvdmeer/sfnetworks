@@ -69,13 +69,19 @@ sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = TRUE, ...) 
   xtg = tidygraph::tbl_graph(nodes, edges, directed = directed)
   xsn = structure(xtg, class = c("sfnetwork", class(xtg)))
   if (edges_as_lines) {
-    if (! st_is_all(get_edges(xsn), "LINESTRING")) {
-      stop("Only geometries of type LINESTRING are allowed as edges")
+    if (has_spatially_explicit_edges(xsn)) {
+      if (! st_is_all(get_edges(xsn), "LINESTRING")) {
+        stop("Only geometries of type LINESTRING are allowed as edges")
+      }
+      if (! same_crs(get_nodes(xsn), get_edges(xsn))) {
+        stop("Nodes and edges do not have the same CRS")
+      }
+      if (! nodes_match_edge_boundaries(xsn)) {
+        stop("Boundary points of edges should match their corresponding nodes")
+      }
+    } else {
+      xsn = to_spatially_explicit_edges(xsn)
     }
-    if (! same_crs(get_nodes(xsn), get_edges(xsn))) {
-      stop("Nodes and edges do not have the same CRS")
-    }
-    xsn = to_spatially_explicit_edges(xsn)
   } else {
     if (has_spatially_explicit_edges(xsn)) {
       xsn = drop_geometry(xsn, "edges")
@@ -152,7 +158,6 @@ as_sfnetwork.sf = function(x, directed = TRUE, edges_as_lines = TRUE, ...) {
   } else {
     stop("Only geometries of type LINESTRING or POINT are allowed")
   }
-  print(network)
   sfnetwork(network$nodes, network$edges, directed, edges_as_lines, ...)
 }
 
