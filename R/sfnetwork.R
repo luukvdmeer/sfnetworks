@@ -33,6 +33,10 @@
 #' @param directed Should the constructed network be directed? Defaults to
 #' \code{TRUE}.
 #'
+#' @param edges_as_lines Should the edges be spatially explicit, i.e. have
+#' \code{LINESTRING} geometries stored in a geometry list column? Defaults to
+#' \code{TRUE}.
+#'
 #' @param ... Arguments passed on to \code{\link[sf]{st_as_sf}}, when
 #' converting the nodes to an \code{sf} object.
 #'
@@ -41,7 +45,7 @@
 #' @importFrom sf st_as_sf
 #' @importFrom tidygraph tbl_graph
 #' @export
-sfnetwork = function(nodes, edges, directed = TRUE, ...) {
+sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = TRUE, ...) {
   # If nodes is not an sf object, try to convert it to an sf object.
   if (! is.sf(nodes)) {
     tryCatch(
@@ -58,6 +62,7 @@ sfnetwork = function(nodes, edges, directed = TRUE, ...) {
   }
   # If edges is an sf object, tidygraph cannot handle it due to sticky geometry.
   # Therefore it has to be converted into a regular data frame (or tibble).
+  # If edges_as_lines is set to FALSE, the geometry has to be dropped completely.
   if (is.sf(edges)) {
     if (! st_is_all(edges, "LINESTRING")) {
       stop("Only geometries of type LINESTRING are allowed as edges")
@@ -66,9 +71,22 @@ sfnetwork = function(nodes, edges, directed = TRUE, ...) {
       stop("Nodes and edges do not have the same CRS")
     }
     edges = structure(edges, class = setdiff(class(edges), "sf"))
+    # if (! edges_as_lines) {
+    #   edges = sf::st_drop_geometry(edges)
+    # } else {
+    #   edges = structure(edges, class = setdiff(class(edges), "sf"))
+    # }
   }
-  x = tidygraph::tbl_graph(nodes, edges, directed = directed)
-  structure(x, class = c("sfnetwork", class(x)))
+  xtg = tidygraph::tbl_graph(nodes, edges, directed = directed)
+  xsn = structure(xtg, class = c("sfnetwork", class(xtg)))
+  if (edges_as_lines) {
+    xsn = to_spatially_explicit_edges(xsn)
+  } else {
+    if (has_spatially_explicit_edges(xsn)) {
+      xsn = drop_geometry(xsn, "edges")
+    }
+  }
+  xsn
 }
 
 #' Convert a foreign object to an sfnetwork object
@@ -99,6 +117,10 @@ sfnetwork = function(nodes, edges, directed = TRUE, ...) {
 #' @param directed Should the constructed network be directed? Defaults to
 #' \code{TRUE}.
 #'
+#' @param edges_as_lines Should the edges be spatially explicit, i.e. have
+#' \code{LINESTRING} geometries stored in a geometry list column? Defaults to
+#' \code{TRUE}.
+#'
 #' @param ... arguments passed on to construction function.
 #'
 #' @return An object of class \code{sfnetwork}.
@@ -111,17 +133,12 @@ as_sfnetwork = function(x, ...) {
 #' @name as_sfnetwork
 #' @importFrom tidygraph as_tbl_graph
 #' @export
-as_sfnetwork.default = function(x, directed = TRUE, ...) {
+as_sfnetwork.default = function(x, directed = TRUE, edges_as_lines = TRUE, ...) {
   xtg = tidygraph::as_tbl_graph(x, directed = directed)
-  as_sfnetwork(xtg, ...)
+  as_sfnetwork(xtg, edges_as_lines = edges_as_lines, ...)
 }
 
 #' @name as_sfnetwork
-#'
-#' @param edges_as_lines Should the edges be spatially explict (i.e. have a
-#' \code{LINESTRING} geometries stored in a geometry list column)? Defaults to
-#' \code{TRUE}.
-#'
 #' @importFrom sf st_geometry
 #' @export
 as_sfnetwork.sf = function(x, directed = TRUE, edges_as_lines = TRUE, ...) {
@@ -140,17 +157,14 @@ as_sfnetwork.sf = function(x, directed = TRUE, edges_as_lines = TRUE, ...) {
   } else {
     stop("Only geometries of type LINESTRING or POINT are allowed")
   }
-  if (! edges_as_lines) {
-    sf::st_geometry(network$edges) = NULL
-  }
-  sfnetwork(network$nodes, network$edges, directed = directed, ...)
+  sfnetwork(network$nodes, network$edges, directed, edges_as_lines, ...)
 }
 
 #' @name as_sfnetwork
 #' @export
-as_sfnetwork.tbl_graph = function(x, ...) {
+as_sfnetwork.tbl_graph = function(x, edges_as_lines = TRUE, ...) {
   xls = as.list(x)
-  sfnetwork(xls[[1]], xls[[2]], directed = is_directed(x), ...)
+  sfnetwork(xls[[1]], xls[[2]], is_directed(x), edges_as_lines, ...)
 }
 
 #' @importFrom sf st_as_sf st_crs st_geometry
