@@ -9,11 +9,11 @@
 \usage{
 as_sfnetwork(x, ...)
 
-\method{as_sfnetwork}{default}(x, directed = TRUE, ...)
+\method{as_sfnetwork}{default}(x, directed = TRUE, edges_as_lines = TRUE, ...)
 
 \method{as_sfnetwork}{sf}(x, directed = TRUE, edges_as_lines = TRUE, ...)
 
-\method{as_sfnetwork}{tbl_graph}(x, ...)
+\method{as_sfnetwork}{tbl_graph}(x, edges_as_lines = TRUE, ...)
 }
 \arguments{
 \item{x}{object to be converted into an \code{sfnetwork} object.}
@@ -23,8 +23,8 @@ as_sfnetwork(x, ...)
 \item{directed}{Should the constructed network be directed? Defaults to
 \code{TRUE}.}
 
-\item{edges_as_lines}{Should the edges be spatially explict (i.e. have a
-\code{LINESTRING} geometries stored in a geometry list column)? Defaults to
+\item{edges_as_lines}{Should the edges be spatially explicit, i.e. have
+\code{LINESTRING} geometries stored in a geometry list column? Defaults to
 \code{TRUE}.}
 }
 \value{

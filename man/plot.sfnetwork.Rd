@@ -12,6 +12,5 @@
 \item{...}{Arguments passed on to \code{\link[sf]{plot}}}
 }
 \description{
-Plot spatially explicit graph components (nodes and edges) of an sfnetwork
-on a map.
+Plot the geometries of an object of class \code{\link{sfnetwork}}.
 }

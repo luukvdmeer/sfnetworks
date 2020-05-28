@@ -4,7 +4,7 @@
 \alias{sfnetwork}
 \title{Create an sfnetwork object}
 \usage{
-sfnetwork(nodes, edges, directed = TRUE, ...)
+sfnetwork(nodes, edges, directed = TRUE, edges_as_lines = TRUE, ...)
 }
 \arguments{
 \item{nodes}{An object containing information about the nodes in the network.
@@ -22,6 +22,10 @@ refer to nodes indices, which in turn refer to the position of a node in the
 nodes table.}
 
 \item{directed}{Should the constructed network be directed? Defaults to
+\code{TRUE}.}
+
+\item{edges_as_lines}{Should the edges be spatially explicit, i.e. have
+\code{LINESTRING} geometries stored in a geometry list column? Defaults to
 \code{TRUE}.}
 
 \item{...}{Arguments passed on to \code{\link[sf]{st_as_sf}}, when
