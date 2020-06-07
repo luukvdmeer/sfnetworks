@@ -198,9 +198,8 @@ as_sfnetwork.sf = function(x, directed = TRUE, edges_as_lines = TRUE, ...) {
 #' @name as_sfnetwork
 #' @importFrom igraph is_directed
 #' @export
-as_sfnetwork.SpatialLinesNetwork = function(x, edges_as_lines = TRUE, ...) {
-  directed = igraph::is_directed(x@g)
-  construct_sfnetwork(x@sl, directed = directed, edges_as_lines, ...)  
+as_sfnetwork.sfNetwork = function(x, edges_as_lines = TRUE, ...) {
+  as_sfnetwork(x@sl, directed = igraph::is_directed(x@g), edges_as_lines, ...)
 }
 
 #' @name as_sfnetwork
