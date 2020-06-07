@@ -140,7 +140,7 @@ drop_geometry = function(x, active = NULL) {
   }
   xnew = tidygraph::mutate(as_tbl_graph(x), !!get_geometry_colname(as_sf(x)) := NULL)
   if (active == "edges") {
-    xnew = tblgraph_to_sfnetwork(xnew, edges_as_lines = FALSE)
+    xnew = as_sfnetwork(xnew, edges_as_lines = FALSE, force = TRUE)
   }
   if (active(xnew) != active(x)) {
     xnew = switch(
