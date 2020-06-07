@@ -8,7 +8,7 @@ sfnetwork(
   nodes,
   edges,
   directed = TRUE,
-  edges_as_lines = TRUE,
+  edges_as_lines = NULL,
   force = FALSE,
   ...
 )
@@ -32,11 +32,13 @@ nodes table.}
 \code{TRUE}.}
 
 \item{edges_as_lines}{Should the edges be spatially explicit, i.e. have
-\code{LINESTRING} geometries stored in a geometry list column? Defaults to
-\code{TRUE}.}
+\code{LINESTRING} geometries stored in a geometry list column? If \code{NULL},
+this will be automatically defined, by setting the argument to \code{TRUE}
+when the given edges object contains a geometry list column, and \code{FALSE}
+otherwise. Defaults to \code{NULL}.}
 
 \item{force}{Should network validity checks be skipped? Defaults to
-/code{FALSE}, meaning that network validity checks are executed when
+\code{FALSE}, meaning that network validity checks are executed when
 constructing the network. These checks guarantee a valid spatial network
 structure. For the nodes, this means that they all should have \code{POINT}
 geometries. In the case of spatially explicit edges, it is also checked that

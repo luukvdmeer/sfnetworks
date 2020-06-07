@@ -4,13 +4,24 @@
 \alias{plot.sfnetwork}
 \title{Plot sfnetwork object}
 \usage{
-\method{plot}{sfnetwork}(x, ...)
+\method{plot}{sfnetwork}(x, draw_lines = TRUE, ...)
 }
 \arguments{
 \item{x}{Object of class \code{\link{sfnetwork}}.}
+
+\item{draw_lines}{If the edges of the network are spatially implicit, should
+straight lines be drawn between connected nodes? Defaults to \code{TRUE}.
+Ignored when the edges of the network are spatially explicit.}
 
 \item{...}{Arguments passed on to \code{\link[sf]{plot}}}
 }
 \description{
 Plot the geometries of an object of class \code{\link{sfnetwork}}.
+}
+\details{
+This is a basic plotting functionality. For more advanced plotting,
+it is recommended to extract the nodes and edges from the network, and plot
+them separately with one of the many available spatial plotting functions
+as can be found in \code{sf}, \code{tmap}, \code{ggplot2}, \code{ggspatial},
+and others.
 }
