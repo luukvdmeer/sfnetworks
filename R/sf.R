@@ -460,7 +460,7 @@ st_join.sfnetwork = function(x, y, join = st_intersects, ..., left = TRUE) {
   }
   print(n_tmp)
   print(e_tmp)
-  construct_sfnetwork(nodes = n_tmp, edges = e_tmp, directed = is_directed(x))
+  sfnetwork(n_tmp, e_tmp, directed = is_directed(x), force = TRUE)
 }
 
 # =============================================================================

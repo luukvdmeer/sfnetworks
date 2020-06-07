@@ -126,10 +126,11 @@ draw_lines = function(x, y) {
 #' @importFrom tidygraph mutate
 #' @noRd
 drop_geometry = function(x, active = NULL) {
+  xac = active(x)
   if (is.null(active)) {
-    active = active(x)
+    active = xac
   } else {
-    if (active != active(x)) {
+    if (active != xac) {
       x = switch(
         active,
         nodes = activate(x, "nodes"),
@@ -142,9 +143,9 @@ drop_geometry = function(x, active = NULL) {
   if (active == "edges") {
     xnew = as_sfnetwork(xnew, edges_as_lines = FALSE, force = TRUE)
   }
-  if (active(xnew) != active(x)) {
+  if (active(xnew) != xac) {
     xnew = switch(
-      active(x),
+      xac,
       nodes = activate(xnew, "nodes"),
       edges = activate(xnew, "edges")
     )
@@ -236,13 +237,15 @@ get_nodes = function(x) {
 
 #' Extract the source nodes of an sfnetwork.
 #'
-#' @param x An object of class \code{\link{sfnetwork}}.
+#' @param nodes Nodes element of an \code{\link{sfnetwork}}.
+#'
+#' @param edges Edges element of an \code{\link{sfnetwork}}.
 #'
 #' @return An object of class \code{\link[sf]{sf}}.
 #'
 #' @noRd
-get_source_nodes = function(x) {
-  get_nodes(x)[get_edges(x)$from,]
+get_source_nodes = function(nodes, edges) {
+  nodes[edges$from,]
 }
 
 #' Get the startpoints of LINESTRING geometries
@@ -262,13 +265,15 @@ get_startpoints = function(x) {
 
 #' Extract the target nodes of an sfnetwork.
 #'
-#' @param x An object of class \code{\link{sfnetwork}}.
+#' @param nodes Nodes element of an \code{\link{sfnetwork}}.
+#'
+#' @param edges Edges element of an \code{\link{sfnetwork}}.
 #'
 #' @return An object of class \code{\link[sf]{sf}}.
 #'
 #' @noRd
-get_target_nodes = function(x) {
-  get_nodes(x)[get_edges(x)$to,]
+get_target_nodes = function(nodes, edges) {
+  nodes[edges$to,]
 }
 
 #' Check if a graph is directed.
@@ -402,23 +407,24 @@ same_geometries = function(x, y) {
   )
 }
 
-#' Check if edge boundaries of an sfnetwork equal to their corresponding nodes
+#' Check if edge boundaries of are equal to their corresponding nodes
 #'
-#' @param x An object of class \code{\link{sfnetwork}} with spatially explicit
-#' edges.
+#' @param nodes Nodes element of an \code{\link{sfnetwork}}.
+#'
+#' @param edges Edges element of an \code{\link{sfnetwork}}.
 #'
 #' @return \code{TRUE} if everything matches, \code{FALSE} otherwise.
 #'
 #' @noRd
-nodes_match_edge_boundaries = function(x) {
+nodes_match_edge_boundaries = function(nodes, edges) {
   source_eq_start = same_geometries(
-    get_source_nodes(x),
-    get_startpoints(get_edges(x))
+    get_source_nodes(nodes, edges),
+    get_startpoints(edges)
   )
 
   target_eq_end = same_geometries(
-    get_target_nodes(x),
-    get_endpoints(get_edges(x))
+    get_target_nodes(nodes, edges),
+    get_endpoints(edges)
   )
 
   source_eq_start && target_eq_end
@@ -455,14 +461,33 @@ st_is_all = function(x, type) {
 #' @noRd
 to_spatially_explicit_edges = function(x, sf_column_name = "geometry") {
   if (has_spatially_explicit_edges(x)) {
-    return(x)
+    x
   } else {
-    edge_geoms = draw_lines(get_source_nodes(x), get_target_nodes(x))
+    sources = get_source_nodes(get_nodes(x), get_edges(x))
+    targets = get_target_nodes(get_nodes(x), get_edges(x))
+    edge_geoms = draw_lines(sources, targets)
     xnew = tidygraph::mutate(activate(x, "edges"), !!sf_column_name := edge_geoms)
     switch(
       active(x),
       nodes = activate(xnew, "nodes"),
       edges = xnew
     )
+  }
+}
+
+#' Convert spatially explicit edges to spatially implicit edges
+#'
+#' @param x An object of class \code{\link{sfnetwork}} with spatially explicit
+#' edges.
+
+#' @return An object of class \code{\link{sfnetwork}} with spatially implicit
+#' edges.
+#'
+#' @noRd
+to_spatially_implicit_edges = function(x) {
+  if (has_spatially_explicit_edges(x)) {
+    drop_geometry(x, "edges")
+  } else {
+    x
   }
 }

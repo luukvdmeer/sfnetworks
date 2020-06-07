@@ -34,11 +34,13 @@
 #' \code{TRUE}.
 #'
 #' @param edges_as_lines Should the edges be spatially explicit, i.e. have
-#' \code{LINESTRING} geometries stored in a geometry list column? Defaults to
-#' \code{TRUE}.
+#' \code{LINESTRING} geometries stored in a geometry list column? If \code{NULL},
+#' this will be automatically defined, by setting the argument to \code{TRUE}
+#' when the given edges object contains a geometry list column, and \code{FALSE}
+#' otherwise. Defaults to \code{NULL}.
 #'
 #' @param force Should network validity checks be skipped? Defaults to
-#' /code{FALSE}, meaning that network validity checks are executed when
+#' \code{FALSE}, meaning that network validity checks are executed when
 #' constructing the network. These checks guarantee a valid spatial network
 #' structure. For the nodes, this means that they all should have \code{POINT}
 #' geometries. In the case of spatially explicit edges, it is also checked that
@@ -53,63 +55,63 @@
 #'
 #' @return An object of class \code{sfnetwork}.
 #'
-#' @importFrom sf st_as_sf
-#' @importFrom tidygraph tbl_graph .N
+#' @importFrom tidygraph tbl_graph
 #' @export
-sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = TRUE, 
+sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = NULL, 
                      force = FALSE, ...) {
-  # Construct the network.
-  net = construct_sfnetwork(nodes, edges, directed, edges_as_lines, ...)
-  # Run checks to guarantee a valid network structure.
-  if (!force) {
-    if (! st_is_all(get_nodes(net), "POINT")) {
-      stop("Only geometries of type POINT are allowed as nodes")
-    }
-    if (has_spatially_explicit_edges(net)) {
-      if (! st_is_all(get_edges(net), "LINESTRING")) {
-        stop("Only geometries of type LINESTRING are allowed as edges")
-      }
-      if (! same_crs(get_nodes(net), get_edges(net))) {
-        stop("Nodes and edges do not have the same CRS")
-      }
-      if (! nodes_match_edge_boundaries(net)) {
-        stop("Boundary points of edges should match their corresponding nodes")
-      }
-    }
+  # Automatically set edges_as_lines if not given.
+  if (is.null(edges_as_lines)) {
+    edges_as_lines = ifelse(is_spatially_explicit(edges), TRUE, FALSE)
   }
-  net
-}
-
-construct_sfnetwork = function(nodes, edges, directed = TRUE, 
-                               edges_as_lines = TRUE, ...) {
   # If nodes is not an sf object, try to convert it to an sf object.
-  if (! is.sf(nodes)) {
-    tryCatch(
-      expr = {
-        nodes = sf::st_as_sf(nodes, ...)
-      },
-      error = function(e) {
-        stop("Failed to convert nodes into sf object because: ", e)
-      }
-    )
-  }
+  # Arguments passed in ... will be passed on to st_as_sf.
+  if (! is.sf(nodes)) nodes = nodes_to_sf(nodes, ...)
   # If edges is an sf object, tidygraph cannot handle it due to sticky geometry.
   # Therefore it has to be converted into a regular data frame (or tibble).
-  if (is.sf(edges)) {
-    edges = structure(edges, class = setdiff(class(edges), "sf"))
-  }
+  if (is.sf(edges)) class(edges) = setdiff(class(edges), "sf")
+  # Check network validity.
+  if (! force) check_network_validity(nodes, edges, edges_as_lines)
   # Create the network with the nodes and edges.
   xtg = tidygraph::tbl_graph(nodes, edges, directed = directed)
   xsn = structure(xtg, class = c("sfnetwork", class(xtg)))
   # Add or remove edge geometries if needed.
   if (edges_as_lines) {
-    xsn = to_spatially_explicit_edges(xsn)
+    to_spatially_explicit_edges(xsn)
   } else {
-    if (has_spatially_explicit_edges(xsn)) {
-      xsn = drop_geometry(xsn, "edges")
+    to_spatially_implicit_edges(xsn)
+  }
+}
+
+check_network_validity = function(nodes, edges, edges_as_lines) {
+  message("Checking network validity... Use force=TRUE to force construction without checks")
+  # Node validity.
+  if (! st_is_all(nodes, "POINT")) {
+    stop("Only geometries of type POINT are allowed as nodes")
+  }
+  # Edge validity.
+  if (is_spatially_explicit(edges) && edges_as_lines) {
+    edges = st_as_sf(edges)
+    if (! st_is_all(edges, "LINESTRING")) {
+      stop("Only geometries of type LINESTRING are allowed as edges")
+    }
+    if (! same_crs(nodes, edges)) {
+      stop("Nodes and edges do not have the same CRS")
+    }
+    if (! nodes_match_edge_boundaries(nodes, edges)) {
+      stop("Boundary points of edges should match their corresponding nodes")
     }
   }
-  xsn
+}
+
+nodes_to_sf = function(nodes, ...) {
+  tryCatch(
+    expr = {
+      sf::st_as_sf(nodes, ...)
+    },
+    error = function(e) {
+      stop("Failed to convert nodes into sf object because: ", e)
+    }
+  )
 }
 
 #' Convert a foreign object to an sfnetwork object
@@ -141,11 +143,12 @@ construct_sfnetwork = function(nodes, edges, directed = TRUE,
 #' \code{TRUE}.
 #'
 #' @param edges_as_lines Should the edges be spatially explicit, i.e. have
-#' \code{LINESTRING} geometries stored in a geometry list column? Defaults to
-#' \code{TRUE}.
+#' \code{LINESTRING} geometries stored in a geometry list column? If \code{NULL},
+#' this will be automatically defined by the construction function, see
+#' \code{\link{sfnetwork}}.
 #'
 #' @param force Should network validity checks be skipped? Defaults to
-#' /code{FALSE}, meaning that network validity checks are executed when
+#' \code{FALSE}, meaning that network validity checks are executed when
 #' constructing the network. These checks guarantee a valid spatial network
 #' structure. For the nodes, this means that they all should have \code{POINT}
 #' geometries. In the case of spatially explicit edges, it is also checked that
@@ -167,7 +170,7 @@ as_sfnetwork = function(x, ...) {
 #' @name as_sfnetwork
 #' @importFrom tidygraph as_tbl_graph
 #' @export
-as_sfnetwork.default = function(x, directed = TRUE, edges_as_lines = TRUE, 
+as_sfnetwork.default = function(x, directed = TRUE, edges_as_lines = NULL, 
                                 force = FALSE, ...) {
   xtg = tidygraph::as_tbl_graph(x, directed = directed)
   as_sfnetwork(xtg, edges_as_lines = edges_as_lines, force = force, ...)
@@ -176,35 +179,36 @@ as_sfnetwork.default = function(x, directed = TRUE, edges_as_lines = TRUE,
 #' @name as_sfnetwork
 #' @importFrom sf st_geometry
 #' @export
-as_sfnetwork.sf = function(x, directed = TRUE, edges_as_lines = TRUE, ...) {
+as_sfnetwork.sf = function(x, directed = TRUE, edges_as_lines = TRUE) {
   if (st_is_all(x, "LINESTRING")) {
     # Workflow:
     # It is assumed that the given LINESTRING geometries form the edges.
     # Nodes need to be created at the boundary points of the edges.
     # Identical boundary points should become the same node.
-    network = create_nodes_from_edges(x)
+    nls = create_nodes_from_edges(x)
   } else if (st_is_all(x, "POINT")) {
     # Workflow:
     # It is assumed that the given POINT geometries form the nodes.
     # Edges need to be created as linestrings between those nodes.
     # It is assumed that the given nodes are connected sequentially.
-    network = create_edges_from_nodes(x)
+    nls = create_edges_from_nodes(x)
   } else {
     stop("Only geometries of type LINESTRING or POINT are allowed")
   }
-  construct_sfnetwork(network$nodes, network$edges, directed, edges_as_lines, ...)
+  sfnetwork(nls$nodes, nls$edges, directed, edges_as_lines, force = TRUE)
 }
 
 #' @name as_sfnetwork
 #' @importFrom igraph is_directed
 #' @export
-as_sfnetwork.sfNetwork = function(x, edges_as_lines = TRUE, ...) {
-  as_sfnetwork(x@sl, directed = igraph::is_directed(x@g), edges_as_lines, ...)
+as_sfnetwork.sfNetwork = function(x, edges_as_lines = TRUE) {
+  as_sfnetwork(x@sl, igraph::is_directed(x@g), edges_as_lines)
 }
 
 #' @name as_sfnetwork
 #' @export
-as_sfnetwork.tbl_graph = function(x, edges_as_lines = TRUE, force = FALSE, ...) {
+as_sfnetwork.tbl_graph = function(x, edges_as_lines = NULL, force = FALSE, ...) {
+  xls = as.list(x)
   sfnetwork(xls[[1]], xls[[2]], is_directed(x), edges_as_lines, force, ...)
 }
 
