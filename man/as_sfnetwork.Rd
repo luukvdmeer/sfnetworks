@@ -12,9 +12,9 @@ as_sfnetwork(x, ...)
 
 \method{as_sfnetwork}{default}(x, directed = TRUE, edges_as_lines = NULL, force = FALSE, ...)
 
-\method{as_sfnetwork}{sf}(x, directed = TRUE, edges_as_lines = TRUE)
+\method{as_sfnetwork}{sf}(x, directed = TRUE, edges_as_lines = TRUE, ...)
 
-\method{as_sfnetwork}{sfNetwork}(x, edges_as_lines = TRUE)
+\method{as_sfnetwork}{sfNetwork}(x, edges_as_lines = TRUE, ...)
 
 \method{as_sfnetwork}{tbl_graph}(x, edges_as_lines = NULL, force = FALSE, ...)
 }

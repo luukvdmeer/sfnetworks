@@ -83,7 +83,12 @@ sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = NULL,
 }
 
 check_network_validity = function(nodes, edges, edges_as_lines) {
-  message("Checking network validity... Use force=TRUE to force construction without checks")
+  message(
+    paste(
+      "Checking validity of network structure...",
+      "Use force=TRUE to force construction without checks"
+    )
+  )
   # Node validity.
   if (! st_is_all(nodes, "POINT")) {
     stop("Only geometries of type POINT are allowed as nodes")
@@ -179,7 +184,7 @@ as_sfnetwork.default = function(x, directed = TRUE, edges_as_lines = NULL,
 #' @name as_sfnetwork
 #' @importFrom sf st_geometry
 #' @export
-as_sfnetwork.sf = function(x, directed = TRUE, edges_as_lines = TRUE) {
+as_sfnetwork.sf = function(x, directed = TRUE, edges_as_lines = TRUE, ...) {
   if (st_is_all(x, "LINESTRING")) {
     # Workflow:
     # It is assumed that the given LINESTRING geometries form the edges.
@@ -201,7 +206,7 @@ as_sfnetwork.sf = function(x, directed = TRUE, edges_as_lines = TRUE) {
 #' @name as_sfnetwork
 #' @importFrom igraph is_directed
 #' @export
-as_sfnetwork.sfNetwork = function(x, edges_as_lines = TRUE) {
+as_sfnetwork.sfNetwork = function(x, edges_as_lines = TRUE, ...) {
   as_sfnetwork(x@sl, igraph::is_directed(x@g), edges_as_lines)
 }
 

@@ -41,7 +41,6 @@ Suggests:
   dplyr,
   fansi,
   ggplot2,
-  igraph,
   knitr,
   testthat
 RoxygenNote: 7.1.0
