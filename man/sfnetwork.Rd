@@ -4,7 +4,14 @@
 \alias{sfnetwork}
 \title{Create an sfnetwork object}
 \usage{
-sfnetwork(nodes, edges, directed = TRUE, edges_as_lines = TRUE, ...)
+sfnetwork(
+  nodes,
+  edges,
+  directed = TRUE,
+  edges_as_lines = TRUE,
+  force = FALSE,
+  ...
+)
 }
 \arguments{
 \item{nodes}{An object containing information about the nodes in the network.
@@ -27,6 +34,17 @@ nodes table.}
 \item{edges_as_lines}{Should the edges be spatially explicit, i.e. have
 \code{LINESTRING} geometries stored in a geometry list column? Defaults to
 \code{TRUE}.}
+
+\item{force}{Should network validity checks be skipped? Defaults to
+/code{FALSE}, meaning that network validity checks are executed when
+constructing the network. These checks guarantee a valid spatial network
+structure. For the nodes, this means that they all should have \code{POINT}
+geometries. In the case of spatially explicit edges, it is also checked that
+all edges have \code{LINESTRING} geometries, nodes and edges have the same 
+CRS and boundary points of edges match their corresponding node coordinates.
+These checks are important, but also time consuming. If you are already sure
+your input data meet the requirements, the checks are unneccesary and can be
+turned off to improve speed.}
 
 \item{...}{Arguments passed on to \code{\link[sf]{st_as_sf}}, when
 converting the nodes to an \code{sf} object.}
