@@ -30,6 +30,7 @@ ByteCompile: true
 Imports:
   crayon,
   graphics,
+  igraph,
   lwgeom,
   rlang,
   sf,
