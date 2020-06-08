@@ -5,7 +5,7 @@ set_shortest_paths_parameters = function(graph, from, to, weights, snap) {
   if (is.sf(from)) {
     from = switch(
       snap,
-      nearest_node = sf::st_nearest_feature(from, activate(graph, nodes)),
+      nearest_node = sf::st_nearest_feature(from, activate(graph, "nodes")),
       stop(snap, " is not a supported snapping technique")
     )
   }
@@ -13,13 +13,13 @@ set_shortest_paths_parameters = function(graph, from, to, weights, snap) {
   if (is.sf(to)) {
     to = switch(
       snap,
-      nearest_node = sf::st_nearest_feature(to, activate(graph, nodes)),
+      nearest_node = sf::st_nearest_feature(to, activate(graph, "nodes")),
       stop(snap, " is not a supported snapping technique")
     )
   }
   # If weights is a string, retrieve the column which name matches the string.
   if (is.character(weights)) {
-    weights = tidygraph::pull(activate(graph, edges), weights)
+    weights = tidygraph::pull(activate(graph, "edges"), weights)
   }
   list(graph = graph, from = from, to = to, weights = weights)
 }
@@ -40,7 +40,7 @@ set_shortest_paths_parameters = function(graph, from, to, weights, snap) {
 #' Alternatively, it can be a numeric constant, referring to the index of the
 #' node from which the shortest paths will be calculated. Only in the case of
 #' \code{st_network_distances} the restriction of a single feature does not
-#' apply. Then, it can also be an \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}}
+#' apply. Then, it can also be an \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 #' object with multiple features, or alternatively a vector of node indices.
 #' 
 #' @param to The (set of) geospatial point(s) to which the shortest paths will be
@@ -80,10 +80,10 @@ st_shortest_paths = function(graph, from, to = V(graph), weights = NULL,
     warning("Multiple from points are given. Only the first one will be used")
   }
   do.call(igraph::shortest_paths, c(params, ...))
-}
+} 
 
 #' @name st_shortest_paths
-#' @importFrom igraph all_shortest_paths
+#' @importFrom igraph all_shortest_paths V
 #' @export
 st_all_shortest_paths = function(graph, from, to = V(graph), weights = NULL, 
                                  snap = "nearest_node") {

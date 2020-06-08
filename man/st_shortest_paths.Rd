@@ -35,6 +35,16 @@ st_network_distances(
 \arguments{
 \item{graph}{An object of class \code{\link{sfnetwork}}.}
 
+\item{from}{The geospatial point from which the shortest paths will be
+calculated. Can be an object of class \code{\link[sf:st]{sfg}}, or an object
+of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}, containing a single
+feature. When multiple features are given, only the first one is taken.
+Alternatively, it can be a numeric constant, referring to the index of the
+node from which the shortest paths will be calculated. Only in the case of
+\code{st_network_distances} the restriction of a single feature does not
+apply. Then, it can also be an \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+object with multiple features, or alternatively a vector of node indices.}
+
 \item{to}{The (set of) geospatial point(s) to which the shortest paths will be
 calculated. Can be an object of class \code{\link[sf:st]{sfg}}, or an object
 of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}. Alternatively, it can 
