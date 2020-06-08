@@ -19,7 +19,7 @@ as_sfnetwork(x, ...)
 \method{as_sfnetwork}{tbl_graph}(x, edges_as_lines = NULL, force = FALSE, ...)
 }
 \arguments{
-\item{x}{object to be converted into an \code{sfnetwork} object.}
+\item{x}{object to be converted into an \code{\link{sfnetwork}} object.}
 
 \item{...}{arguments passed on to construction function.}
 
@@ -43,26 +43,10 @@ your input data meet the requirements, the checks are unneccesary and can be
 turned off to improve speed.}
 }
 \value{
-An object of class \code{sfnetwork}.
+An object of class \code{\link{sfnetwork}}.
 }
 \description{
-\code{sfnetwork} is a tidy data structure for spatial networks. It extends
-the graph manipulation functionalities of the
-\code{\link[tidygraph]{tidygraph-package}} package into the domain of
-geospatial networks, where nodes are embedded in geographical space. It
-subclasses \code{\link[tidygraph]{tbl_graph}}, and therefore all of tidygraphs
-functions should work as expected, without any conversion. Just as with a
-\code{\link[tidygraph]{tbl_graph}}, the nodes are activated by default. The
-context can be changed using the \code{\link[tidygraph]{activate}} verb
-and affects all subsequent operations. In \code{sfnetworks}, the nodes are
-handled as being an \code{\link[sf]{sf}} object with only \code{POINT}
-geometries, and can always be extracted with \code{\link[sf]{st_as_sf}} when
-activated. The edges can be handled as being an \code{sf} object with only
-\code{LINESTRING} geometries, but this is optional. When the edges do not
-have an explicit spatial component, they can always be extracted with
-\code{\link[tidygraph]{as_tibble}} when activated.
-}
-\details{
+Convert a given object into an object of class \code{\link{sfnetwork}}.
 If an object can be read by \code{\link[tidygraph]{as_tbl_graph}} and the
 nodes can be read by \code{\link[sf]{st_as_sf}}, it is automatically
 supported by sfnetworks.

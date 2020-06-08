@@ -142,10 +142,9 @@ the documentation of the corresponding \code{sf} function for details.}
 \item{left}{See \code{\link[sf]{st_join}}.}
 }
 \description{
-Tidyverse methods for sf objects. Use these methods without the .sfnetwork
-suffix and after loading the sf package.
+\code{\link[sf]{sf}} methods for \code{\link{sfnetwork}} objects. Use these 
+methods without the .sfnetwork suffix and after loading the sf package.
 }
 \details{
-See the \code{\link[sf]{sf}} documentation for details on all
-functions.
+See the \code{\link[sf]{sf}} documentation.
 }

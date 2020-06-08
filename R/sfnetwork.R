@@ -1,31 +1,22 @@
 #' Create an sfnetwork object
 #'
-#' \code{sfnetwork} is a tidy data structure for spatial networks. It extends
+#' \code{sfnetwork} is a tidy data structure for geospatial networks. It extends
 #' the graph manipulation functionalities of the
 #' \code{\link[tidygraph]{tidygraph-package}} package into the domain of
-#' geospatial networks, where nodes are embedded in geographical space. It
-#' subclasses \code{\link[tidygraph]{tbl_graph}}, and therefore all of tidygraphs
-#' functions should work as expected, without any conversion. Just as with a
-#' \code{\link[tidygraph]{tbl_graph}}, the nodes are activated by default. The
-#' context can be changed using the \code{\link[tidygraph]{activate}} verb
-#' and affects all subsequent operations. In \code{sfnetworks}, the nodes are
-#' handled as being an \code{\link[sf]{sf}} object with only \code{POINT}
-#' geometries, and can always be extracted with \code{\link[sf]{st_as_sf}} when
-#' activated. The edges can be handled as being an \code{sf} object with only
-#' \code{LINESTRING} geometries, but this is optional. When the edges do not
-#' have an explicit spatial component, they can always be extracted with
-#' \code{\link[tidygraph]{as_tibble}} when activated.
+#' geospatial networks, where the nodes and optionally also the edges are 
+#' embedded in geographical space, and enables to apply the spatial analytical
+#' function from the \code{\link[sf:sf]{sf-package}} directly to the network.
 #'
 #' @param nodes An object containing information about the nodes in the network.
-#' The nodes should contain spatial information, either by being an \code{sf}
-#' object with only \code{POINT} geometries, or by being convertable to such an
+#' The nodes should contain geospatial coordinates, either by being an \code{sf}
+#' object with \code{POINT} geometry features, or by being convertable to such an
 #' object with \code{\link[sf]{st_as_sf}}.
 #'
 #' @param edges An object containing information about the edges in the network.
-#' This object may contain explicit spatial information by being an \code{sf}
-#' object with only \code{LINESTRING} geometries. However, this is optional. It
+#' This object may contain explicit geospatial information by being an \code{sf}
+#' object with \code{LINESTRING} geometry features. However, this is optional. It
 #' may also be a regular \code{data.frame} or \code{tbl_df} object. In any case,
-#' the terminal nodes of each edge must either be encoded in a \code{to} and
+#' the adjacent nodes of each edge must either be encoded in a \code{to} and
 #' \code{from} column, or in the two first columns, as integers. These integers
 #' refer to nodes indices, which in turn refer to the position of a node in the
 #' nodes table.
@@ -121,28 +112,12 @@ nodes_to_sf = function(nodes, ...) {
 
 #' Convert a foreign object to an sfnetwork object
 #'
-#' \code{sfnetwork} is a tidy data structure for spatial networks. It extends
-#' the graph manipulation functionalities of the
-#' \code{\link[tidygraph]{tidygraph-package}} package into the domain of
-#' geospatial networks, where nodes are embedded in geographical space. It
-#' subclasses \code{\link[tidygraph]{tbl_graph}}, and therefore all of tidygraphs
-#' functions should work as expected, without any conversion. Just as with a
-#' \code{\link[tidygraph]{tbl_graph}}, the nodes are activated by default. The
-#' context can be changed using the \code{\link[tidygraph]{activate}} verb
-#' and affects all subsequent operations. In \code{sfnetworks}, the nodes are
-#' handled as being an \code{\link[sf]{sf}} object with only \code{POINT}
-#' geometries, and can always be extracted with \code{\link[sf]{st_as_sf}} when
-#' activated. The edges can be handled as being an \code{sf} object with only
-#' \code{LINESTRING} geometries, but this is optional. When the edges do not
-#' have an explicit spatial component, they can always be extracted with
-#' \code{\link[tidygraph]{as_tibble}} when activated.
-#'
-#' @details
+#' Convert a given object into an object of class \code{\link{sfnetwork}}.
 #' If an object can be read by \code{\link[tidygraph]{as_tbl_graph}} and the
 #' nodes can be read by \code{\link[sf]{st_as_sf}}, it is automatically
 #' supported by sfnetworks.
 #'
-#' @param x object to be converted into an \code{sfnetwork} object.
+#' @param x object to be converted into an \code{\link{sfnetwork}} object.
 #'
 #' @param directed Should the constructed network be directed? Defaults to
 #' \code{TRUE}.
@@ -165,7 +140,7 @@ nodes_to_sf = function(nodes, ...) {
 #'
 #' @param ... arguments passed on to construction function.
 #'
-#' @return An object of class \code{sfnetwork}.
+#' @return An object of class \code{\link{sfnetwork}}.
 #'
 #' @export
 as_sfnetwork = function(x, ...) {

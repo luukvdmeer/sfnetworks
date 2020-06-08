@@ -8,7 +8,7 @@
 #' straight lines be drawn between connected nodes? Defaults to \code{TRUE}.
 #' Ignored when the edges of the network are spatially explicit.
 #'
-#' @param ... Arguments passed on to \code{\link[sf]{plot}}
+#' @param ... Arguments passed on to \code{\link[sf:plot]{plot.sf}}
 #'
 #' @details This is a basic plotting functionality. For more advanced plotting,
 #' it is recommended to extract the nodes and edges from the network, and plot

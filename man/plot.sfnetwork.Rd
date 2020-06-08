@@ -13,7 +13,7 @@
 straight lines be drawn between connected nodes? Defaults to \code{TRUE}.
 Ignored when the edges of the network are spatially explicit.}
 
-\item{...}{Arguments passed on to \code{\link[sf]{plot}}}
+\item{...}{Arguments passed on to \code{\link[sf:plot]{plot.sf}}}
 }
 \description{
 Plot the geometries of an object of class \code{\link{sfnetwork}}.

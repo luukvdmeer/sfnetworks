@@ -22,8 +22,8 @@ is.sf = function(x) {
 
 #' sf methods for sfnetwork objects
 #'
-#' Tidyverse methods for sf objects. Use these methods without the .sfnetwork
-#' suffix and after loading the sf package.
+#' \code{\link[sf]{sf}} methods for \code{\link{sfnetwork}} objects. Use these 
+#' methods without the .sfnetwork suffix and after loading the sf package.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -44,8 +44,7 @@ is.sf = function(x) {
 #'
 #' @param .predicate See \code{\link[sf]{st_filter}}.
 #'
-#' @details See the \code{\link[sf]{sf}} documentation for details on all
-#' functions.
+#' @details See the \code{\link[sf]{sf}} documentation.
 #'
 #' @name sf
 #' @export
