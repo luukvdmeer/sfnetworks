@@ -23,7 +23,6 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
   dots = list(...)
   # Get geometries of nodes.
   nsf = sf::st_geometry(activate(x, "nodes"))
-  print(nsf)
   # Combine node geometries with edge geometries if needed.
   use_edges = TRUE
   if (! has_spatially_explicit_edges(x)) {
