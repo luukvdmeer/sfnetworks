@@ -5,42 +5,27 @@
 \alias{as_sfnetwork.default}
 \alias{as_sfnetwork.sf}
 \alias{as_sfnetwork.sfNetwork}
+\alias{as_sfnetwork.sfnetwork}
 \alias{as_sfnetwork.tbl_graph}
 \title{Convert a foreign object to an sfnetwork object}
 \usage{
 as_sfnetwork(x, ...)
 
-\method{as_sfnetwork}{default}(x, directed = TRUE, edges_as_lines = NULL, force = FALSE, ...)
+\method{as_sfnetwork}{default}(x, ...)
 
-\method{as_sfnetwork}{sf}(x, directed = TRUE, edges_as_lines = TRUE, ...)
+\method{as_sfnetwork}{sf}(x, ...)
 
-\method{as_sfnetwork}{sfNetwork}(x, edges_as_lines = TRUE, ...)
+\method{as_sfnetwork}{sfNetwork}(x, ...)
 
-\method{as_sfnetwork}{tbl_graph}(x, edges_as_lines = NULL, force = FALSE, ...)
+\method{as_sfnetwork}{sfnetwork}(x, ...)
+
+\method{as_sfnetwork}{tbl_graph}(x, ...)
 }
 \arguments{
 \item{x}{object to be converted into an \code{\link{sfnetwork}} object.}
 
-\item{...}{arguments passed on to construction function.}
-
-\item{directed}{Should the constructed network be directed? Defaults to
-\code{TRUE}.}
-
-\item{edges_as_lines}{Should the edges be spatially explicit, i.e. have
-\code{LINESTRING} geometries stored in a geometry list column? If \code{NULL},
-this will be automatically defined by the construction function, see
-\code{\link{sfnetwork}}.}
-
-\item{force}{Should network validity checks be skipped? Defaults to
-\code{FALSE}, meaning that network validity checks are executed when
-constructing the network. These checks guarantee a valid spatial network
-structure. For the nodes, this means that they all should have \code{POINT}
-geometries. In the case of spatially explicit edges, it is also checked that
-all edges have \code{LINESTRING} geometries, nodes and edges have the same 
-CRS and boundary points of edges match their corresponding node coordinates.
-These checks are important, but also time consuming. If you are already sure
-your input data meet the requirements, the checks are unneccesary and can be
-turned off to improve speed.}
+\item{...}{arguments passed on to the \code{\link{sfnetwork}} construction 
+function.}
 }
 \value{
 An object of class \code{\link{sfnetwork}}.

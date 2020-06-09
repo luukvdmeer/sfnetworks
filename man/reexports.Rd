@@ -5,11 +5,6 @@
 \alias{reexports}
 \alias{activate}
 \alias{active}
-\alias{.E}
-\alias{.G}
-\alias{.N}
-\alias{\%>\%}
-\alias{as_tibble}
 \title{Objects exported from other packages}
 \keyword{internal}
 \description{
@@ -17,6 +12,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{tidygraph}{\code{\link[tidygraph]{\%>\%}}, \code{\link[tidygraph]{activate}}, \code{\link[tidygraph]{active}}, \code{\link[tidygraph]{as_tibble}}, \code{\link[tidygraph]{.E}}, \code{\link[tidygraph]{.G}}, \code{\link[tidygraph]{.N}}}
+  \item{tidygraph}{\code{\link[tidygraph]{activate}}, \code{\link[tidygraph]{active}}}
 }}
 
