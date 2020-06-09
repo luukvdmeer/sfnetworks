@@ -119,26 +119,8 @@ nodes_to_sf = function(nodes, ...) {
 #'
 #' @param x object to be converted into an \code{\link{sfnetwork}} object.
 #'
-#' @param directed Should the constructed network be directed? Defaults to
-#' \code{TRUE}.
-#'
-#' @param edges_as_lines Should the edges be spatially explicit, i.e. have
-#' \code{LINESTRING} geometries stored in a geometry list column? If \code{NULL},
-#' this will be automatically defined by the construction function, see
-#' \code{\link{sfnetwork}}.
-#'
-#' @param force Should network validity checks be skipped? Defaults to
-#' \code{FALSE}, meaning that network validity checks are executed when
-#' constructing the network. These checks guarantee a valid spatial network
-#' structure. For the nodes, this means that they all should have \code{POINT}
-#' geometries. In the case of spatially explicit edges, it is also checked that
-#' all edges have \code{LINESTRING} geometries, nodes and edges have the same 
-#' CRS and boundary points of edges match their corresponding node coordinates.
-#' These checks are important, but also time consuming. If you are already sure
-#' your input data meet the requirements, the checks are unneccesary and can be
-#' turned off to improve speed.
-#'
-#' @param ... arguments passed on to construction function.
+#' @param ... arguments passed on to the \code{\link{sfnetwork}} construction 
+#' function.
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
@@ -150,16 +132,14 @@ as_sfnetwork = function(x, ...) {
 #' @name as_sfnetwork
 #' @importFrom tidygraph as_tbl_graph
 #' @export
-as_sfnetwork.default = function(x, directed = TRUE, edges_as_lines = NULL, 
-                                force = FALSE, ...) {
-  x_tbg = tidygraph::as_tbl_graph(x, directed = directed)
-  as_sfnetwork(x_tbg, edges_as_lines = edges_as_lines, force = force, ...)
+as_sfnetwork.default = function(x, ...) {
+  as_sfnetwork(tidygraph::as_tbl_graph(x), ...)
 }
 
 #' @name as_sfnetwork
 #' @importFrom sf st_geometry
 #' @export
-as_sfnetwork.sf = function(x, directed = TRUE, edges_as_lines = TRUE, ...) {
+as_sfnetwork.sf = function(x, ...) {
   if (st_is_all(x, "LINESTRING")) {
     # Workflow:
     # It is assumed that the given LINESTRING geometries form the edges.
@@ -175,21 +155,39 @@ as_sfnetwork.sf = function(x, directed = TRUE, edges_as_lines = TRUE, ...) {
   } else {
     stop("Only geometries of type LINESTRING or POINT are allowed")
   }
-  sfnetwork(n_lst$nodes, n_lst$edges, directed, edges_as_lines, force = TRUE)
+  sfnetwork(n_lst$nodes, n_lst$edges, ...)
 }
 
 #' @name as_sfnetwork
 #' @importFrom igraph is_directed
 #' @export
-as_sfnetwork.sfNetwork = function(x, edges_as_lines = TRUE, ...) {
-  as_sfnetwork(x@sl, igraph::is_directed(x@g), edges_as_lines)
+as_sfnetwork.sfNetwork = function(x, ...) {
+  args = list(...)
+  # Retrieve the @sl slot, which contains the linestring of the network.
+  args$x = x@sl
+  # Define the directed argument automatically if not given, using the @g slot.
+  dir_missing = is.null(args$directed)
+  args$directed = if (dir_missing) igraph::is_directed(x@g) else args$directed
+  # Call as_sfnetwork.sf to build the sfnetwork.
+  do.call("as_sfnetwork.sf", args)
 }
 
 #' @name as_sfnetwork
 #' @export
-as_sfnetwork.tbl_graph = function(x, edges_as_lines = NULL, force = FALSE, ...) {
-  x_lst = as.list(x)
-  sfnetwork(x_lst[[1]], x_lst[[2]], is_directed(x), edges_as_lines, force, ...)
+as_sfnetwork.sfnetwork = function(x, ...) {
+  x
+}
+
+#' @name as_sfnetwork
+#' @export
+as_sfnetwork.tbl_graph = function(x, ...) {
+  # Get nodes and edges from the graph and add to the other given arguments.
+  args = c(as.list(x), list(...))
+  # If no directedness is specified, use the directedness from the tbl_graph.
+  dir_missing = is.null(args$directed)
+  args$directed = if (dir_missing) is_directed(x) else args$directed
+  # Call the sfnetwork construction function.
+  do.call("sfnetwork", args)
 }
 
 #' @importFrom sf st_as_sf st_crs st_geometry
