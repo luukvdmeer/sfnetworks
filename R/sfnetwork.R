@@ -63,13 +63,13 @@ sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = NULL,
   # Check network validity.
   if (! force) check_network_validity(nodes, edges, edges_as_lines)
   # Create the network with the nodes and edges.
-  xtg = tidygraph::tbl_graph(nodes, edges, directed = directed)
-  xsn = structure(xtg, class = c("sfnetwork", class(xtg)))
+  x_tbg = tidygraph::tbl_graph(nodes, edges, directed = directed)
+  x_sfn = tbg_to_sfn(x_tbg)
   # Add or remove edge geometries if needed.
   if (edges_as_lines) {
-    to_spatially_explicit_edges(xsn)
+    to_spatially_explicit_edges(x_sfn)
   } else {
-    to_spatially_implicit_edges(xsn)
+    to_spatially_implicit_edges(x_sfn)
   }
 }
 
@@ -152,8 +152,8 @@ as_sfnetwork = function(x, ...) {
 #' @export
 as_sfnetwork.default = function(x, directed = TRUE, edges_as_lines = NULL, 
                                 force = FALSE, ...) {
-  xtg = tidygraph::as_tbl_graph(x, directed = directed)
-  as_sfnetwork(xtg, edges_as_lines = edges_as_lines, force = force, ...)
+  x_tbg = tidygraph::as_tbl_graph(x, directed = directed)
+  as_sfnetwork(x_tbg, edges_as_lines = edges_as_lines, force = force, ...)
 }
 
 #' @name as_sfnetwork
@@ -165,17 +165,17 @@ as_sfnetwork.sf = function(x, directed = TRUE, edges_as_lines = TRUE, ...) {
     # It is assumed that the given LINESTRING geometries form the edges.
     # Nodes need to be created at the boundary points of the edges.
     # Identical boundary points should become the same node.
-    nls = create_nodes_from_edges(x)
+    n_lst = create_nodes_from_edges(x)
   } else if (st_is_all(x, "POINT")) {
     # Workflow:
     # It is assumed that the given POINT geometries form the nodes.
     # Edges need to be created as linestrings between those nodes.
     # It is assumed that the given nodes are connected sequentially.
-    nls = create_edges_from_nodes(x)
+    n_lst = create_edges_from_nodes(x)
   } else {
     stop("Only geometries of type LINESTRING or POINT are allowed")
   }
-  sfnetwork(nls$nodes, nls$edges, directed, edges_as_lines, force = TRUE)
+  sfnetwork(n_lst$nodes, n_lst$edges, directed, edges_as_lines, force = TRUE)
 }
 
 #' @name as_sfnetwork
@@ -188,8 +188,8 @@ as_sfnetwork.sfNetwork = function(x, edges_as_lines = TRUE, ...) {
 #' @name as_sfnetwork
 #' @export
 as_sfnetwork.tbl_graph = function(x, edges_as_lines = NULL, force = FALSE, ...) {
-  xls = as.list(x)
-  sfnetwork(xls[[1]], xls[[2]], is_directed(x), edges_as_lines, force, ...)
+  x_lst = as.list(x)
+  sfnetwork(x_lst[[1]], x_lst[[2]], is_directed(x), edges_as_lines, force, ...)
 }
 
 #' @importFrom sf st_as_sf st_crs st_geometry

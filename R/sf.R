@@ -451,10 +451,10 @@ st_join.sfnetwork = function(x, y, join = st_intersects, ..., left = TRUE) {
   d_tmp$.sfnetwork_index = NULL
   if (active(x) == "nodes") {
     n_tmp = d_tmp
-    e_tmp = as_tibble(activate(x, "edges"))
+    e_tmp = as_tibble(x, "edges")
   }
   if (active(x) == "edges") {
-    n_tmp = as_tibble(activate(x, "nodes"))
+    n_tmp = as_tibble(x, "nodes")
     e_tmp = d_tmp
   }
   print(n_tmp)
