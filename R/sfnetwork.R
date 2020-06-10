@@ -239,9 +239,9 @@ print.sfnetwork = function(x, ...) {
   cat_subtle("#\n")
   cat_subtle("#", tidygraph:::describe_graph(as_tbl_graph(x)))
   if (has_spatially_explicit_edges(x)) {
-    cat_subtle(" and spatially explicit edges\n")
+    cat_subtle(" with spatially explicit edges\n")
   } else {
-    cat_subtle(" and spatially implicit edges\n")
+    cat_subtle(" with spatially implicit edges\n")
   }
   cat_subtle("#\n")
   # Active data info.

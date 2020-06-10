@@ -38,8 +38,8 @@ to_spatial_coordinates <- function(graph) {
   )
 }
 
-#' @describeIn spatial_morphers Reconstructs the network by using all points
-#' that compose and edge linestring as nodes, instead of only the endpoints.
+#' @describeIn spatial_morphers Reconstruct the network by using all edge 
+#' linestring points as nodes, instead of only the endpoints.
 #' @importFrom lwgeom st_split
 #' @importFrom sf st_cast st_collection_extract
 #' @export
@@ -83,9 +83,9 @@ to_spatial_implicit_edges <- function(graph) {
 #' part of the shortest path between two nodes. If multiple \code{to} nodes are 
 #' given, multiple shortest paths are returned. \code{...} is evaluated in the 
 #' same manner as \code{\link{st_shortest_paths}}, except that the \code{output},
-#' \code{predecessors} and \code{inbound.edges} are ignored. When unmorphing 
-#' only the first instance of both node data and edge data will be used, as the
-#' same node can be present in multiple subgraphs.
+#' \code{predecessors} and \code{inbound.edges} arguments are ignored. When 
+#' unmorphing only the first instance of both the node and edge data will be 
+#' used, as the the same node and/or edge can be present in multiple paths.
 #' @importFrom tidygraph slice
 #' @export
 to_spatial_shortest_paths <- function(graph, ...) {
@@ -104,7 +104,6 @@ to_spatial_shortest_paths <- function(graph, ...) {
 
 #' @describeIn spatial_morphers Limit a graph to a single spatial subset. 
 #' \code{...} is evaluated in the same manner as \code{\link{st_filter}}. 
-#' When unmorphing all data in the subgraph will get merged back.
 #' @export
 to_spatial_subgraph <- function(graph, ..., subset_by = NULL) {
   if (is.null(subset_by)) {
