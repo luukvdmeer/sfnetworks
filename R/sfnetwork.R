@@ -155,7 +155,7 @@ as_sfnetwork.sf = function(x, ...) {
   } else {
     stop("Only geometries of type LINESTRING or POINT are allowed")
   }
-  sfnetwork(n_lst$nodes, n_lst$edges, ...)
+  sfnetwork(n_lst$nodes, n_lst$edges, force = TRUE, ...)
 }
 
 #' @name as_sfnetwork
