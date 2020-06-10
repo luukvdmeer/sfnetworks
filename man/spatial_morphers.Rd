@@ -44,8 +44,8 @@ explanations on how to use morphing, see \code{\link[tidygraph]{morph}}.
 \item \code{to_spatial_coordinates}: Store the spatial coordinates of the nodes in an 
 'X' and Y' column, instead of an \code{\link[sf]{sfc}} geometry list column.
 
-\item \code{to_spatial_dense_graph}: Reconstructs the network by using all points
-that compose and edge linestring as nodes, instead of only the endpoints.
+\item \code{to_spatial_dense_graph}: Reconstruct the network by using all edge 
+linestring points as nodes, instead of only the endpoints.
 
 \item \code{to_spatial_explicit_edges}: Draw linestring geometries for spatially
 implicit edges.
@@ -57,12 +57,11 @@ explicit edges.
 part of the shortest path between two nodes. If multiple \code{to} nodes are 
 given, multiple shortest paths are returned. \code{...} is evaluated in the 
 same manner as \code{\link{st_shortest_paths}}, except that the \code{output},
-\code{predecessors} and \code{inbound.edges} are ignored. When unmorphing 
-only the first instance of both node data and edge data will be used, as the
-same node can be present in multiple subgraphs.
+\code{predecessors} and \code{inbound.edges} arguments are ignored. When 
+unmorphing only the first instance of both the node and edge data will be 
+used, as the the same node and/or edge can be present in multiple paths.
 
 \item \code{to_spatial_subgraph}: Limit a graph to a single spatial subset. 
-\code{...} is evaluated in the same manner as \code{\link{st_filter}}. 
-When unmorphing all data in the subgraph will get merged back.
+\code{...} is evaluated in the same manner as \code{\link{st_filter}}.
 }}
 
