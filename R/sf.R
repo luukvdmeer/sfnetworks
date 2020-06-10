@@ -1,4 +1,18 @@
+#' @export
+st_as_sf.sfnetwork = function(x, active = NULL, ...) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  switch(
+    active,
+    nodes = as_sf(x, "nodes"),
+    edges = as_sf(x, "edges"),
+    stop("Unknown active element: ", active, ". Only nodes and edges supported")
+  )
+}
+
 #' @importFrom sf st_as_sf
+#' @importFrom tidygraph as_tibble
 as_sf = function(x, active = NULL) {
   if (is.sf(x)) {
     return(x)
@@ -10,8 +24,8 @@ as_sf = function(x, active = NULL) {
   }
   switch(
     active,
-    nodes = sf::st_as_sf(as_tibble(as_tbl_graph(x), active = "nodes")),
-    edges = sf::st_as_sf(as_tibble(as_tbl_graph(x), active = "edges")),
+    nodes = sf::st_as_sf(tidygraph::as_tibble(as_tbl_graph(x), active = "nodes")),
+    edges = sf::st_as_sf(tidygraph::as_tibble(as_tbl_graph(x), active = "edges")),
     stop("Unknown active element: ", active, ". Only nodes and edges supported")
   )
 }
@@ -47,10 +61,7 @@ is.sf = function(x) {
 #' @details See the \code{\link[sf]{sf}} documentation.
 #'
 #' @name sf
-#' @export
-st_as_sf.sfnetwork = function(x, ...) {
-  as_sf(x)
-}
+NULL
 
 # =============================================================================
 # CRS utils
