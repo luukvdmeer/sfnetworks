@@ -2,7 +2,6 @@
 % Please edit documentation in R/sf.R
 \name{sf}
 \alias{sf}
-\alias{st_as_sf.sfnetwork}
 \alias{st_crs.sfnetwork}
 \alias{st_crs<-.sfnetwork}
 \alias{st_shift_longitude.sfnetwork}
@@ -43,8 +42,6 @@
 \alias{st_relate.sfnetwork}
 \title{sf methods for sfnetwork objects}
 \usage{
-\method{st_as_sf}{sfnetwork}(x, ...)
-
 \method{st_crs}{sfnetwork}(x, ...)
 
 \method{st_crs}{sfnetwork}(x) <- value
