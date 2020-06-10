@@ -27,7 +27,7 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
   use_edges = TRUE
   if (! has_spatially_explicit_edges(x)) {
     if (draw_lines) {
-      x = to_spatially_explicit_edges(x)
+      x = explicitize_edges(x)
     } else {
       use_edges = FALSE
     }

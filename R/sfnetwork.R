@@ -67,9 +67,9 @@ sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = NULL,
   x_sfn = tbg_to_sfn(x_tbg)
   # Add or remove edge geometries if needed.
   if (edges_as_lines) {
-    to_spatially_explicit_edges(x_sfn)
+    explicitize_edges(x_sfn)
   } else {
-    to_spatially_implicit_edges(x_sfn)
+    implicitize_edges(x_sfn)
   }
 }
 

@@ -459,7 +459,7 @@ st_is_all = function(x, type) {
 #' @importFrom rlang !! :=
 #' @importFrom tidygraph mutate
 #' @noRd
-to_spatially_explicit_edges = function(x, sf_column_name = "geometry") {
+explicitize_edges = function(x, sf_column_name = "geometry") {
   if (has_spatially_explicit_edges(x)) {
     x
   } else {
@@ -484,7 +484,7 @@ to_spatially_explicit_edges = function(x, sf_column_name = "geometry") {
 #' edges.
 #'
 #' @noRd
-to_spatially_implicit_edges = function(x) {
+implicitize_edges = function(x) {
   if (has_spatially_explicit_edges(x)) {
     drop_geometry(x, "edges")
   } else {

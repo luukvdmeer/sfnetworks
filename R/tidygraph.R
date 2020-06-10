@@ -16,11 +16,23 @@ as_tbl_graph.sfnetwork = function(x, ...) {
 #' @importFrom tidygraph morph
 #' @export
 morph.sfnetwork = function(.data, .f, ...) {
-  morphed_tbg = tidygraph::morph(as_tbl_graph(.data), .f, ...)
-  tryCatch(
-    morphed_tbg_to_morphed_sfn(morphed_tbg),
-    error = function(e) return(morphed_tbg)
+  morphed = tryCatch(
+    NextMethod(),
+    error = function(e) tidygraph::morph(as_tbl_graph(.data), .f, ...)
   )
+  if (! all(sapply(morphed, is.sfnetwork))) {
+    tryCatch(
+      morphed_tbg_to_morphed_sfn(morphed),
+      error = function(e) morphed
+    )
+  } else {
+    structure(
+      morphed,
+      class = c("morphed_sfnetwork", class(morphed)),
+      .orig_graph = .data,
+      .morpher = attr(morphed, ".morpher")
+    )
+  }
 }
 
 #' @importFrom tidygraph unmorph
