@@ -61,7 +61,7 @@ sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = NULL,
   # Therefore it has to be converted into a regular data frame (or tibble).
   if (is.sf(edges)) class(edges) = setdiff(class(edges), "sf")
   # Check network validity.
-  if (! force) check_network_validity(nodes, edges, edges_as_lines)
+  if (! force) check_network_validity(nodes, edges, directed, edges_as_lines)
   # Create the network with the nodes and edges.
   x_tbg = tidygraph::tbl_graph(nodes, edges, directed = directed)
   x_sfn = tbg_to_sfn(x_tbg)
@@ -73,7 +73,7 @@ sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = NULL,
   }
 }
 
-check_network_validity = function(nodes, edges, edges_as_lines) {
+check_network_validity = function(nodes, edges, directed, edges_as_lines) {
   message(
     paste(
       "Checking validity of network structure...",
@@ -81,20 +81,34 @@ check_network_validity = function(nodes, edges, edges_as_lines) {
     )
   )
   # Node validity.
+  # --> Are all node geometries points?
   if (! st_is_all(nodes, "POINT")) {
     stop("Only geometries of type POINT are allowed as nodes")
   }
   # Edge validity.
   if (is_spatially_explicit(edges) && edges_as_lines) {
-    edges = st_as_sf(edges)
+    edges = sf::st_as_sf(edges)
+    # --> Are all edge geometries linestrings?
     if (! st_is_all(edges, "LINESTRING")) {
       stop("Only geometries of type LINESTRING are allowed as edges")
     }
+    # --> Is the CRS of the edges the same as of the nodes?
     if (! same_crs(nodes, edges)) {
       stop("Nodes and edges do not have the same CRS")
     }
-    if (! nodes_match_edge_boundaries(nodes, edges)) {
-      stop("Boundary points of edges should match their corresponding nodes")
+    # --> Do the edge boundary points match their corresponding nodes?
+    if (directed) {
+      # Start point should match start node.
+      # End point should match end node.
+      if (! nodes_match_edge_boundaries(nodes, edges)) {
+        stop("Boundary points of edges should match their corresponding nodes")
+      }
+    } else {
+      # Start point should match either start or end node.
+      # End point should match either start or end node.
+      if (! nodes_in_edge_boundaries(nodes, edges)) {
+        stop("Boundary points of edges should match their corresponding nodes")
+      }
     }
   }
 }

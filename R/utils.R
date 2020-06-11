@@ -65,7 +65,7 @@ create_edges_from_nodes = function(nodes) {
 #' @noRd
 create_nodes_from_edges = function(edges) {
   # Get the boundary points of the edges.
-  nodes = get_boundaries(edges)
+  nodes = get_boundary_points(edges)
   # Give each unique location a unique ID.
   indices = match(nodes, unique(nodes))
   # Define for each endpoint if it is a source or target node.
@@ -163,6 +163,68 @@ drop_geometry = function(x, active = NULL) {
   xnew
 }
 
+#' Get the geometries of the boundary nodes of given edges.
+#'
+#' @param nodes Nodes element of an \code{\link{sfnetwork}}.
+#'
+#' @param edges Edges element of an \code{\link{sfnetwork}}.
+#' 
+#' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
+#' geometries.
+#'
+#' @details Boundary nodes differ from boundary points in the sense that
+#' boundary points are retrieved by taking the endpoints of the 
+#' \code{LINESTRING} geometries of edges, while boundary nodes are retrieved
+#' by querying the nodes table of a network with the `to` and `from` columns
+#' in the edges table. In a valid network structure, boundary nodes should be
+#' equal to boundary points.
+#'
+#' @importFrom sf st_geometry
+#' @noRd
+get_boundary_nodes = function(nodes, edges) {
+  # Get the node indices of all startpoints of the edges.
+  start_ids = edges$from 
+  # Get the node indices of all endpoints of the edges.
+  end_ids = edges$to
+  # Order those as [start_edge1, end_edge1, start_edge2, end_edge2, etc].
+  all_ids = do.call(
+    "c",
+    mapply(
+      function(x,y) c(x, y), 
+      start_ids, 
+      end_ids, 
+      SIMPLIFY = FALSE
+    )
+  )
+  # Select the nodes corresponding to the edge boundary geometries.
+  sf::st_geometry(nodes[all_ids, ])
+}
+
+#' Get the indices of the boundary nodes of all edges in the network.
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#' 
+#' @param out Which node indices to return. Either 'sources' to return only the
+#' indices of source nodes, 'targets' to return only the indices of target
+#' nodes, or 'both' to return both of them.
+#'
+#' @return A vector of indices when out is 'sources' or 'targets'. A two-column
+#' matrix when out is 'both', where the source node indices are in the first
+#' column, and the target node indices are in the second column.
+#'
+#' @importFrom igraph E ends
+#' @noRd
+get_boundary_node_indices = function(x, out = "both") {
+  ids = igraph::ends(x, igraph::E(x))
+  switch(
+    out,
+    both = ids,
+    sources = ids[, 1],
+    targets = ids[, 2],
+    stop("Unknown output", out)
+  )
+}
+
 #' Get the boundary points of LINESTRING geometries
 #'
 #' @param x An object of class \code{\link[sf]{sf}} with \code{LINESTRING}
@@ -173,7 +235,7 @@ drop_geometry = function(x, active = NULL) {
 #'
 #' @importFrom sf st_boundary st_cast st_geometry
 #' @noRd
-get_boundaries = function(x) {
+get_boundary_points = function(x) {
   sf::st_cast(sf::st_boundary(sf::st_geometry(x)), "POINT")
 }
 
@@ -324,7 +386,7 @@ same_crs = function(x, y) {
 #'
 #' @noRd
 same_boundary_points = function(x, y) {
-  same_geometries(get_boundaries(x), get_boundaries(y))
+  same_geometries(get_boundary_points(x), get_boundary_points(y))
 }
 
 #' Check if two sf objects have the same geometries
@@ -339,10 +401,10 @@ same_boundary_points = function(x, y) {
 #' @details This is a pairwise check. Each row in x is compared to its
 #' corresponding row in y. Hence, x and y should be of the same length.
 #'
-#' @importFrom sf st_equals st_geometry
+#' @importFrom sf st_equals
 #' @noRd
 same_geometries = function(x, y) {
-  all(diag(sf::st_equals(sf::st_geometry(x), sf::st_geometry(y), sparse = FALSE)))
+  all(diag(sf::st_equals(x, y, sparse = FALSE)))
 }
 
 #' Rename the geometry list column in an sf object.
@@ -360,35 +422,42 @@ set_geometry_colname = function(x, name) {
   x
 }
 
+#' Check if any of the edge boundary points is equal to any of its boundary nodes
+#'
+#' @param nodes Nodes element of an \code{\link{sfnetwork}}.
+#'
+#' @param edges Edges element of an \code{\link{sfnetwork}}.
+#'
+#' @importFrom sf st_equals
+#' @noRd
+nodes_in_edge_boundaries = function(nodes, edges) {
+  # Get geometries of all edge boundary points.
+  edge_boundary_geoms = get_boundary_points(edges)
+  # Get geometries of all edge boundary nodes.
+  edge_boundary_nodes = get_boundary_nodes(nodes, edges)
+  # Test for each edge :
+  # Does one of the boundary points equals at least one of the boundary nodes.
+  mat = sf::st_equals(edge_boundary_geoms, edge_boundary_nodes, sparse = FALSE)
+  all(
+    sapply(
+      seq(1, nrow(mat), by = 2), 
+      function(x) sum(mat[x:(x + 1), x:(x + 1)]) > 1
+    )
+  )
+}
+
 #' Check if edge boundaries of are equal to their corresponding nodes
 #'
 #' @param nodes Nodes element of an \code{\link{sfnetwork}}.
 #'
 #' @param edges Edges element of an \code{\link{sfnetwork}}.
 #'
-#' @return \code{TRUE} if everything matches, \code{FALSE} otherwise.
-#'
 #' @noRd
 nodes_match_edge_boundaries = function(nodes, edges) {
   # Get geometries of all edge boundary points.
-  # These are ordered as (start_edge1, end_edge1, start_edge2, end_edge2, etc).
-  edge_boundary_geoms = get_boundaries(edges)
-  # Get the node indices of all startpoints.
-  start_ids = edges$from 
-  # Get the node indices of all endpoints.
-  end_ids = edges$to
-  # Combine those in the same order as 'edge_boundary_geoms'.
-  all_ids = do.call(
-    "c",
-    mapply(
-      function(x,y) c(x, y), 
-      start_ids, 
-      end_ids, 
-      SIMPLIFY = FALSE
-    )
-  )
-  # Select the nodes corresponding to the edge boundary geometries.
-  edge_boundary_nodes = nodes[all_ids, ]
+  edge_boundary_geoms = get_boundary_points(edges)
+  # Get geometries of all edge boundary nodes.
+  edge_boundary_nodes = get_boundary_nodes(nodes, edges)
   # Test if the boundary geometries are equal to their corresponding nodes.
   same_geometries(edge_boundary_geoms, edge_boundary_nodes)
 }
@@ -432,7 +501,7 @@ explicitize_edges = function(x, sf_column_name = "geometry") {
     col = get_geometry_colname(nodes)
     # Get the indices of the boundary nodes of each edge.
     # Returns a matrix with source ids in column 1 and target ids in column 2.
-    ids = igraph::ends(x, E(x))
+    ids = get_boundary_node_indices(x, out = "both")
     # Draw linestring geometries between the boundary nodes of each edge.
     edge_geoms = draw_lines(nodes[ids[, 1], ], nodes[ids[, 2], ])
     # Add the geometries as a column to the edges.

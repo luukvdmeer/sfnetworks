@@ -306,21 +306,20 @@ geom_unary_ops = function(op, x, ...) {
 
 #' @name sf
 #' @importFrom sf st_reverse
+#' @importFrom tidygraph reroute
 #' @export
 st_reverse.sfnetwork = function(x, ...) {
   if (active(x) == "edges") {
     if (! is_directed(x)) {
-      warning("st_reverse has no effect on undirected edges")
-      return(x)
+      warning("For undirected networks st_reverse has no effect on columns 'to' and 'from'")
+    } else {
+      warning("For directed networks st_reverse swaps columns 'to' and 'from'")
     }
-    warning("Reversing edges swaps columns 'to' and 'from'")
-    edges = as_sf(x)
-    from = edges$from
-    to = edges$to
-    edges$to = from
-    edges$from = to
-    x = sfnetwork(as_sf(x, "nodes"), edges, directed = is_directed(x))
-    x = activate(x, "edges")
+    node_ids = get_boundary_node_indices(x, out = "both")
+    from_ids = node_ids[, 1]
+    to_ids = node_ids[, 2]
+    x_tbg = tidygraph::reroute(as_tbl_graph(x), from = to_ids, to = from_ids)
+    x = tbg_to_sfn(x_tbg)
   } else {
     warning("st_reverse has no effect on nodes. Maybe you want to activate edges?")
   }
