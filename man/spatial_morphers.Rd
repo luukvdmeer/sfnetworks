@@ -4,6 +4,7 @@
 \alias{spatial_morphers}
 \alias{to_spatial_coordinates}
 \alias{to_spatial_dense_graph}
+\alias{to_spatial_directed}
 \alias{to_spatial_explicit_edges}
 \alias{to_spatial_implicit_edges}
 \alias{to_spatial_shortest_paths}
@@ -13,6 +14,8 @@
 to_spatial_coordinates(graph)
 
 to_spatial_dense_graph(graph)
+
+to_spatial_directed(graph)
 
 to_spatial_explicit_edges(graph)
 
@@ -46,6 +49,9 @@ explanations on how to use morphing, see \code{\link[tidygraph]{morph}}.
 
 \item \code{to_spatial_dense_graph}: Reconstruct the network by using all edge 
 linestring points as nodes, instead of only the endpoints.
+
+\item \code{to_spatial_directed}: Make a graph directed in the direction given by 
+the linestring geometries of the edges.
 
 \item \code{to_spatial_explicit_edges}: Draw linestring geometries for spatially
 implicit edges.
