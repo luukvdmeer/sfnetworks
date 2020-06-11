@@ -386,7 +386,7 @@ same_crs = function(x, y) {
 #'
 #' @noRd
 same_boundary_points = function(x, y) {
-  same_geometries(get_boundary_points(x), get_boundary_points(y))
+  all(same_geometries(get_boundary_points(x), get_boundary_points(y)))
 }
 
 #' Check if two sf objects have the same geometries
@@ -395,8 +395,7 @@ same_boundary_points = function(x, y) {
 #'
 #' @param y An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
 #'
-#' @return \code{TRUE} when the geometries are the same, \code{FALSE}
-#' otherwise.
+#' @return A vector of booleans, one element for each (x[i], y[i]) pair.
 #'
 #' @details This is a pairwise check. Each row in x is compared to its
 #' corresponding row in y. Hence, x and y should be of the same length.
@@ -404,7 +403,7 @@ same_boundary_points = function(x, y) {
 #' @importFrom sf st_equals
 #' @noRd
 same_geometries = function(x, y) {
-  all(diag(sf::st_equals(x, y, sparse = FALSE)))
+  diag(sf::st_equals(x, y, sparse = FALSE))
 }
 
 #' Rename the geometry list column in an sf object.
@@ -459,7 +458,7 @@ nodes_match_edge_boundaries = function(nodes, edges) {
   # Get geometries of all edge boundary nodes.
   edge_boundary_nodes = get_boundary_nodes(nodes, edges)
   # Test if the boundary geometries are equal to their corresponding nodes.
-  same_geometries(edge_boundary_geoms, edge_boundary_nodes)
+  all(same_geometries(edge_boundary_geoms, edge_boundary_nodes))
 }
 
 #' Check if the geometries of an sf object are all of a specific type

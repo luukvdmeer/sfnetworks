@@ -61,6 +61,52 @@ to_spatial_dense_graph = function(graph) {
   )
 }
 
+#' @describeIn spatial_morphers Make a graph directed in the direction given by 
+#' the linestring geometries of the edges.
+#' @importFrom lwgeom st_startpoint
+#' @importFrom sf st_geometry
+#' @importFrom tidygraph convert reroute
+#' @export
+to_spatial_directed = function(graph) {
+  if (! has_spatially_explicit_edges(graph)) {
+    stop("This call requires spatially explicit edges")
+  }
+  # Convert to a directed tbl_graph.
+  # Force conversion to sfnetwork (i.e. without valid sfnetwork structure).
+  graph = tidygraph::convert(as_tbl_graph(graph), to_directed)
+  graph = tbg_to_sfn(graph)
+  # Get boundary node indices.
+  node_ids = get_boundary_node_indices(graph, out = "both")
+  from_ids = node_ids[, 1]
+  to_ids = node_ids[, 2]
+  # Get nodes and edge geometries.
+  nodes = sf::st_geometry(st_as_sf(graph, "nodes"))
+  edges = sf::st_geometry(st_as_sf(graph, "edges"))
+  # Get source node geometries of all edges.
+  srcnodes = nodes[from_ids]
+  # Get startpoint geometries of all edges.
+  stpoints = lwgeom::st_startpoint(edges)
+  # Retrieve the edges that don't have a matching source node and startpoint.
+  invalid = which(!same_geometries(srcnodes, stpoints))
+  # Swap from and to indices for those "invalid" edges.
+  new_from_ids = from_ids
+  new_from_ids[invalid] = to_ids[invalid]
+  new_to_ids = to_ids
+  new_to_ids[invalid] = from_ids[invalid]
+  # Insert the new indices into the graph.
+  repared_graph = tidygraph::reroute(
+    as_tbl_graph(activate(graph, "edges")), 
+    from = new_from_ids, 
+    to = new_to_ids
+  )
+  # Reset active element if needed.
+  if (active(graph) == "edges") activate(repared_graph, "nodes")
+  # Convert to sfnetwork and return in list.
+  list(
+    directed_graph = tbg_to_sfn(repared_graph)
+  )
+}
+
 #' @describeIn spatial_morphers Draw linestring geometries for spatially
 #' implicit edges.
 #' @export
