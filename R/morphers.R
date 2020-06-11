@@ -65,7 +65,7 @@ to_spatial_dense_graph = function(graph) {
 #' the linestring geometries of the edges.
 #' @importFrom lwgeom st_startpoint
 #' @importFrom sf st_geometry
-#' @importFrom tidygraph convert reroute
+#' @importFrom tidygraph convert reroute to_directed
 #' @export
 to_spatial_directed = function(graph) {
   if (! has_spatially_explicit_edges(graph)) {
