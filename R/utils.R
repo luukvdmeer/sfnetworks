@@ -38,6 +38,11 @@ create_edges_from_nodes = function(nodes) {
     ),
     crs = sf::st_crs(nodes)
   )
+  # Use the same sf column name as in the nodes.
+  nodes_geometry_colname = get_geometry_colname(nodes)
+  if (nodes_geometry_colname != "geometry") {
+    edges = set_geometry_colname(edges, nodes_geometry_colname)
+  }  
   # Return a list with both the nodes and edges.
   class(edges) = class(nodes)
   list(nodes = nodes, edges = edges)
@@ -60,26 +65,30 @@ create_edges_from_nodes = function(nodes) {
 #' @noRd
 create_nodes_from_edges = function(edges) {
   # Get the boundary points of the edges.
-  nodes = sf::st_as_sf(get_boundaries(edges), crs = sf::st_crs(edges))
+  nodes = get_boundaries(edges)
   # Give each unique location a unique ID.
-  nodes$index = match(sf::st_geometry(nodes), unique(sf::st_geometry(nodes)))
+  indices = match(nodes, unique(nodes))
   # Define for each endpoint if it is a source or target node.
-  nodes$source = rep(c(TRUE, FALSE), nrow(nodes) / 2)
+  sources = rep(c(TRUE, FALSE), length(nodes) / 2)
   # Define for each edges which node is its source and target node.
   if ("from" %in% colnames(edges)) {
     warning("Overwriting column 'from'")
   }
-  edges$from = nodes$index[nodes$source]
+  edges$from = indices[sources]
 
   if ("to" %in% colnames(edges)) {
     warning("Overwriting column 'to'")
   }
-  edges$to = nodes$index[!nodes$source]
+  edges$to = indices[!sources]
   # Remove duplicated nodes from the nodes table.
-  nodes = nodes[!duplicated(nodes$index), ]
-  # Drop the index and source columns.
-  nodes$index = NULL
-  nodes$source = NULL
+  nodes = nodes[!duplicated(indices)]
+  # Convert to sf object
+  nodes = sf::st_sf(geometry = nodes)
+  # Use the same sf column name as in the edges.
+  edges_geometry_colname = get_geometry_colname(edges)
+  if (edges_geometry_colname != "geometry") {
+    nodes = set_geometry_colname(edges, edges_geometry_colname)
+  }
   # Return a list with both the nodes and edges.
   class(nodes) = class(edges)
   list(nodes = nodes, edges = edges)
@@ -99,7 +108,7 @@ create_nodes_from_edges = function(edges) {
 #' @details Lines are drawn row-wise. That is, between point 1 in x and point 1
 #' in y, point 2 in x and point 2 in y, et cetera.
 #'
-#' @importFrom sf st_geometry st_sfc
+#' @importFrom sf st_crs st_geometry st_sfc
 #' @noRd
 draw_lines = function(x, y) {
   sf::st_sfc(
@@ -107,8 +116,9 @@ draw_lines = function(x, y) {
       function (a,b) points_to_line(a,b),
       sf::st_geometry(x),
       sf::st_geometry(y),
-      SIMPLIFY=FALSE
-    )
+      SIMPLIFY = FALSE
+    ),
+    crs = sf::st_crs(x)
   )
 }
 
@@ -126,11 +136,11 @@ draw_lines = function(x, y) {
 #' @importFrom tidygraph mutate
 #' @noRd
 drop_geometry = function(x, active = NULL) {
-  xac = active(x)
+  current_active = active(x)
   if (is.null(active)) {
-    active = xac
+    active = current_active
   } else {
-    if (active != xac) {
+    if (active != current_active) {
       x = switch(
         active,
         nodes = activate(x, "nodes"),
@@ -141,11 +151,11 @@ drop_geometry = function(x, active = NULL) {
   }
   xnew = tidygraph::mutate(as_tbl_graph(x), !!get_geometry_colname(as_sf(x)) := NULL)
   if (active == "edges") {
-    xnew = as_sfnetwork(xnew, edges_as_lines = FALSE, force = TRUE)
+    xnew = tbg_to_sfn(xnew)
   }
-  if (active(xnew) != xac) {
+  if (active(xnew) != current_active) {
     xnew = switch(
-      xac,
+      current_active,
       nodes = activate(xnew, "nodes"),
       edges = activate(xnew, "edges")
     )
@@ -161,17 +171,10 @@ drop_geometry = function(x, active = NULL) {
 #' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
 #' geometries.
 #'
-#' @importFrom lwgeom st_endpoint st_startpoint
-#' @importFrom sf st_geometry
+#' @importFrom sf st_boundary st_cast st_geometry
 #' @noRd
 get_boundaries = function(x) {
-  do.call(
-    "c",
-    lapply(
-      st_geometry(x),
-      function(y) c(lwgeom::st_startpoint(y), lwgeom::st_endpoint(y))
-    )
-  )
+  sf::st_cast(sf::st_boundary(sf::st_geometry(x)), "POINT")
 }
 
 #' Directly extract the edges from an sfnetwork
@@ -186,26 +189,11 @@ get_edges = function(x) {
   as_tibble(x, "edges")
 }
 
-#' Get the endpoints of LINESTRING geometries
-#'
-#' @param x An object of class \code{\link[sf]{sf}} with \code{LINESTRING}
-#' geometries.
-#'
-#' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
-#' geometries.
-#'
-#' @importFrom lwgeom st_endpoint
-#' @importFrom sf st_geometry
-#' @noRd
-get_endpoints = function(x) {
-  do.call("c", lapply(sf::st_geometry(x), function(y) lwgeom::st_endpoint(y)))
-}
-
 #' Retrieve the name of the geometry list column in an sf object
 #'
 #' @param x An object of class \code{\link[sf]{sf}}.
 #'
-#' @return The name of the geometry list column as a string.
+#' @return The name of the geometry list column as a character.
 #'
 #' @noRd
 get_geometry_colname = function(x) {
@@ -233,47 +221,6 @@ has_spatially_explicit_edges = function(x) {
 #' @noRd
 get_nodes = function(x) {
   as_sf(x, "nodes")
-}
-
-#' Extract the source nodes of an sfnetwork.
-#'
-#' @param nodes Nodes element of an \code{\link{sfnetwork}}.
-#'
-#' @param edges Edges element of an \code{\link{sfnetwork}}.
-#'
-#' @return An object of class \code{\link[sf]{sf}}.
-#'
-#' @noRd
-get_source_nodes = function(nodes, edges) {
-  nodes[edges$from,]
-}
-
-#' Get the startpoints of LINESTRING geometries
-#'
-#' @param x An object of class \code{\link[sf]{sf}} with \code{LINESTRING}
-#' geometries.
-#'
-#' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
-#' geometries.
-#'
-#' @importFrom lwgeom st_startpoint
-#' @importFrom sf st_geometry
-#' @noRd
-get_startpoints = function(x) {
-  do.call("c", lapply(sf::st_geometry(x), function(y) lwgeom::st_startpoint(y)))
-}
-
-#' Extract the target nodes of an sfnetwork.
-#'
-#' @param nodes Nodes element of an \code{\link{sfnetwork}}.
-#'
-#' @param edges Edges element of an \code{\link{sfnetwork}}.
-#'
-#' @return An object of class \code{\link[sf]{sf}}.
-#'
-#' @noRd
-get_target_nodes = function(nodes, edges) {
-  nodes[edges$to,]
 }
 
 #' Check if a graph is directed.
@@ -395,16 +342,22 @@ same_boundary_points = function(x, y) {
 #' @importFrom sf st_equals st_geometry
 #' @noRd
 same_geometries = function(x, y) {
-  all(
-    do.call(
-      "c",
-      mapply(
-        function(x,y) sf::st_equals(x,y),
-        sf::st_geometry(x),
-        sf::st_geometry(y)
-      )
-    )
-  )
+  all(diag(sf::st_equals(sf::st_geometry(x), sf::st_geometry(y), sparse = FALSE)))
+}
+
+#' Rename the geometry list column in an sf object.
+#'
+#' @param x An object of class \code{\link[sf]{sf}}.
+#'
+#' @param name New name of the geometry list column as a character.
+#'
+#' @return The same object as \code{x} but with a renamed geometry list column.
+#'
+#' @noRd
+set_geometry_colname = function(x, name) {
+  names(x)[which(names(x) == get_geometry_colname(x))] = name
+  attr(x, "sf_column") = name
+  x
 }
 
 #' Check if edge boundaries of are equal to their corresponding nodes
@@ -417,17 +370,27 @@ same_geometries = function(x, y) {
 #'
 #' @noRd
 nodes_match_edge_boundaries = function(nodes, edges) {
-  source_eq_start = same_geometries(
-    get_source_nodes(nodes, edges),
-    get_startpoints(edges)
+  # Get geometries of all edge boundary points.
+  # These are ordered as (start_edge1, end_edge1, start_edge2, end_edge2, etc).
+  edge_boundary_geoms = get_boundaries(edges)
+  # Get the node indices of all startpoints.
+  start_ids = edges$from 
+  # Get the node indices of all endpoints.
+  end_ids = edges$to
+  # Combine those in the same order as 'edge_boundary_geoms'.
+  all_ids = do.call(
+    "c",
+    mapply(
+      function(x,y) c(x, y), 
+      start_ids, 
+      end_ids, 
+      SIMPLIFY = FALSE
+    )
   )
-
-  target_eq_end = same_geometries(
-    get_target_nodes(nodes, edges),
-    get_endpoints(edges)
-  )
-
-  source_eq_start && target_eq_end
+  # Select the nodes corresponding to the edge boundary geometries.
+  edge_boundary_nodes = nodes[all_ids, ]
+  # Test if the boundary geometries are equal to their corresponding nodes.
+  same_geometries(edge_boundary_geoms, edge_boundary_nodes)
 }
 
 #' Check if the geometries of an sf object are all of a specific type
@@ -463,10 +426,18 @@ explicitize_edges = function(x, sf_column_name = "geometry") {
   if (has_spatially_explicit_edges(x)) {
     x
   } else {
-    sources = get_source_nodes(get_nodes(x), get_edges(x))
-    targets = get_target_nodes(get_nodes(x), get_edges(x))
-    edge_geoms = draw_lines(sources, targets)
-    xnew = tidygraph::mutate(activate(x, "edges"), !!sf_column_name := edge_geoms)
+    # Extract the nodes from the network.
+    nodes = st_as_sf(x, "nodes")
+    # Extract the geom column name from the nodes, to use the same for the edges.
+    col = get_geometry_colname(nodes)
+    # Get the indices of the boundary nodes of each edge.
+    # Returns a matrix with source ids in column 1 and target ids in column 2.
+    ids = igraph::ends(x, E(x))
+    # Draw linestring geometries between the boundary nodes of each edge.
+    edge_geoms = draw_lines(nodes[ids[, 1], ], nodes[ids[, 2], ])
+    # Add the geometries as a column to the edges.
+    xnew = tidygraph::mutate(activate(x, "edges"), !!col := edge_geoms)
+    # Reset the active element if needed.
     switch(
       active(x),
       nodes = activate(xnew, "nodes"),
