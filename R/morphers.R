@@ -22,7 +22,7 @@ NULL
 #' @importFrom sf st_coordinates
 #' @importFrom tidygraph mutate
 #' @export
-to_spatial_coordinates <- function(graph) {
+to_spatial_coordinates = function(graph) {
   # Create X and Y coordinate columns for the nodes.
   coords = sf::st_coordinates(st_as_sf(graph, "nodes"))
   coords_graph = tidygraph::mutate(graph, X = coords[, "X"], Y = coords[, "Y"])
@@ -43,7 +43,7 @@ to_spatial_coordinates <- function(graph) {
 #' @importFrom lwgeom st_split
 #' @importFrom sf st_cast st_collection_extract
 #' @export
-to_spatial_dense_graph <- function(graph) {
+to_spatial_dense_graph = function(graph) {
   # Retrieve the edges from the network, without the to and from columns.
   if (! has_spatially_explicit_edges(graph)) {
     stop("This call requires spatially explicit edges")
@@ -64,7 +64,7 @@ to_spatial_dense_graph <- function(graph) {
 #' @describeIn spatial_morphers Draw linestring geometries for spatially
 #' implicit edges.
 #' @export
-to_spatial_explicit_edges <- function(graph) {
+to_spatial_explicit_edges = function(graph) {
   list(
     explicit_graph = explicitize_edges(graph)
   )
@@ -73,7 +73,7 @@ to_spatial_explicit_edges <- function(graph) {
 #' @describeIn spatial_morphers Remove linestring geometries of spatially 
 #' explicit edges.
 #' @export
-to_spatial_implicit_edges <- function(graph) {
+to_spatial_implicit_edges = function(graph) {
   list(
     implicit_graph = implicitize_edges(graph)
   )
@@ -88,7 +88,7 @@ to_spatial_implicit_edges <- function(graph) {
 #' used, as the the same node and/or edge can be present in multiple paths.
 #' @importFrom tidygraph slice
 #' @export
-to_spatial_shortest_paths <- function(graph, ...) {
+to_spatial_shortest_paths = function(graph, ...) {
   args = list(...)
   args$graph = graph
   args$output = "both"
@@ -105,7 +105,7 @@ to_spatial_shortest_paths <- function(graph, ...) {
 #' @describeIn spatial_morphers Limit a graph to a single spatial subset. 
 #' \code{...} is evaluated in the same manner as \code{\link{st_filter}}. 
 #' @export
-to_spatial_subgraph <- function(graph, ..., subset_by = NULL) {
+to_spatial_subgraph = function(graph, ..., subset_by = NULL) {
   if (is.null(subset_by)) {
     subset_by = active(graph)
     message("Subsetting by ", subset_by)

@@ -115,12 +115,8 @@ check_network_validity = function(nodes, edges, directed, edges_as_lines) {
 
 nodes_to_sf = function(nodes, ...) {
   tryCatch(
-    expr = {
-      sf::st_as_sf(nodes, ...)
-    },
-    error = function(e) {
-      stop("Failed to convert nodes into sf object because: ", e)
-    }
+    sf::st_as_sf(nodes, ...),
+    error = function(e) stop("Failed to convert nodes to sf object because: ", e)
   )
 }
 
