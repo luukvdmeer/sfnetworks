@@ -30,14 +30,17 @@ morph.sfnetwork = function(.data, .f, ...) {
   # Try to convert morphed elements into sfnetwork objects.
   # If not possible, simply return as morphed_tbl_graph.
   tryCatch(
-    {morphed_sfn = lapply(morphed, function(x) as_sfnetwork(x, force = TRUE))},
-    error = function(e) return(morphed)
-  )
-  # Return as object of class morphed_sfnetwork.
-  structure(
-    morphed,
-    class = c("morphed_sfnetwork", class(morphed)),
-    .orig_graph = as_sfnetwork(attr(morphed, ".orig_graph"), force = TRUE),
-    .morpher = attr(morphed, ".morpher")
-  )
+    expr = {
+      morphed_sfn = suppressMessages(
+        lapply(morphed, function(x) as_sfnetwork(x))
+      )
+      structure(
+        morphed_sfn,
+        class = c("morphed_sfnetwork", class(morphed)),
+        .orig_graph = as_sfnetwork(attr(morphed, ".orig_graph"), force = TRUE),
+        .morpher = attr(morphed, ".morpher")
+      )
+    },
+    error = function(e) morphed
+  )  
 }
