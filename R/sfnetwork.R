@@ -3,7 +3,7 @@
 #' \code{sfnetwork} is a tidy data structure for geospatial networks. It extends
 #' the graph manipulation functionalities of the
 #' \code{\link[tidygraph]{tidygraph-package}} package into the domain of
-#' geospatial networks, where the nodes and optionally also the edges are 
+#' geospatial networks, where the nodes and optionally also the edges are
 #' embedded in geographical space, and enables to apply the spatial analytical
 #' function from the \code{\link[sf:sf]{sf-package}} directly to the network.
 #'
@@ -35,7 +35,7 @@
 #' constructing the network. These checks guarantee a valid spatial network
 #' structure. For the nodes, this means that they all should have \code{POINT}
 #' geometries. In the case of spatially explicit edges, it is also checked that
-#' all edges have \code{LINESTRING} geometries, nodes and edges have the same 
+#' all edges have \code{LINESTRING} geometries, nodes and edges have the same
 #' CRS and boundary points of edges match their corresponding node coordinates.
 #' These checks are important, but also time consuming. If you are already sure
 #' your input data meet the requirements, the checks are unneccesary and can be
@@ -48,7 +48,7 @@
 #'
 #' @importFrom tidygraph tbl_graph
 #' @export
-sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = NULL, 
+sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = NULL,
                      force = FALSE, ...) {
   # Automatically set edges_as_lines if not given.
   if (is.null(edges_as_lines)) {
@@ -129,7 +129,7 @@ nodes_to_sf = function(nodes, ...) {
 #'
 #' @param x object to be converted into an \code{\link{sfnetwork}} object.
 #'
-#' @param ... arguments passed on to the \code{\link{sfnetwork}} construction 
+#' @param ... arguments passed on to the \code{\link{sfnetwork}} construction
 #' function.
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
@@ -198,6 +198,24 @@ as_sfnetwork.tbl_graph = function(x, ...) {
   args$directed = if (dir_missing) is_directed(x) else args$directed
   # Call the sfnetwork construction function.
   do.call("sfnetwork", args)
+}
+
+#' @name as_sfnetwork
+#' @importFrom sf st_as_sf st_collection_extract
+#' @export
+as_sfnetwork.psp = function(x, ...) {
+  # I think that the easiest method for transforming a Line Segment Pattern
+  # (psp) object into sfnetwork format is to transform it into sf format and
+  # then apply the usual methods.
+  x_sf = sf::st_as_sf(x)
+
+  # x_sf is an sf object composed by 1 POLYGON (the window of the psp object)
+  # and several LINESTRINGs (the line segments). I'm not sure if and how we can
+  # use the window object so I will extract only the LINESTRINGs.
+  x_linestring = sf::st_collection_extract(x_sf, "LINESTRING")
+
+  # apply as_sfnetwork.sf
+  as_sfnetwork(x_linestring)
 }
 
 #' @importFrom sf st_as_sf st_crs st_geometry

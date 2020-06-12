@@ -3,6 +3,7 @@
 S3method("st_crs<-",sfnetwork)
 S3method("st_geometry<-",sfnetwork)
 S3method(as_sfnetwork,default)
+S3method(as_sfnetwork,psp)
 S3method(as_sfnetwork,sf)
 S3method(as_sfnetwork,sfNetwork)
 S3method(as_sfnetwork,sfnetwork)

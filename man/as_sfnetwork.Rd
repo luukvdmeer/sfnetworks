@@ -7,6 +7,7 @@
 \alias{as_sfnetwork.sfNetwork}
 \alias{as_sfnetwork.sfnetwork}
 \alias{as_sfnetwork.tbl_graph}
+\alias{as_sfnetwork.psp}
 \title{Convert a foreign object to an sfnetwork object}
 \usage{
 as_sfnetwork(x, ...)
@@ -20,11 +21,13 @@ as_sfnetwork(x, ...)
 \method{as_sfnetwork}{sfnetwork}(x, ...)
 
 \method{as_sfnetwork}{tbl_graph}(x, ...)
+
+\method{as_sfnetwork}{psp}(x, ...)
 }
 \arguments{
 \item{x}{object to be converted into an \code{\link{sfnetwork}} object.}
 
-\item{...}{arguments passed on to the \code{\link{sfnetwork}} construction 
+\item{...}{arguments passed on to the \code{\link{sfnetwork}} construction
 function.}
 }
 \value{

@@ -42,7 +42,7 @@ otherwise. Defaults to \code{NULL}.}
 constructing the network. These checks guarantee a valid spatial network
 structure. For the nodes, this means that they all should have \code{POINT}
 geometries. In the case of spatially explicit edges, it is also checked that
-all edges have \code{LINESTRING} geometries, nodes and edges have the same 
+all edges have \code{LINESTRING} geometries, nodes and edges have the same
 CRS and boundary points of edges match their corresponding node coordinates.
 These checks are important, but also time consuming. If you are already sure
 your input data meet the requirements, the checks are unneccesary and can be
@@ -58,7 +58,7 @@ An object of class \code{sfnetwork}.
 \code{sfnetwork} is a tidy data structure for geospatial networks. It extends
 the graph manipulation functionalities of the
 \code{\link[tidygraph]{tidygraph-package}} package into the domain of
-geospatial networks, where the nodes and optionally also the edges are 
+geospatial networks, where the nodes and optionally also the edges are
 embedded in geographical space, and enables to apply the spatial analytical
 function from the \code{\link[sf:sf]{sf-package}} directly to the network.
 }
