@@ -203,6 +203,16 @@ as_sfnetwork.tbl_graph = function(x, ...) {
 #' @name as_sfnetwork
 #' @importFrom sf st_as_sf st_collection_extract
 #' @export
+#' @examples
+#' # Examples for psp method
+#' if (require(spatstat)) {
+#' set.seed(42)
+#' test_psp = psp(runif(10), runif(10), runif(10), runif(10), window=owin())
+#' plot(test_psp, main = "spatstat input")
+#' test_psp_as_sfnetwork = as_sfnetwork(test_psp)
+#' plot(test_psp_as_sfnetwork, main = "sfnetworks output")
+#' }
+#'
 as_sfnetwork.psp = function(x, ...) {
   # I think that the easiest method for transforming a Line Segment Pattern
   # (psp) object into sfnetwork format is to transform it into sf format and
@@ -215,7 +225,28 @@ as_sfnetwork.psp = function(x, ...) {
   x_linestring = sf::st_collection_extract(x_sf, "LINESTRING")
 
   # apply as_sfnetwork.sf
-  as_sfnetwork(x_linestring)
+  as_sfnetwork(x_linestring, ...)
+}
+
+#' @name as_sfnetwork
+#' @export
+#' @examples
+#' # Examples for linnet method
+#' if (require(spatstat)) {
+#' plot(simplenet, main = "spatstat input")
+#' simplenet_as_sfnetwork = as_sfnetwork(simplenet)
+#' plot(simplenet_as_sfnetwork, main = "sfnetworks output")
+#' }
+#'
+as_sfnetwork.linnet = function(x, ...) {
+  # IMO the easiest approach is the same as for psp objects, i.e. converting the
+  # linnet object into a psp format and then applying the corresponding method.
+  if (!requireNamespace("spatstat", quietly = TRUE)) {
+    stop("package spatstat required, please install it first")
+  }
+
+  x_psp = spatstat::as.psp(x)
+  as_sfnetwork(x_psp, ...)
 }
 
 #' @importFrom sf st_as_sf st_crs st_geometry
