@@ -42,7 +42,7 @@ create_edges_from_nodes = function(nodes) {
   nodes_geometry_colname = get_geometry_colname(nodes)
   if (nodes_geometry_colname != "geometry") {
     edges = set_geometry_colname(edges, nodes_geometry_colname)
-  }  
+  }
   # Return a list with both the nodes and edges.
   class(edges) = class(nodes)
   list(nodes = nodes, edges = edges)
@@ -87,7 +87,7 @@ create_nodes_from_edges = function(edges) {
   # Use the same sf column name as in the edges.
   edges_geometry_colname = get_geometry_colname(edges)
   if (edges_geometry_colname != "geometry") {
-    nodes = set_geometry_colname(edges, edges_geometry_colname)
+    nodes = set_geometry_colname(nodes, edges_geometry_colname)
   }
   # Return a list with both the nodes and edges.
   class(nodes) = class(edges)
@@ -168,12 +168,12 @@ drop_geometry = function(x, active = NULL) {
 #' @param nodes Nodes element of an \code{\link{sfnetwork}}.
 #'
 #' @param edges Edges element of an \code{\link{sfnetwork}}.
-#' 
+#'
 #' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
 #' geometries.
 #'
 #' @details Boundary nodes differ from boundary points in the sense that
-#' boundary points are retrieved by taking the endpoints of the 
+#' boundary points are retrieved by taking the endpoints of the
 #' \code{LINESTRING} geometries of edges, while boundary nodes are retrieved
 #' by querying the nodes table of a network with the `to` and `from` columns
 #' in the edges table. In a valid network structure, boundary nodes should be
@@ -183,16 +183,16 @@ drop_geometry = function(x, active = NULL) {
 #' @noRd
 get_boundary_nodes = function(nodes, edges) {
   # Get the node indices of all startpoints of the edges.
-  start_ids = edges$from 
+  start_ids = edges$from
   # Get the node indices of all endpoints of the edges.
   end_ids = edges$to
   # Order those as [start_edge1, end_edge1, start_edge2, end_edge2, etc].
   all_ids = do.call(
     "c",
     mapply(
-      function(x,y) c(x, y), 
-      start_ids, 
-      end_ids, 
+      function(x,y) c(x, y),
+      start_ids,
+      end_ids,
       SIMPLIFY = FALSE
     )
   )
@@ -203,7 +203,7 @@ get_boundary_nodes = function(nodes, edges) {
 #' Get the indices of the boundary nodes of all edges in the network.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
-#' 
+#'
 #' @param out Which node indices to return. Either 'sources' to return only the
 #' indices of source nodes, 'targets' to return only the indices of target
 #' nodes, or 'both' to return both of them.
@@ -439,7 +439,7 @@ nodes_in_edge_boundaries = function(nodes, edges) {
   mat = sf::st_equals(edge_boundary_geoms, edge_boundary_nodes, sparse = FALSE)
   all(
     sapply(
-      seq(1, nrow(mat), by = 2), 
+      seq(1, nrow(mat), by = 2),
       function(x) sum(mat[x:(x + 1), x:(x + 1)]) > 1
     )
   )
