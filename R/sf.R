@@ -163,130 +163,19 @@ change_element_coords = function(x, element, op, ...) {
 }
 
 # =============================================================================
-# Dimension, simplicity, validity or is_empty queries
-# =============================================================================
-
-#' @name sf
-#' @importFrom sf st_dimension
-#' @export
-st_dimension.sfnetwork = function(x, ...) {
-  sf::st_dimension(as_sf(x), ...)
-}
-
-#' @name sf
-#' @importFrom sf st_is_empty
-#' @export
-st_is_empty.sfnetwork = function(x) {
-  sf::st_is_empty(as_sf(x))
-}
-
-#' @name sf
-#' @importFrom sf st_is_simple
-#' @export
-st_is_simple.sfnetwork = function(x) {
-  sf::st_is_simple(as_sf(x))
-}
-
-#' @name sf
-#' @importFrom sf st_is_valid
-#' @export
-st_is_valid.sfnetwork = function(x, ...) {
-  sf::st_is_valid(as_sf(x), ...)
-}
-
-# =============================================================================
 # Geometric binary predicates
 # =============================================================================
 
-#' @name sf
-#' @importFrom sf st_contains
-#' @export
-st_contains.sfnetwork = function(x, y = x, ...) {
-  sf::st_contains(as_sf(x), as_sf(y), ...)
-}
-
-#' @name sf
-#' @importFrom sf st_contains_properly
-#' @export
-st_contains_properly.sfnetwork = function(x, y = x, ...) {
-  sf::st_contains_properly(as_sf(x), as_sf(y), ...)
-}
-
-#' @name sf
-#' @importFrom sf st_covers
-#' @export
-st_covers.sfnetwork = function(x, y = x, ...) {
-  sf::st_covers(as_sf(x), as_sf(y), ...)
-}
-
-#' @name sf
-#' @importFrom sf st_covered_by
-#' @export
-st_covered_by.sfnetwork = function(x, y = x, ...) {
-  sf::st_covered_by(as_sf(x), as_sf(y), ...)
-}
-
-#' @name sf
-#' @importFrom sf st_crosses
-#' @export
-st_crosses.sfnetwork = function(x, y = x, ...) {
-  sf::st_crosses(as_sf(x), as_sf(y), ...)
-}
-
-#' @name sf
-#' @importFrom sf st_disjoint
-#' @export
-st_disjoint.sfnetwork = function(x, y = x, ...) {
-  sf::st_disjoint(as_sf(x), as_sf(y), ...)
-}
-
-#' @name sf
-#' @importFrom sf st_equals
-#' @export
-st_equals.sfnetwork = function(x, y = x, ...) {
-  sf::st_equals(as_sf(x), as_sf(y), ...)
-}
-
-#' @name sf
-#' @importFrom sf st_equals_exact
-#' @export
-st_equals_exact.sfnetwork = function(x, y = x, ...) {
-  sf::st_equals_exact(as_sf(x), as_sf(y), ...)
-}
+# Geometric binary predicates internally are applied to the geometry of the 
+# given object. Since there is a st_geometry.sfnetwork method, they work
+# automatically on sfnetwork objects too. However, st_intersects is the only one
+# that is a generic, and thus an sfnetwork method needs to be created for it.
 
 #' @name sf
 #' @importFrom sf st_intersects
 #' @export
 st_intersects.sfnetwork = function(x, y = x, ...) {
   sf::st_intersects(as_sf(x), as_sf(y), ...)
-}
-
-#' @name sf
-#' @importFrom sf st_is_within_distance
-#' @export
-st_is_within_distance.sfnetwork = function(x, y = x, ...) {
-  sf::st_is_within_distance(as_sf(x), as_sf(y), ...)
-}
-
-#' @name sf
-#' @importFrom sf st_overlaps
-#' @export
-st_overlaps.sfnetwork = function(x, y = x, ...) {
-  sf::st_overlaps(as_sf(x), as_sf(y), ...)
-}
-
-#' @name sf
-#' @importFrom sf st_touches
-#' @export
-st_touches.sfnetwork = function(x, y = x, ...) {
-  sf::st_touches(as_sf(x), as_sf(y), ...)
-}
-
-#' @name sf
-#' @importFrom sf st_within
-#' @export
-st_within.sfnetwork = function(x, y = x, ...) {
-  sf::st_within(as_sf(x), as_sf(y), ...)
 }
 
 # =============================================================================
@@ -298,20 +187,6 @@ st_within.sfnetwork = function(x, y = x, ...) {
 #' @export
 st_area.sfnetwork = function(x) {
   sf::st_area(as_sf(x))
-}
-
-#' @name sf
-#' @importFrom sf st_distance
-#' @export
-st_distance.sfnetwork = function(x, y = x, ...) {
-  sf::st_distance(as_sf(x), as_sf(y), ...)
-}
-
-#' @name sf
-#' @importFrom sf st_length
-#' @export
-st_length.sfnetwork = function(x) {
-  sf::st_length(as_sf(x))
 }
 
 # =============================================================================
@@ -433,13 +308,6 @@ validate_edge_geometry = function(x, value) {
 }
 
 #' @name sf
-#' @importFrom sf st_geometry_type
-#' @export
-st_geometry_type.sfnetwork = function(x, ...) {
-  sf::st_geometry_type(as_sf(x), ...)
-}
-
-#' @name sf
 #' @importFrom sf st_is
 #' @export
 st_is.sfnetwork = function(x, ...) {
@@ -508,29 +376,4 @@ st_join.sfnetwork = function(x, y, join = st_intersects, ..., left = TRUE) {
     e_tmp = d_tmp
   }
   sfnetwork(n_tmp, e_tmp, directed = is_directed(x), force = TRUE)
-}
-
-# =============================================================================
-# Other
-# =============================================================================
-
-#' @name sf
-#' @importFrom sf st_make_grid
-#' @export
-st_make_grid.sfnetwork = function(x, ...) {
-  sf::st_make_grid(as_sf(x), ...)
-}
-
-#' @name sf
-#' @importFrom sf st_nearest_feature
-#' @export
-st_nearest_feature.sfnetwork = function(x, y) {
-  sf::st_nearest_feature(as_sf(x), as_sf(y))
-}
-
-#' @name sf
-#' @importFrom sf st_relate
-#' @export
-st_relate.sfnetwork = function(x, y, ...) {
-  sf::st_relate(as_sf(x), as_sf(y), ...)
 }
