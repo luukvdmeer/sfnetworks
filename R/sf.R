@@ -467,8 +467,6 @@ st_join.sfnetwork = function(x, y, join = st_intersects, ..., left = TRUE) {
     n_tmp = as_tibble(x, "nodes")
     e_tmp = d_tmp
   }
-  print(n_tmp)
-  print(e_tmp)
   sfnetwork(n_tmp, e_tmp, directed = is_directed(x), force = TRUE)
 }
 

@@ -147,6 +147,50 @@ as_sfnetwork.default = function(x, ...) {
 }
 
 #' @name as_sfnetwork
+#' @export
+#' @examples
+#' # Examples for linnet method
+#' if (require(spatstat)) {
+#' plot(simplenet, main = "spatstat input")
+#' simplenet_as_sfnetwork = as_sfnetwork(simplenet)
+#' plot(simplenet_as_sfnetwork, main = "sfnetworks output")
+#' }
+as_sfnetwork.linnet = function(x, ...) {
+  # The easiest approach is the same as for psp objects, i.e. converting the
+  # linnet object into a psp format and then applying the corresponding method.
+  if (!requireNamespace("spatstat", quietly = TRUE)) {
+    stop("Package spatstat required, please install it first")
+  }
+  x_psp = spatstat::as.psp(x)
+  as_sfnetwork(x_psp, ...)
+}
+
+#' @name as_sfnetwork
+#' @importFrom sf st_as_sf st_collection_extract
+#' @export
+#' @examples
+#' # Examples for psp method
+#' if (require(spatstat)) {
+#' set.seed(42)
+#' test_psp = psp(runif(10), runif(10), runif(10), runif(10), window=owin())
+#' plot(test_psp, main = "spatstat input")
+#' test_psp_as_sfnetwork = as_sfnetwork(test_psp)
+#' plot(test_psp_as_sfnetwork, main = "sfnetworks output")
+#' }
+as_sfnetwork.psp = function(x, ...) {
+  # The easiest method for transforming a Line Segment Pattern (psp) object 
+  # into sfnetwork format is to transform it into sf format and then apply 
+  # the usual methods.
+  x_sf = sf::st_as_sf(x)
+  # x_sf is an sf object composed by 1 POLYGON (the window of the psp object)
+  # and several LINESTRINGs (the line segments). I'm not sure if and how we can
+  # use the window object so I will extract only the LINESTRINGs.
+  x_linestring = sf::st_collection_extract(x_sf, "LINESTRING")
+  # Apply as_sfnetwork.sf.
+  as_sfnetwork(x_linestring, ...)
+}
+
+#' @name as_sfnetwork
 #' @importFrom sf st_geometry
 #' @export
 as_sfnetwork.sf = function(x, ...) {
@@ -198,55 +242,6 @@ as_sfnetwork.tbl_graph = function(x, ...) {
   args$directed = if (dir_missing) is_directed(x) else args$directed
   # Call the sfnetwork construction function.
   do.call("sfnetwork", args)
-}
-
-#' @name as_sfnetwork
-#' @importFrom sf st_as_sf st_collection_extract
-#' @export
-#' @examples
-#' # Examples for psp method
-#' if (require(spatstat)) {
-#' set.seed(42)
-#' test_psp = psp(runif(10), runif(10), runif(10), runif(10), window=owin())
-#' plot(test_psp, main = "spatstat input")
-#' test_psp_as_sfnetwork = as_sfnetwork(test_psp)
-#' plot(test_psp_as_sfnetwork, main = "sfnetworks output")
-#' }
-#'
-as_sfnetwork.psp = function(x, ...) {
-  # I think that the easiest method for transforming a Line Segment Pattern
-  # (psp) object into sfnetwork format is to transform it into sf format and
-  # then apply the usual methods.
-  x_sf = sf::st_as_sf(x)
-
-  # x_sf is an sf object composed by 1 POLYGON (the window of the psp object)
-  # and several LINESTRINGs (the line segments). I'm not sure if and how we can
-  # use the window object so I will extract only the LINESTRINGs.
-  x_linestring = sf::st_collection_extract(x_sf, "LINESTRING")
-
-  # apply as_sfnetwork.sf
-  as_sfnetwork(x_linestring, ...)
-}
-
-#' @name as_sfnetwork
-#' @export
-#' @examples
-#' # Examples for linnet method
-#' if (require(spatstat)) {
-#' plot(simplenet, main = "spatstat input")
-#' simplenet_as_sfnetwork = as_sfnetwork(simplenet)
-#' plot(simplenet_as_sfnetwork, main = "sfnetworks output")
-#' }
-#'
-as_sfnetwork.linnet = function(x, ...) {
-  # IMO the easiest approach is the same as for psp objects, i.e. converting the
-  # linnet object into a psp format and then applying the corresponding method.
-  if (!requireNamespace("spatstat", quietly = TRUE)) {
-    stop("package spatstat required, please install it first")
-  }
-
-  x_psp = spatstat::as.psp(x)
-  as_sfnetwork(x_psp, ...)
 }
 
 #' @importFrom sf st_as_sf st_crs st_geometry
