@@ -48,8 +48,6 @@ is.sf = function(x) {
 #'
 #' @param ... Arguments passed on the corresponding \code{sf} function.
 #'
-#' @param crs See \code{\link[sf]{st_transform}}.
-#'
 #' @param join See \code{\link[sf]{st_join}}.
 #'
 #' @param left See \code{\link[sf]{st_join}}.
@@ -67,35 +65,6 @@ NULL
 # CRS utils
 # =============================================================================
 
-#' @importFrom sf st_geometry
-change_element_crs = function(x, what, set, op, val, ...) {
-  if (what == "nodes") x = activate(x, "nodes")
-  if (what == "edges") x = activate(x, "edges")
-  xsf = as_sf(x)
-  if (set) {
-    st_crs(xsf) = val
-    x = replace_geometry(x, sf::st_geometry(xsf))
-  } else {
-    n_tmp = do.call(match.fun(op), list(xsf, ...))
-    x = replace_geometry(x, sf::st_geometry(n_tmp))
-  }
-  x
-}
-
-change_network_crs = function(x, set, op, val, ...) {
-  if (active(x) == "nodes") {
-    if (has_spatially_explicit_edges(x)) {
-      x = change_element_crs(x, "edges", set = set, op = op, val = val, ...)
-    }
-    x = change_element_crs(x, "nodes", set = set, op = op, val = val, ...)
-  }
-  if (active(x) == "edges") {
-    x = change_element_crs(x, "nodes", set = set, op = op, val = val, ...)
-    x = change_element_crs(x, "edges", set = set, op = op, val = val, ...)
-  }
-  x
-}
-
 #' @name sf
 #' @importFrom sf st_crs
 #' @export
@@ -104,31 +73,93 @@ st_crs.sfnetwork = function(x, ...) {
 }
 
 #' @name sf
-#' @importFrom sf st_crs<- st_geometry
+#' @importFrom sf st_crs<-
 #' @export
 `st_crs<-.sfnetwork` = function(x, value) {
-  change_network_crs(x, set = TRUE, op = NULL, val = value)
+  switch(
+    active(x),
+    nodes = set_node_crs(x, value),
+    edges = set_edge_crs(x, value)
+  )
+}
+
+set_node_crs = function(x, value) {
+  # If edges are spatially explicit, set edge crs as well.
+  if (has_spatially_explicit_edges(x)) {
+    x = set_element_crs(x, "edges", value)
+  }
+  set_element_crs(x, "nodes", value)
+}
+
+set_edge_crs = function(x, value) {
+  # Set node crs as well.
+  x = set_element_crs(x, "nodes", value)
+  set_element_crs(x, "edges", value)
+}
+
+set_element_crs = function(x, element, value) {
+  x = switch(
+    element,
+    nodes = activate(x, "nodes"),
+    edges = activate(x, "edges")
+  )
+  geom = st_geometry(x)
+  st_crs(geom) = value
+  replace_geometry(x, geom)
 }
 
 #' @name sf
 #' @importFrom sf st_shift_longitude
 #' @export
 st_shift_longitude.sfnetwork = function(x, ...) {
-  change_network_crs(x, set = FALSE, op = sf::st_shift_longitude, val = NULL, ...)
+  change_coords(x, op = sf::st_shift_longitude, ...)
 }
 
 #' @name sf
 #' @importFrom sf st_transform
 #' @export
-st_transform.sfnetwork = function(x, crs, ...) {
-  change_network_crs(x, set = FALSE, op = sf::st_transform, val = NULL, crs, ...)
+st_transform.sfnetwork = function(x, ...) {
+  change_coords(x, op = sf::st_transform, ...)
 }
 
 #' @name sf
 #' @importFrom sf st_wrap_dateline
 #' @export
 st_wrap_dateline.sfnetwork = function(x, ...) {
-  change_network_crs(x, set = FALSE, op = sf::st_wrap_dateline, val = NULL, ...)
+  change_coords(x, op = sf::st_wrap_dateline, ...)
+}
+
+change_coords = function(x, op, ...) {
+  switch(
+    active(x),
+    nodes = change_node_coords(x, op, ...),
+    edges = change_edge_coords(x, op, ...)
+  )
+}
+
+change_node_coords = function(x, op, ...) {
+  # If edges are spatially explicit, change edge coords as well.
+  if (has_spatially_explicit_edges(x)) {
+    x = change_element_coords(x, "edges", op, ...)
+  }
+  change_element_coords(x, "nodes", op, ...)
+}
+
+change_edge_coords = function(x, op) {
+  # Change node coords as well.
+  x = change_element_coords(x, "nodes", op, ...)
+  change_element_coords(x, "edges", op, ...)
+}
+
+change_element_coords = function(x, element, op, ...) {
+  x = switch(
+    element,
+    nodes = activate(x, "nodes"),
+    edges = activate(x, "edges")
+  )
+  geom = st_geometry(x)
+  new_geom = do.call(match.fun(op), list(geom, ...))
+  replace_geometry(x, new_geom)
 }
 
 # =============================================================================
