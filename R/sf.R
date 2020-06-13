@@ -390,37 +390,46 @@ st_geometry.sfnetwork = function(x, ...) {
 }
 
 #' @name sf
-#' @importFrom rlang !! :=
 #' @importFrom sf st_geometry<-
-#' @importFrom tidygraph mutate
 #' @export
 `st_geometry<-.sfnetwork` = function(x, value) {
-  stopifnot(inherits(value, "sfc") || is.null(value))
-  if (!is.null(value)) {
-    if (active(x) == "nodes" && !st_is_all(value, "POINT")) {
-      stop("Only geometries of type POINT are allowed as nodes")
-    }
-    if (active(x) == "edges" && !st_is_all(value, "LINESTRING")) {
-      stop("Only geometries of type LINESTRING are allowed as edges")
-    }
-    if (has_spatially_explicit_edges(x)) {
-      if (active(x) == "nodes") {
-        stop("Node geometries cannot be replaced when edges are spatially explicit")
-      }
-      if (active(x) == "edges") {
-        if (! same_crs(x, value)) {
-          stop("Edge geometries can only be replaced when the CRS doesn't change")
-        }
-        if (! same_boundary_points(as_sf(x), value)) {
-          stop("Edge geometries can only be replaced when their boundary points don't change")
-        }
-      }
-    }
-    x = replace_geometry(x, value)
-  } else {
-    x = drop_geometry(x)
+  # Drop geometry when value = NULL.
+  if (is.null(value)) {
+    return(drop_geometry(x))
   }
-  x
+  # Validate if the given geometry replacement keeps a valid sfnetwork structure.
+  validate_geometry(x, value)
+  # Replace the current geometry.
+  replace_geometry(x, value)
+}
+
+validate_geometry = function(x, value) {
+  switch(
+    active(x),
+    nodes = validate_node_geometry(x, value),
+    edges = validate_edge_geometry(x, value)
+  )
+}
+
+validate_node_geometry = function(x, value) {
+  if (! st_is_all(value, "POINT")) {
+    stop("Only geometries of type POINT are allowed as nodes")
+  }
+  if (has_spatially_explicit_edges(x)) {
+    stop("Replacing node geometries requires spatially implicit edges")
+  }
+}
+
+validate_edge_geometry = function(x, value) {
+  if (! st_is_all(value, "LINESTRING")) {
+    stop("Only geometries of type LINESTRING are allowed as edges")
+  }
+  if (! same_crs(x, value)) {
+    stop("CRS of replacement not equal to network CRS. Run st_transform first?")
+  }
+  if (! same_boundary_points(as_sf(x), value)) {
+    stop("Boundary points of replacement do not match their corresponding nodes")
+  }
 }
 
 #' @name sf
