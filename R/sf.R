@@ -475,6 +475,13 @@ st_join.sfnetwork = function(x, y, join = st_intersects, ..., left = TRUE) {
 # =============================================================================
 
 #' @name sf
+#' @importFrom sf st_make_grid
+#' @export
+st_make_grid.sfnetwork = function(x, ...) {
+  sf::st_make_grid(as_sf(x), ...)
+}
+
+#' @name sf
 #' @importFrom sf st_nearest_feature
 #' @export
 st_nearest_feature.sfnetwork = function(x, y) {
