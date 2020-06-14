@@ -6,6 +6,45 @@ tidygraph::activate
 #' @export
 tidygraph::active
 
+#' @importFrom tidygraph %>%
+#' @export
+tidygraph::`%>%`
+
+tbg_to_sfn = function(.data) {
+  class(.data) = c("sfnetwork", class(.data))
+  .data
+}
+
+#' tidygraph methods for sfnetwork objects
+#'
+#' \code{\link[tidygraph:tidygraph-package]{tidygraph}} methods for 
+#' \code{\link{sfnetwork}} objects. Since \code{\link{sfnetwork}} objects
+#' subclass \code{\link[tidygraph]{tbl_graph}} objects, most tidygraph
+#' functions work automatically. However, some of them need a special method,
+#' mostly as a result of the presence of the geometry list column in
+#' \code{\link{sfnetwork}} objects. Use these methods without the .sfnetwork 
+#' suffix and after loading the tidygraph package.
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param .data An object of class \code{\link{sfnetwork}}.
+#'
+#' @param ... Arguments passed on the corresponding \code{tidygraph} function.
+#'
+#' @param active Which network element (i.e. nodes or edges) to activate before
+#' extracting. If \code{NULL}, it will be set to the current active element of
+#' the given network. Defaults to \code{NULL}.
+#'
+#' @param spatial Should te extracted tibble be a 'spatial tibble', i.e. an
+#' object of class \code{c('sf', 'tbl_df')}, if it contains a geometry list
+#' column. Defaults to \code{TRUE}. 
+#'
+#' @param .f See \code{\link[tidygraph]{morph}}.
+#'
+#' @details See the \code{\link[tidygraph:tidygraph-package]{tidygraph}} 
+#' documentation.
+#'
+#' @name tidygraph
 #' @importFrom tidygraph as_tbl_graph
 #' @export
 as_tbl_graph.sfnetwork = function(x, ...) {
@@ -13,11 +52,43 @@ as_tbl_graph.sfnetwork = function(x, ...) {
   x
 }
 
-tbg_to_sfn = function(.data) {
-  class(.data) = c("sfnetwork", class(.data))
-  .data
+#' @name tidygraph
+#' @importFrom tidygraph as_tibble
+#' @export
+as_tibble.sfnetwork = function(x, active = NULL, spatial = TRUE, ...) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  if (spatial) {
+    switch(
+      active,
+      nodes = node_spatial_tibble(x),
+      edges = edge_spatial_tibble(x),
+      stop("Unknown active element: ", active, ". Only nodes and edges supported")
+    )
+  } else {
+    switch(
+      active,
+      nodes = tidygraph::as_tibble(as_tbl_graph(x), "nodes"),
+      edges = tidygraph::as_tibble(as_tbl_graph(x), "edges"),
+      stop("Unknown active element: ", active, ". Only nodes and edges supported")
+    )
+  }
 }
 
+node_spatial_tibble = function(x) {
+  as_sf(x, "nodes")
+}
+
+edge_spatial_tibble = function(x) {
+  if (has_spatially_explicit_edges(x)) {
+    as_sf(x, "edges") 
+  } else {
+    tidygraph::as_tibble(as_tbl_graph(x), "edges")
+  }
+}
+
+#' @name tidygraph
 #' @importFrom tidygraph morph
 #' @export
 morph.sfnetwork = function(.data, .f, ...) {

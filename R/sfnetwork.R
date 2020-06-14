@@ -213,7 +213,6 @@ as_sfnetwork.sf = function(x, ...) {
 }
 
 #' @name as_sfnetwork
-#' @importFrom igraph is_directed
 #' @export
 as_sfnetwork.sfNetwork = function(x, ...) {
   args = list(...)
@@ -221,7 +220,7 @@ as_sfnetwork.sfNetwork = function(x, ...) {
   args$x = x@sl
   # Define the directed argument automatically if not given, using the @g slot.
   dir_missing = is.null(args$directed)
-  args$directed = if (dir_missing) igraph::is_directed(x@g) else args$directed
+  args$directed = if (dir_missing) is_directed(x@g) else args$directed
   # Call as_sfnetwork.sf to build the sfnetwork.
   do.call("as_sfnetwork.sf", args)
 }

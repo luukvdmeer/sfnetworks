@@ -39,9 +39,10 @@ create_edges_from_nodes = function(nodes) {
     geometry = draw_lines(sources, targets)
   )
   # Use the same sf column name as in the nodes.
-  nodes_geometry_colname = get_geometry_colname(nodes)
-  if (nodes_geometry_colname != "geometry") {
-    edges = set_geometry_colname(edges, nodes_geometry_colname)
+  nodes_sf_colname = attr(nodes, "sf_column")
+  if (nodes_sf_colname != "geometry") {
+    names(edges)[3] = nodes_sf_colname
+    attr(edges, "sf_column") = nodes_sf_colname
   }
   # Return a list with both the nodes and edges.
   class(edges) = class(nodes)
@@ -61,7 +62,7 @@ create_edges_from_nodes = function(nodes) {
 #' with \code{LINESTRING} geometries and the created nodes as an object of
 #' class \code{\link[sf]{sf}} with \code{POINT} geometries.
 #'
-#' @importFrom sf st_as_sf st_crs st_geometry
+#' @importFrom sf st_sf
 #' @noRd
 create_nodes_from_edges = function(edges) {
   # Get the boundary points of the edges.
@@ -85,9 +86,10 @@ create_nodes_from_edges = function(edges) {
   # Convert to sf object
   nodes = sf::st_sf(geometry = nodes)
   # Use the same sf column name as in the edges.
-  edges_geometry_colname = get_geometry_colname(edges)
-  if (edges_geometry_colname != "geometry") {
-    nodes = set_geometry_colname(nodes, edges_geometry_colname)
+  edges_sf_colname = attr(edges, "sf_column")
+  if (edges_sf_colname != "geometry") {
+    names(nodes)[1] = edges_sf_colname
+    attr(nodes, "sf_column") = edges_sf_colname
   }
   # Return a list with both the nodes and edges.
   class(nodes) = class(edges)
@@ -120,46 +122,6 @@ draw_lines = function(x, y) {
     ),
     crs = sf::st_crs(x)
   )
-}
-
-#' Drop the geometry of a network component
-#'
-#' @param x An object of class \code{\link{sfnetwork}}
-#'
-#' @param active Either 'nodes' or 'edges'. If NULL, the active component of x
-#' will be used.
-#'
-#' @return An object of class \code{\link{sfnetwork}} when what = 'edges', and
-#' an object of class \code{\link[tidygraph]{tbl_graph}} when what = 'nodes'.
-#'
-#' @importFrom rlang !! :=
-#' @importFrom tidygraph mutate
-#' @noRd
-drop_geometry = function(x, active = NULL) {
-  current_active = attr(x, "active")
-  if (is.null(active)) {
-    active = current_active
-  } else {
-    if (active != current_active) {
-      x = switch(
-        active,
-        nodes = activate(x, "nodes"),
-        edges = activate(x, "edges")
-      )
-    }
-  }
-  xnew = tidygraph::mutate(as_tbl_graph(x), !!get_geometry_colname(as_sf(x)) := NULL)
-  if (active == "edges") {
-    xnew = tbg_to_sfn(xnew)
-  }
-  if (active(xnew) != current_active) {
-    xnew = switch(
-      current_active,
-      nodes = activate(xnew, "nodes"),
-      edges = activate(xnew, "edges")
-    )
-  }
-  xnew
 }
 
 #' Get the geometries of the boundary nodes of given edges.
@@ -250,17 +212,6 @@ get_edges = function(x) {
   as_tibble(x, "edges")
 }
 
-#' Retrieve the name of the geometry list column in an sf object
-#'
-#' @param x An object of class \code{\link[sf]{sf}}.
-#'
-#' @return The name of the geometry list column as a character.
-#'
-#' @noRd
-get_geometry_colname = function(x) {
-  attr(x, "sf_column")
-}
-
 #' Directly extract the nodes of an sfnetwork.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
@@ -270,55 +221,6 @@ get_geometry_colname = function(x) {
 #' @noRd
 get_nodes = function(x) {
   as_sf(x, "nodes")
-}
-
-#' Check if an sfnetwork has spatially explicit edges
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @return \code{TRUE} if the network has spatially explicit edges, \code{FALSE}
-#' otherwise.
-#'
-#' @noRd
-has_spatially_explicit_edges = function(x) {
-  is.sf(get_edges(x))
-}
-
-#' Check if a graph is directed.
-#'
-#' @param x An object of \code{\link{sfnetwork}} or \code{tbl_graph}.
-#'
-#' @return \code{TRUE} when the given graph is directed, \code{FALSE} otherwise.
-#'
-#' @importFrom tidygraph graph_is_directed with_graph
-#' @noRd
-is_directed = function(x) {
-  tidygraph::with_graph(x, tidygraph::graph_is_directed())
-}
-
-#' Check if a table has spatial information stored in a geometry list column
-#'
-#' @param x Object to check for spatial explicitness.
-#'
-#' @return \code{TRUE} if the table has a geometry list column, \code{FALSE}
-#' otherwise.
-#'
-#' @noRd
-is_spatially_explicit = function(x) {
-  any(sapply(x, function(y) inherits(y, "sfc")), na.rm = TRUE)
-}
-
-#' Check if the output of an st_join operation has multiple matches
-#'
-#' @param x The output of an st_join(a,b) operation where the original row
-#' indices of a are stored in a column named \code{.sfnetwork_index}.
-#'
-#' @return \code{TRUE} when there where multiple matches, \code{FALSE}
-#' otherwise.
-#'
-#' @noRd
-multiple_matches = function(x) {
-  any(table(x$.sfnetwork_index) > 1)
 }
 
 #' Draw a line between two points
@@ -335,219 +237,45 @@ points_to_line = function(x, y) {
   sf::st_cast(sf::st_union(x, y), "LINESTRING")
 }
 
-#' Replace a geometry list column with another geometry list column
-#'
-#' @param x An object of class \code{\link{sfnetwork}} \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}.
-#'
-#' @param y An object of class \code{\link[sf]{sfc}}.
-#'
-#' @return An object of the same class as x, but with a replaced geometry list
-#' column
-#'
-#' @importFrom rlang !! :=
-#' @importFrom tidygraph mutate
-#' @noRd
-replace_geometry = function(x, y) {
-  tidygraph::mutate(x, !!get_geometry_colname(as_sf(x)) := y)
-}
-
-#' Check if the CRS of two objects are the same
-#'
-#' @param x An object of class \code{\link{sfnetwork}}, \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}.
-#'
-#' @param y An object of class \code{\link{sfnetwork}}, \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}.
-#'
-#' @return \code{TRUE} when the CRS of x and y are the same, \code{FALSE}
-#' otherwise.
-#'
-#' @importFrom sf st_crs
-#' @noRd
-same_crs = function(x, y) {
-  st_crs(x) == st_crs(y)
-}
-
-#' Check if two sf objects have the same LINESTRING boundary points
-#'
-#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
-#' with \code{LINESTRING} geometries.
-#'
-#' @param y An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
-#' with \code{LINESTRING} geometries.
-#'
-#' @return \code{TRUE} when the boundary points are the same, \code{FALSE}
-#' otherwise.
-#'
-#' @details This is a pairwise check. Each row in x is compared to its
-#' corresponding row in y. Hence, x and y should be of the same length.
-#'
-#' @noRd
-same_boundary_points = function(x, y) {
-  all(same_geometries(get_boundary_points(x), get_boundary_points(y)))
-}
-
-#' Check if two sf objects have the same geometries
-#'
-#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
-#'
-#' @param y An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
-#'
-#' @return A vector of booleans, one element for each (x[i], y[i]) pair.
-#'
-#' @details This is a pairwise check. Each row in x is compared to its
-#' corresponding row in y. Hence, x and y should be of the same length.
-#'
-#' @importFrom sf st_equals
-#' @noRd
-same_geometries = function(x, y) {
-  diag(sf::st_equals(x, y, sparse = FALSE))
-}
-
-#' Rename the geometry list column in an sf object.
-#'
-#' @param x An object of class \code{\link[sf]{sf}}.
-#'
-#' @param name New name of the geometry list column as a character.
-#'
-#' @return The same object as \code{x} but with a renamed geometry list column.
-#'
-#' @noRd
-set_geometry_colname = function(x, name) {
-  names(x)[which(names(x) == get_geometry_colname(x))] = name
-  attr(x, "sf_column") = name
-  x
-}
-
-#' Check if any of the edge boundary points is equal to any of its boundary nodes
-#'
-#' @param nodes Nodes element of an \code{\link{sfnetwork}}.
-#'
-#' @param edges Edges element of an \code{\link{sfnetwork}}.
-#'
-#' @importFrom sf st_equals
-#' @noRd
-nodes_in_edge_boundaries = function(nodes, edges) {
-  # Get geometries of all edge boundary points.
-  edge_boundary_geoms = get_boundary_points(edges)
-  # Get geometries of all edge boundary nodes.
-  edge_boundary_nodes = get_boundary_nodes(nodes, edges)
-  # Test for each edge :
-  # Does one of the boundary points equals at least one of the boundary nodes.
-  mat = sf::st_equals(edge_boundary_geoms, edge_boundary_nodes, sparse = FALSE)
-  all(
-    sapply(
-      seq(1, nrow(mat), by = 2),
-      function(x) sum(mat[x:(x + 1), x:(x + 1)]) > 1
-    )
-  )
-}
-
-#' Check if edge boundaries of are equal to their corresponding nodes
-#'
-#' @param nodes Nodes element of an \code{\link{sfnetwork}}.
-#'
-#' @param edges Edges element of an \code{\link{sfnetwork}}.
-#'
-#' @noRd
-nodes_match_edge_boundaries = function(nodes, edges) {
-  # Get geometries of all edge boundary points.
-  edge_boundary_geoms = get_boundary_points(edges)
-  # Get geometries of all edge boundary nodes.
-  edge_boundary_nodes = get_boundary_nodes(nodes, edges)
-  # Test if the boundary geometries are equal to their corresponding nodes.
-  all(same_geometries(edge_boundary_geoms, edge_boundary_nodes))
-}
-
-#' Query sf attributes from the active element of an sfnetwork object
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @param name Name of the attribute to query. If \code{NULL}, then all sf 
-#' attributes are returned in a list. Defaults to \code{NULL}.
-#'
-#' @param active Which network element (i.e. nodes or edges) to activate before
-#' extracting. If \code{NULL}, it will be set to the current active element of
-#' the given network. Defaults to \code{NULL}.
-#'
-#' @return A list of attributes if \code{name} is \code{NULL}. Otherwise, the 
-#' value of the attribute matched, or NULL if no exact match is found and no or 
-#' more than one partial match is found.
-#'
-#' @details sf attributes include \code{sf_column} (the name of the sf column)
-#' and \code{agr}, the attribute-geometry-relationships.
-#'
-#' @importFrom igraph edge_attr vertex_attr
-#' @noRd
-sf_attr = function(x, name = NULL, active = NULL) {
-  if (is.null(active)) {
-    active = attr(x, "active")
-  }
-  if (is.null(name)) {
-    switch(
-      active,
-      nodes = attributes(igraph::vertex_attr(x)),
-      edges = attributes(igraph::edge_attr(x))
-    )
-  } else {
-    switch(
-      active,
-      nodes = attr(igraph::vertex_attr(x), name),
-      edges = attr(igraph::edge_attr(x), name)
-    )
-  }
-}
-
-#' Check if the geometries of an sf object are all of a specific type
-#'
-#' @param x An object of class \code{\link[sf]{sf}}.
-#'
-#' @param type The geometry type to check for, as a string.
-#'
-#' @return \code{TRUE} when all geometries are of the given type, \code{FALSE}
-#' otherwise.
-#'
-#' @importFrom sf st_is
-#' @noRd
-st_is_all = function(x, type) {
-  all(sf::st_is(x, type))
-}
-
 #' Convert spatially implicit edges to spatially explicit edges
 #'
 #' @param x An object of class \code{\link{sfnetwork}} with spatially implicit
 #' edges.
 #'
-#' @param sf_column_name Name of the sf geometry column that will be created
-#' in the edges table. Defaults to "geometry".
-#'
 #' @return An object of class \code{\link{sfnetwork}} with spatially explicit
 #' edges.
 #'
+#' @importFrom igraph edge_attr
 #' @importFrom rlang !! :=
+#' @importFrom sf NA_agr_
 #' @importFrom tidygraph mutate
 #' @noRd
-explicitize_edges = function(x, sf_column_name = "geometry") {
+explicitize_edges = function(x) {
   if (has_spatially_explicit_edges(x)) {
     x
   } else {
     # Extract the nodes from the network.
     nodes = st_as_sf(x, "nodes")
-    # Extract the geom column name from the nodes, to use the same for the edges.
-    col = get_geometry_colname(nodes)
     # Get the indices of the boundary nodes of each edge.
     # Returns a matrix with source ids in column 1 and target ids in column 2.
     ids = get_boundary_node_indices(x, out = "both")
     # Draw linestring geometries between the boundary nodes of each edge.
     edge_geoms = draw_lines(nodes[ids[, 1], ], nodes[ids[, 2], ])
     # Add the geometries as a column to the edges.
-    xnew = tidygraph::mutate(activate(x, "edges"), !!col := edge_geoms)
-    # Reset the active element if needed.
+    # Use the same column name as the geometry column of the nodes.
+    col = attr(nodes, "sf_column")
+    x_new = tidygraph::mutate(activate(x, "edges"), !!col := edge_geoms)
+    # Set the sf attributes.
+    sf_attr(x_new, "sf_column", "edges") = col
+    sf_attr(x_new, "agr", "edges") = sapply(
+      igraph::edge_attr(x), 
+      function(x) sf::NA_agr_
+    )
+    # Return x.
     switch(
       attr(x, "active"),
-      nodes = activate(xnew, "nodes"),
-      edges = xnew
+      nodes = activate(x_new, "nodes"),
+      edges = x_new
     )
   }
 }

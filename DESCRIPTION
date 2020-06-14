@@ -38,12 +38,12 @@ Imports:
   tidygraph,
   utils
 Suggests:
-    dplyr,
-    fansi,
-    ggplot2,
-    knitr,
-    testthat,
-    spatstat
+  dplyr,
+  fansi,
+  ggplot2,
+  knitr,
+  testthat,
+  spatstat
 RoxygenNote: 7.1.0
 VignetteBuilder: knitr
 URL: https://luukvdmeer.github.io/sfnetworks/, https://github.com/luukvdmeer/sfnetworks
