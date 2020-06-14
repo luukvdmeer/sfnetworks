@@ -71,7 +71,7 @@ st_as_sf.sfnetwork = function(x, active = NULL, ...) {
 }
 
 # =============================================================================
-# Geometry
+# Geometries
 # =============================================================================
 
 #' @name sf
@@ -150,7 +150,7 @@ st_is.sfnetwork = function(x, ...) {
 }
 
 # =============================================================================
-# CRS
+# Coordinates
 # =============================================================================
 
 #' @name sf
@@ -217,9 +217,16 @@ st_wrap_dateline.sfnetwork = function(x, ...) {
   change_coords(x, op = sf::st_wrap_dateline, ...)
 }
 
+#' @name sf
+#' @importFrom sf st_zm
+#' @export
+st_zm.sfnetwork = function(x, ...) {
+  change_coords(x, op = sf::st_zm, ...)
+}
+
 change_coords = function(x, op, ...) {
   switch(
-    active(x),
+    attr(x, "active"),
     nodes = change_node_coords(x, op, ...),
     edges = change_edge_coords(x, op, ...)
   )
@@ -248,6 +255,20 @@ change_element_coords = function(x, element, op, ...) {
   geom = st_geometry(x)
   new_geom = do.call(match.fun(op), list(geom, ...))
   replace_geometry(x, new_geom, element)
+}
+
+#' @name sf
+#' @importFrom sf st_m_range
+#' @export
+st_m_range.sfnetwork = function(x, ...) {
+  sf::st_m_range(st_geometry(x))
+}
+
+#' @name sf
+#' @importFrom sf st_z_range
+#' @export
+st_z_range.sfnetwork = function(x, ...) {
+  sf::st_z_range(st_geometry(x))
 }
 
 # =============================================================================
