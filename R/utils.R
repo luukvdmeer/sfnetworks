@@ -245,7 +245,7 @@ points_to_line = function(x, y) {
 #' @return An object of class \code{\link{sfnetwork}} with spatially explicit
 #' edges.
 #'
-#' @importFrom igraph edge_attr
+#' @importFrom igraph edge_attr_names
 #' @importFrom rlang !! :=
 #' @importFrom sf NA_agr_
 #' @importFrom tidygraph mutate
@@ -259,15 +259,16 @@ explicitize_edges = function(x) {
     # Get the indices of the boundary nodes of each edge.
     # Returns a matrix with source ids in column 1 and target ids in column 2.
     ids = get_boundary_node_indices(x, out = "both")
+    from_ids = nodes[ids[, 1], ]
+    to_ids = nodes[ids[, 2], ]
     # Draw linestring geometries between the boundary nodes of each edge.
-    edge_geoms = draw_lines(nodes[ids[, 1], ], nodes[ids[, 2], ])
+    edge_geoms = draw_lines(from_ids, to_ids)
     # Use the same geometry column name as the geometry column of the nodes.
     col = attr(nodes, "sf_column")
     # Set the sf attributes.
     sf_attr(x, "sf_column", "edges") = col
-    sf_attr(x, "agr", "edges") = sapply(
-      igraph::edge_attr(x), 
-      function(x) sf::NA_agr_
+    sf_attr(x, "agr", "edges") = empty_agr(
+      c("from", "to", igraph::edge_attr_names(x))
     )
     # Add the geometries as a column.
     x_new = tidygraph::mutate(activate(x, "edges"), !!col := edge_geoms)

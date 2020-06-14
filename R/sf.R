@@ -251,6 +251,35 @@ change_element_coords = function(x, element, op, ...) {
 }
 
 # =============================================================================
+# Attribute Geometry Relationships
+# =============================================================================
+
+#' @name sf
+#' @importFrom igraph edge_attr_names vertex_attr_names
+#' @importFrom sf st_agr
+#' @export
+st_agr.sfnetwork = function(x, ...) {
+  agr = sf_attr(x, "agr")
+  if (attr(x, "active") == "nodes") return(agr)
+  unlist(
+    list(agr["from"], agr["to"], agr[setdiff(names(agr), c("from", "to"))])
+  )
+}
+
+#' @name sf
+#' @importFrom sf st_agr<- st_agr
+#' @export
+`st_agr<-.sfnetwork` = function(x, value) {
+  x_sf = as_sf(x)
+  sf::st_agr(x_sf) = value
+  sf_attr(x, "agr") = sf::st_agr(x_sf)
+}
+
+empty_agr = function(attr_names) {
+  structure(rep(sf::NA_agr_, length(attr_names)), names = attr_names)
+}
+
+# =============================================================================
 # Geometric binary predicates
 # =============================================================================
 
