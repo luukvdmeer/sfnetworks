@@ -262,6 +262,17 @@ get_geometry_colname = function(x) {
   attr(x, "sf_column")
 }
 
+#' Directly extract the nodes of an sfnetwork.
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @return An object of class \code{\link[sf]{sf}}.
+#'
+#' @noRd
+get_nodes = function(x) {
+  as_sf(x, "nodes")
+}
+
 #' Check if an sfnetwork has spatially explicit edges
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
@@ -272,17 +283,6 @@ get_geometry_colname = function(x) {
 #' @noRd
 has_spatially_explicit_edges = function(x) {
   is.sf(get_edges(x))
-}
-
-#' Directly extract the nodes of an sfnetwork.
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @return An object of class \code{\link[sf]{sf}}.
-#'
-#' @noRd
-get_nodes = function(x) {
-  as_sf(x, "nodes")
 }
 
 #' Check if a graph is directed.
@@ -459,6 +459,64 @@ nodes_match_edge_boundaries = function(nodes, edges) {
   edge_boundary_nodes = get_boundary_nodes(nodes, edges)
   # Test if the boundary geometries are equal to their corresponding nodes.
   all(same_geometries(edge_boundary_geoms, edge_boundary_nodes))
+}
+
+#' Extract all sf attributes from the active element of an sfnetwork object
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param active Which network element (i.e. nodes or edges) to activate before
+#' extracting. If \code{NULL}, it will be set to the current active element of
+#' the given network. Defaults to \code{NULL}.
+#'
+#' @return A list of attributes.
+#'
+#' @details sf attributes include \code{sf_column} (the name of the sf column)
+#' and \code{agr}, the attribute-geometry-relationships.
+#'
+#' @importFrom igraph edge.attributes vertex.attributes
+#' @noRd
+sf_attributes = function(x, active = NULL) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  switch(
+    active,
+    nodes = attributes(igraph::vertex.attributes(x)),
+    edges = attributes(igraph::edge.attributes(x)),
+    stop("Unknown active element: ", active, ". Only nodes and edges supported")
+  )
+}
+
+#' Extract a specific sf attribute from the active element of an sfnetwork object
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param which A non-empty character string specifying which attribute is to 
+#' be accessed.
+#' 
+#' @param active Which network element (i.e. nodes or edges) to activate before
+#' extracting. If \code{NULL}, it will be set to the current active element of
+#' the given network. Defaults to \code{NULL}.
+#'
+#' @return The value of the attribute matched, or NULL if no exact match is 
+#' found and no or more than one partial match is found.
+#' 
+#' @details sf attributes include \code{sf_column} (the name of the sf column)
+#' and \code{agr}, the attribute-geometry-relationships.
+#'
+#' @importFrom igraph edge.attributes vertex.attributes
+#' @noRd
+sf_attr = function(x, which, active = NULL) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  switch(
+    active,
+    nodes = attr(igraph::vertex.attributes(x), which),
+    edges = attr(igraph::edge.attributes(x), which),
+    stop("Unknown active element: ", active, ". Only nodes and edges supported")
+  )
 }
 
 #' Check if the geometries of an sf object are all of a specific type
