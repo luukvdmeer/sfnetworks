@@ -144,8 +144,7 @@ drop_geometry = function(x, active = NULL) {
       x = switch(
         active,
         nodes = activate(x, "nodes"),
-        edges = activate(x, "edges"),
-        stop("Unknown active element: ", active, ". Only nodes and edges supported")
+        edges = activate(x, "edges")
       )
     }
   }
@@ -498,6 +497,25 @@ sf_attr = function(x, name = NULL, active = NULL) {
       edges = attr(igraph::edge_attr(x), name)
     )
   }
+}
+
+set_sf_attr = function(x, name, value, active = NULL) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  switch(
+    active,
+    nodes = set_sf_attr_nodes(x, name, value),
+    edges = set_sf_attr_edges(x, name, value)
+  )
+}
+
+set_sf_attr_nodes = function(x, name, value) {
+  attr(igraph::vertex_attr(x), name) = value
+}
+
+set_sf_attr_edges = function(x, name, value) {
+  attr(igraph::edge_attr(x), name) = value
 }
 
 #' Check if the geometries of an sf object are all of a specific type
