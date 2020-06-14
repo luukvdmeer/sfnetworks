@@ -461,62 +461,43 @@ nodes_match_edge_boundaries = function(nodes, edges) {
   all(same_geometries(edge_boundary_geoms, edge_boundary_nodes))
 }
 
-#' Extract all sf attributes from the active element of an sfnetwork object
+#' Query sf attributes from the active element of an sfnetwork object
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param name Name of the attribute to query. If \code{NULL}, then all sf 
+#' attributes are returned in a list. Defaults to \code{NULL}.
 #'
 #' @param active Which network element (i.e. nodes or edges) to activate before
 #' extracting. If \code{NULL}, it will be set to the current active element of
 #' the given network. Defaults to \code{NULL}.
 #'
-#' @return A list of attributes.
+#' @return A list of attributes if \code{name} is \code{NULL}. Otherwise, the 
+#' value of the attribute matched, or NULL if no exact match is found and no or 
+#' more than one partial match is found.
 #'
 #' @details sf attributes include \code{sf_column} (the name of the sf column)
 #' and \code{agr}, the attribute-geometry-relationships.
 #'
-#' @importFrom igraph edge.attributes vertex.attributes
+#' @importFrom igraph edge_attr vertex_attr
 #' @noRd
-sf_attributes = function(x, active = NULL) {
+sf_attr = function(x, name = NULL, active = NULL) {
   if (is.null(active)) {
     active = attr(x, "active")
   }
-  switch(
-    active,
-    nodes = attributes(igraph::vertex.attributes(x)),
-    edges = attributes(igraph::edge.attributes(x)),
-    stop("Unknown active element: ", active, ". Only nodes and edges supported")
-  )
-}
-
-#' Extract a specific sf attribute from the active element of an sfnetwork object
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @param which A non-empty character string specifying which attribute is to 
-#' be accessed.
-#' 
-#' @param active Which network element (i.e. nodes or edges) to activate before
-#' extracting. If \code{NULL}, it will be set to the current active element of
-#' the given network. Defaults to \code{NULL}.
-#'
-#' @return The value of the attribute matched, or NULL if no exact match is 
-#' found and no or more than one partial match is found.
-#' 
-#' @details sf attributes include \code{sf_column} (the name of the sf column)
-#' and \code{agr}, the attribute-geometry-relationships.
-#'
-#' @importFrom igraph edge.attributes vertex.attributes
-#' @noRd
-sf_attr = function(x, which, active = NULL) {
-  if (is.null(active)) {
-    active = attr(x, "active")
+  if (is.null(name)) {
+    switch(
+      active,
+      nodes = attributes(igraph::vertex_attr(x)),
+      edges = attributes(igraph::edge_attr(x))
+    )
+  } else {
+    switch(
+      active,
+      nodes = attr(igraph::vertex_attr(x), name),
+      edges = attr(igraph::edge_attr(x), name)
+    )
   }
-  switch(
-    active,
-    nodes = attr(igraph::vertex.attributes(x), which),
-    edges = attr(igraph::edge.attributes(x), which),
-    stop("Unknown active element: ", active, ". Only nodes and edges supported")
-  )
 }
 
 #' Check if the geometries of an sf object are all of a specific type
