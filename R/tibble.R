@@ -13,17 +13,13 @@ as_tibble.sfnetwork = function(x, active = NULL, ...) {
 }
 
 node_tibble = function(x) {
-  as_sf(x, active = "nodes")
+  as_sf(x, "nodes")
 }
 
 #' @importFrom tidygraph as_tibble
 edge_tibble = function(x) {
   tryCatch(
-    expr = {
-      as_sf(x, active = "edges")
-    },
-    error = function(e) {
-      tidygraph::as_tibble(as_tbl_graph(x), active = "edges")
-    }
+    as_sf(x, "edges"),
+    error = function(e) tidygraph::as_tibble(as_tbl_graph(x), "edges")
   )
 }

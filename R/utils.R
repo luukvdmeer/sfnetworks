@@ -23,20 +23,20 @@ cat_subtle = function(...) {
 #' with \code{POINT} geometries and the created edges as an object of class
 #' \code{\link[sf]{sf}} with \code{LINESTRING} geometries.
 #'
-#' @importFrom sf st_as_sf st_crs
+#' @importFrom sf st_sf
 #' @noRd
 create_edges_from_nodes = function(nodes) {
+  # Define indices for source and target nodes.
+  source_ids = 1:(nrow(nodes)-1)
+  target_ids = 2:nrow(nodes)
   # Create separate tables for source and target nodes.
-  sources = nodes[1:(nrow(nodes)-1), ]
-  targets = nodes[2:nrow(nodes), ]
+  sources = nodes[source_ids, ]
+  targets = nodes[target_ids, ]
   # Create linestrings between the source and target nodes.
-  edges = sf::st_as_sf(
-    data.frame(
-      from = 1:(nrow(nodes)-1),
-      to = 2:nrow(nodes),
-      geometry = draw_lines(sources, targets)
-    ),
-    crs = sf::st_crs(nodes)
+  edges = sf::st_sf(
+    from = source_ids,
+    to = target_ids,
+    geometry = draw_lines(sources, targets)
   )
   # Use the same sf column name as in the nodes.
   nodes_geometry_colname = get_geometry_colname(nodes)
@@ -136,7 +136,7 @@ draw_lines = function(x, y) {
 #' @importFrom tidygraph mutate
 #' @noRd
 drop_geometry = function(x, active = NULL) {
-  current_active = active(x)
+  current_active = attr(x, "active")
   if (is.null(active)) {
     active = current_active
   } else {
@@ -507,7 +507,7 @@ explicitize_edges = function(x, sf_column_name = "geometry") {
     xnew = tidygraph::mutate(activate(x, "edges"), !!col := edge_geoms)
     # Reset the active element if needed.
     switch(
-      active(x),
+      attr(x, "active"),
       nodes = activate(xnew, "nodes"),
       edges = xnew
     )

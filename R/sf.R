@@ -14,24 +14,30 @@ st_as_sf.sfnetwork = function(x, active = NULL, ...) {
 #' @importFrom sf st_as_sf
 #' @importFrom tidygraph as_tibble
 as_sf = function(x, active = NULL) {
-  if (is.sf(x)) {
+  if (is.sf(x) | is.sfc(x) | is.sfg(x)) {
     return(x)
-  } else {
-    stopifnot(is.sfnetwork(x))
   }
   if (is.null(active)) {
-    active = active(x)
+    active = attr(x, "active")
   }
   switch(
     active,
-    nodes = sf::st_as_sf(tidygraph::as_tibble(as_tbl_graph(x), active = "nodes")),
-    edges = sf::st_as_sf(tidygraph::as_tibble(as_tbl_graph(x), active = "edges")),
+    nodes = sf::st_as_sf(tidygraph::as_tibble(as_tbl_graph(x), "nodes")),
+    edges = sf::st_as_sf(tidygraph::as_tibble(as_tbl_graph(x), "edges")),
     stop("Unknown active element: ", active, ". Only nodes and edges supported")
   )
 }
 
 is.sf = function(x) {
-  inherits(x, "sf") | inherits(x, "sfc") | inherits(x, "sfg")
+  inherits(x, "sf")
+}
+
+is.sfc = function(x) {
+  inherits(x, "sfc")
+}
+
+is.sfg = function(x) {
+  inherits(x, "sfg")
 }
 
 #' sf methods for sfnetwork objects
