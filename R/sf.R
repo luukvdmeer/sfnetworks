@@ -71,25 +71,12 @@ st_as_sf.sfnetwork = function(x, active = NULL, ...) {
 }
 
 # =============================================================================
-# Geometry utils
+# Geometry
 # =============================================================================
 
 #' @name sf
-#' @importFrom sf st_bbox
-#' @export
-st_bbox.sfnetwork = function(x, ...) {
-  sf::st_bbox(as_sf(x), ...)
-}
-
-#' @name sf
-#' @importFrom sf st_coordinates
-#' @export
-st_coordinates.sfnetwork = function(x, ...) {
-  sf::st_coordinates(as_sf(x), ...)
-}
-
-#' @name sf
 #' @importFrom igraph edge_attr vertex_attr
+#' @importFrom sf st_geometry
 #' @export
 st_geometry.sfnetwork = function(x, ...) {
   geom = switch(
@@ -142,21 +129,35 @@ set_edge_geom = function(x, value) {
 }
 
 #' @name sf
+#' @importFrom sf st_bbox
+#' @export
+st_bbox.sfnetwork = function(x, ...) {
+  sf::st_bbox(st_geometry(x), ...)
+}
+
+#' @name sf
+#' @importFrom sf st_coordinates
+#' @export
+st_coordinates.sfnetwork = function(x, ...) {
+  sf::st_coordinates(st_geometry(x), ...)
+}
+
+#' @name sf
 #' @importFrom sf st_is
 #' @export
 st_is.sfnetwork = function(x, ...) {
-  sf::st_is(as_sf(x), ...)
+  sf::st_is(st_geometry(x), ...)
 }
 
 # =============================================================================
-# CRS utils
+# CRS
 # =============================================================================
 
 #' @name sf
 #' @importFrom sf st_crs
 #' @export
 st_crs.sfnetwork = function(x, ...) {
-  sf::st_crs(as_sf(x), ...)
+  sf::st_crs(st_geometry(x), ...)
 }
 
 #' @name sf
@@ -191,7 +192,7 @@ set_element_crs = function(x, element, value) {
     edges = activate(x, "edges")
   )
   geom = st_geometry(x)
-  st_crs(geom) = value
+  sf::st_crs(geom) = value
   replace_geometry(x, geom, element)
 }
 
@@ -263,17 +264,6 @@ change_element_coords = function(x, element, op, ...) {
 #' @export
 st_intersects.sfnetwork = function(x, y = x, ...) {
   sf::st_intersects(as_sf(x), as_sf(y), ...)
-}
-
-# =============================================================================
-# Geometric measurements
-# =============================================================================
-
-#' @name sf
-#' @importFrom sf st_area
-#' @export
-st_area.sfnetwork = function(x) {
-  sf::st_area(as_sf(x))
 }
 
 # =============================================================================

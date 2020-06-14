@@ -261,16 +261,16 @@ explicitize_edges = function(x) {
     ids = get_boundary_node_indices(x, out = "both")
     # Draw linestring geometries between the boundary nodes of each edge.
     edge_geoms = draw_lines(nodes[ids[, 1], ], nodes[ids[, 2], ])
-    # Add the geometries as a column to the edges.
-    # Use the same column name as the geometry column of the nodes.
+    # Use the same geometry column name as the geometry column of the nodes.
     col = attr(nodes, "sf_column")
-    x_new = tidygraph::mutate(activate(x, "edges"), !!col := edge_geoms)
     # Set the sf attributes.
-    sf_attr(x_new, "sf_column", "edges") = col
-    sf_attr(x_new, "agr", "edges") = sapply(
+    sf_attr(x, "sf_column", "edges") = col
+    sf_attr(x, "agr", "edges") = sapply(
       igraph::edge_attr(x), 
       function(x) sf::NA_agr_
     )
+    # Add the geometries as a column.
+    x_new = tidygraph::mutate(activate(x, "edges"), !!col := edge_geoms)
     # Return x.
     switch(
       attr(x, "active"),
