@@ -1,15 +1,5 @@
 #' @export
-st_as_sf.sfnetwork = function(x, active = NULL, ...) {
-  if (is.null(active)) {
-    active = attr(x, "active")
-  }
-  switch(
-    active,
-    nodes = as_sf(x, "nodes"),
-    edges = as_sf(x, "edges"),
-    stop("Unknown active element: ", active, ". Only nodes and edges supported")
-  )
-}
+
 
 #' @importFrom sf st_as_sf
 #' @importFrom tidygraph as_tibble
@@ -54,18 +44,33 @@ is.sfg = function(x) {
 #'
 #' @param ... Arguments passed on the corresponding \code{sf} function.
 #'
+#' @param active Which network element (i.e. nodes or edges) to activate before
+#' extracting. If \code{NULL}, it will be set to the current active element of
+#' the given network. Defaults to \code{NULL}.
+#'
+#' @param value See \code{\link[sf]{st_crs}} or \code{\link[sf]{st_geometry}}.
+#'
 #' @param join See \code{\link[sf]{st_join}}.
 #'
 #' @param left See \code{\link[sf]{st_join}}.
-#'
-#' @param value See \code{\link[sf]{st_crs}} or \code{\link[sf]{st_geometry}}.
 #'
 #' @param .predicate See \code{\link[sf]{st_filter}}.
 #'
 #' @details See the \code{\link[sf]{sf}} documentation.
 #'
 #' @name sf
-NULL
+#' @export
+st_as_sf.sfnetwork = function(x, active = NULL, ...) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  switch(
+    active,
+    nodes = as_sf(x, "nodes"),
+    edges = as_sf(x, "edges"),
+    stop("Unknown active element: ", active, ". Only nodes and edges supported")
+  )
+}
 
 # =============================================================================
 # CRS utils
