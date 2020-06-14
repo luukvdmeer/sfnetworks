@@ -3,17 +3,21 @@
 \name{as_sfnetwork}
 \alias{as_sfnetwork}
 \alias{as_sfnetwork.default}
+\alias{as_sfnetwork.linnet}
+\alias{as_sfnetwork.psp}
 \alias{as_sfnetwork.sf}
 \alias{as_sfnetwork.sfNetwork}
 \alias{as_sfnetwork.sfnetwork}
 \alias{as_sfnetwork.tbl_graph}
-\alias{as_sfnetwork.psp}
-\alias{as_sfnetwork.linnet}
 \title{Convert a foreign object to an sfnetwork object}
 \usage{
 as_sfnetwork(x, ...)
 
 \method{as_sfnetwork}{default}(x, ...)
+
+\method{as_sfnetwork}{linnet}(x, ...)
+
+\method{as_sfnetwork}{psp}(x, ...)
 
 \method{as_sfnetwork}{sf}(x, ...)
 
@@ -22,10 +26,6 @@ as_sfnetwork(x, ...)
 \method{as_sfnetwork}{sfnetwork}(x, ...)
 
 \method{as_sfnetwork}{tbl_graph}(x, ...)
-
-\method{as_sfnetwork}{psp}(x, ...)
-
-\method{as_sfnetwork}{linnet}(x, ...)
 }
 \arguments{
 \item{x}{object to be converted into an \code{\link{sfnetwork}} object.}
@@ -43,19 +43,18 @@ nodes can be read by \code{\link[sf]{st_as_sf}}, it is automatically
 supported by sfnetworks.
 }
 \examples{
-# Examples for psp method
-if (require(spatstat)) {
-test_psp = psp(runif(10), runif(10), runif(10), runif(10), window=owin())
-plot(test_psp, main = "spatstat input")
-test_psp_as_sfnetwork = as_sfnetwork(test_psp)
-plot(test_psp_as_sfnetwork, main = "sfnetworks output")
-}
-
 # Examples for linnet method
 if (require(spatstat)) {
 plot(simplenet, main = "spatstat input")
 simplenet_as_sfnetwork = as_sfnetwork(simplenet)
 plot(simplenet_as_sfnetwork, main = "sfnetworks output")
 }
-
+# Examples for psp method
+if (require(spatstat)) {
+set.seed(42)
+test_psp = psp(runif(10), runif(10), runif(10), runif(10), window=owin())
+plot(test_psp, main = "spatstat input")
+test_psp_as_sfnetwork = as_sfnetwork(test_psp)
+plot(test_psp_as_sfnetwork, main = "sfnetworks output")
+}
 }

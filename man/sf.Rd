@@ -2,99 +2,27 @@
 % Please edit documentation in R/sf.R
 \name{sf}
 \alias{sf}
+\alias{st_as_sf.sfnetwork}
+\alias{st_bbox.sfnetwork}
+\alias{st_coordinates.sfnetwork}
+\alias{st_geometry.sfnetwork}
+\alias{st_geometry<-.sfnetwork}
+\alias{st_is.sfnetwork}
 \alias{st_crs.sfnetwork}
 \alias{st_crs<-.sfnetwork}
 \alias{st_shift_longitude.sfnetwork}
 \alias{st_transform.sfnetwork}
 \alias{st_wrap_dateline.sfnetwork}
-\alias{st_dimension.sfnetwork}
-\alias{st_is_empty.sfnetwork}
-\alias{st_is_simple.sfnetwork}
-\alias{st_is_valid.sfnetwork}
-\alias{st_contains.sfnetwork}
-\alias{st_contains_properly.sfnetwork}
-\alias{st_covers.sfnetwork}
-\alias{st_covered_by.sfnetwork}
-\alias{st_crosses.sfnetwork}
-\alias{st_disjoint.sfnetwork}
-\alias{st_equals.sfnetwork}
-\alias{st_equals_exact.sfnetwork}
 \alias{st_intersects.sfnetwork}
-\alias{st_is_within_distance.sfnetwork}
-\alias{st_overlaps.sfnetwork}
-\alias{st_touches.sfnetwork}
-\alias{st_within.sfnetwork}
 \alias{st_area.sfnetwork}
-\alias{st_distance.sfnetwork}
-\alias{st_length.sfnetwork}
 \alias{st_reverse.sfnetwork}
 \alias{st_simplify.sfnetwork}
-\alias{st_bbox.sfnetwork}
-\alias{st_coordinates.sfnetwork}
-\alias{st_geometry.sfnetwork}
-\alias{st_geometry<-.sfnetwork}
-\alias{st_geometry_type.sfnetwork}
-\alias{st_is.sfnetwork}
+\alias{st_join.sfnetwork}
 \alias{st_crop.sfnetwork}
 \alias{st_filter.sfnetwork}
-\alias{st_join.sfnetwork}
-\alias{st_nearest_feature.sfnetwork}
-\alias{st_relate.sfnetwork}
 \title{sf methods for sfnetwork objects}
 \usage{
-\method{st_crs}{sfnetwork}(x, ...)
-
-\method{st_crs}{sfnetwork}(x) <- value
-
-\method{st_shift_longitude}{sfnetwork}(x, ...)
-
-\method{st_transform}{sfnetwork}(x, crs, ...)
-
-\method{st_wrap_dateline}{sfnetwork}(x, ...)
-
-st_dimension.sfnetwork(x, ...)
-
-st_is_empty.sfnetwork(x)
-
-st_is_simple.sfnetwork(x)
-
-\method{st_is_valid}{sfnetwork}(x, ...)
-
-st_contains.sfnetwork(x, y = x, ...)
-
-st_contains_properly.sfnetwork(x, y = x, ...)
-
-st_covers.sfnetwork(x, y = x, ...)
-
-st_covered_by.sfnetwork(x, y = x, ...)
-
-st_crosses.sfnetwork(x, y = x, ...)
-
-st_disjoint.sfnetwork(x, y = x, ...)
-
-st_equals.sfnetwork(x, y = x, ...)
-
-st_equals_exact.sfnetwork(x, y = x, ...)
-
-\method{st_intersects}{sfnetwork}(x, y = x, ...)
-
-st_is_within_distance.sfnetwork(x, y = x, ...)
-
-st_overlaps.sfnetwork(x, y = x, ...)
-
-st_touches.sfnetwork(x, y = x, ...)
-
-st_within.sfnetwork(x, y = x, ...)
-
-\method{st_area}{sfnetwork}(x)
-
-st_distance.sfnetwork(x, y = x, ...)
-
-st_length.sfnetwork(x)
-
-\method{st_reverse}{sfnetwork}(x, ...)
-
-\method{st_simplify}{sfnetwork}(x, ...)
+\method{st_as_sf}{sfnetwork}(x, active = NULL, ...)
 
 \method{st_bbox}{sfnetwork}(x, ...)
 
@@ -104,39 +32,53 @@ st_length.sfnetwork(x)
 
 \method{st_geometry}{sfnetwork}(x) <- value
 
-st_geometry_type.sfnetwork(x, ...)
-
 \method{st_is}{sfnetwork}(x, ...)
+
+\method{st_crs}{sfnetwork}(x, ...)
+
+\method{st_crs}{sfnetwork}(x) <- value
+
+\method{st_shift_longitude}{sfnetwork}(x, ...)
+
+\method{st_transform}{sfnetwork}(x, ...)
+
+\method{st_wrap_dateline}{sfnetwork}(x, ...)
+
+\method{st_intersects}{sfnetwork}(x, y = x, ...)
+
+\method{st_area}{sfnetwork}(x)
+
+\method{st_reverse}{sfnetwork}(x, ...)
+
+\method{st_simplify}{sfnetwork}(x, ...)
+
+\method{st_join}{sfnetwork}(x, y, join = st_intersects, ..., left = TRUE)
 
 \method{st_crop}{sfnetwork}(x, y, ...)
 
 \method{st_filter}{sfnetwork}(x, y, ..., .predicate = st_intersects)
-
-\method{st_join}{sfnetwork}(x, y, join = st_intersects, ..., left = TRUE)
-
-st_nearest_feature.sfnetwork(x, y)
-
-st_relate.sfnetwork(x, y, ...)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
 
+\item{active}{Which network element (i.e. nodes or edges) to activate before
+extracting. If \code{NULL}, it will be set to the current active element of
+the given network. Defaults to \code{NULL}.}
+
 \item{...}{Arguments passed on the corresponding \code{sf} function.}
 
 \item{value}{See \code{\link[sf]{st_crs}} or \code{\link[sf]{st_geometry}}.}
-
-\item{crs}{See \code{\link[sf]{st_transform}}.}
 
 \item{y}{An object of class \link{sfnetwork} or class \code{\link[sf]{sf}}.
 In some cases, it can also be an object of \code{\link[sf]{sfc}},
 \code{\link[sf:st]{sfg}} or \code{\link[sf:st_bbox]{bbox}}. Always look at
 the documentation of the corresponding \code{sf} function for details.}
 
-\item{.predicate}{See \code{\link[sf]{st_filter}}.}
-
 \item{join}{See \code{\link[sf]{st_join}}.}
 
 \item{left}{See \code{\link[sf]{st_join}}.}
+
+\item{.predicate}{See \code{\link[sf]{st_filter}}.}
 }
 \description{
 \code{\link[sf]{sf}} methods for \code{\link{sfnetwork}} objects. Use these 
