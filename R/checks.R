@@ -21,7 +21,7 @@ expect_active_edges = function(x) {
 #'
 #' @noRd
 expect_spatially_explicit_edges = function(x) {
-  if (! has_spatially_explicit_edges(graph)) {
+  if (! has_spatially_explicit_edges(x)) {
     stop("This call requires spatially explicit edges")
   }
 }

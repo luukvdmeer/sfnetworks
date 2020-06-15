@@ -59,7 +59,16 @@ sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = NULL,
   if (! is.sf(nodes)) nodes = nodes_to_sf(nodes, ...)
   # If edges is an sf object, tidygraph cannot handle it due to sticky geometry.
   # Therefore it has to be converted into a regular data frame (or tibble).
-  if (is.sf(edges)) class(edges) = setdiff(class(edges), "sf")
+  if (is.sf(edges)) {
+    class(edges) = setdiff(class(edges), "sf")
+  } else {
+    # If there is a geometry list column but no agr attribute, this has to be
+    # created by converting to an sf object first.
+    if (is.null(attr(edges, "agr")) && is_spatially_explicit(edges)) {
+      edges = sf::st_as_sf(edges)
+      class(edges) = setdiff(class(edges), "sf")
+    }
+  }
   # Check network validity.
   if (! force) check_network_validity(nodes, edges, directed, edges_as_lines)
   # Create the network with the nodes and edges.

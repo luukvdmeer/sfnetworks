@@ -106,7 +106,6 @@ edge_spatial_tibble = function(x) {
 morph.sfnetwork = function(.data, .f, ...) {
   # Morph using tidygraphs morphing functionality.
   # First convert to tbl_graph if sfnetwork object gives errors.
-  NextMethod()
   morphed = tryCatch(
     NextMethod(),
     error = function(e) tidygraph::morph(as_tbl_graph(.data), .f, ...)
