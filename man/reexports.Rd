@@ -5,6 +5,7 @@
 \alias{reexports}
 \alias{activate}
 \alias{active}
+\alias{\%>\%}
 \title{Objects exported from other packages}
 \keyword{internal}
 \description{
@@ -12,6 +13,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{tidygraph}{\code{\link[tidygraph]{activate}}, \code{\link[tidygraph]{active}}}
+  \item{tidygraph}{\code{\link[tidygraph]{\%>\%}}, \code{\link[tidygraph]{activate}}, \code{\link[tidygraph]{active}}}
 }}
 
