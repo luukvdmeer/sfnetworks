@@ -61,8 +61,8 @@ weights are used (even if the edges have a weight attribute).}
 
 \item{snap}{Which technique to use for snapping given geospatial points to the
 network. Can be either 'nearest_node', which will use the nearest node to the
-given point, or 'nearest_edge_point', which will use the nearest location on
-the nearest edge to the given point. Defaults to 'nearest_node', which is
+given point, or 'nearest_point_on_edge', which will use the nearest location 
+on the nearest edge to the given point. Defaults to 'nearest_node', which is
 currently the only implemented option.}
 
 \item{...}{Arguments passed on to the corresponding 

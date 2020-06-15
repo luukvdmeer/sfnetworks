@@ -2,7 +2,7 @@
 #' @importFrom tidygraph pull
 set_shortest_paths_parameters = function(graph, from, to, weights, snap) {
   # Get node index of from node.
-  if (is.sf(from)) {
+  if (is.sf(from) | is.sfc(from) | is.sfg(from)) {
     from = switch(
       snap,
       nearest_node = sf::st_nearest_feature(from, activate(graph, "nodes")),
@@ -10,7 +10,7 @@ set_shortest_paths_parameters = function(graph, from, to, weights, snap) {
     )
   }
   # Get node indices of to nodes.
-  if (is.sf(to)) {
+  if (is.sf(to) | is.sfc(to) | is.sfg(to)) {
     to = switch(
       snap,
       nearest_node = sf::st_nearest_feature(to, activate(graph, "nodes")),
@@ -58,8 +58,8 @@ set_shortest_paths_parameters = function(graph, from, to, weights, snap) {
 #'
 #' @param snap Which technique to use for snapping given geospatial points to the
 #' network. Can be either 'nearest_node', which will use the nearest node to the
-#' given point, or 'nearest_edge_point', which will use the nearest location on
-#' the nearest edge to the given point. Defaults to 'nearest_node', which is
+#' given point, or 'nearest_point_on_edge', which will use the nearest location 
+#' on the nearest edge to the given point. Defaults to 'nearest_node', which is
 #' currently the only implemented option.
 #' 
 #' @param ... Arguments passed on to the corresponding 
