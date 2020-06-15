@@ -260,6 +260,7 @@ Or, for calculating the lengths of multiple shortest paths.
 
 ```{r}
 net %>%
+  activate("edges") %>%
   morph(to_spatial_shortest_paths, p1, c(p3, p4)) %>%
   sapply(function(x) sum(st_length(x)))
 ```
