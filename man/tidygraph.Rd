@@ -5,6 +5,8 @@
 \alias{as_tbl_graph.sfnetwork}
 \alias{as_tibble.sfnetwork}
 \alias{morph.sfnetwork}
+\alias{mutate.sfnetwork}
+\alias{select.sfnetwork}
 \title{tidygraph methods for sfnetwork objects}
 \usage{
 \method{as_tbl_graph}{sfnetwork}(x, ...)
@@ -12,6 +14,10 @@
 \method{as_tibble}{sfnetwork}(x, active = NULL, spatial = TRUE, ...)
 
 \method{morph}{sfnetwork}(.data, .f, ...)
+
+\method{mutate}{sfnetwork}(.data, ...)
+
+\method{select}{sfnetwork}(.data, ...)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
@@ -51,7 +57,7 @@ geometry list column is present, by default it will return a
 'spatial tibble'. With that we mean an object of class 
 \code{c('sf', 'tbl_df')} instead of an object of class \code{'tbl_df'}.
 
-\item \code{morph.sfnetwork}: The sfnetwork methods for 
+\item \code{morph.sfnetwork}: The sfnetwork method for 
 \code{\link[tidygraph]{morph}} will first try to input the 
 \code{\link{sfnetwork}} object into the morph method for a 
 \code{\link[tidygraph]{tbl_graph}}. If this fails, it will first convert
@@ -60,5 +66,11 @@ object before calling \code{\link[tidygraph]{morph}}. The returned value
 will be a \code{morphed_sfnetwork} when all elements of the morphed graph
 are of class \code{\link{sfnetwork}}, and a \code{morphed_tbl_graph}
 otherwise.
+
+\item \code{mutate.sfnetwork}: The sfnetwork method for \code{\link[tidygraph]{mutate}}
+works the same, but updates the sf attributes of the resulting network.
+
+\item \code{select.sfnetwork}: The sfnetwork method for \code{\link[tidygraph]{select}}
+works the same, but updates the sf attributes of the resulting network.
 }}
 

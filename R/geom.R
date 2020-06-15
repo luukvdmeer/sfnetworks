@@ -154,13 +154,13 @@ validate_edge_geometry = function(x) {
     # Start point should match start node.
     # End point should match end node.
     if (! nodes_match_edge_boundaries(nodes, edges)) {
-      stop("Boundary points of replacement should match their corresponding nodes")
+      stop("Boundary points of edges should match their corresponding nodes")
     }
   } else {
     # Start point should match either start or end node.
     # End point should match either start or end node.
     if (! nodes_in_edge_boundaries(nodes, edges)) {
-      stop("Boundary points of replacement should match their corresponding nodes")
+      stop("Boundary points of edges should match their corresponding nodes")
     }
   }
 }
