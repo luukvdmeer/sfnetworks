@@ -1,18 +1,6 @@
-#' @importFrom sf st_as_sf
-#' @importFrom tidygraph as_tibble
 as_sf = function(x, active = NULL) {
-  if (is.sf(x) | is.sfc(x) | is.sfg(x)) {
-    return(x)
-  }
-  if (is.null(active)) {
-    active = attr(x, "active")
-  }
-  switch(
-    active,
-    nodes = sf::st_as_sf(tidygraph::as_tibble(as_tbl_graph(x), "nodes")),
-    edges = sf::st_as_sf(tidygraph::as_tibble(as_tbl_graph(x), "edges")),
-    stop("Unknown active element: ", active, ". Only nodes and edges supported")
-  )
+  if (is.sf(x) | is.sfc(x) | is.sfg(x)) return(x)
+  st_as_sf(x, active)
 }
 
 is.sf = function(x) {
@@ -64,11 +52,29 @@ st_as_sf.sfnetwork = function(x, active = NULL, ...) {
   }
   switch(
     active,
-    nodes = as_sf(x, "nodes"),
-    edges = as_sf(x, "edges"),
+    nodes = nodes_as_sf(x, ...),
+    edges = edges_as_sf(x, ...),
     stop("Unknown active element: ", active, ". Only nodes and edges supported")
   )
 }
+
+nodes_as_sf = function(x, ...) {
+  sf::st_as_sf(
+    tidygraph::as_tibble(as_tbl_graph(x), "nodes"),
+    agr = sf_attr(x, "agr", "nodes"),
+    sf_column_name = sf_attr(x, "sf_column", "nodes")
+  )
+}
+
+edges_as_sf = function(x, ...) {
+  sf::st_as_sf(
+    tidygraph::as_tibble(as_tbl_graph(x), "edges"),
+    agr = sf_attr(x, "agr", "edges"),
+    sf_column_name = sf_attr(x, "sf_column", "edges")
+  )
+}
+
+
 
 # =============================================================================
 # Geometries
@@ -280,11 +286,7 @@ st_z_range.sfnetwork = function(x, ...) {
 #' @importFrom sf st_agr
 #' @export
 st_agr.sfnetwork = function(x, ...) {
-  agr = sf_attr(x, "agr")
-  if (attr(x, "active") == "nodes") return(agr)
-  unlist(
-    list(agr["from"], agr["to"], agr[setdiff(names(agr), c("from", "to"))])
-  )
+  sf_attr(x, "agr")
 }
 
 #' @name sf
@@ -294,10 +296,7 @@ st_agr.sfnetwork = function(x, ...) {
   x_sf = as_sf(x)
   sf::st_agr(x_sf) = value
   sf_attr(x, "agr") = sf::st_agr(x_sf)
-}
-
-empty_agr = function(attr_names) {
-  structure(rep(sf::NA_agr_, length(attr_names)), names = attr_names)
+  x
 }
 
 # =============================================================================
@@ -426,70 +425,4 @@ filter_network = function(op, x, y, ...) {
   d_tmp = do.call(match.fun(op), list(xsf, ysf, ...))
   keep_ind = d_tmp$.sfnetwork_index
   tidygraph::slice(x, keep_ind)
-}
-
-#' Query sf attributes from the active element of an sfnetwork object
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @param name Name of the attribute to query. If \code{NULL}, then all sf 
-#' attributes are returned in a list. Defaults to \code{NULL}.
-#'
-#' @param active Which network element (i.e. nodes or edges) to activate before
-#' extracting. If \code{NULL}, it will be set to the current active element of
-#' the given network. Defaults to \code{NULL}.
-#'
-#' @param value The new value of the attribute, or \code{NULL} to remove the 
-#' attribute.
-#'
-#' @return For the extractor: a list of attributes if \code{name} is \code{NULL},
-#' otherwise the value of the attribute matched, or NULL if no exact match is 
-#' found and no or more than one partial match is found.
-#'
-#' @details sf attributes include \code{sf_column} (the name of the sf column)
-#' and \code{agr} (the attribute-geometry-relationships).
-#'
-#' @name sf_attr
-#' @importFrom igraph edge_attr vertex_attr
-#' @export
-sf_attr = function(x, name = NULL, active = NULL) {
-  if (is.null(active)) {
-    active = attr(x, "active")
-  }
-  if (is.null(name)) {
-    switch(
-      active,
-      nodes = attributes(igraph::vertex_attr(x)),
-      edges = attributes(igraph::edge_attr(x))
-    )
-  } else {
-    switch(
-      active,
-      nodes = attr(igraph::vertex_attr(x), name),
-      edges = attr(igraph::edge_attr(x), name)
-    )
-  }
-}
-
-#' @name sf_attr
-#' @export
-`sf_attr<-` = function(x, name, active = NULL, value) {
-  if (is.null(active)) {
-    active = attr(x, "active")
-  }
-  switch(
-    active,
-    nodes = set_node_sf_attr(x, name, value),
-    edges = set_edge_sf_attr(x, name, value)
-  )
-}
-
-set_node_sf_attr = function(x, name, value) {
-  attr(igraph::vertex_attr(x), name) = value
-  x
-}
-
-set_edge_sf_attr = function(x, name, value) {
-  attr(igraph::edge_attr(x), name) = value
-  x
 }

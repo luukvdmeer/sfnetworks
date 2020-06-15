@@ -63,11 +63,17 @@ sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = NULL,
   # Check network validity.
   if (! force) check_network_validity(nodes, edges, directed, edges_as_lines)
   # Create the network with the nodes and edges.
+  # Store sf attributes of the nodes and edges in a special graph attribute.
   x_tbg = tidygraph::tbl_graph(nodes, edges, directed = directed)
-  x_sfn = tbg_to_sfn(x_tbg)
+  x_sfn = structure(
+    x_tbg,
+    class = c("sfnetwork", class(x_tbg)),
+    sf = list(nodes = attrs_from_sf(nodes), edges = attrs_from_sf(edges))
+  )
   # Add or remove edge geometries if needed.
   if (edges_as_lines) {
-    explicitize_edges(x_sfn)
+    # Reorder agr since 'from' and 'to' are always the first two columns now.
+    explicitize_edges(order_agr(x_sfn))
   } else {
     implicitize_edges(x_sfn)
   }
