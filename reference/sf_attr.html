@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot sfnetwork object — plot.sfnetwork • sfnetworks</title>
+<title>Query sf attributes from the active element of an sfnetwork object — sf_attr • sfnetworks</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Plot sfnetwork object — plot.sfnetwork" />
-<meta property="og:description" content="Plot the geometries of an object of class sfnetwork." />
+<meta property="og:title" content="Query sf attributes from the active element of an sfnetwork object — sf_attr" />
+<meta property="og:description" content="Query sf attributes from the active element of an sfnetwork object" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -123,50 +123,60 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot sfnetwork object</h1>
-    <small class="dont-index">Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/R/plot.R'><code>R/plot.R</code></a></small>
-    <div class="hidden name"><code>plot.sfnetwork.Rd</code></div>
+    <h1>Query sf attributes from the active element of an sfnetwork object</h1>
+    <small class="dont-index">Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/R/attrs.R'><code>R/attrs.R</code></a></small>
+    <div class="hidden name"><code>sf_attr.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plot the geometries of an object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p>
+    <p>Query sf attributes from the active element of an sfnetwork object</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for sfnetwork</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>draw_lines</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>sf_attr</span>(<span class='no'>x</span>, <span class='kw'>name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>active</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+
+<span class='fu'>sf_attr</span>(<span class='no'>x</span>, <span class='no'>name</span>, <span class='kw'>active</span> <span class='kw'>=</span> <span class='kw'>NULL</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>Object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></td>
+      <td><p>An object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></td>
     </tr>
     <tr>
-      <th>draw_lines</th>
-      <td><p>If the edges of the network are spatially implicit, should
-straight lines be drawn between connected nodes? Defaults to <code>TRUE</code>.
-Ignored when the edges of the network are spatially explicit.</p></td>
+      <th>name</th>
+      <td><p>Name of the attribute to query. If <code>NULL</code>, then all sf 
+attributes are returned in a list. Defaults to <code>NULL</code>.</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>Arguments passed on to <code><a href='https://rdrr.io/pkg/sf/man/plot.html'>plot.sf</a></code></p></td>
+      <th>active</th>
+      <td><p>Which network element (i.e. nodes or edges) to activate before
+extracting. If <code>NULL</code>, it will be set to the current active element of
+the given network. Defaults to <code>NULL</code>.</p></td>
+    </tr>
+    <tr>
+      <th>value</th>
+      <td><p>The new value of the attribute, or <code>NULL</code> to remove the 
+attribute.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>For the extractor: a list of attributes if <code>name</code> is <code>NULL</code>,
+otherwise the value of the attribute matched, or NULL if no exact match is 
+found and no or more than one partial match is found.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>This is a basic plotting functionality. For more advanced plotting,
-it is recommended to extract the nodes and edges from the network, and plot
-them separately with one of the many available spatial plotting functions
-as can be found in <code>sf</code>, <code>tmap</code>, <code>ggplot2</code>, <code>ggspatial</code>,
-and others.</p>
+    <p>sf attributes include <code>sf_column</code> (the name of the sf column)
+and <code>agr</code> (the attribute-geometry-relationships).</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#value">Value</a></li>
       <li><a href="#details">Details</a></li>
     </ul>
 

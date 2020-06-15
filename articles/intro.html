@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -54,12 +54,25 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/extensions.html">Extending the vocabulary</a>
+    </li>
+    <li>
       <a href="../articles/intro.html">Tidy Geospatial Networks in R</a>
     </li>
   </ul>
 </li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/luukvdmeer/sfnetworks">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -74,9 +87,9 @@
     <div class="page-header toc-ignore">
       <h1>Tidy Geospatial Networks in R</h1>
             
-            <h4 class="date">2020-05-14</h4>
+            <h4 class="date">2020-06-15</h4>
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/intro.Rmd"><code>vignettes/intro.Rmd</code></a></small>
       <div class="hidden name"><code>intro.Rmd</code></div>
 
     </div>
@@ -90,6 +103,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>R is also well-suited for network analysis, thanks to the R interface of the <a href="https://igraph.org/">igraph library</a>. The <a href="https://tidygraph.data-imaginist.com/index.html">tidygraph package</a> extends <code>igraph</code> into the domain of the <code>tidyverse</code>, enabling <code>dplyr</code> compatibility by treating a graph as a collection of two tidy data frames describing respectively the nodes and edges.</p>
 <p>Given the strength of R in spatial <em>and</em> network analysis, one would expect it to be an ideal language for analysis of geospatial networks. Geospatial networks are simultaneously graph and spatial objects, with nodes and edges embedded in geographic space. Well known examples include transport networks, river basins, power grids, ecological networks and geolocated social networks.</p>
 <p>Although several R packages exist that address geospatial networks, they often focus on a specific application within the broader domain of geospatial network analysis, or complicate <code>tidyverse</code> compatibility, for example by using S4 classes or relying on the older <code>sp</code> package for spatial data handling. Hence, at present, no generally applicable, <code>tidyverse</code> compatible classes exist for geospatial network data, representing a gap in R’s spatial and network analysis ecosystems (see the <a href="https://cran.r-project.org/web/views/gR.html">gRaphical Models</a> and <a href="https://cran.r-project.org/web/views/Spatial.html">Spatial</a> task views). <code>sfnetworks</code> is created to fill this gap, and form a connecting edge between the two worlds.</p>
+<p>The core of the package is a data structure that can be provided directly to both graph analytical functions of <code>tidygraph</code> and spatial analytical functions of <code>sf</code>. However, there might be problems that are so specific to spatial networks, that they can neither be solved by <code>tidygraph</code> nor <code>sf</code>. Therefore, <code>sfnetworks</code> will contain several extensions to the current offer of the two “parent packages”. Think for example of a function that can snap spatial points to the edges of a network. We want to prevent that <code>sfnetworks</code> goes too much into a single application - it should remain a lower-level package - but basic, widely used spatial network operations should be supported. See the <a href="https://luukvdmeer.github.io/sfnetworks/articles/extensions.html">extensions vignette</a> for an explanation of the currently implemented extensions.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
@@ -114,10 +128,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <ul>
 <li>The nodes should be an object of class <code>sf</code>, solely containing features with <code>POINT</code> geometries.</li>
 <li>When creating a network with spatially explicit edges, the edges should be an object of class <code>sf</code>, solely containing features with <code>LINESTRING</code> geometries. Otherwise, they can be a <code>data.frame</code> or <code>tibble</code>. In any case, they should contain the indices of their end-nodes in a to and from column, or in the two first columns, as integers. Every node index refers to the <em>position</em> (i.e. the rownumber) of the node in the nodes table.</li>
-<li>When creating a network with spatially explicit edges, the coordinates of the endpoints of the edge linestrings should match with the coordinates of the respective end-nodes. Otherwise, the network structure is not valid. Note that this also depends on the precision of the coordinates.</li>
+<li>When creating a network with spatially explicit edges, the coordinates of the boundary points of the edge linestrings should match with the coordinates of the respective end-nodes. Otherwise, the network structure is not valid. Note that this also depends on the precision of the coordinates.</li>
 <li>When creating a network with spatially explicit edges, the two provided sf objects should have the same CRS.</li>
 </ul>
-<p>Additionally, one can set the <code>directed</code> argument, defining if the created network should be directed or not. This defaults to <code>TRUE</code>.</p>
+<p>Additionally, one can set the <code>directed</code> argument, defining if the created network should be directed or not. This defaults to <code>TRUE</code>. The <code>edges_to_lines</code> argument defines if the edges of the resulting network should be spatially explicit or not.</p>
 <p>See below a small toy example.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(sfnetworks)</span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(sf)</span>
@@ -134,13 +148,13 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span id="cb3-10"><a href="#cb3-10"></a>edges<span class="op">$</span>from =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span>
 <span id="cb3-11"><a href="#cb3-11"></a>edges<span class="op">$</span>to =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">3</span>)</span>
 <span id="cb3-12"><a href="#cb3-12"></a></span>
-<span id="cb3-13"><a href="#cb3-13"></a><span class="kw"><a href="../reference/sfnetwork.html">sfnetwork</a></span>(nodes, edges, <span class="dt">directed =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">3</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">3</span><span> </span><span style="color: #555555;">edges
+<span id="cb3-13"><a href="#cb3-13"></a><span class="kw"><a href="../reference/sfnetwork.html">sfnetwork</a></span>(nodes, edges, <span class="dt">directed =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="co">#&gt; Checking validity of network structure... Use force=TRUE to force construction without checks</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># An sfnetwork with</span><span> </span><span style="color: #555555;">3</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">3</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">
-#&gt; #</span><span>
-#&gt; </span><span style="color: #555555;"># An undirected simple graph with 1 component</span><span>
-#&gt; </span><span style="color: #555555;"># and spatially explicit edges
+#&gt; #
+#&gt; # An undirected simple graph with 1 component with spatially explicit edges
 #&gt; #
 #&gt; # Node Data:     3 x 1 (active)</span><span>
 #&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
@@ -170,7 +184,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>Additionally, <code><a href="../reference/as_sfnetwork.html">as_sfnetwork()</a></code> has a method that directly converts an <code>sf</code> object into a network. Of course, a single <code>sf</code> object does not contain any explicit network information, so assumptions have to be made. This functionality should therefore be seen as a convenience function, and will not be suited for all possible use-cases. It works as follows:</p>
 <ul>
 <li>When given an <code>sf</code> object with <code>LINESTRING</code> geometries: the lines are considered edges, and nodes are created at the endpoints of the lines. Identical endpoints become one single node. This addresses the use-case that was presented in this <a href="https://www.r-spatial.org/r/2019/09/26/spatial-networks.html">r-spatial blogpost</a>.</li>
-<li>When given an <code>sf</code> object with <code>POINT</code> geometries: the points are considered nodes, and edges are created between them, in a sequential way. With that we mean: node 1 will be connected to node 2, node 2 to node 3, et cetera. This addresses the use-case that was presented in this <a href="https://stackoverflow.com/questions/57833905/how-to-convert-a-list-of-sf-spatial-points-into-a-routable-graph">stackoverflow thread</a>.</li>
+<li>When given an <code>sf</code> object with <code>POINT</code> geometries: the points are considered nodes, and edges are created between them, in a sequential way. With that we mean: node 1 will be connected to node 2, node 2 to node 3, et cetera. This addresses the use-case that was presented in this <a href="https://stackoverflow.com/questions/57833905/how-to-convert-a-list-of-sf-spatial-points-into-a-routable-graph">stackoverflow thread</a>. More construction algorithms for point data are planned to be implemented, see <a href="https://github.com/luukvdmeer/sfnetworks/issues/52">here</a>.</li>
 </ul>
 <p>See below an example with the Roxel dataset (which comes with <code>sfnetworks</code> and is a cleaned extract of OpenStreetMap roads in Münster-Roxel).</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>roxel</span></code></pre></div>
@@ -195,12 +209,11 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># … with 841 more rows</span><span>
 </span></code></pre>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>(<span class="dt">net =</span> <span class="kw"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span>(roxel, <span class="dt">directed =</span> <span class="ot">FALSE</span>))</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># An sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">
-#&gt; #</span><span>
-#&gt; </span><span style="color: #555555;"># An undirected multigraph with 14 components</span><span>
-#&gt; </span><span style="color: #555555;"># and spatially explicit edges
+#&gt; #
+#&gt; # An undirected multigraph with 14 components with spatially explicit edges
 #&gt; #
 #&gt; # Node Data:     701 x 1 (active)</span><span>
 #&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
@@ -229,13 +242,13 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 </span></code></pre>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw"><a href="https://rdrr.io/r/base/class.html">class</a></span>(net)</span>
 <span id="cb6-2"><a href="#cb6-2"></a><span class="co">#&gt; [1] "sfnetwork" "tbl_graph" "igraph"</span></span></code></pre></div>
-<p>More methods will be added in the near future, such that other spatial network objects that exist in R can be directly converted into an <code>sfnetwork</code>, e.g. <code>dodgr_streetnet</code> from the <code>dodgr</code> package and <code>SpatialLinesNetwork</code> from the <code>stplanr</code> package.</p>
+<p>More methods for <code>as_sfnetwork</code> exists, such that other spatial network objects that exist in R can be directly converted into an <code>sfnetwork</code>. These includes <code>SpatialLinesNetwork</code> from the <code>stplanr</code> package and <code>linnet</code> from the <code>spatstat</code> package.</p>
 </div>
 <div id="activation-and-extraction" class="section level3">
 <h3 class="hasAnchor">
 <a href="#activation-and-extraction" class="anchor"></a>Activation and extraction</h3>
 <p>Just as with a <code>tbl_graph</code>, one of the graph elements of an <code>sfnetwork</code> (i.e. nodes or edges) can be activated, and all subsequent computations will be performed on that active element. By default, the nodes are the active element. This can be changed with the <code><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate()</a></code> verb, that is borrowed from <code>tidygraph</code>.</p>
-<p>Thanks to <code><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate()</a></code>, a lot of data manipulation tools can be directly applied to the network. If you want to do something that goes further, you can always extract the active element as an <code>sf</code> object, simply by calling <code><a href="https://rdrr.io/pkg/sf/man/st_as_sf.html">st_as_sf()</a></code> - in the case of spatially implicit edges, extract them with <code><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble()</a></code> instead.</p>
+<p>Thanks to <code><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate()</a></code>, a lot of data manipulation tools can be directly applied to the network. If you want to do something that goes further, you can always extract the active element as an <code>sf</code> object, simply by calling <code><a href="https://rdrr.io/pkg/sf/man/st_as_sf.html">st_as_sf()</a></code> - in the case of spatially implicit edges, extract them with <code><a href="https://tidygraph.data-imaginist.com/reference/reexports.html">as_tibble()</a></code> instead.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>net <span class="op">%&gt;%</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span>(<span class="st">"edges"</span>) <span class="op">%&gt;%</span></span>
 <span id="cb7-3"><a href="#cb7-3"></a><span class="st">  </span><span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_as_sf.html">st_as_sf</a></span>()</span></code></pre></div>
@@ -268,12 +281,13 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span id="cb8-2"><a href="#cb8-2"></a><span class="kw"><a href="https://rdrr.io/pkg/sf/man/plot.html">plot</a></span>(net)</span></code></pre></div>
 <p><img src="intro_files/figure-html/unnamed-chunk-8-1.png" width="480"></p>
 <p>For advanced visualization, we encourage to extract nodes and edges as <code>sf</code> objects, and use one of the many ways to map those in R, either statically or interactively. Think of sf’s default plot method, ggplots <code><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf()</a></code>, <code>tmap</code>, <code>mapview</code>, et cetera.</p>
+<p><em>Note: it would be great to see this change in the future, for example by good integration with <code>ggraph</code>. Contributions are very welcome regarding this!</em></p>
 </div>
 </div>
 <div id="graph-operations" class="section level2">
 <h2 class="hasAnchor">
 <a href="#graph-operations" class="anchor"></a>Graph operations</h2>
-<p>Since it subclasses <code>tbl_graph</code>, <code>sfnetwork</code> objects are recognized by all network analysis algorithms that <code>igraph</code> offers, as well as by the tidy wrappers that <code>tidygraph</code> has built around them.</p>
+<p>Since they subclass <code>tbl_graph</code>, <code>sfnetwork</code> objects are recognized by all network analysis algorithms that <code>igraph</code> offers, as well as by the tidy wrappers that <code>tidygraph</code> has built around them*.</p>
 <p>A small example is the calculation of the betweenness centrality for each node:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(ggplot2)</span>
 <span id="cb9-2"><a href="#cb9-2"></a></span>
@@ -286,6 +300,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span id="cb9-9"><a href="#cb9-9"></a><span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span>(<span class="dt">data =</span> <span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span>(net_c, <span class="st">"nodes"</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_as_sf.html">st_as_sf</a></span>(), <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">col =</span> bc, <span class="dt">size =</span> bc))</span></code></pre></div>
 <p><img src="intro_files/figure-html/unnamed-chunk-9-1.png" width="480"></p>
 <p>There is a large amount of available algorithms, ranging from simple type queries to advanced community detection. To keep this vignette within an acceptable length, we will not cover all graph algorithms that can be used, but instead refer to the <a href="https://www.data-imaginist.com/2017/introducing-tidygraph/">tidygraph introduction</a>.</p>
+<p><em>Note: due to the internal handling of nodes and edges as sf objects with a sticky geometry list column, there are still some <code>tidygraph</code> and <code>igraph</code> functions that result in errors when applying them to <code>sfnetwork</code> objects. In that case, you can try to first run <code><a href="https://tidygraph.data-imaginist.com/reference/tbl_graph.html">as_tbl_graph()</a></code>, and then apply the algorithm.</em></p>
 </div>
 <div id="spatial-operations" class="section level2">
 <h2 class="hasAnchor">
@@ -327,22 +342,21 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span id="cb11-2"><a href="#cb11-2"></a>net_b =<span class="st"> </span>net <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/reexports.html">slice</a></span>(<span class="dv">2</span><span class="op">:</span><span class="dv">4</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/reexports.html">mutate</a></span>(<span class="dt">foo =</span> <span class="st">"bar"</span>)</span>
 <span id="cb11-3"><a href="#cb11-3"></a>net_a <span class="op">%&gt;%</span></span>
 <span id="cb11-4"><a href="#cb11-4"></a><span class="st">  </span><span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_join.html">st_join</a></span>(net_b, <span class="dt">join =</span> st_equals)</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">3</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">1</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># An sfnetwork with</span><span> </span><span style="color: #555555;">3</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">1</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">
-#&gt; #</span><span>
-#&gt; </span><span style="color: #555555;"># An unrooted forest with 2 trees</span><span>
-#&gt; </span><span style="color: #555555;"># and spatially explicit edges
+#&gt; #
+#&gt; # An unrooted forest with 2 trees with spatially explicit edges
 #&gt; #
 #&gt; # Node Data:     3 x 2 (active)</span><span>
 #&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
 #&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
 #&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 7.532442 ymin: 51.95422 xmax: 7.533722 ymax: 51.95576</span><span>
-#&gt;              geometry foo  
-#&gt;           </span><span style="color: #555555;font-style: italic;">&lt;POINT [°]&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span> (7.533722 51.95556) </span><span style="color: #BB0000;">NA</span><span>   
-#&gt; </span><span style="color: #555555;">2</span><span> (7.533461 51.95576) bar  
-#&gt; </span><span style="color: #555555;">3</span><span> (7.532442 51.95422) bar  
+#&gt;   foo              geometry
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>         </span><span style="color: #555555;font-style: italic;">&lt;POINT [°]&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span> </span><span style="color: #BB0000;">NA</span><span>    (7.533722 51.95556)
+#&gt; </span><span style="color: #555555;">2</span><span> bar   (7.533461 51.95576)
+#&gt; </span><span style="color: #555555;">3</span><span> bar   (7.532442 51.95422)
 #&gt; </span><span style="color: #555555;">#
 #&gt; # Edge Data:     1 x 5</span><span>
 #&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
@@ -361,12 +375,11 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span id="cb12-2"><a href="#cb12-2"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/reexports.html">mutate</a></span>(<span class="dt">in_rect =</span> <span class="kw"><a href="https://rdrr.io/r/base/lengths.html">lengths</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/sf/man/geos_binary_pred.html">st_intersects</a></span>(., rect)) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>)</span>
 <span id="cb12-3"><a href="#cb12-3"></a><span class="co">#&gt; although coordinates are longitude/latitude, st_intersects assumes that they are planar</span></span>
 <span id="cb12-4"><a href="#cb12-4"></a><span class="co">#&gt; although coordinates are longitude/latitude, st_intersects assumes that they are planar</span></span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># An sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">
-#&gt; #</span><span>
-#&gt; </span><span style="color: #555555;"># An undirected multigraph with 14 components</span><span>
-#&gt; </span><span style="color: #555555;"># and spatially explicit edges
+#&gt; #
+#&gt; # An undirected multigraph with 14 components with spatially explicit edges
 #&gt; #
 #&gt; # Node Data:     701 x 2 (active)</span><span>
 #&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
@@ -413,12 +426,11 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span id="cb13-13"><a href="#cb13-13"></a><span class="co">#&gt;         AUTHORITY["EPSG","9122"]],</span></span>
 <span id="cb13-14"><a href="#cb13-14"></a><span class="co">#&gt;     AUTHORITY["EPSG","4326"]]</span></span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_transform.html">st_transform</a></span>(net, <span class="dv">3035</span>)</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># An sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
-#&gt; #</span><span>
-#&gt; </span><span style="color: #555555;"># An undirected multigraph with 14 components</span><span>
-#&gt; </span><span style="color: #555555;"># and spatially explicit edges
+#&gt; #
+#&gt; # An undirected multigraph with 14 components with spatially explicit edges
 #&gt; #
 #&gt; # Node Data:     701 x 1 (active)</span><span>
 #&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
@@ -475,14 +487,13 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span>(roxel, <span class="dt">directed =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span></span>
 <span id="cb18-2"><a href="#cb18-2"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span>(<span class="st">"edges"</span>) <span class="op">%&gt;%</span></span>
 <span id="cb18-3"><a href="#cb18-3"></a><span class="st">  </span><span class="kw"><a href="https://rdrr.io/pkg/sf/man/geos_unary.html">st_reverse</a></span>()</span>
-<span id="cb18-4"><a href="#cb18-4"></a><span class="co">#&gt; Warning in st_reverse.sfnetwork(.): Reversing edges swaps columns 'to' and</span></span>
-<span id="cb18-5"><a href="#cb18-5"></a><span class="co">#&gt; 'from'</span></span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+<span id="cb18-4"><a href="#cb18-4"></a><span class="co">#&gt; Warning in st_reverse.sfnetwork(.): For directed networks st_reverse swaps</span></span>
+<span id="cb18-5"><a href="#cb18-5"></a><span class="co">#&gt; columns 'to' and 'from'</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># An sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">
-#&gt; #</span><span>
-#&gt; </span><span style="color: #555555;"># A directed multigraph with 14 components</span><span>
-#&gt; </span><span style="color: #555555;"># and spatially explicit edges
+#&gt; #
+#&gt; # A directed multigraph with 14 components with spatially explicit edges
 #&gt; #
 #&gt; # Edge Data:     851 x 5 (active)</span><span>
 #&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
@@ -510,134 +521,92 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># … with 698 more rows</span><span>
 </span></code></pre>
 </div>
-<div id="computing-geometric-measures" class="section level3">
+<div id="preservation-of-sf-attributes" class="section level3">
 <h3 class="hasAnchor">
-<a href="#computing-geometric-measures" class="anchor"></a>Computing geometric measures</h3>
-<p>Geometric measures can be very useful to add as attributes to features, and serve as weights in for example shortest path calculations.</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>net_t =<span class="st"> </span>net <span class="op">%&gt;%</span></span>
-<span id="cb19-2"><a href="#cb19-2"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span>(<span class="st">"edges"</span>) <span class="op">%&gt;%</span></span>
-<span id="cb19-3"><a href="#cb19-3"></a><span class="st">  </span><span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_transform.html">st_transform</a></span>(<span class="dv">3035</span>) <span class="op">%&gt;%</span></span>
-<span id="cb19-4"><a href="#cb19-4"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/reexports.html">mutate</a></span>(<span class="dt">length =</span> <span class="kw"><a href="https://rdrr.io/pkg/sf/man/geos_measures.html">st_length</a></span>(.))</span>
-<span id="cb19-5"><a href="#cb19-5"></a></span>
-<span id="cb19-6"><a href="#cb19-6"></a>net_t</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
-#&gt; #
-#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
-#&gt; #</span><span>
-#&gt; </span><span style="color: #555555;"># An undirected multigraph with 14 components</span><span>
-#&gt; </span><span style="color: #555555;"># and spatially explicit edges
-#&gt; #
-#&gt; # Edge Data:     851 x 6 (active)</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
-#&gt;    from    to name       type                                  geometry   length
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>      </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                         </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>      </span><span style="color: #555555;">[m]</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbeck… reside…     (4151491 3207923, 4151474 3207946)  28.859…
-#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersal… second… (4151398 3207777, 4151390 3207727, 41… 107.714…
-#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-B… reside… (4151408 3207539, 4151417 3207573, 41…  54.367…
-#&gt; </span><span style="color: #555555;">4</span><span>     7     8 </span><span style="color: #BB0000;">NA</span><span>         path    (4151885 3206698, 4151861 3206711, 41… 155.223…
-#&gt; </span><span style="color: #555555;">5</span><span>     9    10 Welsinghe… reside…     (4151732 3207017, 4151721 3206809) 208.682…
-#&gt; </span><span style="color: #555555;">6</span><span>    11    12 </span><span style="color: #BB0000;">NA</span><span>         footway (4152152 3206984, 4152143 3206932, 41…  63.028…
-#&gt; </span><span style="color: #555555;"># … with 845 more rows</span><span>
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Node Data:     701 x 1</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
-#&gt;            geometry
-#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923)
-#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946)
-#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777)
-#&gt; </span><span style="color: #555555;"># … with 698 more rows</span><span>
-</span></code></pre>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(igraph)</span>
-<span id="cb20-2"><a href="#cb20-2"></a></span>
-<span id="cb20-3"><a href="#cb20-3"></a><span class="kw"><a href="https://rdrr.io/pkg/igraph/man/distances.html">shortest_paths</a></span>(net_t, <span class="dt">from =</span> <span class="dv">1</span>, <span class="dt">to =</span> <span class="dv">10</span>, <span class="dt">weights =</span> <span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/reexports.html">pull</a></span>(net_t, length))<span class="op">$</span>vpath</span>
-<span id="cb20-4"><a href="#cb20-4"></a><span class="co">#&gt; [[1]]</span></span>
-<span id="cb20-5"><a href="#cb20-5"></a><span class="co">#&gt; + 18/701 vertices, from 7111d04:</span></span>
-<span id="cb20-6"><a href="#cb20-6"></a><span class="co">#&gt;  [1]   1 645 481 263 164 208 426 424 533 657 512 506 111 524 292 167   9  10</span></span></code></pre></div>
+<a href="#preservation-of-sf-attributes" class="anchor"></a>Preservation of sf attributes</h3>
+<p>An <code>sfnetwork</code> object preserves the sf-specific attributes of the nodes and edge data. They can be queried using the <code>sf_attr</code> function.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw"><a href="../reference/sf_attr.html">sf_attr</a></span>(net, <span class="st">"agr"</span>, <span class="dt">active =</span> <span class="st">"edges"</span>)</span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="co">#&gt; from   to name type </span></span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="co">#&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; </span></span>
+<span id="cb19-4"><a href="#cb19-4"></a><span class="co">#&gt; Levels: constant aggregate identity</span></span>
+<span id="cb19-5"><a href="#cb19-5"></a><span class="kw"><a href="../reference/sf_attr.html">sf_attr</a></span>(net, <span class="st">"sf_column"</span>, <span class="dt">active =</span> <span class="st">"edges"</span>)</span>
+<span id="cb19-6"><a href="#cb19-6"></a><span class="co">#&gt; [1] "geometry"</span></span></code></pre></div>
 </div>
 <div id="non-supported-functions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#non-supported-functions" class="anchor"></a>Non-supported functions</h3>
-<p>For the same reason as <code>tidygraph</code> does not support all <code>dplyr</code> functions, <code>sfnetwork</code> does not support all <code>sf</code> functions: there is a clear limitation in the relational data structure that requires rows to maintain their identity. For <code>sfnetwork</code> objects, this also means that the geometries of features should be maintained, or at least the endpoints of these geometries, in the case of the edges. That is, functions that summarise geometries, or (may) change their <em>type</em>, <em>shape</em> or <em>position</em>, are not supported. These are the <a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html">geometric binary operations</a>, most of the <a href="https://r-spatial.github.io/sf/reference/geos_unary.html">geometric unary operations</a>, <code>st_union</code>, <code>st_combine</code>, <code>st_cast</code>, <code>st_nearest_point</code>, <code>st_sample</code>, <code>st_line_sample</code>, <code>st_jitter</code>, <code>st_collection_extract</code> and <code>st_make_valid</code>.</p>
+<p>For the same reason as <code>tidygraph</code> does not support all <code>dplyr</code> functions, <code>sfnetwork</code> does not support all <code>sf</code> functions: there is a clear limitation in the relational data structure that requires rows to maintain their identity. For <code>sfnetwork</code> objects, this also means that the geometries of features should be maintained, or at least the endpoints of these geometries, in the case of the edges. That is, functions that summarise geometries, or (may) change their <em>type</em>, <em>shape</em> or <em>position</em>, are not supported. These are for example the <a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html">geometric binary operations</a>, most of the <a href="https://r-spatial.github.io/sf/reference/geos_unary.html">geometric unary operations</a>, <code>st_union</code>, <code>st_combine</code>, <code>st_cast</code>, and <code>st_jitter</code>.</p>
 <p>These functions cannot be directly applied to an <code>sfnetwork</code> object, but of course you can always escape the network structure, do some work, and merge changes back into the network. For example, when you want to know the area of the voronoi polygon of each node:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>y =<span class="st"> </span>net_t <span class="op">%&gt;%</span></span>
-<span id="cb21-2"><a href="#cb21-2"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span>(<span class="st">"nodes"</span>) <span class="op">%&gt;%</span></span>
-<span id="cb21-3"><a href="#cb21-3"></a><span class="st">  </span><span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_as_sf.html">st_as_sf</a></span>() <span class="op">%&gt;%</span></span>
-<span id="cb21-4"><a href="#cb21-4"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/reexports.html">mutate</a></span>(<span class="dt">aoi =</span> <span class="kw"><a href="https://rdrr.io/pkg/sf/man/geos_measures.html">st_area</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_collection_extract.html">st_collection_extract</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/sf/man/geos_unary.html">st_voronoi</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span>(c, <span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_geometry.html">st_geometry</a></span>(.))))))</span>
-<span id="cb21-5"><a href="#cb21-5"></a></span>
-<span id="cb21-6"><a href="#cb21-6"></a>net_t <span class="op">%&gt;%</span></span>
-<span id="cb21-7"><a href="#cb21-7"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span>(<span class="st">"nodes"</span>) <span class="op">%&gt;%</span></span>
-<span id="cb21-8"><a href="#cb21-8"></a><span class="st">  </span><span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_join.html">st_join</a></span>(y)</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>net_t =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_transform.html">st_transform</a></span>(net, <span class="dv">3035</span>)</span>
+<span id="cb20-2"><a href="#cb20-2"></a></span>
+<span id="cb20-3"><a href="#cb20-3"></a>y =<span class="st"> </span>net_t <span class="op">%&gt;%</span></span>
+<span id="cb20-4"><a href="#cb20-4"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span>(<span class="st">"nodes"</span>) <span class="op">%&gt;%</span></span>
+<span id="cb20-5"><a href="#cb20-5"></a><span class="st">  </span><span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_as_sf.html">st_as_sf</a></span>() <span class="op">%&gt;%</span></span>
+<span id="cb20-6"><a href="#cb20-6"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/reexports.html">mutate</a></span>(<span class="dt">aoi =</span> <span class="kw"><a href="https://rdrr.io/pkg/sf/man/geos_measures.html">st_area</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_collection_extract.html">st_collection_extract</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/sf/man/geos_unary.html">st_voronoi</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span>(c, <span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_geometry.html">st_geometry</a></span>(.))))))</span>
+<span id="cb20-7"><a href="#cb20-7"></a></span>
+<span id="cb20-8"><a href="#cb20-8"></a>net_t <span class="op">%&gt;%</span></span>
+<span id="cb20-9"><a href="#cb20-9"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span>(<span class="st">"nodes"</span>) <span class="op">%&gt;%</span></span>
+<span id="cb20-10"><a href="#cb20-10"></a><span class="st">  </span><span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_join.html">st_join</a></span>(y)</span></code></pre></div>
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># An sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
-#&gt; #</span><span>
-#&gt; </span><span style="color: #555555;"># An undirected multigraph with 14 components</span><span>
-#&gt; </span><span style="color: #555555;"># and spatially explicit edges
+#&gt; #
+#&gt; # An undirected multigraph with 14 components with spatially explicit edges
 #&gt; #
 #&gt; # Node Data:     701 x 2 (active)</span><span>
 #&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
 #&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
 #&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
-#&gt;            geometry      aoi
-#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span>    </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923) 1</span><span style="text-decoration: underline;">837</span><span>540.
-#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946) 2</span><span style="text-decoration: underline;">563</span><span>698.
-#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777)   </span><span style="text-decoration: underline;">36</span><span>462.
-#&gt; </span><span style="color: #555555;">4</span><span> (4151370 3207673)  </span><span style="text-decoration: underline;">359</span><span>624.
-#&gt; </span><span style="color: #555555;">5</span><span> (4151408 3207539)   </span><span style="text-decoration: underline;">12</span><span>954.
-#&gt; </span><span style="color: #555555;">6</span><span> (4151421 3207592)   </span><span style="text-decoration: underline;">11</span><span>089.
+#&gt;        aoi          geometry
+#&gt;      </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span>       </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span> 1</span><span style="text-decoration: underline;">837</span><span>540. (4151491 3207923)
+#&gt; </span><span style="color: #555555;">2</span><span> 2</span><span style="text-decoration: underline;">563</span><span>698. (4151474 3207946)
+#&gt; </span><span style="color: #555555;">3</span><span>   </span><span style="text-decoration: underline;">36</span><span>462. (4151398 3207777)
+#&gt; </span><span style="color: #555555;">4</span><span>  </span><span style="text-decoration: underline;">359</span><span>624. (4151370 3207673)
+#&gt; </span><span style="color: #555555;">5</span><span>   </span><span style="text-decoration: underline;">12</span><span>954. (4151408 3207539)
+#&gt; </span><span style="color: #555555;">6</span><span>   </span><span style="text-decoration: underline;">11</span><span>089. (4151421 3207592)
 #&gt; </span><span style="color: #555555;"># … with 695 more rows</span><span>
 #&gt; </span><span style="color: #555555;">#
-#&gt; # Edge Data:     851 x 6</span><span>
+#&gt; # Edge Data:     851 x 5</span><span>
 #&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
 #&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
 #&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
-#&gt;    from    to name         type                                geometry   length
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>        </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                       </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>      </span><span style="color: #555555;">[m]</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbecker… residen…  (4151491 3207923, 4151474 3207946)  28.859…
-#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersallee seconda… (4151398 3207777, 4151390 3207727,… 107.714…
-#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-Ber… residen… (4151408 3207539, 4151417 3207573,…  54.367…
+#&gt;    from    to name            type                                      geometry
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>           </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                             </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbecker St… resident…       (4151491 3207923, 4151474 3207946)
+#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersallee    secondary (4151398 3207777, 4151390 3207727, 4151…
+#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-Bernd-… resident… (4151408 3207539, 4151417 3207573, 4151…
 #&gt; </span><span style="color: #555555;"># … with 848 more rows</span><span>
 </span></code></pre>
-<p>In addition to those functions mentioned above, there are also no <code>sfnetwork</code> methods for:</p>
-<ul>
-<li>All functions related to reading and writing data. Use <code>sf</code> for this, and then convert to an <code>sfnetwork</code>. Note: Maybe there are specific spatial network data formats that the package should be able to read from and write to? If yes, please let us know.</li>
-<li>All functions related to M and Z coordinates. This is something for later.</li>
-<li>Functions that retrieve/change the attributes of sf objects. Like <code>st_agr</code>. See <a href="https://github.com/luukvdmeer/sfnetworks/issues/24">this issue</a>.</li>
-</ul>
+<p>In addition to those functions mentioned above, there are also no <code>sfnetwork</code> methods for functions related to reading and writing data. Use <code>sf</code> for this, and then convert to an <code>sfnetwork</code>.</p>
+<p><em>Note: Maybe there are specific spatial network data formats that the package should be able to read from and write to? If yes, please let us know.</em></p>
 </div>
 </div>
 <div id="tidyverse-methods" class="section level2">
 <h2 class="hasAnchor">
 <a href="#tidyverse-methods" class="anchor"></a>Tidyverse methods</h2>
 <p>As already shown in some of the examples above, a lot of <code>dplyr</code> functions work directly on <code>sfnetwork</code> objects, thanks to <code>tidygraph</code>. Since the active elements (if spatially explicit) are internally handled as being <code>sf</code> objects, automatically the <code>sf</code> methods for these functions are used. That means, for example, that the <code>geometry</code> column is ‘sticky’. Note: also the <code>to</code> and <code>from</code> column in the edges table are sticky, which does not come from <code>sf</code>, but from <code>tidygraph</code>. So now, we have three sticky columns!</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>net <span class="op">%&gt;%</span></span>
-<span id="cb22-2"><a href="#cb22-2"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span>(<span class="st">"edges"</span>) <span class="op">%&gt;%</span></span>
-<span id="cb22-3"><a href="#cb22-3"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/reexports.html">select</a></span>(name)</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>net <span class="op">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span>(<span class="st">"edges"</span>) <span class="op">%&gt;%</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/reexports.html">select</a></span>(name)</span></code></pre></div>
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># An sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">
-#&gt; #</span><span>
-#&gt; </span><span style="color: #555555;"># An undirected multigraph with 14 components</span><span>
-#&gt; </span><span style="color: #555555;"># and spatially explicit edges
+#&gt; #
+#&gt; # An undirected multigraph with 14 components with spatially explicit edges
 #&gt; #
 #&gt; # Edge Data:     851 x 4 (active)</span><span>
 #&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
 #&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
 #&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
-#&gt;    from    to name                                                      geometry
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                                             </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbecker S…              (7.533722 51.95556, 7.533461 51.95576)
-#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersallee   (7.532442 51.95422, 7.53236 51.95377, 7.53209 51.9…
-#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-Bernd… (7.532709 51.95209, 7.532823 51.95239, 7.532869 51…
-#&gt; </span><span style="color: #555555;">4</span><span>     7     8 </span><span style="color: #BB0000;">NA</span><span>             (7.540063 51.94468, 7.539696 51.94479, 7.539466 51…
-#&gt; </span><span style="color: #555555;">5</span><span>     9    10 Welsingheide                 (7.537673 51.9475, 7.537614 51.94562)
-#&gt; </span><span style="color: #555555;">6</span><span>    11    12 </span><span style="color: #BB0000;">NA</span><span>             (7.543791 51.94733, 7.54369 51.94686, 7.543751 51.…
+#&gt;    from    to                                             geometry name         
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>                                     </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>        
+#&gt; </span><span style="color: #555555;">1</span><span>     1     2               (7.533722 51.95556, 7.533461 51.95576) Havixbecker …
+#&gt; </span><span style="color: #555555;">2</span><span>     3     4 (7.532442 51.95422, 7.53236 51.95377, 7.53209 51.95… Pienersallee 
+#&gt; </span><span style="color: #555555;">3</span><span>     5     6 (7.532709 51.95209, 7.532823 51.95239, 7.532869 51.… Schulte-Bern…
+#&gt; </span><span style="color: #555555;">4</span><span>     7     8 (7.540063 51.94468, 7.539696 51.94479, 7.539466 51.… </span><span style="color: #BB0000;">NA</span><span>           
+#&gt; </span><span style="color: #555555;">5</span><span>     9    10                (7.537673 51.9475, 7.537614 51.94562) Welsingheide 
+#&gt; </span><span style="color: #555555;">6</span><span>    11    12 (7.543791 51.94733, 7.54369 51.94686, 7.543751 51.9… </span><span style="color: #BB0000;">NA</span><span>           
 #&gt; </span><span style="color: #555555;"># … with 845 more rows</span><span>
 #&gt; </span><span style="color: #555555;">#
 #&gt; # Node Data:     701 x 1</span><span>
@@ -652,36 +621,6 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># … with 698 more rows</span><span>
 </span></code></pre>
 </div>
-<div id="what-is-still-to-come" class="section level2">
-<h2 class="hasAnchor">
-<a href="#what-is-still-to-come" class="anchor"></a>What is still to come?</h2>
-<p>Everything presented in this vignette is only a first glance at what <code>sfnetworks</code> will offer. The package is currently in very active development, and several features are planned to be introduced soon.</p>
-<div id="better-tidygraph-integration" class="section level3">
-<h3 class="hasAnchor">
-<a href="#better-tidygraph-integration" class="anchor"></a>Better tidygraph integration</h3>
-<p>The fact that <code>sfnetwork</code> subclasses <code>tbl_graph</code>, makes that they are recognized by all of <code>tidygraph</code>’s functions. However, not all of these functions already run without errors. This is because of the geometry list column, which causes some operations to fail. Examples are the <code>morph</code> and <code>bind</code> functionalities. These issues should be solved, such that the integration of <code>sfnetworks</code> with <code>tidygraph</code> becomes - approximately - flawless.</p>
-</div>
-<div id="extending-the-functionalities-of-tidygraph-and-sf" class="section level3">
-<h3 class="hasAnchor">
-<a href="#extending-the-functionalities-of-tidygraph-and-sf" class="anchor"></a>Extending the functionalities of tidygraph and sf</h3>
-<p>Right now, <code>sfnetworks</code> serves as a connection between <code>tidygraph</code> and <code>sf</code>, in the sense that objects of class <code>sfnetwork</code> are recognized by functions of both packages. However, there might be problems that are so specific to spatial networks, that they can neither be solved by <code>tidygraph</code> nor <code>sf</code>. It is the goal of <code>sfnetworks</code> to provide analytical functions by itself, that address such problems. Think of snapping spatial points to the edges of a network, or finding the nearest node to a given spatial feature. We want to prevent that <code>sfnetworks</code> goes too much into a single application - it should remain a lower-level package - but basic, widely used spatial network operations should be supported.</p>
-</div>
-<div id="adding-more-methods-to-as_sfnetwork" class="section level3">
-<h3 class="hasAnchor">
-<a href="#adding-more-methods-to-as_sfnetwork" class="anchor"></a>Adding more methods to as_sfnetwork</h3>
-<p>As said before, it is the goal to provide <code><a href="../reference/as_sfnetwork.html">as_sfnetwork()</a></code>-methods for a wide range of R classes for spatial networks.</p>
-</div>
-<div id="visualization-1" class="section level3">
-<h3 class="hasAnchor">
-<a href="#visualization-1" class="anchor"></a>Visualization</h3>
-<p>In the current version of <code>sfnetworks</code>, visualization of spatial networks does not yet play a big role. It would be great to see this change in the future, for example by good integration with <code>ggraph</code>. Contributions are very welcome regarding this!</p>
-</div>
-</div>
-<div id="contribute" class="section level2">
-<h2 class="hasAnchor">
-<a href="#contribute" class="anchor"></a>Contribute</h2>
-<p>We look very much forward to contributions to the package. This can be in the form of pull requests (please direct them to the <code>develop</code> branch), but also by opening issues in the <a href="https://github.com/luukvdmeer/sfnetworks/issues">issue tracker</a>. Such issues can be specific feature requests labeled with the <code>feature</code> label (e.g. “I would like to see a function <code>f(x)</code> that accepts an object <code>x</code> of class <code>foo</code> and returns &lt; this &gt;”). It can also be a more generic description of problems that you deal with when working with spatial networks in R (e.g. “I usually find it impossible/confusing/complicated to do &lt; this &gt;”). Please label such issues with the <code>hackathon</code> label, since we will be organising a spatial networks hackathon in which we hope to solve these kind of problems. For more information on that event, see <a href="https://www.eventbrite.co.uk/e/erum2020-satellite-event-hackathon-on-spatial-networks-tickets-90976873277">here</a> (and join!).</p>
-</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -695,8 +634,6 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
       <li><a href="#graph-operations">Graph operations</a></li>
       <li><a href="#spatial-operations">Spatial operations</a></li>
       <li><a href="#tidyverse-methods">Tidyverse methods</a></li>
-      <li><a href="#what-is-still-to-come">What is still to come?</a></li>
-      <li><a href="#contribute">Contribute</a></li>
       </ul>
 </div>
       </div>

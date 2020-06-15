@@ -36,21 +36,10 @@
 
 
 <meta property="og:title" content="Convert a foreign object to an sfnetwork object — as_sfnetwork" />
-<meta property="og:description" content="sfnetwork is a tidy data structure for spatial networks. It extends
-the graph manipulation functionalities of the
-tidygraph-package package into the domain of
-geospatial networks, where nodes are embedded in geographical space. It
-subclasses tbl_graph, and therefore all of tidygraphs
-functions should work as expected, without any conversion. Just as with a
-tbl_graph, the nodes are activated by default. The
-context can be changed using the activate verb
-and affects all subsequent operations. In sfnetworks, the nodes are
-handled as being an sf object with only POINT
-geometries, and can always be extracted with st_as_sf when
-activated. The edges can be handled as being an sf object with only
-LINESTRING geometries, but this is optional. When the edges do not
-have an explicit spatial component, they can always be extracted with
-as_tibble when activated." />
+<meta property="og:description" content="Convert a given object into an object of class sfnetwork.
+If an object can be read by as_tbl_graph and the
+nodes can be read by st_as_sf, it is automatically
+supported by sfnetworks." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -83,7 +72,7 @@ as_tibble when activated." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -106,13 +95,24 @@ as_tibble when activated." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/extensions.html">Extending the vocabulary</a>
+    </li>
+    <li>
       <a href="../articles/intro.html">Tidy Geospatial Networks in R</a>
     </li>
   </ul>
 </li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/luukvdmeer/sfnetworks">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -127,35 +127,36 @@ as_tibble when activated." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Convert a foreign object to an sfnetwork object</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/R/sfnetwork.R'><code>R/sfnetwork.R</code></a></small>
     <div class="hidden name"><code>as_sfnetwork.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><code>sfnetwork</code> is a tidy data structure for spatial networks. It extends
-the graph manipulation functionalities of the
-<code><a href='https://tidygraph.data-imaginist.com/reference/tidygraph-package.html'>tidygraph-package</a></code> package into the domain of
-geospatial networks, where nodes are embedded in geographical space. It
-subclasses <code><a href='https://tidygraph.data-imaginist.com/reference/tbl_graph.html'>tbl_graph</a></code>, and therefore all of tidygraphs
-functions should work as expected, without any conversion. Just as with a
-<code><a href='https://tidygraph.data-imaginist.com/reference/tbl_graph.html'>tbl_graph</a></code>, the nodes are activated by default. The
-context can be changed using the <code><a href='https://tidygraph.data-imaginist.com/reference/activate.html'>activate</a></code> verb
-and affects all subsequent operations. In <code>sfnetworks</code>, the nodes are
-handled as being an <code><a href='https://rdrr.io/pkg/sf/man/sf.html'>sf</a></code> object with only <code>POINT</code>
-geometries, and can always be extracted with <code><a href='https://rdrr.io/pkg/sf/man/st_as_sf.html'>st_as_sf</a></code> when
-activated. The edges can be handled as being an <code>sf</code> object with only
-<code>LINESTRING</code> geometries, but this is optional. When the edges do not
-have an explicit spatial component, they can always be extracted with
-<code><a href='https://tidygraph.data-imaginist.com/reference/reexports.html'>as_tibble</a></code> when activated.</p>
+    <p>Convert a given object into an object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.
+If an object can be read by <code><a href='https://tidygraph.data-imaginist.com/reference/tbl_graph.html'>as_tbl_graph</a></code> and the
+nodes can be read by <code><a href='https://rdrr.io/pkg/sf/man/st_as_sf.html'>st_as_sf</a></code>, it is automatically
+supported by sfnetworks.</p>
     </div>
 
     <pre class="usage"><span class='fu'>as_sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for default</span>
-<span class='fu'>as_sfnetwork</span>(<span class='no'>x</span>, <span class='kw'>directed</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)
+<span class='fu'>as_sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for linnet</span>
+<span class='fu'>as_sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for psp</span>
+<span class='fu'>as_sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for sf</span>
-<span class='fu'>as_sfnetwork</span>(<span class='no'>x</span>, <span class='kw'>directed</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>edges_as_lines</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)
+<span class='fu'>as_sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for sfNetwork</span>
+<span class='fu'>as_sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for sfnetwork</span>
+<span class='fu'>as_sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for tbl_graph</span>
 <span class='fu'>as_sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
@@ -165,41 +166,44 @@ have an explicit spatial component, they can always be extracted with
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>object to be converted into an <code>sfnetwork</code> object.</p></td>
+      <td><p>object to be converted into an <code><a href='sfnetwork.html'>sfnetwork</a></code> object.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>arguments passed on to construction function.</p></td>
-    </tr>
-    <tr>
-      <th>directed</th>
-      <td><p>Should the constructed network be directed? Defaults to
-<code>TRUE</code>.</p></td>
-    </tr>
-    <tr>
-      <th>edges_as_lines</th>
-      <td><p>Should the edges be spatially explict (i.e. have a
-<code>LINESTRING</code> geometries stored in a geometry list column)? Defaults to
-<code>TRUE</code>.</p></td>
+      <td><p>arguments passed on to the <code><a href='sfnetwork.html'>sfnetwork</a></code> construction
+function.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An object of class <code>sfnetwork</code>.</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+    <p>An object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p>
 
-    <p>If an object can be read by <code><a href='https://tidygraph.data-imaginist.com/reference/tbl_graph.html'>as_tbl_graph</a></code> and the
-nodes can be read by <code><a href='https://rdrr.io/pkg/sf/man/st_as_sf.html'>st_as_sf</a></code>, it is automatically
-supported by sfnetworks.</p>
-
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'># Examples for linnet method</span>
+<span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='no'>spatstat</span>)) {
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>simplenet</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"spatstat input"</span>)
+<span class='no'>simplenet_as_sfnetwork</span> <span class='kw'>=</span> <span class='fu'>as_sfnetwork</span>(<span class='no'>simplenet</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>simplenet_as_sfnetwork</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"sfnetworks output"</span>)
+}</div><div class='output co'>#&gt; <span class='message'>Loading required package: spatstat</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: spatstat.data</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: nlme</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: rpart</span></div><div class='output co'>#&gt; <span class='message'>Registered S3 method overwritten by 'spatstat':</span>
+#&gt; <span class='message'>  method     from</span>
+#&gt; <span class='message'>  print.boxx cli </span></div><div class='output co'>#&gt; <span class='message'></span>
+#&gt; <span class='message'>spatstat 1.64-1       (nickname: ‘Help you I can, yes!’) </span>
+#&gt; <span class='message'>For an introduction to spatstat, type ‘beginner’ </span></div><div class='img'><img src='as_sfnetwork-1.png' alt='' width='700' height='433' /></div><div class='img'><img src='as_sfnetwork-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Examples for psp method</span>
+<span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='no'>spatstat</span>)) {
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>42</span>)
+<span class='no'>test_psp</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/spatstat/man/psp.html'>psp</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='fl'>10</span>), <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='fl'>10</span>), <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='fl'>10</span>), <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='fl'>10</span>), <span class='kw'>window</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/pkg/spatstat/man/owin.html'>owin</a></span>())
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>test_psp</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"spatstat input"</span>)
+<span class='no'>test_psp_as_sfnetwork</span> <span class='kw'>=</span> <span class='fu'>as_sfnetwork</span>(<span class='no'>test_psp</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>test_psp_as_sfnetwork</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"sfnetworks output"</span>)
+}</div><div class='img'><img src='as_sfnetwork-3.png' alt='' width='700' height='433' /></div><div class='img'><img src='as_sfnetwork-4.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
-      <li><a href="#details">Details</a></li>
+      <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>

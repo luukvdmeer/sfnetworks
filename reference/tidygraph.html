@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot sfnetwork object — plot.sfnetwork • sfnetworks</title>
+<title>tidygraph methods for sfnetwork objects — tidygraph • sfnetworks</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,14 @@
 
 
 
-<meta property="og:title" content="Plot sfnetwork object — plot.sfnetwork" />
-<meta property="og:description" content="Plot the geometries of an object of class sfnetwork." />
+<meta property="og:title" content="tidygraph methods for sfnetwork objects — tidygraph" />
+<meta property="og:description" content="tidygraph methods for 
+sfnetwork objects. Since sfnetwork objects
+subclass tbl_graph objects, most tidygraph
+functions work automatically. However, some of them need a special method,
+mostly as a result of the presence of the geometry list column in
+sfnetwork objects. Use these methods without the .sfnetwork 
+suffix and after loading the tidygraph package." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -123,44 +129,96 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot sfnetwork object</h1>
-    <small class="dont-index">Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/R/plot.R'><code>R/plot.R</code></a></small>
-    <div class="hidden name"><code>plot.sfnetwork.Rd</code></div>
+    <h1>tidygraph methods for sfnetwork objects</h1>
+    <small class="dont-index">Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/R/tidygraph.R'><code>R/tidygraph.R</code></a></small>
+    <div class="hidden name"><code>tidygraph.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plot the geometries of an object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p>
+    <p><code><a href='https://tidygraph.data-imaginist.com/reference/tidygraph-package.html'>tidygraph</a></code> methods for 
+<code><a href='sfnetwork.html'>sfnetwork</a></code> objects. Since <code><a href='sfnetwork.html'>sfnetwork</a></code> objects
+subclass <code><a href='https://tidygraph.data-imaginist.com/reference/tbl_graph.html'>tbl_graph</a></code> objects, most tidygraph
+functions work automatically. However, some of them need a special method,
+mostly as a result of the presence of the geometry list column in
+<code><a href='sfnetwork.html'>sfnetwork</a></code> objects. Use these methods without the .sfnetwork 
+suffix and after loading the tidygraph package.</p>
     </div>
 
     <pre class="usage"><span class='co'># S3 method for sfnetwork</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>draw_lines</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>as_tbl_graph</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for sfnetwork</span>
+<span class='fu'>as_tibble</span>(<span class='no'>x</span>, <span class='kw'>active</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>spatial</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for sfnetwork</span>
+<span class='fu'>morph</span>(<span class='no'>.data</span>, <span class='no'>.f</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for sfnetwork</span>
+<span class='fu'>mutate</span>(<span class='no'>.data</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for sfnetwork</span>
+<span class='fu'>select</span>(<span class='no'>.data</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>Object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></td>
-    </tr>
-    <tr>
-      <th>draw_lines</th>
-      <td><p>If the edges of the network are spatially implicit, should
-straight lines be drawn between connected nodes? Defaults to <code>TRUE</code>.
-Ignored when the edges of the network are spatially explicit.</p></td>
+      <td><p>An object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Arguments passed on to <code><a href='https://rdrr.io/pkg/sf/man/plot.html'>plot.sf</a></code></p></td>
+      <td><p>Arguments passed on the corresponding <code>tidygraph</code> function.</p></td>
+    </tr>
+    <tr>
+      <th>active</th>
+      <td><p>Which network element (i.e. nodes or edges) to activate before
+extracting. If <code>NULL</code>, it will be set to the current active element of
+the given network. Defaults to <code>NULL</code>.</p></td>
+    </tr>
+    <tr>
+      <th>spatial</th>
+      <td><p>Should te extracted tibble be a 'spatial tibble', i.e. an
+object of class <code><a href='https://rdrr.io/r/base/c.html'>c('sf', 'tbl_df')</a></code>, if it contains a geometry list
+column. Defaults to <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>.data</th>
+      <td><p>An object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>.f</th>
+      <td><p>See <code><a href='https://tidygraph.data-imaginist.com/reference/morph.html'>morph</a></code>.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>This is a basic plotting functionality. For more advanced plotting,
-it is recommended to extract the nodes and edges from the network, and plot
-them separately with one of the many available spatial plotting functions
-as can be found in <code>sf</code>, <code>tmap</code>, <code>ggplot2</code>, <code>ggspatial</code>,
-and others.</p>
+    <p>See the <code><a href='https://tidygraph.data-imaginist.com/reference/tidygraph-package.html'>tidygraph</a></code> 
+documentation.</p>
+    <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
+
+    
+<ul>
+<li><p><code>as_tibble.sfnetwork</code>: The sfnetwork method for 
+<code><a href='https://tidygraph.data-imaginist.com/reference/reexports.html'>as_tibble</a></code> differs in the sense that whenever a
+geometry list column is present, by default it will return a 
+'spatial tibble'. With that we mean an object of class 
+<code><a href='https://rdrr.io/r/base/c.html'>c('sf', 'tbl_df')</a></code> instead of an object of class <code>'tbl_df'</code>.</p></li>
+<li><p><code>morph.sfnetwork</code>: The sfnetwork method for 
+<code><a href='https://tidygraph.data-imaginist.com/reference/morph.html'>morph</a></code> will first try to input the 
+<code><a href='sfnetwork.html'>sfnetwork</a></code> object into the morph method for a 
+<code><a href='https://tidygraph.data-imaginist.com/reference/tbl_graph.html'>tbl_graph</a></code>. If this fails, it will first convert
+the <code><a href='sfnetwork.html'>sfnetwork</a></code> object into a <code><a href='https://tidygraph.data-imaginist.com/reference/tbl_graph.html'>tbl_graph</a></code>
+object before calling <code><a href='https://tidygraph.data-imaginist.com/reference/morph.html'>morph</a></code>. The returned value
+will be a <code>morphed_sfnetwork</code> when all elements of the morphed graph
+are of class <code><a href='sfnetwork.html'>sfnetwork</a></code>, and a <code>morphed_tbl_graph</code>
+otherwise.</p></li>
+<li><p><code>mutate.sfnetwork</code>: The sfnetwork method for <code><a href='https://tidygraph.data-imaginist.com/reference/reexports.html'>mutate</a></code>
+works the same, but updates the sf attributes of the resulting network.</p></li>
+<li><p><code>select.sfnetwork</code>: The sfnetwork method for <code><a href='https://tidygraph.data-imaginist.com/reference/reexports.html'>select</a></code>
+works the same, but updates the sf attributes of the resulting network.</p></li>
+</ul>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -168,6 +226,7 @@ and others.</p>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#details">Details</a></li>
+      <li><a href="#functions">Functions</a></li>
     </ul>
 
   </div>

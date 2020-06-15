@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot sfnetwork object — plot.sfnetwork • sfnetworks</title>
+<title>Querying spatial edge measures — spatial_edge_measures • sfnetworks</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,10 @@
 
 
 
-<meta property="og:title" content="Plot sfnetwork object — plot.sfnetwork" />
-<meta property="og:description" content="Plot the geometries of an object of class sfnetwork." />
+<meta property="og:title" content="Querying spatial edge measures — spatial_edge_measures" />
+<meta property="og:description" content="These functions are a collection of specific spatial edge measures, that
+form a spatial extension to edge measures in 
+tidygraph." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -123,51 +125,58 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot sfnetwork object</h1>
-    <small class="dont-index">Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/R/plot.R'><code>R/plot.R</code></a></small>
-    <div class="hidden name"><code>plot.sfnetwork.Rd</code></div>
+    <h1>Querying spatial edge measures</h1>
+    <small class="dont-index">Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/R/edge_measures.R'><code>R/edge_measures.R</code></a></small>
+    <div class="hidden name"><code>spatial_edge_measures.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plot the geometries of an object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p>
+    <p>These functions are a collection of specific spatial edge measures, that
+form a spatial extension to edge measures in 
+<code><a href='https://tidygraph.data-imaginist.com/reference/tidygraph-package.html'>tidygraph</a></code>.</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for sfnetwork</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>draw_lines</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>edge_circuity</span>()
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>x</th>
-      <td><p>Object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></td>
-    </tr>
-    <tr>
-      <th>draw_lines</th>
-      <td><p>If the edges of the network are spatially implicit, should
-straight lines be drawn between connected nodes? Defaults to <code>TRUE</code>.
-Ignored when the edges of the network are spatially explicit.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Arguments passed on to <code><a href='https://rdrr.io/pkg/sf/man/plot.html'>plot.sf</a></code></p></td>
-    </tr>
-    </table>
+<span class='fu'>edge_length</span>()
 
+<span class='fu'>edge_straight_length</span>()</pre>
+
+
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A numeric vector of the same length as the number of edges in the
+graph.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>This is a basic plotting functionality. For more advanced plotting,
-it is recommended to extract the nodes and edges from the network, and plot
-them separately with one of the many available spatial plotting functions
-as can be found in <code>sf</code>, <code>tmap</code>, <code>ggplot2</code>, <code>ggspatial</code>,
-and others.</p>
+    <p>Just as with all tidygraph algorithms, spatial edge measures are 
+meant to be called inside tidygraph verbs such as <code>mutate()</code>, where 
+the graph that is currently being worked on is known and thus not needed 
+as an argument to the function. If you want to use an algorithm outside of
+the tidygraph framework you can use <code><a href='https://tidygraph.data-imaginist.com/reference/with_graph.html'>with_graph</a></code> to 
+set the graph context temporarily while the algorithm is being evaluated.</p>
+    <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
+
+    
+<ul>
+<li><p><code>edge_circuity</code>: The ratio of the length of an edge
+linestring geometry versus the straight-line distance between its boundary
+nodes, as described in
+<a href='https://journals.sagepub.com/doi/10.1068/b130131p'>Giacomin &amp; Levinson,
+2015</a>.</p></li>
+<li><p><code>edge_length</code>: The length of an edge linestring geometry
+as calculated by <code><a href='https://rdrr.io/pkg/sf/man/geos_measures.html'>st_length</a></code>.</p></li>
+<li><p><code>edge_straight_length</code>: The straight-line distance between the two
+boundary nodes of an edge, as calculated by <code><a href='https://rdrr.io/pkg/sf/man/geos_measures.html'>st_distance</a></code>.</p></li>
+</ul>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
+      <li><a href="#value">Value</a></li>
       <li><a href="#details">Details</a></li>
+      <li><a href="#functions">Functions</a></li>
     </ul>
 
   </div>

@@ -36,21 +36,12 @@
 
 
 <meta property="og:title" content="Create an sfnetwork object — sfnetwork" />
-<meta property="og:description" content="sfnetwork is a tidy data structure for spatial networks. It extends
+<meta property="og:description" content="sfnetwork is a tidy data structure for geospatial networks. It extends
 the graph manipulation functionalities of the
 tidygraph-package package into the domain of
-geospatial networks, where nodes are embedded in geographical space. It
-subclasses tbl_graph, and therefore all of tidygraphs
-functions should work as expected, without any conversion. Just as with a
-tbl_graph, the nodes are activated by default. The
-context can be changed using the activate verb
-and affects all subsequent operations. In sfnetworks, the nodes are
-handled as being an sf object with only POINT
-geometries, and can always be extracted with st_as_sf when
-activated. The edges can be handled as being an sf object with only
-LINESTRING geometries, but this is optional. When the edges do not
-have an explicit spatial component, they can always be extracted with
-as_tibble when activated." />
+geospatial networks, where the nodes and optionally also the edges are
+embedded in geographical space, and enables to apply the spatial analytical
+function from the sf-package directly to the network." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -83,7 +74,7 @@ as_tibble when activated." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -106,13 +97,24 @@ as_tibble when activated." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/extensions.html">Extending the vocabulary</a>
+    </li>
+    <li>
       <a href="../articles/intro.html">Tidy Geospatial Networks in R</a>
     </li>
   </ul>
 </li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/luukvdmeer/sfnetworks">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -127,29 +129,27 @@ as_tibble when activated." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Create an sfnetwork object</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/R/sfnetwork.R'><code>R/sfnetwork.R</code></a></small>
     <div class="hidden name"><code>sfnetwork.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><code>sfnetwork</code> is a tidy data structure for spatial networks. It extends
+    <p><code>sfnetwork</code> is a tidy data structure for geospatial networks. It extends
 the graph manipulation functionalities of the
 <code><a href='https://tidygraph.data-imaginist.com/reference/tidygraph-package.html'>tidygraph-package</a></code> package into the domain of
-geospatial networks, where nodes are embedded in geographical space. It
-subclasses <code><a href='https://tidygraph.data-imaginist.com/reference/tbl_graph.html'>tbl_graph</a></code>, and therefore all of tidygraphs
-functions should work as expected, without any conversion. Just as with a
-<code><a href='https://tidygraph.data-imaginist.com/reference/tbl_graph.html'>tbl_graph</a></code>, the nodes are activated by default. The
-context can be changed using the <code><a href='https://tidygraph.data-imaginist.com/reference/activate.html'>activate</a></code> verb
-and affects all subsequent operations. In <code>sfnetworks</code>, the nodes are
-handled as being an <code><a href='https://rdrr.io/pkg/sf/man/sf.html'>sf</a></code> object with only <code>POINT</code>
-geometries, and can always be extracted with <code><a href='https://rdrr.io/pkg/sf/man/st_as_sf.html'>st_as_sf</a></code> when
-activated. The edges can be handled as being an <code>sf</code> object with only
-<code>LINESTRING</code> geometries, but this is optional. When the edges do not
-have an explicit spatial component, they can always be extracted with
-<code><a href='https://tidygraph.data-imaginist.com/reference/reexports.html'>as_tibble</a></code> when activated.</p>
+geospatial networks, where the nodes and optionally also the edges are
+embedded in geographical space, and enables to apply the spatial analytical
+function from the <code><a href='https://rdrr.io/pkg/sf/man/sf.html'>sf-package</a></code> directly to the network.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sfnetwork</span>(<span class='no'>nodes</span>, <span class='no'>edges</span>, <span class='kw'>directed</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>sfnetwork</span>(
+  <span class='no'>nodes</span>,
+  <span class='no'>edges</span>,
+  <span class='kw'>directed</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>edges_as_lines</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>force</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='no'>...</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -157,17 +157,17 @@ have an explicit spatial component, they can always be extracted with
     <tr>
       <th>nodes</th>
       <td><p>An object containing information about the nodes in the network.
-The nodes should contain spatial information, either by being an <code>sf</code>
-object with only <code>POINT</code> geometries, or by being convertable to such an
+The nodes should contain geospatial coordinates, either by being an <code>sf</code>
+object with <code>POINT</code> geometry features, or by being convertable to such an
 object with <code><a href='https://rdrr.io/pkg/sf/man/st_as_sf.html'>st_as_sf</a></code>.</p></td>
     </tr>
     <tr>
       <th>edges</th>
       <td><p>An object containing information about the edges in the network.
-This object may contain explicit spatial information by being an <code>sf</code>
-object with only <code>LINESTRING</code> geometries. However, this is optional. It
+This object may contain explicit geospatial information by being an <code>sf</code>
+object with <code>LINESTRING</code> geometry features. However, this is optional. It
 may also be a regular <code>data.frame</code> or <code>tbl_df</code> object. In any case,
-the terminal nodes of each edge must either be encoded in a <code>to</code> and
+the adjacent nodes of each edge must either be encoded in a <code>to</code> and
 <code>from</code> column, or in the two first columns, as integers. These integers
 refer to nodes indices, which in turn refer to the position of a node in the
 nodes table.</p></td>
@@ -176,6 +176,27 @@ nodes table.</p></td>
       <th>directed</th>
       <td><p>Should the constructed network be directed? Defaults to
 <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>edges_as_lines</th>
+      <td><p>Should the edges be spatially explicit, i.e. have
+<code>LINESTRING</code> geometries stored in a geometry list column? If <code>NULL</code>,
+this will be automatically defined, by setting the argument to <code>TRUE</code>
+when the given edges object contains a geometry list column, and <code>FALSE</code>
+otherwise. Defaults to <code>NULL</code>.</p></td>
+    </tr>
+    <tr>
+      <th>force</th>
+      <td><p>Should network validity checks be skipped? Defaults to
+<code>FALSE</code>, meaning that network validity checks are executed when
+constructing the network. These checks guarantee a valid spatial network
+structure. For the nodes, this means that they all should have <code>POINT</code>
+geometries. In the case of spatially explicit edges, it is also checked that
+all edges have <code>LINESTRING</code> geometries, nodes and edges have the same
+CRS and boundary points of edges match their corresponding node coordinates.
+These checks are important, but also time consuming. If you are already sure
+your input data meet the requirements, the checks are unneccesary and can be
+turned off to improve speed.</p></td>
     </tr>
     <tr>
       <th>...</th>

@@ -36,8 +36,8 @@
 
 
 <meta property="og:title" content="sf methods for sfnetwork objects — sf" />
-<meta property="og:description" content="Tidyverse methods for sf objects. Use these methods without the .sfnetwork
-suffix and after loading the sf package." />
+<meta property="og:description" content="sf methods for sfnetwork objects. Use these 
+methods without the .sfnetwork suffix and after loading the sf package." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -70,7 +70,7 @@ suffix and after loading the sf package." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
       </span>
     </div>
 
@@ -93,13 +93,24 @@ suffix and after loading the sf package." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/extensions.html">Extending the vocabulary</a>
+    </li>
+    <li>
       <a href="../articles/intro.html">Tidy Geospatial Networks in R</a>
     </li>
   </ul>
 </li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/luukvdmeer/sfnetworks">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -114,17 +125,32 @@ suffix and after loading the sf package." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>sf methods for sfnetwork objects</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/R/sf.R'><code>R/sf.R</code></a></small>
     <div class="hidden name"><code>sf.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Tidyverse methods for sf objects. Use these methods without the .sfnetwork
-suffix and after loading the sf package.</p>
+    <p><code><a href='https://rdrr.io/pkg/sf/man/sf.html'>sf</a></code> methods for <code><a href='sfnetwork.html'>sfnetwork</a></code> objects. Use these 
+methods without the .sfnetwork suffix and after loading the sf package.</p>
     </div>
 
     <pre class="usage"><span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_as_sf</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'>st_as_sf</span>(<span class='no'>x</span>, <span class='kw'>active</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for sfnetwork</span>
+<span class='fu'>st_geometry</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for sfnetwork</span>
+<span class='fu'>st_geometry</span>(<span class='no'>x</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span>
+
+<span class='co'># S3 method for sfnetwork</span>
+<span class='fu'>st_bbox</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for sfnetwork</span>
+<span class='fu'>st_coordinates</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+
+<span class='co'># S3 method for sfnetwork</span>
+<span class='fu'>st_is</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for sfnetwork</span>
 <span class='fu'>st_crs</span>(<span class='no'>x</span>, <span class='no'>...</span>)
@@ -136,52 +162,28 @@ suffix and after loading the sf package.</p>
 <span class='fu'>st_shift_longitude</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_transform</span>(<span class='no'>x</span>, <span class='no'>crs</span>, <span class='no'>...</span>)
+<span class='fu'>st_transform</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for sfnetwork</span>
 <span class='fu'>st_wrap_dateline</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
-<span class='fu'>st_dimension.sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='co'># S3 method for sfnetwork</span>
+<span class='fu'>st_zm</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
-<span class='fu'>st_is_empty.sfnetwork</span>(<span class='no'>x</span>)
+<span class='co'># S3 method for sfnetwork</span>
+<span class='fu'>st_m_range</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
-<span class='fu'>st_is_simple.sfnetwork</span>(<span class='no'>x</span>)
+<span class='co'># S3 method for sfnetwork</span>
+<span class='fu'>st_z_range</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
-<span class='fu'>st_is_valid.sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='co'># S3 method for sfnetwork</span>
+<span class='fu'>st_agr</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
-<span class='fu'>st_contains.sfnetwork</span>(<span class='no'>x</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='fu'>st_contains_properly.sfnetwork</span>(<span class='no'>x</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='fu'>st_covers.sfnetwork</span>(<span class='no'>x</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='fu'>st_covered_by.sfnetwork</span>(<span class='no'>x</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='fu'>st_crosses.sfnetwork</span>(<span class='no'>x</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='fu'>st_disjoint.sfnetwork</span>(<span class='no'>x</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='fu'>st_equals.sfnetwork</span>(<span class='no'>x</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='fu'>st_equals_exact.sfnetwork</span>(<span class='no'>x</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='no'>...</span>)
+<span class='co'># S3 method for sfnetwork</span>
+<span class='fu'>st_agr</span>(<span class='no'>x</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span>
 
 <span class='co'># S3 method for sfnetwork</span>
 <span class='fu'>st_intersects</span>(<span class='no'>x</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='fu'>st_is_within_distance.sfnetwork</span>(<span class='no'>x</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='fu'>st_overlaps.sfnetwork</span>(<span class='no'>x</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='fu'>st_touches.sfnetwork</span>(<span class='no'>x</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='fu'>st_within.sfnetwork</span>(<span class='no'>x</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_area</span>(<span class='no'>x</span>)
-
-<span class='fu'>st_distance.sfnetwork</span>(<span class='no'>x</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='fu'>st_length.sfnetwork</span>(<span class='no'>x</span>)
 
 <span class='co'># S3 method for sfnetwork</span>
 <span class='fu'>st_reverse</span>(<span class='no'>x</span>, <span class='no'>...</span>)
@@ -190,34 +192,13 @@ suffix and after loading the sf package.</p>
 <span class='fu'>st_simplify</span>(<span class='no'>x</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_bbox</span>(<span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_coordinates</span>(<span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_geometry</span>(<span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_geometry</span>(<span class='no'>x</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span>
-
-<span class='fu'>st_geometry_type.sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)
-
-<span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_is</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'>st_join</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>join</span> <span class='kw'>=</span> <span class='no'>st_intersects</span>, <span class='no'>...</span>, <span class='kw'>left</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
 <span class='co'># S3 method for sfnetwork</span>
 <span class='fu'>st_crop</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_filter</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>...</span>, <span class='kw'>.predicate</span> <span class='kw'>=</span> <span class='no'>st_intersects</span>)
-
-<span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_join</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>join</span> <span class='kw'>=</span> <span class='no'>st_intersects</span>, <span class='no'>...</span>, <span class='kw'>left</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-
-<span class='fu'>st_nearest_feature.sfnetwork</span>(<span class='no'>x</span>, <span class='no'>y</span>)
-
-<span class='fu'>st_relate.sfnetwork</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>st_filter</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>...</span>, <span class='kw'>.predicate</span> <span class='kw'>=</span> <span class='no'>st_intersects</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -225,6 +206,12 @@ suffix and after loading the sf package.</p>
     <tr>
       <th>x</th>
       <td><p>An object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>active</th>
+      <td><p>Which network element (i.e. nodes or edges) to activate before
+extracting. If <code>NULL</code>, it will be set to the current active element of
+the given network. Defaults to <code>NULL</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -235,19 +222,11 @@ suffix and after loading the sf package.</p>
       <td><p>See <code><a href='https://rdrr.io/pkg/sf/man/st_crs.html'>st_crs</a></code> or <code><a href='https://rdrr.io/pkg/sf/man/st_geometry.html'>st_geometry</a></code>.</p></td>
     </tr>
     <tr>
-      <th>crs</th>
-      <td><p>See <code><a href='https://rdrr.io/pkg/sf/man/st_transform.html'>st_transform</a></code>.</p></td>
-    </tr>
-    <tr>
       <th>y</th>
       <td><p>An object of class <a href='sfnetwork.html'>sfnetwork</a> or class <code><a href='https://rdrr.io/pkg/sf/man/sf.html'>sf</a></code>.
 In some cases, it can also be an object of <code><a href='https://rdrr.io/pkg/sf/man/sfc.html'>sfc</a></code>,
 <code><a href='https://rdrr.io/pkg/sf/man/st.html'>sfg</a></code> or <code><a href='https://rdrr.io/pkg/sf/man/st_bbox.html'>bbox</a></code>. Always look at
 the documentation of the corresponding <code>sf</code> function for details.</p></td>
-    </tr>
-    <tr>
-      <th>.predicate</th>
-      <td><p>See <code><a href='https://rdrr.io/pkg/sf/man/st_join.html'>st_filter</a></code>.</p></td>
     </tr>
     <tr>
       <th>join</th>
@@ -257,12 +236,15 @@ the documentation of the corresponding <code>sf</code> function for details.</p>
       <th>left</th>
       <td><p>See <code><a href='https://rdrr.io/pkg/sf/man/st_join.html'>st_join</a></code>.</p></td>
     </tr>
+    <tr>
+      <th>.predicate</th>
+      <td><p>See <code><a href='https://rdrr.io/pkg/sf/man/st_join.html'>st_filter</a></code>.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>See the <code><a href='https://rdrr.io/pkg/sf/man/sf.html'>sf</a></code> documentation for details on all
-functions.</p>
+    <p>See the <code><a href='https://rdrr.io/pkg/sf/man/sf.html'>sf</a></code> documentation.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

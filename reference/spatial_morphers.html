@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot sfnetwork object — plot.sfnetwork • sfnetworks</title>
+<title>Spatial morphers for sfnetwork objects — spatial_morphers • sfnetworks</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,11 @@
 
 
 
-<meta property="og:title" content="Plot sfnetwork object — plot.sfnetwork" />
-<meta property="og:description" content="Plot the geometries of an object of class sfnetwork." />
+<meta property="og:title" content="Spatial morphers for sfnetwork objects — spatial_morphers" />
+<meta property="og:description" content="These functions are meant to be passed into [morph()] to create a temporary
+alternate representation of the input graph. They are thus not meant to be
+called directly. See below for detail of each morpher. For a more detailed
+explanations on how to use morphing, see morph." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -123,51 +126,85 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot sfnetwork object</h1>
-    <small class="dont-index">Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/R/plot.R'><code>R/plot.R</code></a></small>
-    <div class="hidden name"><code>plot.sfnetwork.Rd</code></div>
+    <h1>Spatial morphers for sfnetwork objects</h1>
+    <small class="dont-index">Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/R/morphers.R'><code>R/morphers.R</code></a></small>
+    <div class="hidden name"><code>spatial_morphers.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plot the geometries of an object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p>
+    <p>These functions are meant to be passed into [morph()] to create a temporary
+alternate representation of the input graph. They are thus not meant to be
+called directly. See below for detail of each morpher. For a more detailed
+explanations on how to use morphing, see <code><a href='https://tidygraph.data-imaginist.com/reference/morph.html'>morph</a></code>.</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for sfnetwork</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>draw_lines</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>to_spatial_coordinates</span>(<span class='no'>graph</span>)
+
+<span class='fu'>to_spatial_dense_graph</span>(<span class='no'>graph</span>)
+
+<span class='fu'>to_spatial_directed</span>(<span class='no'>graph</span>)
+
+<span class='fu'>to_spatial_explicit_edges</span>(<span class='no'>graph</span>)
+
+<span class='fu'>to_spatial_implicit_edges</span>(<span class='no'>graph</span>)
+
+<span class='fu'>to_spatial_shortest_paths</span>(<span class='no'>graph</span>, <span class='no'>...</span>)
+
+<span class='fu'>to_spatial_subgraph</span>(<span class='no'>graph</span>, <span class='no'>...</span>, <span class='kw'>subset_by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>Object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></td>
-    </tr>
-    <tr>
-      <th>draw_lines</th>
-      <td><p>If the edges of the network are spatially implicit, should
-straight lines be drawn between connected nodes? Defaults to <code>TRUE</code>.
-Ignored when the edges of the network are spatially explicit.</p></td>
+      <th>graph</th>
+      <td><p>An object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Arguments passed on to <code><a href='https://rdrr.io/pkg/sf/man/plot.html'>plot.sf</a></code></p></td>
+      <td><p>Arguments to be passed on to other function. See the description
+of each morpher for details.</p></td>
+    </tr>
+    <tr>
+      <th>subset_by</th>
+      <td><p>Whether to create subgraphs based on nodes or edges.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>This is a basic plotting functionality. For more advanced plotting,
-it is recommended to extract the nodes and edges from the network, and plot
-them separately with one of the many available spatial plotting functions
-as can be found in <code>sf</code>, <code>tmap</code>, <code>ggplot2</code>, <code>ggspatial</code>,
-and others.</p>
+    <p>A list of <code><a href='sfnetwork.html'>sfnetwork</a></code> objects.</p>
+    <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
+
+    
+<ul>
+<li><p><code>to_spatial_coordinates</code>: Store the spatial coordinates of the nodes in an 
+'X' and Y' column, instead of an <code><a href='https://rdrr.io/pkg/sf/man/sfc.html'>sfc</a></code> geometry list column.</p></li>
+<li><p><code>to_spatial_dense_graph</code>: Reconstruct the network by using all edge 
+linestring points as nodes, instead of only the endpoints.</p></li>
+<li><p><code>to_spatial_directed</code>: Make a graph directed in the direction given by 
+the linestring geometries of the edges.</p></li>
+<li><p><code>to_spatial_explicit_edges</code>: Draw linestring geometries for spatially
+implicit edges.</p></li>
+<li><p><code>to_spatial_implicit_edges</code>: Remove linestring geometries of spatially 
+explicit edges.</p></li>
+<li><p><code>to_spatial_shortest_paths</code>: Limit a graph to those nodes and edges that are
+part of the shortest path between two nodes. If multiple <code>to</code> nodes are 
+given, multiple shortest paths are returned. <code>...</code> is evaluated in the 
+same manner as <code><a href='spatial_shortest_paths.html'>st_shortest_paths</a></code>, except that the <code>output</code>,
+<code>predecessors</code> and <code>inbound.edges</code> arguments are ignored. When 
+unmorphing only the first instance of both the node and edge data will be 
+used, as the the same node and/or edge can be present in multiple paths.</p></li>
+<li><p><code>to_spatial_subgraph</code>: Limit a graph to a single spatial subset. 
+<code>...</code> is evaluated in the same manner as <code>st_filter</code>.</p></li>
+</ul>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#details">Details</a></li>
+      <li><a href="#value">Value</a></li>
+      <li><a href="#functions">Functions</a></li>
     </ul>
 
   </div>

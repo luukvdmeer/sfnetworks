@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot sfnetwork object — plot.sfnetwork • sfnetworks</title>
+<title>Changelog • sfnetworks</title>
 
 
 <!-- jquery -->
@@ -35,9 +35,7 @@
 
 
 
-<meta property="og:title" content="Plot sfnetwork object — plot.sfnetwork" />
-<meta property="og:description" content="Plot the geometries of an object of class sfnetwork." />
-<meta name="twitter:card" content="summary" />
+<meta property="og:title" content="Changelog" />
 
 
 
@@ -56,7 +54,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-topic">
+    <div class="container template-news">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -123,54 +121,86 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot sfnetwork object</h1>
-    <small class="dont-index">Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/R/plot.R'><code>R/plot.R</code></a></small>
-    <div class="hidden name"><code>plot.sfnetwork.Rd</code></div>
+      <h1>Changelog <small></small></h1>
+      <small>Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div class="ref-description">
-    <p>Plot the geometries of an object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p>
-    </div>
-
-    <pre class="usage"><span class='co'># S3 method for sfnetwork</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>x</span>, <span class='kw'>draw_lines</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>x</th>
-      <td><p>Object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></td>
-    </tr>
-    <tr>
-      <th>draw_lines</th>
-      <td><p>If the edges of the network are spatially implicit, should
-straight lines be drawn between connected nodes? Defaults to <code>TRUE</code>.
-Ignored when the edges of the network are spatially explicit.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Arguments passed on to <code><a href='https://rdrr.io/pkg/sf/man/plot.html'>plot.sf</a></code></p></td>
-    </tr>
-    </table>
-
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>This is a basic plotting functionality. For more advanced plotting,
-it is recommended to extract the nodes and edges from the network, and plot
-them separately with one of the many available spatial plotting functions
-as can be found in <code>sf</code>, <code>tmap</code>, <code>ggplot2</code>, <code>ggspatial</code>,
-and others.</p>
-
+    <div id="sfnetworks-v030-gievenbeck" class="section level1">
+<h1 class="page-header">
+<a href="#sfnetworks-v030-gievenbeck" class="anchor"></a>sfnetworks v0.3.0 “Gievenbeck”</h1>
+<ul>
+<li>Several spatial network extensions for the tidygraph and sf functionalities:
+<ul>
+<li>Spatial wrappers around igraph shortest paths functions. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/28"><a href='https://github.com/luukvdmeer/sfnetworks/issues/28'>#28</a></a>
+</li>
+<li>Various spatial morpher functions. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/19"><a href='https://github.com/luukvdmeer/sfnetworks/issues/19'>#19</a></a>
+</li>
+<li>Various edge measure algorithms, including edge circuity. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/51"><a href='https://github.com/luukvdmeer/sfnetworks/issues/51'>#51</a></a>
+</li>
+</ul>
+</li>
+<li>More methods for as_sfnetwork. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/41"><a href='https://github.com/luukvdmeer/sfnetworks/issues/41'>#41</a></a>
+<ul>
+<li>Support <a href="https://docs.ropensci.org/stplanr/reference/SpatialLinesNetwork.html">sfNetwork</a> from <a href="https://docs.ropensci.org/stplanr/">stplanr</a>
+</li>
+<li>Support <a href="https://rdrr.io/cran/spatstat/man/linnet.html">linnet</a> and <a href="https://rdrr.io/cran/spatstat/man/psp.object.html">psp</a> from <a href="https://rdrr.io/cran/spatstat/">spatstat</a>
+</li>
+</ul>
+</li>
+<li>Preserving sf attributes for nodes and edges inside the sfnetwork object. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/24"><a href='https://github.com/luukvdmeer/sfnetworks/issues/24'>#24</a></a>
+</li>
+<li>Structural and performance improvements of the code base. This includes:
+<ul>
+<li>Construction checks are run only when needed, adding a force argument to skip validity tests.</li>
+<li>Allowing to choose between spatially explicit and implicit edges during construction, adding an edges_as_lines argument. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/47"><a href='https://github.com/luukvdmeer/sfnetworks/issues/47'>#47</a></a>
+</li>
+<li>Using st_boundary to find line endpoints increases performance for sfnetwork construction from sf objects. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/30"><a href='https://github.com/luukvdmeer/sfnetworks/issues/30'>#30</a></a>
+</li>
+<li>Cleaning up sf methods for sfnetwork objects.</li>
+<li>Relying on internally stored attributes rather than first extracting sf objects.</li>
+<li>Option to plot without making edges explicit.</li>
+</ul>
+</li>
+<li>Improved function documentation.</li>
+<li>An additional <a href="https://luukvdmeer.github.io/sfnetworks/articles/extensions.html">vignette</a>.</li>
+</ul>
+</div>
+    <div id="sfnetworks-v020-neutor" class="section level1">
+<h1 class="page-header">
+<a href="#sfnetworks-v020-neutor" class="anchor"></a>sfnetworks v0.2.0 “Neutor”</h1>
+<ul>
+<li>Major stable release</li>
+<li>Basic construction function and initial foreign objects conversion. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/9"><a href='https://github.com/luukvdmeer/sfnetworks/issues/9'>#9</a></a>
+</li>
+<li>Methods for sf functions</li>
+<li>Roxel data as lazyData</li>
+<li>Internal checks before construction</li>
+<li>ghactions for sf and pkgdown</li>
+<li>Basic print and plot methods</li>
+<li>First vignette</li>
+<li>Code of conduct, contribution and license files</li>
+</ul>
+</div>
+    <div id="sfnetworks-v010" class="section level1">
+<h1 class="page-header">
+<a href="#sfnetworks-v010" class="anchor"></a>sfnetworks v0.1.0</h1>
+<ul>
+<li>Initial release</li>
+</ul>
+</div>
   </div>
+
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#details">Details</a></li>
-    </ul>
-
+    <div id="tocnav">
+      <h2>Contents</h2>
+      <ul class="nav nav-pills nav-stacked">
+        <li><a href="#sfnetworks-v030-gievenbeck">0.3.0</a></li>
+        <li><a href="#sfnetworks-v020-neutor">0.2.0</a></li>
+        <li><a href="#sfnetworks-v010">0.1.0</a></li>
+      </ul>
+    </div>
   </div>
+
 </div>
 
 
