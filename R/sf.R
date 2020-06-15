@@ -103,6 +103,7 @@ st_geometry.sfnetwork = function(x, ...) {
 #' @importFrom sf st_geometry<-
 #' @export
 `st_geometry<-.sfnetwork` = function(x, value) {
+  if (is.null(value)) return(drop_geometry(x))
   switch(
     attr(x, "active"),
     nodes = set_node_geom(x, value),
@@ -246,7 +247,7 @@ change_node_coords = function(x, op, ...) {
   change_element_coords(x, "nodes", op, ...)
 }
 
-change_edge_coords = function(x, op) {
+change_edge_coords = function(x, op, ...) {
   # Change node coords as well.
   x = change_element_coords(x, "nodes", op, ...)
   change_element_coords(x, "edges", op, ...)
