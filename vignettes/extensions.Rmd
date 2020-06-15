@@ -1,0 +1,265 @@
+---
+title: "Extending the vocabulary"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Extending the vocabulary}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+knitr::opts_knit$set(global.par = TRUE)
+```
+
+```{r color, echo = FALSE, results='asis'}
+# crayon needs to be explicitly activated in Rmd
+options(crayon.enabled = TRUE)
+# Hooks needs to be set to deal with outputs
+# thanks to fansi logic
+old_hooks <- fansi::set_knit_hooks(knitr::knit_hooks,
+                                   which = c("output", "message", "error"))
+```
+
+The core of the package is a data structure that can be provided directly to both graph analytical functions of `tidygraph` and spatial analytical functions of `sf`. However, there might be problems that are so specific to spatial networks, that they can neither be solved by `tidygraph` nor `sf`. Therefore, `sfnetworks` will contains a several extensions to the current offer of the two "parent packages". We want to prevent that `sfnetworks` goes too much into a single application - it should remain a lower-level package - but basic, widely used spatial network operations should be supported. The ones that are currently 
+
+## Spatial graph, node and edge information
+The `tidygraph` package has a very organized structure, in which it offers a wide range of algorithms for extracting information about either the graph itself, its nodes, or its edges. Think for example about centrality measures (e.g. `centrality_betweenness`), other node, edge or graph measures (e.g. `node_eccentricity`, `graph_diameter`) and node, edge or graph type queries (e.g. `node_is_center`, `edge_is_loop`, `graph_is_connected`).
+
+The `sfnetworks` package extends this ecosystem by adding specific
+spatial algorithms. In the current state, the offer contains three spatial edge measures:
+
+- `edge_length`: The length of an edge linestring geometry as calculated by `st_length`.
+- `edge_straight_length`: The straight-line distance (i.e. euclidean distance for projected coordinates, and great-circle-distance for geographic coordinates) between the two boundary nodes of an edge, as calculated by `st_distance`.
+- `edge_circuity`: The ratio of the length of an edge linestring geometry versus the straight-line distance between its boundary nodes, as described in [Giacomin & Levinson, 2015](https://journals.sagepub.com/doi/10.1068/b130131p).
+
+Just as with all tidygraph algorithms, spatial edge measures are meant to be called inside `tidygraph` verbs such as `mutate()`, where the graph that is currently being worked on is known and thus not needed as an argument to the function.
+
+```{r, message=FALSE}
+library(sfnetworks)
+library(sf)
+library(tidygraph)
+```
+```{r}
+net = as_sfnetwork(roxel, directed = FALSE) %>%
+  st_transform(3035)
+
+net %>%
+  activate("edges") %>%
+  mutate(
+    length = edge_length(), 
+    straight = edge_straight_length(),
+    circuity = edge_circuity()
+  ) %>%
+  select(length, straight, circuity)
+```
+
+If you want to use an algorithm outside of a verb you can use `with_graph()` to set the graph context temporarily.
+
+```{r}
+circuities = with_graph(activate(net, "edges"), edge_circuity())
+head(circuities)
+```
+
+## Spatial shortest paths
+`sfnetworks` also offers spatial wrappers around the shortest path calculation functionalities from `igraph`. The spatial wrappers all start with `st_`, just as the spatial analytical functions from the `sf` packages. Instead of providing the node indices of the `from` and `to` nodes of the shortest path, it is possible to provide sf-formatted points in geographical space instead.
+
+Providing node indices:
+
+```{r}
+st_shortest_paths(net, 1, 9)$vpath
+```
+
+Providing the same nodes as spatial points instead:
+
+```{r}
+p1 = net %>%
+  activate("nodes") %>%
+  st_as_sf() %>%
+  slice(1)
+
+p1
+
+p2 = net %>%
+  activate("nodes") %>%
+  st_as_sf() %>%
+  slice(9)
+
+p2
+
+st_shortest_paths(net, p1, p2)$vpath
+```
+
+In the case above, the locations of these spatial points are exactly equal to the locations of nodes in the network. However, they don't have to be. Points that don't lie on the network will be replaced by their nearest node.
+
+```{r}
+p3 = st_sfc(
+  st_geometry(p1)[[1]] + st_point(c(500, 500)), 
+  crs = st_crs(p1)
+)
+
+p4 = st_sfc(
+  st_geometry(p2)[[1]] + st_point(c(-500, -500)), 
+  crs = st_crs(p2)
+)
+
+par(mar = c(1, 1, 1, 1))
+plot(net)
+plot(p3, col = "red", pch = 20, add = TRUE)
+plot(p4, col = "red", pch = 20, add = TRUE)
+
+lengths(st_intersects(p3, net)) > 0
+
+lengths(st_intersects(p4, net)) > 0
+
+st_shortest_paths(net, p3, p4)$vpath
+```
+
+All paths above are calculated without taking into account weights of edges. Just as in `igraph::shortest_paths`, you can provide such weights through the weights argument. However, in `st_shortest_path` you also have the option to just provide a column name to the weights argument, which should match an existing column in the networks edges table, whose values will then be used as weights.
+
+```{r}
+net  = net %>%
+  activate(edges) %>%
+  mutate(length = sf::st_length(.))
+
+net
+
+st_shortest_paths(net, p1, p2, weights = "length")$vpath
+```
+
+Alternatively, you can name your weights column weight. That is the same as having a weight attribute in an `igraph` object. The weight values will then be automatically detected and do not have to be provided explicitly.
+
+```{r}
+net  = net %>%
+  activate("edges") %>%
+  rename(weight = length) %>%
+  activate("nodes")
+
+st_shortest_paths(net, p1, p2)$vpath
+```
+
+We now showed 1-to-1 shortest paths. You can also calculate 1-to-many shortest paths, by giving a multiple feature `sf` or `sfc` object as `to` argument. Having multiple features as `from` argument is not possible in this case (since `igraph` does not support it).
+
+Having multiple features as `from` argument ìs possible in `st_network_distance()`, which is a wrapper around `igraph::distances`. This returns a distance matrix.
+
+```{r}
+ps1 = c(st_geometry(p1), st_sfc(p3))
+
+ps1
+
+ps2 = c(st_geometry(p2), st_sfc(p4))
+
+ps2
+
+# Note that our net object now has a weight column which will be automatically used.
+st_network_distance(net, ps1, ps2)
+```
+
+Finally, there is also `st_all_shortest_paths()`, which is a wrapper around `igraph::all_shortest_paths`. It works the same as `st_shortest_paths()`, but in case there are multiple shortest paths from A to B, it will return all of them, instead of only one.
+
+*Note: if you provide points that are not network nodes, the nearest node to those points will be taken. We would like to also give the option to take the nearest point on the nearest edge. See [here](https://github.com/luukvdmeer/sfnetworks/issues/54)*
+
+## Spatial morphers
+Before we get to the spatial morphing extensions, we need to shortly introduce the concept. Morphing is a `tidygraph` functionality to morph a graph into a different representation. Then, any of the supported `dplyr` verbs can be applied to this morphed graph (which sub-classes a `list`), and changes to the data are merged back into the original graph when calling `unmorph()`. A "different representation of a graph" sounds like a broad term, and it is! A large amount of morphing functions are offered by `tidygraph`, and they all work on `sfnetwork` objects as well. See the [tidygraph documentation](https://tidygraph.data-imaginist.com/index.html) for an overview of all of them, and more details on the morphing concept.
+
+Lets look at an example, in which we morph a graph into a representation where all its components are a graph on its own, combined together in a list structure. Since `net` has 14 components, the morphed representation is a list with 14 elements.
+
+```{r}
+# Mutate will be applied to each component separately.
+net %>%
+  morph(to_components) %>%
+  mutate(is_comp_center = node_is_center()) %>%
+  unmorph() %>%
+  filter(is_comp_center)
+```
+
+The `crystallise()` verb will turn a morphed graph into a tibble, where each row represents one of the elements of the list, which the corresponding graph object stored in a column named `graph`. Alternatively, the `convert()` verb takes one element of the list, and returns the graph stored in that element. For example, `convert(net, to_components, .select = 1)` will convert the first (and largest) component of our network. A lot of morphers create a list with only a single element. In that case, the `.select` argument of `convert()` can be left out, since the only graph of the morphed representation will always be returned.
+
+Now, lets move on to the spatial morphers, that `sfnetworks` adds to the exsting set of tidygraphs offer. All spatial morpher functions start with `to_spatial_`, to distinguish them for the others. Just as in `tidygraph`, morphers are only meant to be called inside either `morph()` or `convert()` verbs, and not to be applied to the graph directly.
+
+The following spatial morphers are currently offered by `sfnetwork`:
+
+`to_spatial_coordinates` drops the geometry list column of the edges (if present), and represents the node geometries with an `X` and `Y` column, instead of a geometry list column.
+
+```{r}
+net %>%
+  convert(to_spatial_coordinates)
+```
+
+`to_spatial_dense_graph` reconstruct the network by using all edge linestring points as nodes, instead of only the endpoints.
+
+```{r, fig.show='hold'}
+plot(net)
+plot(convert(net, to_spatial_dense_graph))
+```
+
+`to_spatial_directed` makes a graph directed in the direction given by the linestring geometries of the edges. This in contradiction to the `to_directed` morpher of `tidygraph`, which makes a graph directed in the direction given by the `to` and `from` column.
+
+```{r}
+net %>%
+  activate("edges") %>%
+  st_reverse() %>%
+  convert(to_spatial_directed)
+```
+
+`to_spatial_implicit_edges` drops the geometries of spatially explicit edges.
+
+```{r}
+net %>%
+  convert(to_spatial_implicit_edges)
+```
+
+`to_spatial_explicit_edges` draws straight linestring geometries between the `to` and `from` nodes of spatially implicit edges.
+
+```{r}
+net %>%
+  convert(to_spatial_implicit_edges) %>%
+  convert(to_spatial_explicit_edges)
+```
+
+`to_spatial_subgraph` limits a graph to a single spatial subset. ... is evaluated in the same manner as `st_filter`.
+
+```{r}
+e1 = st_point(c(7.53173, 51.95662))
+e2 = st_point(c(7.53173, 51.95190))
+e3 = st_point(c(7.53778, 51.95190))
+e4 = st_point(c(7.53778, 51.95662))
+
+rect = st_multipoint(c(e1, e2, e3, e4)) %>%
+  st_cast('POLYGON') %>%
+  st_sfc(crs = 4326) %>%
+  st_transform(3035)
+
+net %>%
+  convert(to_spatial_subgraph, rect, .predicate = st_intersects)
+```
+
+`to_spatial_shortest_paths` limits a graph to those nodes and edges that are part of the shortest path between two nodes. If multiple `to` nodes are given, multiple shortest path graphs are returned.
+
+```{r}
+net %>%
+  convert(to_spatial_shortest_paths, p3, p4)
+```
+
+This morpher can be very useful for plotting shortest paths on top of the original graph.
+
+```{r}
+plot(net)
+plot(
+  net %>% convert(to_spatial_shortest_paths, p3, p4),
+  col = "red",
+  add = TRUE
+)
+```
+
+Or, for calculating the lengths of multiple shortest paths.
+
+```{r}
+net %>%
+  morph(to_spatial_shortest_paths, p1, c(p3, p4)) %>%
+  sapply(function(x) sum(st_length(x)))
+```

@@ -33,7 +33,7 @@ Given the strength of R in spatial *and* network analysis, one would expect it t
 
 Although several R packages exist that address geospatial networks, they often focus on a specific application within the broader domain of geospatial network analysis, or complicate `tidyverse` compatibility, for example by using S4 classes or relying on the older `sp` package for spatial data handling. Hence, at present, no generally applicable, `tidyverse` compatible classes exist for geospatial network data, representing a gap in R's spatial and network analysis ecosystems (see the [gRaphical Models](https://cran.r-project.org/web/views/gR.html) and [Spatial](https://cran.r-project.org/web/views/Spatial.html) task views). `sfnetworks` is created to fill this gap, and form a connecting edge between the two worlds.
 
-The core of the package is a data structure that can be provided directly to both graph analytical functions of `tidygraph` and spatial analytical functions of `sf`. However, there might be problems that are so specific to spatial networks, that they can neither be solved by `tidygraph` nor `sf`. Therefore, `sfnetworks` will provide extension to the current offer of the two "parent packages". Think for example of a function that can snap spatial points to the edges of a network. We want to prevent that `sfnetworks` goes too much into a single application - it should remain a lower-level package - but basic, widely used spatial network operations should be supported.
+The core of the package is a data structure that can be provided directly to both graph analytical functions of `tidygraph` and spatial analytical functions of `sf`. However, there might be problems that are so specific to spatial networks, that they can neither be solved by `tidygraph` nor `sf`. Therefore, `sfnetworks` will contain several extensions to the current offer of the two "parent packages". Think for example of a function that can snap spatial points to the edges of a network. We want to prevent that `sfnetworks` goes too much into a single application - it should remain a lower-level package - but basic, widely used spatial network operations should be supported. See the [extensions vignette](https://luukvdmeer.github.io/sfnetworks/articles/extensions.html) for an explanation of the currently implemented extensions.
 
 ## Installation
 The `sfnetworks` package is still in very active development, and this vignette only describes the first part of our work. Therefore, the package is also not on CRAN yet. Install it from GitHub using the `remotes` package in R.
@@ -246,24 +246,6 @@ as_sfnetwork(roxel, directed = TRUE) %>%
   st_reverse()
 ```
 
-### Computing geometric measures
-Geometric measures can be very useful to add as attributes to features, and serve as weights in for example shortest path calculations.
-
-```{r}
-net_t = net %>%
-  activate("edges") %>%
-  st_transform(3035) %>%
-  mutate(length = st_length(.))
-
-net_t
-```
-
-```{r, message=FALSE}
-library(igraph)
-
-shortest_paths(net_t, from = 1, to = 10, weights = pull(net_t, length))$vpath
-```
-
 ### Preservation of sf attributes
 An `sfnetwork` object preserves the sf-specific attributes of the nodes and edge data. They can be queried using the `sf_attr` function.
 
@@ -277,6 +259,8 @@ For the same reason as `tidygraph` does not support all `dplyr` functions, `sfne
 These functions cannot be directly applied to an `sfnetwork` object, but of course you can always escape the network structure, do some work, and merge changes back into the network. For example, when you want to know the area of the voronoi polygon of each node:
 
 ```{r}
+net_t = st_transform(net, 3035)
+
 y = net_t %>%
   activate("nodes") %>%
   st_as_sf() %>%
