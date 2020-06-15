@@ -6,6 +6,10 @@ empty_agr = function(attr_names) {
   structure(rep(sf::NA_agr_, length(attr_names)), names = attr_names)
 }
 
+# This is needed because an input edge data frame to the sfnetwork construction
+# function can have the required from and to columns at any location. In the
+# resulting network however they will always be the first two columns, so the
+# order of the agr attribute might not match the column order anymore.
 order_agr = function(x) {
   agr = sf_attr(x, "agr", "edges")
   ordered_agr = unlist(

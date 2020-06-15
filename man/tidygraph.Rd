@@ -43,3 +43,22 @@ suffix and after loading the tidygraph package.
 See the \code{\link[tidygraph:tidygraph-package]{tidygraph}} 
 documentation.
 }
+\section{Functions}{
+\itemize{
+\item \code{as_tibble.sfnetwork}: The sfnetwork method for 
+\code{\link[tidygraph]{as_tibble}} differs in the sense that whenever a
+geometry list column is present, by default it will return a 
+'spatial tibble'. With that we mean an object of class 
+\code{c('sf', 'tbl_df')} instead of an object of class \code{'tbl_df'}.
+
+\item \code{morph.sfnetwork}: The sfnetwork methods for 
+\code{\link[tidygraph]{morph}} will first try to input the 
+\code{\link{sfnetwork}} object into the morph method for a 
+\code{\link[tidygraph]{tbl_graph}}. If this fails, it will first convert
+the \code{\link{sfnetwork}} object into a \code{\link[tidygraph]{tbl_graph}}
+object before calling \code{\link[tidygraph]{morph}}. The returned value
+will be a \code{morphed_sfnetwork} when all elements of the morphed graph
+are of class \code{\link{sfnetwork}}, and a \code{morphed_tbl_graph}
+otherwise.
+}}
+

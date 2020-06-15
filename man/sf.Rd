@@ -3,18 +3,22 @@
 \name{sf}
 \alias{sf}
 \alias{st_as_sf.sfnetwork}
-\alias{st_bbox.sfnetwork}
-\alias{st_coordinates.sfnetwork}
 \alias{st_geometry.sfnetwork}
 \alias{st_geometry<-.sfnetwork}
+\alias{st_bbox.sfnetwork}
+\alias{st_coordinates.sfnetwork}
 \alias{st_is.sfnetwork}
 \alias{st_crs.sfnetwork}
 \alias{st_crs<-.sfnetwork}
 \alias{st_shift_longitude.sfnetwork}
 \alias{st_transform.sfnetwork}
 \alias{st_wrap_dateline.sfnetwork}
+\alias{st_zm.sfnetwork}
+\alias{st_m_range.sfnetwork}
+\alias{st_z_range.sfnetwork}
+\alias{st_agr.sfnetwork}
+\alias{st_agr<-.sfnetwork}
 \alias{st_intersects.sfnetwork}
-\alias{st_area.sfnetwork}
 \alias{st_reverse.sfnetwork}
 \alias{st_simplify.sfnetwork}
 \alias{st_join.sfnetwork}
@@ -24,13 +28,13 @@
 \usage{
 \method{st_as_sf}{sfnetwork}(x, active = NULL, ...)
 
-\method{st_bbox}{sfnetwork}(x, ...)
-
-\method{st_coordinates}{sfnetwork}(x, ...)
-
 \method{st_geometry}{sfnetwork}(x, ...)
 
 \method{st_geometry}{sfnetwork}(x) <- value
+
+\method{st_bbox}{sfnetwork}(x, ...)
+
+\method{st_coordinates}{sfnetwork}(x, ...)
 
 \method{st_is}{sfnetwork}(x, ...)
 
@@ -44,9 +48,17 @@
 
 \method{st_wrap_dateline}{sfnetwork}(x, ...)
 
-\method{st_intersects}{sfnetwork}(x, y = x, ...)
+\method{st_zm}{sfnetwork}(x, ...)
 
-\method{st_area}{sfnetwork}(x)
+\method{st_m_range}{sfnetwork}(x, ...)
+
+\method{st_z_range}{sfnetwork}(x, ...)
+
+\method{st_agr}{sfnetwork}(x, ...)
+
+\method{st_agr}{sfnetwork}(x) <- value
+
+\method{st_intersects}{sfnetwork}(x, y = x, ...)
 
 \method{st_reverse}{sfnetwork}(x, ...)
 
