@@ -92,7 +92,7 @@ edge_spatial_tibble = function(x) {
   }
 }
 
-#' @describeIn tidygraph The sfnetwork methods for 
+#' @describeIn tidygraph The sfnetwork method for 
 #' \code{\link[tidygraph]{morph}} will first try to input the 
 #' \code{\link{sfnetwork}} object into the morph method for a 
 #' \code{\link[tidygraph]{tbl_graph}}. If this fails, it will first convert
@@ -127,3 +127,58 @@ morph.sfnetwork = function(.data, .f, ...) {
     error = function(e) morphed
   )  
 }
+
+#' @describeIn tidygraph The sfnetwork method for \code{\link[tidygraph]{mutate}}
+#' works the same, but updates the sf attributes of the resulting network.
+#' @importFrom tidygraph mutate
+#' @export
+mutate.sfnetwork = function(.data, ...) {
+  # Run tidygraphs mutate.
+  x = NextMethod()
+  # Update the agr sf attribute.
+  agr = st_agr(.data)
+  attrs = get_attr_names(x)
+  new_agr = setNames(agr[attrs], attrs) # NA's new columns
+  sf_attr(x, "agr") = new_agr
+  # Return x.
+  x
+}
+
+#' @describeIn tidygraph The sfnetwork method for \code{\link[tidygraph]{select}}
+#' works the same, but updates the sf attributes of the resulting network.
+#' @importFrom tidygraph select
+#' @export
+select.sfnetwork = function(.data, ...) {
+  # Run tidygraphs select.
+  x = NextMethod()
+  # Update the agr sf attribute.
+  agr = st_agr(.data)
+  attrs = get_attr_names(x)
+  new_agr = agr[attrs]
+  sf_attr(x, "agr") = new_agr
+  # Return x.
+  x
+}
+
+get_attr_names = function(x) {
+  switch(
+    attr(x, "active"),
+    nodes = get_node_attr_names(x),
+    edges = get_edge_attr_names(x)
+  )
+}
+
+get_node_attr_names = function(x) {
+  igraph::vertex_attr_names(x)[!sapply(igraph::vertex_attr(x), is.sfc)]
+}
+
+get_edge_attr_names = function(x) {
+  # Note:
+  # From and to are not really attributes, but still present in the agr specs.
+  c(
+    "from", 
+    "to", 
+    igraph::edge_attr_names(x)[!sapply(igraph::edge_attr(x), is.sfc)]
+  )
+}
+
