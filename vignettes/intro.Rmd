@@ -33,6 +33,8 @@ Given the strength of R in spatial *and* network analysis, one would expect it t
 
 Although several R packages exist that address geospatial networks, they often focus on a specific application within the broader domain of geospatial network analysis, or complicate `tidyverse` compatibility, for example by using S4 classes or relying on the older `sp` package for spatial data handling. Hence, at present, no generally applicable, `tidyverse` compatible classes exist for geospatial network data, representing a gap in R's spatial and network analysis ecosystems (see the [gRaphical Models](https://cran.r-project.org/web/views/gR.html) and [Spatial](https://cran.r-project.org/web/views/Spatial.html) task views). `sfnetworks` is created to fill this gap, and form a connecting edge between the two worlds.
 
+The core of the package is a data structure that can be provided directly to both graph analytical functions of `tidygraph` and spatial analytical functions of `sf`. However, there might be problems that are so specific to spatial networks, that they can neither be solved by `tidygraph` nor `sf`. Therefore, `sfnetworks` will provide extension to the current offer of the two "parent packages". Think for example of a function that can snap spatial points to the edges of a network. We want to prevent that `sfnetworks` goes too much into a single application - it should remain a lower-level package - but basic, widely used spatial network operations should be supported.
+
 ## Installation
 The `sfnetworks` package is still in very active development, and this vignette only describes the first part of our work. Therefore, the package is also not on CRAN yet. Install it from GitHub using the `remotes` package in R.
 
@@ -55,10 +57,10 @@ An `sfnetwork` object can be constructed with the `sfnetwork()` function. This f
 
 - The nodes should be an object of class `sf`, solely containing features with `POINT` geometries.
 - When creating a network with spatially explicit edges, the edges should be an object of class `sf`, solely containing features with `LINESTRING` geometries. Otherwise, they can be a `data.frame` or `tibble`. In any case, they should contain the indices of their end-nodes in a to and from column, or in the two first columns, as integers. Every node index refers to the *position* (i.e. the rownumber) of the node in the nodes table.
-- When creating a network with spatially explicit edges, the coordinates of the endpoints of the edge linestrings should match with the coordinates of the respective end-nodes. Otherwise, the network structure is not valid. Note that this also depends on the precision of the coordinates.
+- When creating a network with spatially explicit edges, the coordinates of the boundary points of the edge linestrings should match with the coordinates of the respective end-nodes. Otherwise, the network structure is not valid. Note that this also depends on the precision of the coordinates.
 - When creating a network with spatially explicit edges, the two provided sf objects should have the same CRS.
 
-Additionally, one can set the `directed` argument, defining if the created network should be directed or not. This defaults to `TRUE`.
+Additionally, one can set the `directed` argument, defining if the created network should be directed or not. This defaults to `TRUE`. The `edges_to_lines` argument defines if the edges of the resulting network should be spatially explicit or not.
 
 See below a small toy example.
 
@@ -92,7 +94,7 @@ Converting foreign objects into an `sfnetwork` can be done with the `as_sfnetwor
 Additionally, `as_sfnetwork()` has a method that directly converts an `sf` object into a network. Of course, a single `sf` object does not contain any explicit network information, so assumptions have to be made. This functionality should therefore be seen as a convenience function, and will not be suited for all possible use-cases. It works as follows:
 
 - When given an `sf` object with `LINESTRING` geometries: the lines are considered edges, and nodes are created at the endpoints of the lines. Identical endpoints become one single node. This addresses the use-case that was presented in this [r-spatial blogpost](https://www.r-spatial.org/r/2019/09/26/spatial-networks.html).
-- When given an `sf` object with `POINT` geometries: the points are considered nodes, and edges are created between them, in a sequential way. With that we mean: node 1 will be connected to node 2, node 2 to node 3, et cetera. This addresses the use-case that was presented in this [stackoverflow thread](https://stackoverflow.com/questions/57833905/how-to-convert-a-list-of-sf-spatial-points-into-a-routable-graph).
+- When given an `sf` object with `POINT` geometries: the points are considered nodes, and edges are created between them, in a sequential way. With that we mean: node 1 will be connected to node 2, node 2 to node 3, et cetera. This addresses the use-case that was presented in this [stackoverflow thread](https://stackoverflow.com/questions/57833905/how-to-convert-a-list-of-sf-spatial-points-into-a-routable-graph). More construction algorithms for point data are planned to be implemented, see [here](https://github.com/luukvdmeer/sfnetworks/issues/52).
 
 See below an example with the Roxel dataset (which comes with `sfnetworks` and is a cleaned extract of OpenStreetMap roads in Münster-Roxel).
 
@@ -107,7 +109,7 @@ roxel
 class(net)
 ```
 
-More methods will be added in the near future, such that other spatial network objects that exist in R can be directly converted into an `sfnetwork`, e.g. `dodgr_streetnet` from the `dodgr` package and `SpatialLinesNetwork` from the `stplanr` package.
+More methods for `as_sfnetwork` exists, such that other spatial network objects that exist in R can be directly converted into an `sfnetwork`. These includes `SpatialLinesNetwork` from the `stplanr` package and `linnet` from the `spatstat` package.
 
 ### Activation and extraction
 Just as with a `tbl_graph`, one of the graph elements of an `sfnetwork` (i.e. nodes or edges) can be activated, and all subsequent computations will be performed on that active element. By default, the nodes are the active element. This can be changed with the `activate()` verb, that is borrowed from `tidygraph`.
@@ -130,8 +132,10 @@ plot(net)
 
 For advanced visualization, we encourage to extract nodes and edges as `sf` objects, and use one of the many ways to map those in R, either statically or interactively. Think of sf's default plot method, ggplots `geom_sf()`, `tmap`, `mapview`, et cetera.
 
+*Note: it would be great to see this change in the future, for example by good integration with `ggraph`. Contributions are very welcome regarding this!*
+
 ## Graph operations
-Since it subclasses `tbl_graph`, `sfnetwork` objects are recognized by all network analysis algorithms that `igraph` offers, as well as by the tidy wrappers that `tidygraph` has built around them.
+Since they subclass `tbl_graph`, `sfnetwork` objects are recognized by all network analysis algorithms that `igraph` offers, as well as by the tidy wrappers that `tidygraph` has built around them*.
 
 A small example is the calculation of the betweenness centrality for each node:
 
@@ -148,6 +152,8 @@ ggplot() +
 ```
 
 There is a large amount of available algorithms, ranging from simple type queries to advanced community detection. To keep this vignette within an acceptable length, we will not cover all graph algorithms that can be used, but instead refer to the [tidygraph introduction](https://www.data-imaginist.com/2017/introducing-tidygraph/).
+
+*Note: due to the internal handling of nodes and edges as sf objects with a sticky geometry list column, there are still some `tidygraph` and `igraph` functions that result in errors when applying them to `sfnetwork` objects. In that case, you can try to first run `as_tbl_graph()`, and then apply the algorithm.*
 
 ## Spatial operations
 Not only can `sfnetwork` objects be used in graph algorithms, they are also recognized by various spatial analytical functions of `sf`. Internally, this works as follows: the active element is converted to an `sf` object, on which the function is applied. Depending on the function, the results are merged back into the network, and an `sfnetwork` object is returned, or simply the raw output of the sf function is returned.
@@ -258,8 +264,15 @@ library(igraph)
 shortest_paths(net_t, from = 1, to = 10, weights = pull(net_t, length))$vpath
 ```
 
+### Preservation of sf attributes
+An `sfnetwork` object preserves the sf-specific attributes of the nodes and edge data. They can be queried using the `sf_attr` function.
+
+```{r, message = FALSE}
+sf_attr(net, "agr", active = "edges")
+sf_attr(net, "sf_column", active = "edges")
+```
 ### Non-supported functions
-For the same reason as `tidygraph` does not support all `dplyr` functions, `sfnetwork` does not support all `sf` functions: there is a clear limitation in the relational data structure that requires rows to maintain their identity. For `sfnetwork` objects, this also means that the geometries of features should be maintained, or at least the endpoints of these geometries, in the case of the edges. That is, functions that summarise geometries, or (may) change their *type*, *shape* or *position*, are not supported. These are the [geometric binary operations](https://r-spatial.github.io/sf/reference/geos_binary_ops.html), most of the [geometric unary operations](https://r-spatial.github.io/sf/reference/geos_unary.html), `st_union`, `st_combine`, `st_cast`, `st_nearest_point`, `st_sample`, `st_line_sample`, `st_jitter`, `st_collection_extract` and `st_make_valid`.
+For the same reason as `tidygraph` does not support all `dplyr` functions, `sfnetwork` does not support all `sf` functions: there is a clear limitation in the relational data structure that requires rows to maintain their identity. For `sfnetwork` objects, this also means that the geometries of features should be maintained, or at least the endpoints of these geometries, in the case of the edges. That is, functions that summarise geometries, or (may) change their *type*, *shape* or *position*, are not supported. These are for example the [geometric binary operations](https://r-spatial.github.io/sf/reference/geos_binary_ops.html), most of the [geometric unary operations](https://r-spatial.github.io/sf/reference/geos_unary.html), `st_union`, `st_combine`, `st_cast`, and `st_jitter`.
 
 These functions cannot be directly applied to an `sfnetwork` object, but of course you can always escape the network structure, do some work, and merge changes back into the network. For example, when you want to know the area of the voronoi polygon of each node:
 
@@ -274,11 +287,9 @@ net_t %>%
   st_join(y)
 ```
 
-In addition to those functions mentioned above, there are also no `sfnetwork` methods for:
+In addition to those functions mentioned above, there are also no `sfnetwork` methods for functions related to reading and writing data. Use `sf` for this, and then convert to an `sfnetwork`. 
 
-- All functions related to reading and writing data. Use `sf` for this, and then convert to an `sfnetwork`. Note: Maybe there are specific spatial network data formats that the package should be able to read from and write to? If yes, please let us know.
-- All functions related to M and Z coordinates. This is something for later.
-- Functions that retrieve/change the attributes of sf objects. Like `st_agr`. See [this issue](https://github.com/luukvdmeer/sfnetworks/issues/24).
+*Note: Maybe there are specific spatial network data formats that the package should be able to read from and write to? If yes, please let us know.*
 
 ## Tidyverse methods
 As already shown in some of the examples above, a lot of `dplyr` functions work directly on `sfnetwork` objects, thanks to `tidygraph`. Since the active elements (if spatially explicit) are internally handled as being `sf` objects, automatically the `sf` methods for these functions are used. That means, for example, that the `geometry` column is 'sticky'. Note: also the `to` and `from` column in the edges table are sticky, which does not come from `sf`, but from `tidygraph`. So now, we have three sticky columns!
@@ -288,21 +299,3 @@ net %>%
   activate("edges") %>%
   select(name)
 ```
-
-## What is still to come?
-Everything presented in this vignette is only a first glance at what `sfnetworks` will offer. The package is currently in very active development, and several features are planned to be introduced soon.
-
-### Better tidygraph integration
-The fact that `sfnetwork` subclasses `tbl_graph`, makes that they are recognized by all of `tidygraph`'s functions. However, not all of these functions already run without errors. This is because of the geometry list column, which causes some operations to fail. Examples are the `morph` and `bind` functionalities. These issues should be solved, such that the integration of `sfnetworks` with `tidygraph` becomes - approximately - flawless.
-
-### Extending the functionalities of tidygraph and sf
-Right now, `sfnetworks` serves as a connection between `tidygraph` and `sf`, in the sense that objects of class `sfnetwork` are recognized by functions of both packages. However, there might be problems that are so specific to spatial networks, that they can neither be solved by `tidygraph` nor `sf`. It is the goal of `sfnetworks` to provide analytical functions by itself, that address such problems. Think of snapping spatial points to the edges of a network, or finding the nearest node to a given spatial feature. We want to prevent that `sfnetworks` goes too much into a single application - it should remain a lower-level package - but basic, widely used spatial network operations should be supported.
-
-### Adding more methods to as_sfnetwork
-As said before, it is the goal to provide `as_sfnetwork()`-methods for a wide range of R classes for spatial networks.
-
-### Visualization
-In the current version of `sfnetworks`, visualization of spatial networks does not yet play a big role. It would be great to see this change in the future, for example by good integration with `ggraph`. Contributions are very welcome regarding this!
-
-## Contribute
-We look very much forward to contributions to the package. This can be in the form of pull requests (please direct them to the `develop` branch), but also by opening issues in the [issue tracker](https://github.com/luukvdmeer/sfnetworks/issues). Such issues can be specific feature requests labeled with the `feature` label (e.g. "I would like to see a function `f(x)` that accepts an object `x` of class `foo` and returns < this >"). It can also be a more generic description of problems that you deal with when working with spatial networks in R (e.g. "I usually find it impossible/confusing/complicated to do < this >"). Please label such issues with the `hackathon` label, since we will be organising a spatial networks hackathon in which we hope to solve these kind of problems. For more information on that event, see [here](https://www.eventbrite.co.uk/e/erum2020-satellite-event-hackathon-on-spatial-networks-tickets-90976873277) (and join!).
