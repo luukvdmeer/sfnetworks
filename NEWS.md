@@ -16,6 +16,7 @@
   - Relying on internally stored attributes rather than first extracting sf objects.
   - Option to plot without making edges explicit.
 * Improved function documentation.
+* An additional [vignette](https://luukvdmeer.github.io/sfnetworks/articles/extensions.html).
 
 # sfnetworks v0.2.0 "Neutor"
 
