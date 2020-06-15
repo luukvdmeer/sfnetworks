@@ -1,23 +1,26 @@
-# sfnetworks (development version)
+# sfnetworks v0.3.0 "Gievenbeck"
 
+* Several spatial network extensions for the tidygraph and sf functionalities:
+  - Spatial wrappers around igraph shortest paths functions. Refs [#28](https://github.com/luukvdmeer/sfnetworks/issues/28)
+  - Various spatial morpher functions. Refs [#19](https://github.com/luukvdmeer/sfnetworks/issues/19)
+  - Various edge measure algorithms, including edge circuity. Refs [#51](https://github.com/luukvdmeer/sfnetworks/issues/51)
 * More methods for as_sfnetwork. Refs [#41](https://github.com/luukvdmeer/sfnetworks/issues/41)
-  - Improve default method
   - Support [sfNetwork](https://docs.ropensci.org/stplanr/reference/SpatialLinesNetwork.html) from [stplanr](https://docs.ropensci.org/stplanr/)
   - Support [linnet](https://rdrr.io/cran/spatstat/man/linnet.html) and [psp](https://rdrr.io/cran/spatstat/man/psp.object.html) from [spatstat](https://rdrr.io/cran/spatstat/)
-* Allow choice between spatially explicit and implicit edges. Refs [#47](https://github.com/luukvdmeer/sfnetworks/issues/47)
-* Construction checks are run only when needed, adding a force argument to skip validity tests
-* Performance improvements and more efficient construction
-  - Using st_boundary uncreases performance for sfnetwork construction compared to lwgeom::st_startpoint and lwgeom::st_endpoint. Refs [#30](https://github.com/luukvdmeer/sfnetworks/issues/30)
-* Wrapper around igraph shortest paths functions. Refs [#28](https://github.com/luukvdmeer/sfnetworks/issues/28)
-* Option to plot without making edges explicit
-* Enable morphing of sfnetwork object adding various spatial morphers. Refs [#19](https://github.com/luukvdmeer/sfnetworks/issues/19)
+* Preserving sf attributes for nodes and edges inside the sfnetwork object. Refs [#24](https://github.com/luukvdmeer/sfnetworks/issues/24)
+* Structural and performance improvements of the code base. This includes:
+  - Construction checks are run only when needed, adding a force argument to skip validity tests.
+  - Allowing to choose between spatially explicit and implicit edges during construction, adding an edges_as_lines argument. Refs [#47](https://github.com/luukvdmeer/sfnetworks/issues/47)
+  - Using st_boundary to find line endpoints increases performance for sfnetwork construction from sf objects. Refs [#30](https://github.com/luukvdmeer/sfnetworks/issues/30)
+  - Cleaning up sf methods for sfnetwork objects.
+  - Relying on internally stored attributes rather than first extracting sf objects.
+  - Option to plot without making edges explicit.
+* Improved function documentation.
 
 # sfnetworks v0.2.0 "Neutor"
 
 * Major stable release
 * Basic construction function and initial foreign objects conversion. Refs [#9](https://github.com/luukvdmeer/sfnetworks/issues/9)
-  - Allow only points as nodes and lines as edges
-  - Add edges_as_lines argument
 * Methods for sf functions
 * Roxel data as lazyData
 * Internal checks before construction
