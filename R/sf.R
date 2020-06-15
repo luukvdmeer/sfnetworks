@@ -113,25 +113,29 @@ st_geometry.sfnetwork = function(x, ...) {
 
 set_node_geom = function(x, value) {
   if (is.character(value)) {
-    col = igraph::vertex_attr(x, value)
-    validate_geometry(x, col, "nodes")
+    stopifnot(is.sfc(igraph::vertex_attr(x, value)))
     sf_attr(x, "sf_column", "nodes") = value
+    validate_geometry(x, "nodes")
     x
   } else {
-    validate_geometry(x, value, "nodes")
-    replace_geometry(x, value, "nodes")
+    stopifnot(is.sfc(value))
+    x_new = replace_geometry(x, value, "nodes")
+    validate_geometry(x_new, "nodes")
+    x_new
   }
 }
 
 set_edge_geom = function(x, value) {
   if (is.character(value)) {
-    col = igraph::edge_attr(x, value)
-    validate_geometry(x, col, "edges")
+    stopifnot(is.sfc(igraph::edge_attr(x, value)))
     sf_attr(x, "sf_column", "edges") = value
+    validate_geometry(x, "edges")
     x
   } else {
-    validate_geometry(x, value, "edges")
-    replace_geometry(x, value, "edges")
+    stopifnot(is.sfc(value))
+    x_new = replace_geometry(x, value, "edges")
+    validate_geometry(x_new, "edges")
+    x_new
   }
 }
 
@@ -283,7 +287,6 @@ st_z_range.sfnetwork = function(x, ...) {
 # =============================================================================
 
 #' @name sf
-#' @importFrom igraph edge_attr_names vertex_attr_names
 #' @importFrom sf st_agr
 #' @export
 st_agr.sfnetwork = function(x, ...) {

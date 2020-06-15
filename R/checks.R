@@ -1,3 +1,30 @@
+#' Proceed only when edges are active
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @return Nothing when the edges of x are activated, an error message
+#' otherwise.
+#'
+#' @noRd
+expect_active_edges = function(x) {
+  if (attr(x, "active") == "nodes") {
+    stop("This call requires the edges to be active")
+  }
+}
+
+#' Proceed only when edges are spatially explicit
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @return Nothing when the edges of x are spatially explicit, an error message
+#' otherwise.
+#'
+#' @noRd
+expect_spatially_explicit_edges = function(x) {
+  if (! has_spatially_explicit_edges(graph)) {
+    stop("This call requires spatially explicit edges")
+  }
+}
 #' Check if the output of an st_join operation has multiple matches
 #'
 #' @param x The output of an \code{st_join(a,b)} where the original row

@@ -73,12 +73,7 @@ replace_node_geometry = function(x, y) {
     }
   }
   # Replace.
-  if (attr(x, "active") == "edges") {
-    x = tidygraph::mutate(activate(x, "nodes"), !!geom_attr := y)
-    activate(x, "edges")
-  } else {
-    tidygraph::mutate(x, !!geom_attr := y)
-  }
+  tidygraph::mutate(activate(x, "nodes"), !!geom_attr := y) %preserve_active% x
 }
 
 #' @importFrom rlang !! :=
@@ -95,19 +90,12 @@ replace_edge_geometry = function(x, y) {
     }
   }
   # Replace.
-  if (attr(x, "active") == "nodes") {
-    x = tidygraph::mutate(activate(x, "edges"), !!geom_attr := y)
-    activate(x, "nodes")
-  } else {
-    tidygraph::mutate(x, !!geom_attr := y)
-  }
+  tidygraph::mutate(activate(x, "edges"), !!geom_attr := y) %preserve_active% x
 }
 
 #' Validate if a replacement geometry preserves a valid sfnetwork structure
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @param y An object of class \code{\link[sf]{sfc}}.
 #'
 #' @param active Either 'nodes' or 'edges'. If \code{NULL}, the active component 
 #' of x will be used.
@@ -116,22 +104,21 @@ replace_edge_geometry = function(x, y) {
 #' message otherwise.
 #'
 #' @noRd
-validate_geometry = function(x, y, active = NULL) {
-  stopifnot(is.sfc(y)) # Invalid input.
+validate_geometry = function(x, active = NULL) {
   if (is.null(active)) {
     active = attr(x, "active")
   }
   switch(
     attr(x, "active"),
-    nodes = validate_node_geometry(x, y),
-    edges = validate_edge_geometry(x, y),
+    nodes = validate_node_geometry(x),
+    edges = validate_edge_geometry(x),
     stop("Unknown active element: ", active, ". Only nodes and edges supported")
   )
 }
 
-validate_node_geometry = function(x, y) {
+validate_node_geometry = function(x) {
   # --> Are all node geometries points?
-  if (! st_is_all(y, "POINT")) {
+  if (! st_is_all(st_as_sf(x, "nodes"), "POINT")) {
     stop("Only geometries of type POINT are allowed as nodes")
   }
   # --> Are the edges of the network spatially implicit?
@@ -140,26 +127,28 @@ validate_node_geometry = function(x, y) {
   }
 }
 
-validate_edge_geometry = function(x, y) {
+validate_edge_geometry = function(x) {
+  nodes = st_as_sf(x, "nodes")
+  edges = st_as_sf(x, "edges")
   # --> Are all edge geometries linestrings?
-  if (! st_is_all(y, "LINESTRING")) {
+  if (! st_is_all(edges, "LINESTRING")) {
     stop("Only geometries of type LINESTRING are allowed as edges")
   }
-  # --> Is the CRS of the edges the same as of the network?
-  if (! same_crs(as_sf(x, "nodes"), y)) {
-    stop("CRS of replacement not equal to network CRS. Run st_transform first?")
+  # --> Is the CRS of the edges the same as of the nodes?
+  if (! same_crs(nodes, edges)) {
+    stop("CRS of nodes not equal to CRS of edges. Run st_transform first?")
   }
   # --> Do the edge boundary points match their corresponding nodes?
   if (is_directed(x)) {
     # Start point should match start node.
     # End point should match end node.
-    if (! nodes_match_edge_boundaries(as_sf(x, "nodes"), y)) {
+    if (! nodes_match_edge_boundaries(nodes, edges)) {
       stop("Boundary points of replacement should match their corresponding nodes")
     }
   } else {
     # Start point should match either start or end node.
     # End point should match either start or end node.
-    if (! nodes_in_edge_boundaries(as_sf(x, "nodes"), y)) {
+    if (! nodes_in_edge_boundaries(nodes, edges)) {
       stop("Boundary points of replacement should match their corresponding nodes")
     }
   }
