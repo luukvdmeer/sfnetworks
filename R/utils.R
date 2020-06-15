@@ -1,3 +1,18 @@
+#' Preserve the active element of the original graph
+#'
+#' @param new_graph An object of class \code{\link{sfnetwork}}.
+#'
+#' @param orig_graph An object of class \code{\link{sfnetwork}}.
+#'
+#' @noRd
+`%preserve_active%` = function(new_graph, orig_graph) {
+  switch(
+    attr(orig_graph, "active"),
+    nodes = activate(new_graph, "nodes"),
+    edges = activate(new_graph, "edges")
+  )
+}
+
 #' Print a string with a subtle style.
 #'
 #' @param ... A string to print.
@@ -259,10 +274,11 @@ explicitize_edges = function(x) {
     # Get the indices of the boundary nodes of each edge.
     # Returns a matrix with source ids in column 1 and target ids in column 2.
     ids = get_boundary_node_indices(x, out = "both")
-    from_ids = nodes[ids[, 1], ]
-    to_ids = nodes[ids[, 2], ]
+    # Get the boundary node geometries of each edge.
+    from_nodes = nodes[ids[, 1], ]
+    to_nodes = nodes[ids[, 2], ]
     # Draw linestring geometries between the boundary nodes of each edge.
-    edge_geoms = draw_lines(from_ids, to_ids)
+    edge_geoms = draw_lines(from_nodes, to_nodes)
     # Use the same geometry column name as the geometry column of the nodes.
     col = attr(nodes, "sf_column")
     # Set the sf attributes.
@@ -272,12 +288,8 @@ explicitize_edges = function(x) {
     )
     # Add the geometries as a column.
     x_new = tidygraph::mutate(activate(x, "edges"), !!col := edge_geoms)
-    # Return x.
-    switch(
-      attr(x, "active"),
-      nodes = activate(x_new, "nodes"),
-      edges = x_new
-    )
+    # Return x_new.
+    x_new %preserve_active% x
   }
 }
 

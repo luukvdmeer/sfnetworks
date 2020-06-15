@@ -24,8 +24,13 @@ NULL
 #' @export
 to_spatial_coordinates = function(graph) {
   # Create X and Y coordinate columns for the nodes.
-  coords = sf::st_coordinates(st_as_sf(graph, "nodes"))
-  coords_graph = tidygraph::mutate(graph, X = coords[, "X"], Y = coords[, "Y"])
+  nodes_graph = activate(graph, "nodes")
+  coords = st_coordinates(nodes_graph)
+  coords_graph = tidygraph::mutate(
+    nodes_graph, 
+    X = coords[, "X"], 
+    Y = coords[, "Y"]
+  )
   # Drop edge geometries if present.
   if (has_spatially_explicit_edges(coords_graph)) {
     coords_graph = drop_geometry(coords_graph, "edges")
@@ -34,7 +39,7 @@ to_spatial_coordinates = function(graph) {
   coords_graph = drop_geometry(coords_graph, "nodes")
   # Return in a list.
   list(
-    coords_graph = coords_graph
+    coords_graph = coords_graph %preserve_active% graph
   )
 }
 
@@ -44,10 +49,8 @@ to_spatial_coordinates = function(graph) {
 #' @importFrom sf st_cast st_collection_extract
 #' @export
 to_spatial_dense_graph = function(graph) {
+  expect_spatially_explicit_edges(graph)
   # Retrieve the edges from the network, without the to and from columns.
-  if (! has_spatially_explicit_edges(graph)) {
-    stop("This call requires spatially explicit edges")
-  }
   edges = st_as_sf(graph, "edges")
   edges[, c("from", "to")] = NULL
   # Split the edges by the points they are composed of.
@@ -57,7 +60,7 @@ to_spatial_dense_graph = function(graph) {
   new_edges = sf::st_collection_extract(splitted_edges, "LINESTRING")
   # Reconstruct the network with the new edges.
   list(
-    dense_graph = as_sfnetwork(new_edges)
+    dense_graph = as_sfnetwork(new_edges) %preserve_active% graph
   )
 }
 
@@ -68,9 +71,7 @@ to_spatial_dense_graph = function(graph) {
 #' @importFrom tidygraph convert reroute to_directed
 #' @export
 to_spatial_directed = function(graph) {
-  if (! has_spatially_explicit_edges(graph)) {
-    stop("This call requires spatially explicit edges")
-  }
+  expect_spatially_explicit_edges(graph)
   # Convert to a directed tbl_graph.
   # Force conversion to sfnetwork (i.e. without valid sfnetwork structure).
   graph = tidygraph::convert(as_tbl_graph(graph), to_directed)
@@ -99,11 +100,9 @@ to_spatial_directed = function(graph) {
     from = new_from_ids, 
     to = new_to_ids
   )
-  # Reset active element if needed.
-  if (active(graph) == "edges") activate(repared_graph, "nodes")
   # Convert to sfnetwork and return in list.
   list(
-    directed_graph = tbg_to_sfn(repared_graph)
+    directed_graph = tbg_to_sfn(repared_graph) %preserve_active% graph
   )
 }
 
@@ -143,7 +142,8 @@ to_spatial_shortest_paths = function(graph, ...) {
   # Subset the graph for each single shortest path.
   get_single_path = function(i) {
     epath = tidygraph::slice(activate(graph, "edges"), as.integer(paths$epath[[i]]))
-    tidygraph::slice(activate(epath, "nodes"), as.integer(paths$vpath[[i]]))
+    npath = tidygraph::slice(activate(epath, "nodes"), as.integer(paths$vpath[[i]]))
+    npath %preserve_active% graph
   }
   lapply(c(1:length(paths$vpath)), get_single_path)
 }
@@ -156,12 +156,13 @@ to_spatial_subgraph = function(graph, ..., subset_by = NULL) {
     subset_by = active(graph)
     message("Subsetting by ", subset_by)
   }
+  sub_graph = switch(
+    subset_by,
+    nodes = st_filter(activate(graph, "nodes"), ...),
+    edges = st_filter(activate(graph, "edges"), ...),
+    stop("Only possible to subset by nodes and edges")
+  )
   list(
-    sub_graph = switch(
-      subset_by,
-      nodes = st_filter(activate(graph, "nodes"), ...),
-      edges = st_filter(activate(graph, "edges"), ...),
-      stop("Only possible to subset by nodes and edges")
-    )
+    sub_graph = sub_graph %preserve_active% graph
   )
 }
