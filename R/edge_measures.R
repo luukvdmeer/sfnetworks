@@ -22,24 +22,26 @@ NULL
 #' nodes, as described in
 #' \href{https://journals.sagepub.com/doi/10.1068/b130131p}{Giacomin & Levinson,
 #' 2015}.
+#' @importFrom sf st_length
 #' @importFrom tidygraph .G
 #' @export
 edge_circuity = function() {
   graph = tidygraph::.G()
   expect_active_edges(graph)
   expect_spatially_explicit_edges(graph)
-  st_length(graph) / straight_line_distance(graph)
+  sf::st_length(graph) / straight_line_distance(graph)
 }
 
 #' @describeIn spatial_edge_measures The length of an edge linestring geometry
 #' as calculated by \code{\link[sf]{st_length}}.
+#' @importFrom sf st_length
 #' @importFrom tidygraph .G
 #' @export
 edge_length = function() {
   graph = tidygraph::.G()
   expect_active_edges(graph)
   expect_spatially_explicit_edges(graph)
-  st_length(graph)
+  sf::st_length(graph)
 }
 
 #' @describeIn spatial_edge_measures The straight-line distance between the two

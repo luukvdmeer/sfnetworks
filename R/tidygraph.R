@@ -130,6 +130,7 @@ morph.sfnetwork = function(.data, .f, ...) {
 
 #' @describeIn tidygraph The sfnetwork method for \code{\link[tidygraph]{mutate}}
 #' works the same, but updates the sf attributes of the resulting network.
+#' @importFrom stats setNames
 #' @importFrom tidygraph mutate
 #' @export
 mutate.sfnetwork = function(.data, ...) {
@@ -141,7 +142,7 @@ mutate.sfnetwork = function(.data, ...) {
   # Update the agr sf attribute.
   agr = st_agr(.data)
   attrs = get_attr_names(x)
-  new_agr = setNames(agr[attrs], attrs) # NA's new columns
+  new_agr = stats::setNames(agr[attrs], attrs) # NA's new columns
   sf_attr(x, "agr") = new_agr
   # Return x.
   x
