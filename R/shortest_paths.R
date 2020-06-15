@@ -70,7 +70,11 @@ set_shortest_paths_parameters = function(graph, from, to, weights, snap) {
 #' @return The return value is the same as for the corresponding \code{igraph}
 #' function, see \code{\link[igraph:shortest_paths]{here}}.
 #'
-#' @name st_shortest_paths
+#' @name spatial_shortest_paths
+NULL
+
+#' @describeIn spatial_shortest_paths Wrapper around 
+#' \code{igraph::shortest_paths}.
 #' @importFrom igraph shortest_paths V
 #' @export
 st_shortest_paths = function(graph, from, to = V(graph), weights = NULL, 
@@ -82,7 +86,8 @@ st_shortest_paths = function(graph, from, to = V(graph), weights = NULL,
   do.call(igraph::shortest_paths, c(params, ...))
 } 
 
-#' @name st_shortest_paths
+#' @describeIn spatial_shortest_paths Wrapper around 
+#' \code{igraph::all_shortest_paths}.
 #' @importFrom igraph all_shortest_paths V
 #' @export
 st_all_shortest_paths = function(graph, from, to = V(graph), weights = NULL, 
@@ -94,10 +99,10 @@ st_all_shortest_paths = function(graph, from, to = V(graph), weights = NULL,
   do.call(igraph::all_shortest_paths, params)
 }
 
-#' @name st_shortest_paths
+#' @describeIn spatial_shortest_paths Wrapper around \code{igraph::distances}.
 #' @importFrom igraph distances V
 #' @export
-st_network_distances = function(graph, from = V(graph), to = V(graph), 
+st_network_distance = function(graph, from = V(graph), to = V(graph), 
                                 weights = NULL, snap = "nearest_node", ...) {
   params = set_shortest_paths_parameters(graph, from, to, weights, snap)
   names(params)[which(names(params) == "from")] = "v"
