@@ -2,10 +2,51 @@ attrs_from_sf = function(x) {
   list(sf_column = attr(x, "sf_column"), agr = attr(x, "agr"))
 }
 
-empty_agr = function(attr_names) {
-  structure(rep(sf::NA_agr_, length(attr_names)), names = attr_names)
+empty_agr = function(x, active = NULL) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  switch(
+    active,
+    nodes = empty_nodes_agr(x),
+    edges = empty_edges_agr(x),
+    stop("Unknown active element: ", active, ". Only nodes and edges supported")
+  )
 }
 
+empty_nodes_agr = function(x) {
+  attrs = get_node_attr_names(x)
+  structure(rep(sf::NA_agr_, length(attrs)), names = attrs)
+}
+
+empty_edges_agr = function(x) {
+  attrs = get_edge_attr_names(x)
+  structure(rep(sf::NA_agr_, length(attrs)), names = attrs)
+}
+
+get_attr_names = function(x) {
+  switch(
+    attr(x, "active"),
+    nodes = get_node_attr_names(x),
+    edges = get_edge_attr_names(x)
+  )
+}
+
+get_node_attr_names = function(x) {
+  igraph::vertex_attr_names(x)[!sapply(igraph::vertex_attr(x), is.sfc)]
+}
+
+# Note:
+# From and to are not really attributes, but still present in the agr specs.
+get_edge_attr_names = function(x) {  
+  c(
+    "from", 
+    "to", 
+    igraph::edge_attr_names(x)[!sapply(igraph::edge_attr(x), is.sfc)]
+  )
+}
+
+# Note:
 # This is needed because an input edge data frame to the sfnetwork construction
 # function can have the required from and to columns at any location. In the
 # resulting network however they will always be the first two columns, so the
@@ -51,13 +92,15 @@ sf_attr = function(x, name = NULL, active = NULL) {
     switch(
       active,
       nodes = attr(x, "sf")[["nodes"]],
-      edges = attr(x, "sf")[["edges"]]
+      edges = attr(x, "sf")[["edges"]],
+      stop("Unknown active element: ", active, ". Only nodes and edges supported")
     )
   } else {
     switch(
       active,
       nodes = attr(x, "sf")[["nodes"]][[name]],
-      edges = attr(x, "sf")[["edges"]][[name]]
+      edges = attr(x, "sf")[["edges"]][[name]],
+      stop("Unknown active element: ", active, ". Only nodes and edges supported")
     )
   }
 }
@@ -71,7 +114,8 @@ sf_attr = function(x, name = NULL, active = NULL) {
   switch(
     active,
     nodes = set_node_sf_attr(x, name, value),
-    edges = set_edge_sf_attr(x, name, value)
+    edges = set_edge_sf_attr(x, name, value),
+    stop("Unknown active element: ", active, ". Only nodes and edges supported")
   )
 }
 

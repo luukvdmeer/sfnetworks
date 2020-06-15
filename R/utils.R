@@ -283,9 +283,7 @@ explicitize_edges = function(x) {
     col = attr(nodes, "sf_column")
     # Set the sf attributes.
     sf_attr(x, "sf_column", "edges") = col
-    sf_attr(x, "agr", "edges") = empty_agr(
-      c("from", "to", igraph::edge_attr_names(x))
-    )
+    sf_attr(x, "agr", "edges") = empty_agr(x, "edges")
     # Add the geometries as a column.
     x_new = tidygraph::mutate(activate(x, "edges"), !!col := edge_geoms)
     # Return x_new.

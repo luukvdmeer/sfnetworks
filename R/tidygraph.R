@@ -106,6 +106,7 @@ edge_spatial_tibble = function(x) {
 morph.sfnetwork = function(.data, .f, ...) {
   # Morph using tidygraphs morphing functionality.
   # First convert to tbl_graph if sfnetwork object gives errors.
+  NextMethod()
   morphed = tryCatch(
     NextMethod(),
     error = function(e) tidygraph::morph(as_tbl_graph(.data), .f, ...)
@@ -135,6 +136,9 @@ morph.sfnetwork = function(.data, .f, ...) {
 mutate.sfnetwork = function(.data, ...) {
   # Run tidygraphs mutate.
   x = NextMethod()
+  if (attr(x, "active") == "edges" && !has_spatially_explicit_edges(x)) {
+    return(x)
+  }
   # Update the agr sf attribute.
   agr = st_agr(.data)
   attrs = get_attr_names(x)
@@ -151,6 +155,9 @@ mutate.sfnetwork = function(.data, ...) {
 select.sfnetwork = function(.data, ...) {
   # Run tidygraphs select.
   x = NextMethod()
+  if (attr(x, "active") == "edges" && !has_spatially_explicit_edges(x)) {
+    return(x)
+  }
   # Update the agr sf attribute.
   agr = st_agr(.data)
   attrs = get_attr_names(x)
@@ -158,27 +165,5 @@ select.sfnetwork = function(.data, ...) {
   sf_attr(x, "agr") = new_agr
   # Return x.
   x
-}
-
-get_attr_names = function(x) {
-  switch(
-    attr(x, "active"),
-    nodes = get_node_attr_names(x),
-    edges = get_edge_attr_names(x)
-  )
-}
-
-get_node_attr_names = function(x) {
-  igraph::vertex_attr_names(x)[!sapply(igraph::vertex_attr(x), is.sfc)]
-}
-
-get_edge_attr_names = function(x) {
-  # Note:
-  # From and to are not really attributes, but still present in the agr specs.
-  c(
-    "from", 
-    "to", 
-    igraph::edge_attr_names(x)[!sapply(igraph::edge_attr(x), is.sfc)]
-  )
 }
 

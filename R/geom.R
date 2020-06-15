@@ -62,16 +62,21 @@ replace_geometry = function(x, y, active = NULL) {
 #' @importFrom rlang !! :=
 #' @importFrom tidygraph mutate
 replace_node_geometry = function(x, y) {
-  # Name of the attribute to replace.
+  # Get the name of the geometry column to replace from the sf_column attribute.
   geom_attr = sf_attr(x, "sf_column", "nodes")
-  if (is.null(geom_attr)) {
-    if (is_spatially_explicit(igraph::vertex_attr(x))) {
-      sfc_column = which(sapply(igraph::vertex_attr(x), function(x) is.sfc))
-      geom_attr = vertex_attr_names(x)[sfc_column]
-    } else {
-      geom_attr = "geometry"
-    }
-  }
+  # if (is.null(geom_attr)) {
+  #   if (is_spatially_explicit(igraph::vertex_attr(x))) {
+  #     sfc_column = which(sapply(igraph::vertex_attr(x), function(x) is.sfc))
+  #     geom_attr = vertex_attr_names(x)[sfc_column]
+  #   } else {
+  #     geom_attr = "geometry"
+  #   }
+  # }
+  # # Make sure the nodes have agr attributes.
+  # agr_attr = sf_attr(x, "agr", "nodes")
+  # if (is.null(agr_attr)) {
+  #   sf_attr(x, "agr", "nodes") = empty_agr(x, "nodes")
+  # }
   # Replace.
   tidygraph::mutate(activate(x, "nodes"), !!geom_attr := y) %preserve_active% x
 }
@@ -79,7 +84,7 @@ replace_node_geometry = function(x, y) {
 #' @importFrom rlang !! :=
 #' @importFrom tidygraph mutate
 replace_edge_geometry = function(x, y) {
-  # Name of the attribute to replace.
+  # Get the name of the geometry column to replace from the sf_column attribute.
   geom_attr = sf_attr(x, "sf_column", "edges")
   if (is.null(geom_attr)) {
     if (is_spatially_explicit(igraph::edge_attr(x))) {
@@ -88,6 +93,12 @@ replace_edge_geometry = function(x, y) {
     } else {
       geom_attr = "geometry"
     }
+    sf_attr(x, "sf_column", "edges") = geom_attr
+  }
+  # Make sure the edges have agr attributes.
+  agr_attr = sf_attr(x, "agr", "edges")
+  if (is.null(agr_attr)) {
+    sf_attr(x, "agr", "edges") = empty_agr(x, "edges")
   }
   # Replace.
   tidygraph::mutate(activate(x, "edges"), !!geom_attr := y) %preserve_active% x
