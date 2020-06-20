@@ -44,8 +44,10 @@ explanations on how to use morphing, see \code{\link[tidygraph]{morph}}.
 }
 \section{Functions}{
 \itemize{
-\item \code{to_spatial_coordinates}: Store the spatial coordinates of the nodes in an 
-'X' and Y' column, instead of an \code{\link[sf]{sfc}} geometry list column.
+\item \code{to_spatial_coordinates}: Store the spatial coordinates of the nodes in 
+separate coordinate columns (e.g. "X" and "Y"), instead of an 
+\code{\link[sf]{sfc}} geometry list column. If edges are spatially
+explicit, the edge geometries are dropped.
 
 \item \code{to_spatial_dense_graph}: Reconstruct the network by using all edge 
 linestring points as nodes, instead of only the endpoints.
