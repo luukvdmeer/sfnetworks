@@ -209,10 +209,35 @@ get_boundary_node_indices = function(x, out = "both") {
 #' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
 #' geometries.
 #'
-#' @importFrom sf st_boundary st_cast st_geometry
+#' See #59 for a discussion on this function.
+#'
+#' @importFrom sf st_coordinates st_cast st_sfc
 #' @noRd
 get_boundary_points = function(x) {
-  sf::st_cast(sf::st_boundary(sf::st_geometry(x)), "POINT")
+  # 1a. extract coordinates
+  x_coordinates <- sf::st_coordinates(x)
+
+  # 1b. Find index of L1 column
+  L1_index <- ncol(x_coordinates)
+
+  # 1c. Remove colnames
+  x_coordinates <- unname(x_coordinates)
+
+  # 2. Find idxs of first and last coordinate (i.e. the boundary points)
+  first_pair <- !duplicated(x_coordinates[, L1_index])
+  last_pair <- !duplicated(x_coordinates[, L1_index], fromLast = TRUE)
+  idxs <- first_pair | last_pair
+
+  # 3. Extract idxs and rebuild sfc
+  x_pairs <- x_coordinates[idxs, ]
+  x_nodes <- sf::st_cast(
+    sf::st_sfc(
+      sf::st_multipoint(x_pairs[, -L1_index]),
+      crs = sf::st_crs(x)
+    ),
+   "POINT"
+  )
+  x_nodes
 }
 
 #' Directly extract the edges from an sfnetwork
