@@ -1,3 +1,7 @@
+# Development version
+
+* Adding a "node_key" argument to the construction functions, in line with the recent update of tidygraph. Refs [#53](https://github.com/luukvdmeer/sfnetworks/issues/53)
+
 # sfnetworks v0.3.0 "Gievenbeck"
 
 * Several spatial network extensions for the tidygraph and sf functionalities:
