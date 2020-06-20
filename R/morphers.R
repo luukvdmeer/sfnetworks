@@ -17,20 +17,14 @@
 #' @name spatial_morphers
 NULL
 
-#' @describeIn spatial_morphers Store the spatial coordinates of the nodes in an 
-#' 'X' and Y' column, instead of an \code{\link[sf]{sfc}} geometry list column.
-#' @importFrom sf st_coordinates
-#' @importFrom tidygraph mutate
+#' @describeIn spatial_morphers Store the spatial coordinates of the nodes in 
+#' separate coordinate columns (e.g. "X" and "Y"), instead of an 
+#' \code{\link[sf]{sfc}} geometry list column. If edges are spatially
+#' explicit, the edge geometries are dropped.
 #' @export
 to_spatial_coordinates = function(graph) {
   # Create X and Y coordinate columns for the nodes.
-  nodes_graph = activate(graph, "nodes")
-  coords = st_coordinates(nodes_graph)
-  coords_graph = tidygraph::mutate(
-    nodes_graph, 
-    X = coords[, "X"], 
-    Y = coords[, "Y"]
-  )
+  coords_graph = add_coordinate_columns(activate(graph, "nodes"))
   # Drop edge geometries if present.
   if (has_spatially_explicit_edges(coords_graph)) {
     coords_graph = drop_geometry(coords_graph, "edges")
@@ -41,6 +35,13 @@ to_spatial_coordinates = function(graph) {
   list(
     coords_graph = coords_graph %preserve_active% graph
   )
+}
+
+#' @importFrom rlang !!!
+#' @importFrom sf st_coordinates
+#' @importFrom tidygraph mutate
+add_coordinate_columns = function(x) {
+  tidygraph::mutate(x, !!!as.data.frame(sf::st_coordinates(x)))
 }
 
 #' @describeIn spatial_morphers Reconstruct the network by using all edge 
