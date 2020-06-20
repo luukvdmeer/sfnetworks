@@ -24,6 +24,11 @@
 #' @param directed Should the constructed network be directed? Defaults to
 #' \code{TRUE}.
 #'
+#' @param node_key The name of the column in the nodes table that character 
+#' represented \code{to} and \code{from} columns should be matched against. If 
+#' NA the first column is always chosen. This setting has no effect if \code{to} 
+#' and \code{from} are given as integers. Defaults to \code{"name"}.
+#' 
 #' @param edges_as_lines Should the edges be spatially explicit, i.e. have
 #' \code{LINESTRING} geometries stored in a geometry list column? If \code{NULL},
 #' this will be automatically defined, by setting the argument to \code{TRUE}
@@ -48,8 +53,8 @@
 #'
 #' @importFrom tidygraph tbl_graph
 #' @export
-sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = NULL,
-                     force = FALSE, ...) {
+sfnetwork = function(nodes, edges, directed = TRUE, node_key = "name",
+                     edges_as_lines = NULL, force = FALSE, ...) {
   # Automatically set edges_as_lines if not given.
   if (is.null(edges_as_lines)) {
     edges_as_lines = ifelse(is_spatially_explicit(edges), TRUE, FALSE)
@@ -73,7 +78,7 @@ sfnetwork = function(nodes, edges, directed = TRUE, edges_as_lines = NULL,
   if (! force) check_network_validity(nodes, edges, directed, edges_as_lines)
   # Create the network with the nodes and edges.
   # Store sf attributes of the nodes and edges in a special graph attribute.
-  x_tbg = tidygraph::tbl_graph(nodes, edges, directed = directed)
+  x_tbg = tidygraph::tbl_graph(nodes, edges, directed, node_key)
   x_sfn = structure(
     x_tbg,
     class = c("sfnetwork", class(x_tbg)),
