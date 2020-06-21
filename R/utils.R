@@ -211,7 +211,7 @@ get_boundary_node_indices = function(x, out = "both") {
 #'
 #' See #59 for a discussion on this function.
 #'
-#' @importFrom sf st_coordinates st_cast st_sfc
+#' @importFrom sf st_coordinates st_cast st_sfc st_multipoint st_crs
 #' @noRd
 get_boundary_points = function(x) {
   # 1a. extract coordinates
