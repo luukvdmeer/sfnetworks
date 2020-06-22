@@ -2,6 +2,8 @@
 
 * Addition of a "node_key" argument to the construction functions, in line with the recent update of tidygraph. Refs [#53](https://github.com/luukvdmeer/sfnetworks/issues/53)
 * Better integration with Z and M coordinates by adding them as coordinate columns when calling spatial morpher to_spatial_coordinates. Refs [#62](https://github.com/luukvdmeer/sfnetworks/issues/62)
+* Bug fixes:
+  - as_sfnetwork now handles circular linestrings. Fixes [#59](https://github.com/luukvdmeer/sfnetworks/issues/59)
 
 
 # sfnetworks v0.3.0 "Gievenbeck"
