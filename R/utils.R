@@ -209,35 +209,28 @@ get_boundary_node_indices = function(x, out = "both") {
 #' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
 #' geometries.
 #'
-#' See #59 for a discussion on this function.
+#' @details
+#' See issue #59 on the GitHub repo for a discussion on this function.
 #'
-#' @importFrom sf st_coordinates st_cast st_sfc st_multipoint st_crs
+#' @importFrom sf st_cast st_coordinates st_crs st_multipoint st_sfc
 #' @noRd
 get_boundary_points = function(x) {
-  # 1a. extract coordinates
-  x_coordinates <- sf::st_coordinates(x)
-
-  # 1b. Find index of L1 column
-  L1_index <- ncol(x_coordinates)
-
-  # 1c. Remove colnames
-  x_coordinates <- unname(x_coordinates)
-
-  # 2. Find idxs of first and last coordinate (i.e. the boundary points)
-  first_pair <- !duplicated(x_coordinates[, L1_index])
-  last_pair <- !duplicated(x_coordinates[, L1_index], fromLast = TRUE)
-  idxs <- first_pair | last_pair
-
-  # 3. Extract idxs and rebuild sfc
-  x_pairs <- x_coordinates[idxs, ]
-  x_nodes <- sf::st_cast(
-    sf::st_sfc(
-      sf::st_multipoint(x_pairs[, -L1_index]),
-      crs = sf::st_crs(x)
-    ),
+  # Extract coordinates.
+  x_coordinates = unname(sf::st_coordinates(x))
+  # Find index of L1 column.
+  # This column defines to which linestring each coordinate pair belongs.
+  L1_index = ncol(x_coordinates)
+  # Find row-indices of the first and last coordinate pair of each linestring.
+  # These are the boundary points.
+  first_pair = !duplicated(x_coordinates[, L1_index])
+  last_pair = !duplicated(x_coordinates[, L1_index], fromLast = TRUE)
+  idxs = first_pair | last_pair
+  # Extract boundary points and rebuild sfc.
+  x_pairs = x_coordinates[idxs, ]
+  sf::st_cast(
+    sf::st_sfc(sf::st_multipoint(x_pairs[, -L1_index]), crs = sf::st_crs(x)),
    "POINT"
   )
-  x_nodes
 }
 
 #' Directly extract the edges from an sfnetwork
