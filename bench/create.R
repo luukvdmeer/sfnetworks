@@ -2,13 +2,21 @@ pkgload::load_all()
 # remotes::install_github("luukvdmeer/sfnetworks@develop")
 # library(sfnetworks)
 
-bench::press(n = c(10, 100, 200, nrow(roxel)),
-             {
-               bench::mark(check = FALSE,
-                 as_sfnetwork(roxel[1:n, ]),
-               )
-             }
-             )
+bench::mark(check = FALSE,
+            as_sfnetwork(roxel[1:10, ]),
+            as_sfnetwork(roxel[1:100, ]),
+            as_sfnetwork(roxel[1:200, ]),
+            as_sfnetwork(roxel)
+            )
+
+# See https://github.com/r-lib/bench/issues/88
+# bench::press(n = c(10, 100, 200, nrow(roxel)),
+#              {
+#                bench::mark(check = FALSE,
+#                  as_sfnetwork(roxel[1:n, ]),
+#                )
+#              }
+#              )
 
 # # comparison with stplanr (commented out to reduce dependencies)
 # library(sfnetworks)
