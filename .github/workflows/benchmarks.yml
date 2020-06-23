@@ -14,7 +14,8 @@ jobs:
       matrix:
         config:
           - {os: ubuntu-latest, r: 'release'}
-          - {os: ubuntu-20.04, r: 'release'}
+          # fails: https://github.com/luukvdmeer/sfnetworks/pull/64/checks?check_run_id=798178450
+          # - {os: ubuntu-20.04, r: 'release'}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
