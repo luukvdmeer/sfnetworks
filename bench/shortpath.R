@@ -3,15 +3,15 @@ pkgload::load_all()
 library(sf)
 library(tidygraph)
 
-net = as_sfnetwork(roxel, directed = FALSE)
-
-short_path_1_9 = net %>%
-  activate("edges") %>%
-  dplyr::mutate(weight = edge_length()) %>%
-  tidygraph::convert(to_shortest_path, 1, 9)
-
-plot(roxel$geometry)
-plot(sf::st_as_sf(short_path_1_9)$geometry, lwd = 5, add = TRUE)
+# net = as_sfnetwork(roxel, directed = FALSE)
+#
+# short_path_1_9 = net %>%
+#   activate("edges") %>%
+#   dplyr::mutate(weight = edge_length()) %>%
+#   tidygraph::convert(to_shortest_path, 1, 9)
+#
+# plot(roxel$geometry)
+# plot(sf::st_as_sf(short_path_1_9)$geometry, lwd = 5, add = TRUE)
 
 sp = function(net, from, to) {
   net %>%

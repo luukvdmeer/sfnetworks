@@ -1,9 +1,10 @@
 pkgload::load_all()
+# remotes::install_github("luukvdmeer/sfnetworks@develop")
+# library(sfnetworks)
 
 bench::press(n = seq(from = 1, to = nrow(roxel), length.out = 5),
              {
                bench::mark(
-                 time_unit = "ms",
                  as_sfnetwork(roxel[1:n, ])
                )
              }
