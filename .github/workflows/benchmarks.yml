@@ -14,6 +14,7 @@ jobs:
       matrix:
         config:
           - {os: ubuntu-latest, r: 'release'}
+          - {os: ubuntu-20.04, r: 'release'}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -99,7 +100,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          Rscript -e "install.packages(c('remotes'))" -e "remotes::install_deps(dependencies = TRUE)"
+          Rscript -e "install.packages(c('remotes', 'bench'))" -e "remotes::install_deps(dependencies = TRUE)"
           R CMD INSTALL .
       - name: Fetch existing benchmarks
         run: Rscript -e 'bench::cb_fetch()'
