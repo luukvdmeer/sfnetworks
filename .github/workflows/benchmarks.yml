@@ -83,6 +83,8 @@ jobs:
             libgdal-dev \
             libgeos-dev \
             libproj-dev
+          git config --global user.email "rob00x@gmail.com"
+          git config --global user.name "Robin Lovelace"
 
       - name: Install dependencies
         run: |
