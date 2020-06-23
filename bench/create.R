@@ -2,10 +2,10 @@ pkgload::load_all()
 # remotes::install_github("luukvdmeer/sfnetworks@develop")
 # library(sfnetworks)
 
-bench::press(n = seq(from = 1, to = nrow(roxel), length.out = 5),
+bench::press(n = c(10, 100, 200, nrow(roxel)),
              {
-               bench::mark(
-                 as_sfnetwork(roxel[1:n, ])
+               bench::mark(check = FALSE,
+                 as_sfnetwork(roxel[1:n, ]),
                )
              }
              )
