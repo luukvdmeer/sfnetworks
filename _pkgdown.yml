@@ -3,8 +3,8 @@ destination: docs
 reference:
   - title: Construction
     desc: >
-      The core of the package is an sfnetwork data structure that can be 
-      provided directly to both graph analytical functions of tidygraph 
+      The core of the package is an sfnetwork data structure that can be
+      provided directly to both graph analytical functions of tidygraph
       and spatial analytical functions of sf.
     contents:
       - sfnetwork
@@ -13,7 +13,7 @@ reference:
   - title: Extensions
     desc: >
        Some problems are so specific to spatial networks, that they can neither
-       be solved by tidygraph nor sf. Therefore, sfnetworks contains several 
+       be solved by tidygraph nor sf. Therefore, sfnetworks contains several
        extensions to the current offer of the two "parent packages".
     contents:
       - spatial_shortest_paths
@@ -28,19 +28,26 @@ reference:
       - sf_attr
   - title: Integration with tidygraph
     desc: >
-      Since sfnetwork objects subclass tbl_graph objects, most tidygraph 
-      functions work automatically. However, some of them need a special 
-      method, mostly as a result of the presence of the sticky geometry 
+      Since sfnetwork objects subclass tbl_graph objects, most tidygraph
+      functions work automatically. However, some of them need a special
+      method, mostly as a result of the presence of the sticky geometry
       list column in sfnetwork objects.
     contents:
       - tidygraph
   - title: Visualization
     desc: >
-      The sfnetworks package does not (yet?) include advanced visualization 
-      options. However, a simple plot method is provided, which gives a quick 
+      The sfnetworks package does not (yet?) include advanced visualization
+      options. However, a simple plot method is provided, which gives a quick
       view of how the network looks like.
     contents:
       - plot.sfnetwork
   - title: Test data
     contents:
       - roxel
+
+articles:
+- title: Vignettes
+  navbar: ~
+  contents:
+      - intro
+      - extensions
