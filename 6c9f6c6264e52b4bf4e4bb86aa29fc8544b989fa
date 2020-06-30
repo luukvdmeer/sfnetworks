@@ -2,3 +2,5 @@
 {"file":"create.R","name":"as_sfnetwork(roxel[1:100, ])","time":"2020-06-30T22:36:25Z","os":"linux","mean":0.02003,"sd":0.00405,"p0":0.0167,"p25":0.01798,"p50":0.0191,"p75":0.02085,"p100":0.03655,"n_itr":25,"n_gc":9,"total_time":0.50078,"mem_alloc":5055496}
 {"file":"create.R","name":"as_sfnetwork(roxel[1:200, ])","time":"2020-06-30T22:36:25Z","os":"linux","mean":0.02823,"sd":0.00186,"p0":0.02567,"p25":0.02662,"p50":0.02804,"p75":0.02977,"p100":0.03135,"n_itr":18,"n_gc":9,"total_time":0.50807,"mem_alloc":430392}
 {"file":"create.R","name":"as_sfnetwork(roxel)","time":"2020-06-30T22:36:25Z","os":"linux","mean":0.06575,"sd":0.00702,"p0":0.0572,"p25":0.06122,"p50":0.06374,"p75":0.06961,"p100":0.07934,"n_itr":8,"n_gc":10,"total_time":0.52602,"mem_alloc":1151344}
+
+{"file":"shortpath.R","name":"sp_1_9","time":"2020-06-30T22:36:27Z","os":"linux","mean":0.07233,"sd":0.00523,"p0":0.06335,"p25":0.07103,"p50":0.07136,"p75":0.07457,"p100":0.08042,"n_itr":7,"n_gc":4,"total_time":0.50632,"mem_alloc":4844864}
