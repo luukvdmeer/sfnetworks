@@ -96,10 +96,10 @@ jobs:
         shell: Rscript {0}
 
       - name: Checkout repo
-        uses: actions/checkout@develop
+        uses: actions/checkout@master
 
       - name: Setup R
-        uses: r-lib/actions/setup-r@develop
+        uses: r-lib/actions/setup-r@master
 
       - name: Install dependencies
         run: |
