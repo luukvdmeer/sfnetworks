@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
       </span>
     </div>
 
@@ -82,12 +82,12 @@
 
       
 
-      </header><div class="row">
+      </header><script src="intro_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Tidy Geospatial Networks in R</h1>
             
-            <h4 class="date">2020-06-15</h4>
+            <h4 class="date">2020-07-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/intro.Rmd"><code>vignettes/intro.Rmd</code></a></small>
       <div class="hidden name"><code>intro.Rmd</code></div>
@@ -149,7 +149,22 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span id="cb3-11"><a href="#cb3-11"></a>edges<span class="op">$</span>to =<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">3</span>)</span>
 <span id="cb3-12"><a href="#cb3-12"></a></span>
 <span id="cb3-13"><a href="#cb3-13"></a><span class="kw"><a href="../reference/sfnetwork.html">sfnetwork</a></span>(nodes, edges, <span class="dt">directed =</span> <span class="ot">FALSE</span>)</span>
-<span id="cb3-14"><a href="#cb3-14"></a><span class="co">#&gt; Checking validity of network structure... Use force=TRUE to force construction without checks</span></span></code></pre></div>
+<span id="cb3-14"><a href="#cb3-14"></a><span class="co">#&gt; Checking validity of network structure... Use force=TRUE to force construction without checks</span></span>
+<span id="cb3-15"><a href="#cb3-15"></a><span class="co">#&gt; Warning: `...` is not empty.</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a><span class="co">#&gt; </span></span>
+<span id="cb3-17"><a href="#cb3-17"></a><span class="co">#&gt; We detected these problematic arguments:</span></span>
+<span id="cb3-18"><a href="#cb3-18"></a><span class="co">#&gt; * `needs_dots`</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a><span class="co">#&gt; </span></span>
+<span id="cb3-20"><a href="#cb3-20"></a><span class="co">#&gt; These dots only exist to allow future extensions and should be empty.</span></span>
+<span id="cb3-21"><a href="#cb3-21"></a><span class="co">#&gt; Did you misspecify an argument?</span></span>
+<span id="cb3-22"><a href="#cb3-22"></a></span>
+<span id="cb3-23"><a href="#cb3-23"></a><span class="co">#&gt; Warning: `...` is not empty.</span></span>
+<span id="cb3-24"><a href="#cb3-24"></a><span class="co">#&gt; </span></span>
+<span id="cb3-25"><a href="#cb3-25"></a><span class="co">#&gt; We detected these problematic arguments:</span></span>
+<span id="cb3-26"><a href="#cb3-26"></a><span class="co">#&gt; * `needs_dots`</span></span>
+<span id="cb3-27"><a href="#cb3-27"></a><span class="co">#&gt; </span></span>
+<span id="cb3-28"><a href="#cb3-28"></a><span class="co">#&gt; These dots only exist to allow future extensions and should be empty.</span></span>
+<span id="cb3-29"><a href="#cb3-29"></a><span class="co">#&gt; Did you misspecify an argument?</span></span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># An sfnetwork with</span><span> </span><span style="color: #555555;">3</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">3</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">
@@ -187,13 +202,20 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <li>When given an <code>sf</code> object with <code>POINT</code> geometries: the points are considered nodes, and edges are created between them, in a sequential way. With that we mean: node 1 will be connected to node 2, node 2 to node 3, et cetera. This addresses the use-case that was presented in this <a href="https://stackoverflow.com/questions/57833905/how-to-convert-a-list-of-sf-spatial-points-into-a-routable-graph">stackoverflow thread</a>. More construction algorithms for point data are planned to be implemented, see <a href="https://github.com/luukvdmeer/sfnetworks/issues/52">here</a>.</li>
 </ul>
 <p>See below an example with the Roxel dataset (which comes with <code>sfnetworks</code> and is a cleaned extract of OpenStreetMap roads in Münster-Roxel).</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>roxel</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; Simple feature collection with 851 features and 2 fields
-#&gt; geometry type:  LINESTRING
-#&gt; dimension:      XY
-#&gt; bbox:           xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
-#&gt; CRS:            EPSG:4326
-#&gt; <span style="color: #555555;"># A tibble: 851 x 3</span><span>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>roxel</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="co">#&gt; Simple feature collection with 851 features and 2 fields</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="co">#&gt; geometry type:  LINESTRING</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="co">#&gt; dimension:      XY</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="co">#&gt; bbox:           xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="co">#&gt; geographic CRS: WGS 84</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="co">#&gt; Warning: `...` is not empty.</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="co">#&gt; </span></span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="co">#&gt; We detected these problematic arguments:</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a><span class="co">#&gt; * `needs_dots`</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a><span class="co">#&gt; </span></span>
+<span id="cb4-12"><a href="#cb4-12"></a><span class="co">#&gt; These dots only exist to allow future extensions and should be empty.</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a><span class="co">#&gt; Did you misspecify an argument?</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A tibble: 851 x 3</span><span>
 #&gt;    name           type                                                  geometry
 #&gt;    </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>          </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                                         </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>
 #&gt; </span><span style="color: #555555;"> 1</span><span> Havixbecker S… residen…                (7.533722 51.95556, 7.533461 51.95576)
@@ -208,7 +230,22 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;">10</span><span> </span><span style="color: #BB0000;">NA</span><span>             track    (7.5424 51.94599, 7.54205 51.94629, 7.541967 51.9463…
 #&gt; </span><span style="color: #555555;"># … with 841 more rows</span><span>
 </span></code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>(<span class="dt">net =</span> <span class="kw"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span>(roxel, <span class="dt">directed =</span> <span class="ot">FALSE</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>(<span class="dt">net =</span> <span class="kw"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span>(roxel, <span class="dt">directed =</span> <span class="ot">FALSE</span>))</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="co">#&gt; Warning: `...` is not empty.</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="co">#&gt; </span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="co">#&gt; We detected these problematic arguments:</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="co">#&gt; * `needs_dots`</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="co">#&gt; </span></span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="co">#&gt; These dots only exist to allow future extensions and should be empty.</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a><span class="co">#&gt; Did you misspecify an argument?</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a></span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="co">#&gt; Warning: `...` is not empty.</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a><span class="co">#&gt; </span></span>
+<span id="cb5-12"><a href="#cb5-12"></a><span class="co">#&gt; We detected these problematic arguments:</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a><span class="co">#&gt; * `needs_dots`</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a><span class="co">#&gt; </span></span>
+<span id="cb5-15"><a href="#cb5-15"></a><span class="co">#&gt; These dots only exist to allow future extensions and should be empty.</span></span>
+<span id="cb5-16"><a href="#cb5-16"></a><span class="co">#&gt; Did you misspecify an argument?</span></span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># An sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">
@@ -251,13 +288,20 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>Thanks to <code><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate()</a></code>, a lot of data manipulation tools can be directly applied to the network. If you want to do something that goes further, you can always extract the active element as an <code>sf</code> object, simply by calling <code><a href="https://rdrr.io/pkg/sf/man/st_as_sf.html">st_as_sf()</a></code> - in the case of spatially implicit edges, extract them with <code><a href="https://tidygraph.data-imaginist.com/reference/reexports.html">as_tibble()</a></code> instead.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>net <span class="op">%&gt;%</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span>(<span class="st">"edges"</span>) <span class="op">%&gt;%</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="st">  </span><span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_as_sf.html">st_as_sf</a></span>()</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; Simple feature collection with 851 features and 4 fields
-#&gt; geometry type:  LINESTRING
-#&gt; dimension:      XY
-#&gt; bbox:           xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
-#&gt; CRS:            EPSG:4326
-#&gt; <span style="color: #555555;"># A tibble: 851 x 5</span><span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="st">  </span><span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_as_sf.html">st_as_sf</a></span>()</span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="co">#&gt; Simple feature collection with 851 features and 4 fields</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="co">#&gt; geometry type:  LINESTRING</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="co">#&gt; dimension:      XY</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="co">#&gt; bbox:           xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="co">#&gt; geographic CRS: WGS 84</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a><span class="co">#&gt; Warning: `...` is not empty.</span></span>
+<span id="cb7-10"><a href="#cb7-10"></a><span class="co">#&gt; </span></span>
+<span id="cb7-11"><a href="#cb7-11"></a><span class="co">#&gt; We detected these problematic arguments:</span></span>
+<span id="cb7-12"><a href="#cb7-12"></a><span class="co">#&gt; * `needs_dots`</span></span>
+<span id="cb7-13"><a href="#cb7-13"></a><span class="co">#&gt; </span></span>
+<span id="cb7-14"><a href="#cb7-14"></a><span class="co">#&gt; These dots only exist to allow future extensions and should be empty.</span></span>
+<span id="cb7-15"><a href="#cb7-15"></a><span class="co">#&gt; Did you misspecify an argument?</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A tibble: 851 x 5</span><span>
 #&gt;     from    to name         type                                        geometry
 #&gt;    </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>        </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                               </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>
 #&gt; </span><span style="color: #555555;"> 1</span><span>     1     2 Havixbecker… reside…       (7.533722 51.95556, 7.533461 51.95576)
@@ -341,7 +385,22 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>net_a =<span class="st"> </span>net <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/reexports.html">slice</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>)</span>
 <span id="cb11-2"><a href="#cb11-2"></a>net_b =<span class="st"> </span>net <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/reexports.html">slice</a></span>(<span class="dv">2</span><span class="op">:</span><span class="dv">4</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/reexports.html">mutate</a></span>(<span class="dt">foo =</span> <span class="st">"bar"</span>)</span>
 <span id="cb11-3"><a href="#cb11-3"></a>net_a <span class="op">%&gt;%</span></span>
-<span id="cb11-4"><a href="#cb11-4"></a><span class="st">  </span><span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_join.html">st_join</a></span>(net_b, <span class="dt">join =</span> st_equals)</span></code></pre></div>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="st">  </span><span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_join.html">st_join</a></span>(net_b, <span class="dt">join =</span> st_equals)</span>
+<span id="cb11-5"><a href="#cb11-5"></a><span class="co">#&gt; Warning: `...` is not empty.</span></span>
+<span id="cb11-6"><a href="#cb11-6"></a><span class="co">#&gt; </span></span>
+<span id="cb11-7"><a href="#cb11-7"></a><span class="co">#&gt; We detected these problematic arguments:</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a><span class="co">#&gt; * `needs_dots`</span></span>
+<span id="cb11-9"><a href="#cb11-9"></a><span class="co">#&gt; </span></span>
+<span id="cb11-10"><a href="#cb11-10"></a><span class="co">#&gt; These dots only exist to allow future extensions and should be empty.</span></span>
+<span id="cb11-11"><a href="#cb11-11"></a><span class="co">#&gt; Did you misspecify an argument?</span></span>
+<span id="cb11-12"><a href="#cb11-12"></a></span>
+<span id="cb11-13"><a href="#cb11-13"></a><span class="co">#&gt; Warning: `...` is not empty.</span></span>
+<span id="cb11-14"><a href="#cb11-14"></a><span class="co">#&gt; </span></span>
+<span id="cb11-15"><a href="#cb11-15"></a><span class="co">#&gt; We detected these problematic arguments:</span></span>
+<span id="cb11-16"><a href="#cb11-16"></a><span class="co">#&gt; * `needs_dots`</span></span>
+<span id="cb11-17"><a href="#cb11-17"></a><span class="co">#&gt; </span></span>
+<span id="cb11-18"><a href="#cb11-18"></a><span class="co">#&gt; These dots only exist to allow future extensions and should be empty.</span></span>
+<span id="cb11-19"><a href="#cb11-19"></a><span class="co">#&gt; Did you misspecify an argument?</span></span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># An sfnetwork with</span><span> </span><span style="color: #555555;">3</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">1</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">
@@ -374,7 +433,22 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>net <span class="op">%&gt;%</span></span>
 <span id="cb12-2"><a href="#cb12-2"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/reexports.html">mutate</a></span>(<span class="dt">in_rect =</span> <span class="kw"><a href="https://rdrr.io/r/base/lengths.html">lengths</a></span>(<span class="kw"><a href="https://rdrr.io/pkg/sf/man/geos_binary_pred.html">st_intersects</a></span>(., rect)) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>)</span>
 <span id="cb12-3"><a href="#cb12-3"></a><span class="co">#&gt; although coordinates are longitude/latitude, st_intersects assumes that they are planar</span></span>
-<span id="cb12-4"><a href="#cb12-4"></a><span class="co">#&gt; although coordinates are longitude/latitude, st_intersects assumes that they are planar</span></span></code></pre></div>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="co">#&gt; although coordinates are longitude/latitude, st_intersects assumes that they are planar</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="co">#&gt; Warning: `...` is not empty.</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="co">#&gt; </span></span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="co">#&gt; We detected these problematic arguments:</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="co">#&gt; * `needs_dots`</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="co">#&gt; </span></span>
+<span id="cb12-10"><a href="#cb12-10"></a><span class="co">#&gt; These dots only exist to allow future extensions and should be empty.</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a><span class="co">#&gt; Did you misspecify an argument?</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a></span>
+<span id="cb12-13"><a href="#cb12-13"></a><span class="co">#&gt; Warning: `...` is not empty.</span></span>
+<span id="cb12-14"><a href="#cb12-14"></a><span class="co">#&gt; </span></span>
+<span id="cb12-15"><a href="#cb12-15"></a><span class="co">#&gt; We detected these problematic arguments:</span></span>
+<span id="cb12-16"><a href="#cb12-16"></a><span class="co">#&gt; * `needs_dots`</span></span>
+<span id="cb12-17"><a href="#cb12-17"></a><span class="co">#&gt; </span></span>
+<span id="cb12-18"><a href="#cb12-18"></a><span class="co">#&gt; These dots only exist to allow future extensions and should be empty.</span></span>
+<span id="cb12-19"><a href="#cb12-19"></a><span class="co">#&gt; Did you misspecify an argument?</span></span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># An sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">
@@ -415,17 +489,40 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span id="cb13-2"><a href="#cb13-2"></a><span class="co">#&gt; Coordinate Reference System:</span></span>
 <span id="cb13-3"><a href="#cb13-3"></a><span class="co">#&gt;   User input: EPSG:4326 </span></span>
 <span id="cb13-4"><a href="#cb13-4"></a><span class="co">#&gt;   wkt:</span></span>
-<span id="cb13-5"><a href="#cb13-5"></a><span class="co">#&gt; GEOGCS["WGS 84",</span></span>
-<span id="cb13-6"><a href="#cb13-6"></a><span class="co">#&gt;     DATUM["WGS_1984",</span></span>
-<span id="cb13-7"><a href="#cb13-7"></a><span class="co">#&gt;         SPHEROID["WGS 84",6378137,298.257223563,</span></span>
-<span id="cb13-8"><a href="#cb13-8"></a><span class="co">#&gt;             AUTHORITY["EPSG","7030"]],</span></span>
-<span id="cb13-9"><a href="#cb13-9"></a><span class="co">#&gt;         AUTHORITY["EPSG","6326"]],</span></span>
-<span id="cb13-10"><a href="#cb13-10"></a><span class="co">#&gt;     PRIMEM["Greenwich",0,</span></span>
-<span id="cb13-11"><a href="#cb13-11"></a><span class="co">#&gt;         AUTHORITY["EPSG","8901"]],</span></span>
-<span id="cb13-12"><a href="#cb13-12"></a><span class="co">#&gt;     UNIT["degree",0.0174532925199433,</span></span>
-<span id="cb13-13"><a href="#cb13-13"></a><span class="co">#&gt;         AUTHORITY["EPSG","9122"]],</span></span>
-<span id="cb13-14"><a href="#cb13-14"></a><span class="co">#&gt;     AUTHORITY["EPSG","4326"]]</span></span></code></pre></div>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_transform.html">st_transform</a></span>(net, <span class="dv">3035</span>)</span></code></pre></div>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="co">#&gt; GEOGCRS["WGS 84",</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="co">#&gt;     DATUM["World Geodetic System 1984",</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="co">#&gt;         ELLIPSOID["WGS 84",6378137,298.257223563,</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="co">#&gt;             LENGTHUNIT["metre",1]]],</span></span>
+<span id="cb13-9"><a href="#cb13-9"></a><span class="co">#&gt;     PRIMEM["Greenwich",0,</span></span>
+<span id="cb13-10"><a href="#cb13-10"></a><span class="co">#&gt;         ANGLEUNIT["degree",0.0174532925199433]],</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a><span class="co">#&gt;     CS[ellipsoidal,2],</span></span>
+<span id="cb13-12"><a href="#cb13-12"></a><span class="co">#&gt;         AXIS["geodetic latitude (Lat)",north,</span></span>
+<span id="cb13-13"><a href="#cb13-13"></a><span class="co">#&gt;             ORDER[1],</span></span>
+<span id="cb13-14"><a href="#cb13-14"></a><span class="co">#&gt;             ANGLEUNIT["degree",0.0174532925199433]],</span></span>
+<span id="cb13-15"><a href="#cb13-15"></a><span class="co">#&gt;         AXIS["geodetic longitude (Lon)",east,</span></span>
+<span id="cb13-16"><a href="#cb13-16"></a><span class="co">#&gt;             ORDER[2],</span></span>
+<span id="cb13-17"><a href="#cb13-17"></a><span class="co">#&gt;             ANGLEUNIT["degree",0.0174532925199433]],</span></span>
+<span id="cb13-18"><a href="#cb13-18"></a><span class="co">#&gt;     USAGE[</span></span>
+<span id="cb13-19"><a href="#cb13-19"></a><span class="co">#&gt;         SCOPE["unknown"],</span></span>
+<span id="cb13-20"><a href="#cb13-20"></a><span class="co">#&gt;         AREA["World"],</span></span>
+<span id="cb13-21"><a href="#cb13-21"></a><span class="co">#&gt;         BBOX[-90,-180,90,180]],</span></span>
+<span id="cb13-22"><a href="#cb13-22"></a><span class="co">#&gt;     ID["EPSG",4326]]</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_transform.html">st_transform</a></span>(net, <span class="dv">3035</span>)</span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="co">#&gt; Warning: `...` is not empty.</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="co">#&gt; </span></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="co">#&gt; We detected these problematic arguments:</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="co">#&gt; * `needs_dots`</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="co">#&gt; </span></span>
+<span id="cb14-7"><a href="#cb14-7"></a><span class="co">#&gt; These dots only exist to allow future extensions and should be empty.</span></span>
+<span id="cb14-8"><a href="#cb14-8"></a><span class="co">#&gt; Did you misspecify an argument?</span></span>
+<span id="cb14-9"><a href="#cb14-9"></a></span>
+<span id="cb14-10"><a href="#cb14-10"></a><span class="co">#&gt; Warning: `...` is not empty.</span></span>
+<span id="cb14-11"><a href="#cb14-11"></a><span class="co">#&gt; </span></span>
+<span id="cb14-12"><a href="#cb14-12"></a><span class="co">#&gt; We detected these problematic arguments:</span></span>
+<span id="cb14-13"><a href="#cb14-13"></a><span class="co">#&gt; * `needs_dots`</span></span>
+<span id="cb14-14"><a href="#cb14-14"></a><span class="co">#&gt; </span></span>
+<span id="cb14-15"><a href="#cb14-15"></a><span class="co">#&gt; These dots only exist to allow future extensions and should be empty.</span></span>
+<span id="cb14-16"><a href="#cb14-16"></a><span class="co">#&gt; Did you misspecify an argument?</span></span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># An sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
@@ -473,7 +570,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span id="cb15-3"><a href="#cb15-3"></a><span class="co">#&gt; geometry type:  POINT</span></span>
 <span id="cb15-4"><a href="#cb15-4"></a><span class="co">#&gt; dimension:      XY</span></span>
 <span id="cb15-5"><a href="#cb15-5"></a><span class="co">#&gt; bbox:           xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span></span>
-<span id="cb15-6"><a href="#cb15-6"></a><span class="co">#&gt; CRS:            EPSG:4326</span></span>
+<span id="cb15-6"><a href="#cb15-6"></a><span class="co">#&gt; geographic CRS: WGS 84</span></span>
 <span id="cb15-7"><a href="#cb15-7"></a><span class="co">#&gt; First 5 geometries:</span></span>
 <span id="cb15-8"><a href="#cb15-8"></a><span class="co">#&gt; POINT (7.533722 51.95556)</span></span>
 <span id="cb15-9"><a href="#cb15-9"></a><span class="co">#&gt; POINT (7.533461 51.95576)</span></span>
@@ -488,7 +585,22 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span id="cb18-2"><a href="#cb18-2"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span>(<span class="st">"edges"</span>) <span class="op">%&gt;%</span></span>
 <span id="cb18-3"><a href="#cb18-3"></a><span class="st">  </span><span class="kw"><a href="https://rdrr.io/pkg/sf/man/geos_unary.html">st_reverse</a></span>()</span>
 <span id="cb18-4"><a href="#cb18-4"></a><span class="co">#&gt; Warning in st_reverse.sfnetwork(.): For directed networks st_reverse swaps</span></span>
-<span id="cb18-5"><a href="#cb18-5"></a><span class="co">#&gt; columns 'to' and 'from'</span></span></code></pre></div>
+<span id="cb18-5"><a href="#cb18-5"></a><span class="co">#&gt; columns 'to' and 'from'</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a><span class="co">#&gt; Warning: `...` is not empty.</span></span>
+<span id="cb18-7"><a href="#cb18-7"></a><span class="co">#&gt; </span></span>
+<span id="cb18-8"><a href="#cb18-8"></a><span class="co">#&gt; We detected these problematic arguments:</span></span>
+<span id="cb18-9"><a href="#cb18-9"></a><span class="co">#&gt; * `needs_dots`</span></span>
+<span id="cb18-10"><a href="#cb18-10"></a><span class="co">#&gt; </span></span>
+<span id="cb18-11"><a href="#cb18-11"></a><span class="co">#&gt; These dots only exist to allow future extensions and should be empty.</span></span>
+<span id="cb18-12"><a href="#cb18-12"></a><span class="co">#&gt; Did you misspecify an argument?</span></span>
+<span id="cb18-13"><a href="#cb18-13"></a></span>
+<span id="cb18-14"><a href="#cb18-14"></a><span class="co">#&gt; Warning: `...` is not empty.</span></span>
+<span id="cb18-15"><a href="#cb18-15"></a><span class="co">#&gt; </span></span>
+<span id="cb18-16"><a href="#cb18-16"></a><span class="co">#&gt; We detected these problematic arguments:</span></span>
+<span id="cb18-17"><a href="#cb18-17"></a><span class="co">#&gt; * `needs_dots`</span></span>
+<span id="cb18-18"><a href="#cb18-18"></a><span class="co">#&gt; </span></span>
+<span id="cb18-19"><a href="#cb18-19"></a><span class="co">#&gt; These dots only exist to allow future extensions and should be empty.</span></span>
+<span id="cb18-20"><a href="#cb18-20"></a><span class="co">#&gt; Did you misspecify an argument?</span></span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># An sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">
@@ -546,7 +658,22 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span id="cb20-7"><a href="#cb20-7"></a></span>
 <span id="cb20-8"><a href="#cb20-8"></a>net_t <span class="op">%&gt;%</span></span>
 <span id="cb20-9"><a href="#cb20-9"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span>(<span class="st">"nodes"</span>) <span class="op">%&gt;%</span></span>
-<span id="cb20-10"><a href="#cb20-10"></a><span class="st">  </span><span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_join.html">st_join</a></span>(y)</span></code></pre></div>
+<span id="cb20-10"><a href="#cb20-10"></a><span class="st">  </span><span class="kw"><a href="https://rdrr.io/pkg/sf/man/st_join.html">st_join</a></span>(y)</span>
+<span id="cb20-11"><a href="#cb20-11"></a><span class="co">#&gt; Warning: `...` is not empty.</span></span>
+<span id="cb20-12"><a href="#cb20-12"></a><span class="co">#&gt; </span></span>
+<span id="cb20-13"><a href="#cb20-13"></a><span class="co">#&gt; We detected these problematic arguments:</span></span>
+<span id="cb20-14"><a href="#cb20-14"></a><span class="co">#&gt; * `needs_dots`</span></span>
+<span id="cb20-15"><a href="#cb20-15"></a><span class="co">#&gt; </span></span>
+<span id="cb20-16"><a href="#cb20-16"></a><span class="co">#&gt; These dots only exist to allow future extensions and should be empty.</span></span>
+<span id="cb20-17"><a href="#cb20-17"></a><span class="co">#&gt; Did you misspecify an argument?</span></span>
+<span id="cb20-18"><a href="#cb20-18"></a></span>
+<span id="cb20-19"><a href="#cb20-19"></a><span class="co">#&gt; Warning: `...` is not empty.</span></span>
+<span id="cb20-20"><a href="#cb20-20"></a><span class="co">#&gt; </span></span>
+<span id="cb20-21"><a href="#cb20-21"></a><span class="co">#&gt; We detected these problematic arguments:</span></span>
+<span id="cb20-22"><a href="#cb20-22"></a><span class="co">#&gt; * `needs_dots`</span></span>
+<span id="cb20-23"><a href="#cb20-23"></a><span class="co">#&gt; </span></span>
+<span id="cb20-24"><a href="#cb20-24"></a><span class="co">#&gt; These dots only exist to allow future extensions and should be empty.</span></span>
+<span id="cb20-25"><a href="#cb20-25"></a><span class="co">#&gt; Did you misspecify an argument?</span></span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># An sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
@@ -588,7 +715,22 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>As already shown in some of the examples above, a lot of <code>dplyr</code> functions work directly on <code>sfnetwork</code> objects, thanks to <code>tidygraph</code>. Since the active elements (if spatially explicit) are internally handled as being <code>sf</code> objects, automatically the <code>sf</code> methods for these functions are used. That means, for example, that the <code>geometry</code> column is ‘sticky’. Note: also the <code>to</code> and <code>from</code> column in the edges table are sticky, which does not come from <code>sf</code>, but from <code>tidygraph</code>. So now, we have three sticky columns!</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>net <span class="op">%&gt;%</span></span>
 <span id="cb21-2"><a href="#cb21-2"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span>(<span class="st">"edges"</span>) <span class="op">%&gt;%</span></span>
-<span id="cb21-3"><a href="#cb21-3"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/reexports.html">select</a></span>(name)</span></code></pre></div>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="st">  </span><span class="kw"><a href="https://tidygraph.data-imaginist.com/reference/reexports.html">select</a></span>(name)</span>
+<span id="cb21-4"><a href="#cb21-4"></a><span class="co">#&gt; Warning: `...` is not empty.</span></span>
+<span id="cb21-5"><a href="#cb21-5"></a><span class="co">#&gt; </span></span>
+<span id="cb21-6"><a href="#cb21-6"></a><span class="co">#&gt; We detected these problematic arguments:</span></span>
+<span id="cb21-7"><a href="#cb21-7"></a><span class="co">#&gt; * `needs_dots`</span></span>
+<span id="cb21-8"><a href="#cb21-8"></a><span class="co">#&gt; </span></span>
+<span id="cb21-9"><a href="#cb21-9"></a><span class="co">#&gt; These dots only exist to allow future extensions and should be empty.</span></span>
+<span id="cb21-10"><a href="#cb21-10"></a><span class="co">#&gt; Did you misspecify an argument?</span></span>
+<span id="cb21-11"><a href="#cb21-11"></a></span>
+<span id="cb21-12"><a href="#cb21-12"></a><span class="co">#&gt; Warning: `...` is not empty.</span></span>
+<span id="cb21-13"><a href="#cb21-13"></a><span class="co">#&gt; </span></span>
+<span id="cb21-14"><a href="#cb21-14"></a><span class="co">#&gt; We detected these problematic arguments:</span></span>
+<span id="cb21-15"><a href="#cb21-15"></a><span class="co">#&gt; * `needs_dots`</span></span>
+<span id="cb21-16"><a href="#cb21-16"></a><span class="co">#&gt; </span></span>
+<span id="cb21-17"><a href="#cb21-17"></a><span class="co">#&gt; These dots only exist to allow future extensions and should be empty.</span></span>
+<span id="cb21-18"><a href="#cb21-18"></a><span class="co">#&gt; Did you misspecify an argument?</span></span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># An sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">

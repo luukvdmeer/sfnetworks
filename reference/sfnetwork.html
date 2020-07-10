@@ -74,7 +74,7 @@ function from the sf-package directly to the network." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
       </span>
     </div>
 
@@ -146,6 +146,7 @@ function from the <code><a href='https://rdrr.io/pkg/sf/man/sf.html'>sf-package<
   <span class='no'>nodes</span>,
   <span class='no'>edges</span>,
   <span class='kw'>directed</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>node_key</span> <span class='kw'>=</span> <span class='st'>"name"</span>,
   <span class='kw'>edges_as_lines</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>force</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='no'>...</span>
@@ -176,6 +177,13 @@ nodes table.</p></td>
       <th>directed</th>
       <td><p>Should the constructed network be directed? Defaults to
 <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>node_key</th>
+      <td><p>The name of the column in the nodes table that character 
+represented <code>to</code> and <code>from</code> columns should be matched against. If 
+NA the first column is always chosen. This setting has no effect if <code>to</code> 
+and <code>from</code> are given as integers. Defaults to <code>"name"</code>.</p></td>
     </tr>
     <tr>
       <th>edges_as_lines</th>

@@ -67,7 +67,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
       </span>
     </div>
 
@@ -125,6 +125,26 @@
       <small>Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="sfnetworks-v031" class="section level1">
+<h1 class="page-header">
+<a href="#sfnetworks-v031" class="anchor"></a>sfnetworks v0.3.1</h1>
+<ul>
+<li>Bug fixes:
+<ul>
+<li>as_sfnetwork now handles circular linestrings. Fixes <a href="https://github.com/luukvdmeer/sfnetworks/issues/59"><a href='https://github.com/luukvdmeer/sfnetworks/issues/59'>#59</a></a>
+</li>
+</ul>
+</li>
+<li>Addition of a “node_key” argument to the construction functions, in line with the recent update of tidygraph. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/53"><a href='https://github.com/luukvdmeer/sfnetworks/issues/53'>#53</a></a>
+</li>
+<li>Better integration with Z and M coordinates by adding them as coordinate columns when calling spatial morpher to_spatial_coordinates. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/62"><a href='https://github.com/luukvdmeer/sfnetworks/issues/62'>#62</a></a>
+</li>
+<li>Improved pkgdown structure. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/44"><a href='https://github.com/luukvdmeer/sfnetworks/issues/44'>#44</a></a>
+</li>
+<li>First implementation of continuous benchmarking. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/6"><a href='https://github.com/luukvdmeer/sfnetworks/issues/6'>#6</a></a>
+</li>
+</ul>
+</div>
     <div id="sfnetworks-v030-gievenbeck" class="section level1">
 <h1 class="page-header">
 <a href="#sfnetworks-v030-gievenbeck" class="anchor"></a>sfnetworks v0.3.0 “Gievenbeck”</h1>
@@ -194,6 +214,7 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
+        <li><a href="#sfnetworks-v031">0.3.1</a></li>
         <li><a href="#sfnetworks-v030-gievenbeck">0.3.0</a></li>
         <li><a href="#sfnetworks-v020-neutor">0.2.0</a></li>
         <li><a href="#sfnetworks-v010">0.1.0</a></li>

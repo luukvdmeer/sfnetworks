@@ -72,7 +72,7 @@ explanations on how to use morphing, see morph." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
       </span>
     </div>
 
@@ -177,8 +177,10 @@ of each morpher for details.</p></td>
 
     
 <ul>
-<li><p><code>to_spatial_coordinates</code>: Store the spatial coordinates of the nodes in an 
-'X' and Y' column, instead of an <code><a href='https://rdrr.io/pkg/sf/man/sfc.html'>sfc</a></code> geometry list column.</p></li>
+<li><p><code>to_spatial_coordinates</code>: Store the spatial coordinates of the nodes in 
+separate coordinate columns (e.g. "X" and "Y"), instead of an 
+<code><a href='https://rdrr.io/pkg/sf/man/sfc.html'>sfc</a></code> geometry list column. If edges are spatially
+explicit, the edge geometries are dropped.</p></li>
 <li><p><code>to_spatial_dense_graph</code>: Reconstruct the network by using all edge 
 linestring points as nodes, instead of only the endpoints.</p></li>
 <li><p><code>to_spatial_directed</code>: Make a graph directed in the direction given by 
