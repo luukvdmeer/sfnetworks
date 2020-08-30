@@ -42,6 +42,6 @@ remotes::install_github("luukvdmeer/sfnetworks@v0.1")
 ```
 
 ## Contribution
-We look very much forward to contributions to the package. Please refer to the [contributing](CONTRIBUTING.md) for further details. 
+We look very much forward to contributions to the package. Please refer to the [contributing](CONTRIBUTING.md) guide for further details. 
 
 This project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.  
