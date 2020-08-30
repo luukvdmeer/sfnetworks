@@ -57,4 +57,17 @@ plot(test_psp, main = "spatstat input")
 test_psp_as_sfnetwork = as_sfnetwork(test_psp)
 plot(test_psp_as_sfnetwork, main = "sfnetworks output")
 }
+# Examples for sf method
+## from POINT geometries
+p1 = sf::st_point(c(7, 51))
+p2 = sf::st_point(c(7, 52))
+p3 = sf::st_point(c(8, 52))
+points = sf::st_as_sf(sf::st_sfc(p1, p2, p3, crs = 4326))
+as_sfnetwork(points)
+## from LINESTRING geometries
+e1 = sf::st_cast(sf::st_union(p1,p2), "LINESTRING")
+e2 = sf::st_cast(sf::st_union(p1,p3), "LINESTRING")
+e3 = sf::st_cast(sf::st_union(p2,p3), "LINESTRING")
+lines = sf::st_as_sf(sf::st_sfc(e1, e2, e3, crs = 4326))
+as_sfnetwork(lines)
 }

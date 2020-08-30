@@ -9,7 +9,7 @@
 #'
 #' @param nodes An object containing information about the nodes in the network.
 #' The nodes should contain geospatial coordinates, either by being an \code{sf}
-#' object with \code{POINT} geometry features, or by being convertable to such an
+#' object with \code{POINT} geometry features, or by being convertible to such an
 #' object with \code{\link[sf]{st_as_sf}}.
 #'
 #' @param edges An object containing information about the edges in the network.
@@ -53,6 +53,28 @@
 #'
 #' @importFrom tidygraph tbl_graph
 #' @export
+#' @examples
+#' # Create sfnetwork from sf objects
+#' p1 = sf::st_point(c(7, 51))
+#' p2 = sf::st_point(c(7, 52))
+#' p3 = sf::st_point(c(8, 52))
+#' nodes = sf::st_as_sf(sf::st_sfc(p1, p2, p3, crs = 4326))
+#'
+#' e1 = sf::st_cast(sf::st_union(p1,p2), "LINESTRING")
+#' e2 = sf::st_cast(sf::st_union(p1,p3), "LINESTRING")
+#' e3 = sf::st_cast(sf::st_union(p2,p3), "LINESTRING")
+#' edges = sf::st_as_sf(sf::st_sfc(e1, e2, e3, crs = 4326))
+#' edges$from = c(1, 1, 2)
+#' edges$to = c(2, 3, 3)
+#'
+#' ## directed network
+#' sfnetwork(nodes, edges, directed = TRUE)
+#'
+#' ## undirected network
+#' sfnetwork(nodes, edges, directed = FALSE)
+#'
+#' ## spatially implicit edges
+#' sfnetwork(nodes, edges, directed = FALSE, edges_as_lines = F)
 sfnetwork = function(nodes, edges, directed = TRUE, node_key = "name",
                      edges_as_lines = NULL, force = FALSE, ...) {
   # Automatically set edges_as_lines if not given.
@@ -213,6 +235,20 @@ as_sfnetwork.psp = function(x, ...) {
 #' @name as_sfnetwork
 #' @importFrom sf st_geometry
 #' @export
+#' @examples
+#' # Examples for sf method
+#' ## from POINT geometries
+#' p1 = sf::st_point(c(7, 51))
+#' p2 = sf::st_point(c(7, 52))
+#' p3 = sf::st_point(c(8, 52))
+#' points = sf::st_as_sf(sf::st_sfc(p1, p2, p3, crs = 4326))
+#' as_sfnetwork(points)
+#' ## from LINESTRING geometries
+#' e1 = sf::st_cast(sf::st_union(p1,p2), "LINESTRING")
+#' e2 = sf::st_cast(sf::st_union(p1,p3), "LINESTRING")
+#' e3 = sf::st_cast(sf::st_union(p2,p3), "LINESTRING")
+#' lines = sf::st_as_sf(sf::st_sfc(e1, e2, e3, crs = 4326))
+#' as_sfnetwork(lines)
 as_sfnetwork.sf = function(x, ...) {
   if (st_is_all(x, "LINESTRING")) {
     # Workflow:
