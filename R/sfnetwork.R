@@ -24,11 +24,11 @@
 #' @param directed Should the constructed network be directed? Defaults to
 #' \code{TRUE}.
 #'
-#' @param node_key The name of the column in the nodes table that character 
-#' represented \code{to} and \code{from} columns should be matched against. If 
-#' NA the first column is always chosen. This setting has no effect if \code{to} 
+#' @param node_key The name of the column in the nodes table that character
+#' represented \code{to} and \code{from} columns should be matched against. If
+#' NA the first column is always chosen. This setting has no effect if \code{to}
 #' and \code{from} are given as integers. Defaults to \code{"name"}.
-#' 
+#'
 #' @param edges_as_lines Should the edges be spatially explicit, i.e. have
 #' \code{LINESTRING} geometries stored in a geometry list column? If \code{NULL},
 #' this will be automatically defined, by setting the argument to \code{TRUE}
@@ -198,8 +198,8 @@ as_sfnetwork.linnet = function(x, ...) {
 #' plot(test_psp_as_sfnetwork, main = "sfnetworks output")
 #' }
 as_sfnetwork.psp = function(x, ...) {
-  # The easiest method for transforming a Line Segment Pattern (psp) object 
-  # into sfnetwork format is to transform it into sf format and then apply 
+  # The easiest method for transforming a Line Segment Pattern (psp) object
+  # into sfnetwork format is to transform it into sf format and then apply
   # the usual methods.
   x_sf = sf::st_as_sf(x)
   # x_sf is an sf object composed by 1 POLYGON (the window of the psp object)
@@ -263,11 +263,12 @@ as_sfnetwork.tbl_graph = function(x, ...) {
   do.call("sfnetwork", args)
 }
 
-#' @importFrom sf st_as_sf st_crs st_geometry
 #' @importFrom rlang !!
+#' @importFrom sf st_as_sf st_crs st_geometry
 #' @importFrom tibble trunc_mat
-#' @importFrom utils modifyList
+#' @importFrom tidygraph as_tibble
 #' @importFrom tools toTitleCase
+#' @importFrom utils modifyList
 #' @export
 print.sfnetwork = function(x, ...) {
   # Capture graph output.
@@ -278,7 +279,11 @@ print.sfnetwork = function(x, ...) {
   not_active = if (active(x) == "nodes") "edges" else "nodes"
   top = do.call(trunc_mat, utils::modifyList(arg_list, list(x = as_tibble(x), n = 6)))
   top$summary[1] = paste0(top$summary[1], " (active)")
-  if (active(x) == "edges" && !has_spatially_explicit_edges(x)) {
+  if (
+    active(x) == "edges" &&
+    !has_spatially_explicit_edges(x) ||
+    nrow(tidygraph::as_tibble(x)) == 0
+    ) {
     names(top$summary)[1] = tools::toTitleCase(paste0(substr(active(x), 1, 4), " data"))
   } else {
     active_geom = sf::st_geometry(sf::st_as_sf(x))
@@ -292,7 +297,11 @@ print.sfnetwork = function(x, ...) {
     )
   }
   bottom = do.call(trunc_mat, modifyList(arg_list, list(x = as_tibble(x, active = not_active), n = 3)))
-  if (active(x) == "nodes" && !has_spatially_explicit_edges(x)) {
+  if (
+    active(x) == "nodes" &&
+    !has_spatially_explicit_edges(x) ||
+    nrow(tidygraph::as_tibble(activate(x, !!not_active))) == 0
+    ) {
     names(bottom$summary)[1] = tools::toTitleCase(paste0(substr(not_active, 1, 4), " data"))
   } else {
     inactive_geom = sf::st_geometry(sf::st_as_sf(activate(x, !!not_active)))

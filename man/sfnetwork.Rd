@@ -32,9 +32,9 @@ nodes table.}
 \item{directed}{Should the constructed network be directed? Defaults to
 \code{TRUE}.}
 
-\item{node_key}{The name of the column in the nodes table that character 
-represented \code{to} and \code{from} columns should be matched against. If 
-NA the first column is always chosen. This setting has no effect if \code{to} 
+\item{node_key}{The name of the column in the nodes table that character
+represented \code{to} and \code{from} columns should be matched against. If
+NA the first column is always chosen. This setting has no effect if \code{to}
 and \code{from} are given as integers. Defaults to \code{"name"}.}
 
 \item{edges_as_lines}{Should the edges be spatially explicit, i.e. have
