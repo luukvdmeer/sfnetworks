@@ -8,6 +8,7 @@
 \alias{to_spatial_explicit_edges}
 \alias{to_spatial_implicit_edges}
 \alias{to_spatial_shortest_paths}
+\alias{to_spatial_simple}
 \alias{to_spatial_smoothed}
 \alias{to_spatial_subgraph}
 \title{Spatial morphers for sfnetwork objects}
@@ -24,7 +25,13 @@ to_spatial_implicit_edges(graph)
 
 to_spatial_shortest_paths(graph, ...)
 
-to_spatial_smoothed(graph, require_equal_attrs = FALSE, keep_orig = TRUE)
+to_spatial_simple(graph, keep = "shortest", ...)
+
+to_spatial_smoothed(
+  graph,
+  require_equal_attrs = FALSE,
+  store_original_data = TRUE
+)
 
 to_spatial_subgraph(graph, ..., subset_by = NULL)
 }
@@ -34,10 +41,14 @@ to_spatial_subgraph(graph, ..., subset_by = NULL)
 \item{...}{Arguments to be passed on to other functions. See the description
 of each morpher for details.}
 
+\item{keep}{Which edge should be kept when collapsing parallel edges. Either
+\code{"longest"} or \code{"shortest"}. Defaults to \code{"shortest"}.
+\code{...} is passed on to \code{\link[tidygraph]{to_simple}}.}
+
 \item{require_equal_attrs}{Should selected nodes only be removed when the
 attributes of their adjacent edges are equal? Defaults to \code{FALSE}.}
 
-\item{keep_orig}{Should the original edge data be kept in a special
+\item{store_original_data}{Should the original edge data be kept in a special
 \code{.orig_data} column? Defaults to \code{TRUE}.}
 
 \item{subset_by}{Whether to create subgraphs based on nodes or edges.}
@@ -77,6 +88,9 @@ same manner as \code{\link{st_shortest_paths}}, except that the \code{output},
 \code{predecessors} and \code{inbound.edges} arguments are ignored. When 
 unmorphing only the first instance of both the node and edge data will be 
 used, as the the same node and/or edge can be present in multiple paths.
+
+\item \code{to_spatial_simple}: Remove loops in a graph and collapse parallel
+edges by keeping only one of them.
 
 \item \code{to_spatial_smoothed}: Reconstruct the network by iteratively removing 
 all nodes that have only one incoming and one outgoing edge (or simply a 

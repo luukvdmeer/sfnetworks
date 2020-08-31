@@ -147,6 +147,51 @@ to_spatial_shortest_paths = function(graph, ...) {
   lapply(c(1:length(paths$vpath)), get_single_path)
 }
 
+#' @describeIn spatial_morphers Remove loops in a graph and collapse parallel
+#' edges by keeping only one of them.
+#' @param keep Which edge should be kept when collapsing parallel edges. Either
+#' \code{"longest"} or \code{"shortest"}. Defaults to \code{"shortest"}.
+#' \code{...} is passed on to \code{\link[tidygraph]{to_simple}}.
+#' @importFrom sf st_length
+#' @importFrom tidygraph convert to_simple
+#' @export
+to_spatial_simple = function(graph, keep = "shortest", ...) {
+  expect_spatially_explicit_edges(graph)
+  # Retrieve the column name of geometry list column of the edges.
+  sf_colname = sf_attr(graph, "sf_column", "edges")
+  # Run tidygraphs to_simple morpher.
+  # Force conversion to sfnetwork (i.e. without valid sfnetwork structure).
+  simple_graph = tidygraph::convert(graph, to_simple, ...)
+  simple_graph = tbg_to_sfn(simple_graph)
+  simple_graph = activate(simple_graph, "edges")
+  edges = as_tibble(simple_graph)
+  # For each of the edges that are a result of a merge of original edges:
+  # Select the geometry of either the longest or shortest edge.
+  select_edge = function(x) {
+    if (length(x) == 1) {
+      x 
+    } else {
+      lengths = sf::st_length(x)
+      switch(
+        keep,
+        longest = x[which(lengths == max(lengths))],
+        shortest = x[which(lengths == min(lengths))]
+      )
+    }
+  }
+  edges[[sf_colname]] = do.call(c, lapply(edges[[sf_colname]], select_edge))
+  new_edges = sf::st_as_sf(edges)
+  new_graph = sfnetwork(
+    nodes = st_as_sf(simple_graph, "nodes"),
+    edges = new_edges,
+    directed = is_directed(graph),
+    force = TRUE
+  )
+  list(
+    simple_graph = new_graph %preserve_active% graph
+  ) 
+}
+
 #' @describeIn spatial_morphers Reconstruct the network by iteratively removing 
 #' all nodes that have only one incoming and one outgoing edge (or simply a 
 #' degree centrality of 2 in the case of undirected networks), but at the same 
@@ -154,13 +199,13 @@ to_spatial_shortest_paths = function(graph, ...) {
 #' outgoing edge of the removed node.
 #' @param require_equal_attrs Should selected nodes only be removed when the
 #' attributes of their adjacent edges are equal? Defaults to \code{FALSE}.
-#' @param keep_orig Should the original edge data be kept in a special
+#' @param store_original_data Should the original edge data be kept in a special
 #' \code{.orig_data} column? Defaults to \code{TRUE}.
 #' @importFrom sf st_boundary st_geometry st_cast st_reverse st_union
 #' @importFrom tidygraph filter
 #' @export
 to_spatial_smoothed = function(graph, require_equal_attrs = FALSE,
-                               keep_orig = TRUE) {
+                               store_original_data = TRUE) {
   expect_spatially_explicit_edges(graph)
   # Check which nodes in the graph are pseudo nodes.
   pseudo = is_pseudo_node(activate(graph, "nodes"))
@@ -245,8 +290,8 @@ to_spatial_smoothed = function(graph, require_equal_attrs = FALSE,
   # Remove attributes from edges.
   keep_attrs = c("from", "to", ".tidygraph_edge_index")
   new_edges = new_edges[, names(new_edges) %in% keep_attrs]
-  # Keep the original edge data in a special column if requested.
-  if (keep_orig) {
+  # Store the original edge data in a special column if requested.
+  if (store_original_data) {
     new_edges$.orig_data = lapply(
       new_edges$.tidygraph_edge_index, 
       function(i) edges[i, , drop = FALSE]
