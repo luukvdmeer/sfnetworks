@@ -76,6 +76,25 @@ is_spatially_explicit = function(x) {
   any(sapply(x, is.sfc), na.rm = TRUE)
 }
 
+#' Check if sf features have the same attributes
+#'
+#' @param x A single feature of an object of class \code{\link[sf]{sf}}, or an
+#' object of class \code{\link[sf]{sf}} with multiple features.
+#'
+#' @param y A single feature of an object of class \code{\link[sf]{sf}}.
+#' Ignored when x contains multiple features.
+#'
+#' @return \code{TRUE} when the attributes of x and y are the same, 
+#' \code{FALSE} otherwise.
+#'
+#' @noRd
+same_attributes = function(x, y = NULL) {
+  if (nrow(x) == 1 & !is.null(y)) {
+    x = rbind(x, y)
+  }
+  all(duplicated(sf::st_drop_geometry(x))[-1])
+}
+
 #' Check if the CRS of two objects are the same
 #'
 #' @param x An object of class \code{\link{sfnetwork}}, \code{\link[sf]{sf}} or
