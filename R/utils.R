@@ -191,7 +191,7 @@ get_boundary_nodes = function(nodes, edges) {
 #' @importFrom igraph E ends
 #' @noRd
 get_boundary_node_indices = function(x, out = "both") {
-  ids = igraph::ends(x, igraph::E(x))
+  ids = igraph::ends(x, igraph::E(x), names = FALSE)
   switch(
     out,
     both = ids,
