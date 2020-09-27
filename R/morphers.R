@@ -209,38 +209,35 @@ to_spatial_smoothed = function(graph, require_equal_attrs = FALSE,
   expect_spatially_explicit_edges(graph)
   # Check which nodes in the graph are pseudo nodes.
   pseudo = is_pseudo_node(activate(graph, "nodes"))
-  # Initialize a list indicating the pseudo nodes that still need to be processed.
-  # At first this is equal to the full pseudo node list.
-  pseudo_remaining = pseudo
-  # Retrieve the edges from the graph.
-  edges = st_as_sf(graph, "edges")
-  new_edges = edges
+  # Initialize the smoothed graph.
+  smoothed_graph = graph
   # Iteratively process pseudo nodes until none remain.
   # Preserve the connectivity of the graph while doing so.
-  while (any(pseudo_remaining)) {
-    # Get the node index of the first remaining pseudo node.
+  while (any(pseudo)) {
+    # Retrieve the nodes and edges from the graph.
+    nodes = st_as_sf(smoothed_graph, "nodes")
+    node_geoms = sf::st_geometry(nodes)
+    edges = st_as_sf(smoothed_graph, "edges")
+    # Get the node index of the first pseudo node.
     # This is the one that will be processed in this iteration.
-    idx = which(pseudo_remaining)[1]
+    idx = which(pseudo)[1]
     # Find the adjacent edges to the pseudo node.
     adj_edges = rbind(edges[edges$to == idx, ], edges[edges$from == idx, ])
     # Normally, there should be two adjacent edges to a pseudo node.
     # If there is only one adjacent edge, this means this edge is a loop.
-    # In that case, mark the node as processed and move to next iteration.
+    # In that case, filter out this node and edge and move on to next pseudo.
     if (nrow(adj_edges) == 1) {
-      pseudo_remaining[idx] = FALSE
+      smoothed_graph = tidygraph::filter(smoothed_graph, !idx)
+      pseudo[idx] = FALSE
       next
     }
     # If equal attributes of adjacent edges are required:
     # Check if the attributes of the edges are equal.
     # If not, then the node is not a real pseudo node.
-    # Hence, change the value of the current node to FALSE in both:
-    # - The list of all pseudo nodes.
-    # - The list of remaining pseudo nodes.
-    # And move on to the next iteration.
+    # Mark node as FALSE and move on to the next iteration.
     if (require_equal_attrs) {
       if (!same_attributes(adj_edges[, !names(adj_edges) %in% c("from", "to")])) {
         pseudo[idx] = FALSE
-        pseudo_remaining[idx] = FALSE
         next
       }
     }
@@ -276,38 +273,44 @@ to_spatial_smoothed = function(graph, require_equal_attrs = FALSE,
     # The pseudo node vertice is in both of them, so should be removed once.
     in_pts = sf::st_cast(sf::st_geometry(adj_edges[1, ]), "POINT")
     out_pts = sf::st_cast(sf::st_geometry(adj_edges[2, ]), "POINT")[-1]
-    all_pts = sf::st_union(c(in_pts, out_pts))
+    line = sf::st_cast(do.call("c", c(in_pts, out_pts)), "LINESTRING")
     # Merge the in and out edges into a single edge.
     new_edge = adj_edges[1, ]
     new_edge$to = adj_edges[2, ]$to
-    new_edge$.tidygraph_edge_index = list(adj_edges$.tidygraph_edge_index)
-    sf::st_geometry(new_edge) = sf::st_cast(all_pts, "LINESTRING")
-    # Add the new edge to the existing edges.
-    new_edges = rbind(new_edges, new_edge)
-    # Mark the current pseudo node as processed.
-    pseudo_remaining[idx] = FALSE
+    new_edge$.tidygraph_edge_index = list(
+      c(
+        unlist(adj_edges[1, ]$.tidygraph_edge_index),
+        unlist(adj_edges[2, ]$.tidygraph_edge_index)
+      )
+    )
+    sf::st_geometry(new_edge) = sf::st_sfc(line, crs = sf::st_crs(edges))
+    # Reconstruct the graph with the new edge added.
+    smoothed_graph = sfnetwork(
+      nodes = nodes, 
+      edges = rbind(edges, new_edge), 
+      directed = is_directed(graph),
+      force = TRUE
+    )
+    # Filter out the processed pseudo node and adjacent edges.
+    smoothed_graph = tidygraph::slice(smoothed_graph, -idx)
+    # Find pseudo nodes in the smoothed graph.
+    pseudo = is_pseudo_node(smoothed_graph)
   }
   # Remove attributes from edges.
-  keep_attrs = c("from", "to", ".tidygraph_edge_index")
-  new_edges = new_edges[, names(new_edges) %in% keep_attrs]
+  smoothed_graph = activate(smoothed_graph, "edges")
+  keep = c("from", "to", ".tidygraph_edge_index")
+  smoothed_graph = tidygraph::select(smoothed_graph, keep)
   # Store the original edge data in a special column if requested.
   if (store_original_data) {
-    new_edges$.orig_data = lapply(
-      new_edges$.tidygraph_edge_index, 
-      function(i) edges[i, , drop = FALSE]
+    orig_edges = st_as_sf(graph, "edges")
+    orig_data = lapply(
+      tidygraph::pull(smoothed_graph, ".tidygraph_edge_index"), 
+      function(i) orig_edges[i, , drop = FALSE]
     )
+    smoothed_graph = tidygraph::mutate(smoothed_graph, .orig_data = orig_data)
   }
-  # Create a new graph which includes the newly added edges.
-  new_graph = sfnetwork(
-    nodes = st_as_sf(graph, "nodes"), 
-    edges = new_edges, 
-    directed = is_directed(graph),
-    force = TRUE
-  )
-  # Remove the pseudo nodes and their adjacent edges from this graph.
-  new_graph = tidygraph::filter(new_graph, !pseudo)
   list(
-    smoothed_graph = new_graph %preserve_active% graph
+    smoothed_graph = smoothed_graph %preserve_active% graph
   )
 }
 
