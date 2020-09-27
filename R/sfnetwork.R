@@ -74,7 +74,7 @@
 #' sfnetwork(nodes, edges, directed = FALSE)
 #'
 #' ## spatially implicit edges
-#' sfnetwork(nodes, edges, directed = FALSE, edges_as_lines = F)
+#' sfnetwork(nodes, edges, directed = FALSE, edges_as_lines = FALSE)
 sfnetwork = function(nodes, edges, directed = TRUE, node_key = "name",
                      edges_as_lines = NULL, force = FALSE, ...) {
   # Automatically set edges_as_lines if not given.
