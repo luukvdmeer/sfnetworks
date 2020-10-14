@@ -93,47 +93,40 @@ See the \code{\link[igraph:shortest_paths]{igraph}} documentation.
 }}
 
 \examples{
-net = st_as_sfnetwork(roxel)
+library(sf)
+library(tidygraph)
 
-## Calculate shortest paths:
+net = st_transform(as_sfnetwork(roxel, directed = FALSE), 3035)
+
 # 1. providing node indices
 
 st_shortest_paths(net, 1, 9)$vpath
 
 # 2. providing nodes as spatial points
 
-p1 = net \%>\%
-  activate("nodes") \%>\%
-  st_as_sf() \%>\%
-  slice(1)
-
-p2 = net \%>\%
-  activate("nodes") \%>\%
-  st_as_sf() \%>\%
-  slice(9)
-
+p1 = st_geometry(net, "nodes")[1]
+p2 = st_geometry(net, "nodes")[9]
 st_shortest_paths(net, p1, p2)$vpath
 
 # 3. providing spatial points outside of the network
 
-p3 = st_sfc(
-  st_geometry(p1)[[1]] + st_point(c(500, 500)),
-  crs = st_crs(p1)
-)
-p4 = st_sfc(
-  st_geometry(p2)[[1]] + st_point(c(-500, -500)),
-  crs = st_crs(p2)
-)
-
+p3 = st_sfc(p1[[1]] + st_point(c(500, 500)), crs = st_crs(p1))
+p4 = st_sfc(p2[[1]] + st_point(c(-500, -500)), crs = st_crs(p2))
 st_shortest_paths(net, p3, p4)$vpath
 
 # 4. Providing weigths from column name
 
-net  = net \%>\%
-  activate(edges) \%>\%
+net = net \%>\%
+  activate("edges") \%>\%
   mutate(length = sf::st_length(.))
-
 st_shortest_paths(net, p1, p2, weights = "length")$vpath
+
+# 5. Providing weigths from column named 'weight'
+
+net = net \%>\%
+  activate("edges") \%>\%
+  mutate(weight = length)
+st_shortest_paths(net, p1, p2)$vpath
 
 ## Calculate all shortest paths between two points
 

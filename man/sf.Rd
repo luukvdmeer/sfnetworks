@@ -28,7 +28,7 @@
 \usage{
 \method{st_as_sf}{sfnetwork}(x, active = NULL, ...)
 
-\method{st_geometry}{sfnetwork}(x, ...)
+\method{st_geometry}{sfnetwork}(x, active = NULL, ...)
 
 \method{st_geometry}{sfnetwork}(x) <- value
 
