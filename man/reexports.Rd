@@ -13,6 +13,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{tidygraph}{\code{\link[tidygraph]{\%>\%}}, \code{\link[tidygraph]{activate}}, \code{\link[tidygraph]{active}}}
+  \item{tidygraph}{\code{\link[tidygraph:reexports]{\%>\%}}, \code{\link[tidygraph]{activate}}, \code{\link[tidygraph:activate]{active}}}
 }}
 
