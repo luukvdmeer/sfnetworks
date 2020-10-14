@@ -84,9 +84,12 @@ edges_as_sf = function(x, ...) {
 #' @importFrom igraph edge_attr vertex_attr
 #' @importFrom sf st_geometry
 #' @export
-st_geometry.sfnetwork = function(x, ...) {
+st_geometry.sfnetwork = function(x, active = NULL, ...) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
   geom = switch(
-    attr(x, "active"),
+    active,
     nodes = igraph::vertex_attr(x, sf_attr(x, "sf_column", "nodes")),
     edges = igraph::edge_attr(x, sf_attr(x, "sf_column", "edges"))
   )
