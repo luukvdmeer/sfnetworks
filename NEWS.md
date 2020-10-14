@@ -1,3 +1,14 @@
+# development
+
+* Implementation of snapping techniques in an st_snap_to_network function, which can find either the nearest node or nearest point on an edge to given input geometries. Refs [#54](https://github.com/luukvdmeer/sfnetworks/issues/54) and [#57](https://github.com/luukvdmeer/sfnetworks/issues/57)
+* New spatial morphers:
+  - The to_spatial_smoothed morpher removes pseudo-nodes from the network. Refs [#70](https://github.com/luukvdmeer/sfnetworks/issues/70)
+* Bug fixes:
+  - print method of sfnetwork objects now handles networks without edges. Fixes [#69](https://github.com/luukvdmeer/sfnetworks/issues/69)
+  - bug in internal utility function for retrieving node indices of edge boundaries is now fixed. Bug was identified in [#72](https://github.com/luukvdmeer/sfnetworks/issues/72)
+* Improved documentation:
+  - examples added to most functions. Refs [#45]((https://github.com/luukvdmeer/sfnetworks/issues/45))
+
 # sfnetworks v0.3.1 
 
 * Bug fixes:
