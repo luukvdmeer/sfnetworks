@@ -28,9 +28,9 @@ as_sfnetwork(x, ...)
 \method{as_sfnetwork}{tbl_graph}(x, ...)
 }
 \arguments{
-\item{x}{object to be converted into an \code{\link{sfnetwork}} object.}
+\item{x}{Object to be converted into an \code{\link{sfnetwork}} object.}
 
-\item{...}{arguments passed on to the \code{\link{sfnetwork}} construction
+\item{...}{Arguments passed on to the \code{\link{sfnetwork}} construction
 function.}
 }
 \value{

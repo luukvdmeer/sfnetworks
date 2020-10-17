@@ -128,9 +128,11 @@ net = net \%>\%
   mutate(weight = length)
 st_shortest_paths(net, p1, p2)$vpath
 
+
 ## Calculate all shortest paths between two points
 
 st_all_shortest_paths(net, 5, 1)$res
+
 
 ## Calculate a distance matrix
 
@@ -138,4 +140,5 @@ ps1 = c(st_geometry(p1), st_sfc(p3))
 ps2 = c(st_geometry(p2), st_sfc(p4))
 
 st_network_distance(net, ps1, ps2)
+
 }

@@ -54,7 +54,7 @@
 
 \method{st_z_range}{sfnetwork}(x, ...)
 
-\method{st_agr}{sfnetwork}(x, ...)
+\method{st_agr}{sfnetwork}(x, active = NULL, ...)
 
 \method{st_agr}{sfnetwork}(x) <- value
 

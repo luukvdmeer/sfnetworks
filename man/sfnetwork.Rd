@@ -16,14 +16,14 @@ sfnetwork(
 }
 \arguments{
 \item{nodes}{An object containing information about the nodes in the network.
-The nodes should contain geospatial coordinates, either by being an \code{sf}
-object with \code{POINT} geometry features, or by being convertible to such an
-object with \code{\link[sf]{st_as_sf}}.}
+The nodes should contain geospatial coordinates, either by being an object of
+class \code{\link[sf]{sf}} with \code{POINT} geometry features, or by being 
+convertible to such an object with \code{\link[sf]{st_as_sf}}.}
 
 \item{edges}{An object containing information about the edges in the network.
-This object may contain explicit geospatial information by being an \code{sf}
-object with \code{LINESTRING} geometry features. However, this is optional. It
-may also be a regular \code{data.frame} or \code{tbl_df} object. In any case,
+This object may contain explicit geospatial information by being an object of
+class \code{\link[sf]{sf}} with \code{LINESTRING} geometry features. It may 
+also be a regular \code{data.frame} or \code{tbl_df} object. In any case,
 the adjacent nodes of each edge must either be encoded in a \code{to} and
 \code{from} column, or in the two first columns, as integers. These integers
 refer to nodes indices, which in turn refer to the position of a node in the
@@ -35,7 +35,7 @@ nodes table.}
 \item{node_key}{The name of the column in the nodes table that character
 represented \code{to} and \code{from} columns should be matched against. If
 NA the first column is always chosen. This setting has no effect if \code{to}
-and \code{from} are given as integers. Defaults to \code{"name"}.}
+and \code{from} are given as integers. Defaults to \code{'name'}.}
 
 \item{edges_as_lines}{Should the edges be spatially explicit, i.e. have
 \code{LINESTRING} geometries stored in a geometry list column? If \code{NULL},
@@ -52,10 +52,10 @@ all edges have \code{LINESTRING} geometries, nodes and edges have the same
 CRS and boundary points of edges match their corresponding node coordinates.
 These checks are important, but also time consuming. If you are already sure
 your input data meet the requirements, the checks are unneccesary and can be
-turned off to improve speed.}
+turned off to improve performance.}
 
-\item{...}{Arguments passed on to \code{\link[sf]{st_as_sf}}, when
-converting the nodes to an \code{sf} object.}
+\item{...}{Arguments passed on to \code{\link[sf]{st_as_sf}}, if nodes
+need to be converted into an \code{sf} object during construction.}
 }
 \value{
 An object of class \code{sfnetwork}.
@@ -64,9 +64,9 @@ An object of class \code{sfnetwork}.
 \code{sfnetwork} is a tidy data structure for geospatial networks. It extends
 the graph manipulation functionalities of the
 \code{\link[tidygraph]{tidygraph-package}} package into the domain of
-geospatial networks, where the nodes and optionally also the edges are
-embedded in geographical space, and enables to apply the spatial analytical
-function from the \code{\link[sf:sf]{sf-package}} directly to the network.
+geospatial networks, where the nodes and edges are embedded in geographical 
+space, and enables to apply the spatial analytical functions from the 
+\code{\link[sf:sf]{sf-package}} directly to the network.
 }
 \examples{
 # Create sfnetwork from sf objects
@@ -90,4 +90,5 @@ sfnetwork(nodes, edges, directed = FALSE)
 
 ## spatially implicit edges
 sfnetwork(nodes, edges, directed = FALSE, edges_as_lines = FALSE)
+
 }

@@ -2,12 +2,9 @@
 % Please edit documentation in R/attrs.R
 \name{sf_attr}
 \alias{sf_attr}
-\alias{sf_attr<-}
-\title{Query sf attributes from the active element of an sfnetwork object}
+\title{Query sf attributes from the active element of an sfnetwork}
 \usage{
 sf_attr(x, name = NULL, active = NULL)
-
-sf_attr(x, name, active = NULL) <- value
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
@@ -15,20 +12,16 @@ sf_attr(x, name, active = NULL) <- value
 \item{name}{Name of the attribute to query. If \code{NULL}, then all sf 
 attributes are returned in a list. Defaults to \code{NULL}.}
 
-\item{active}{Which network element (i.e. nodes or edges) to activate before
-extracting. If \code{NULL}, it will be set to the current active element of
-the given network. Defaults to \code{NULL}.}
-
-\item{value}{The new value of the attribute, or \code{NULL} to remove the 
-attribute.}
+\item{active}{Either 'nodes' or 'edges'. If \code{NULL}, the currently 
+active element of x will be used.}
 }
 \value{
-For the extractor: a list of attributes if \code{name} is \code{NULL},
+A named list of attributes if \code{name} is \code{NULL},
 otherwise the value of the attribute matched, or NULL if no exact match is 
 found and no or more than one partial match is found.
 }
 \description{
-Query sf attributes from the active element of an sfnetwork object
+Query sf attributes from the active element of an sfnetwork
 }
 \details{
 sf attributes include \code{sf_column} (the name of the sf column)
