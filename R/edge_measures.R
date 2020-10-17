@@ -27,8 +27,8 @@ NULL
 #' @export
 edge_circuity = function() {
   graph = tidygraph::.G()
-  expect_active_edges(graph)
-  expect_spatially_explicit_edges(graph)
+  require_active_edges(graph)
+  require_spatially_explicit_edges(graph)
   sf::st_length(graph) / straight_line_distance(graph)
 }
 
@@ -39,8 +39,8 @@ edge_circuity = function() {
 #' @export
 edge_length = function() {
   graph = tidygraph::.G()
-  expect_active_edges(graph)
-  expect_spatially_explicit_edges(graph)
+  require_active_edges(graph)
+  require_spatially_explicit_edges(graph)
   sf::st_length(graph)
 }
 
@@ -50,7 +50,7 @@ edge_length = function() {
 #' @export
 edge_straight_length = function() {
   graph = tidygraph::.G()
-  expect_active_edges(graph)
+  require_active_edges(graph)
   straight_line_distance(graph)
 }
 
@@ -59,7 +59,7 @@ straight_line_distance = function(x) {
   nodes = st_as_sf(x, "nodes")
   # Get the indices of the boundary nodes of each edge.
   # Returns a matrix with source ids in column 1 and target ids in column 2.
-  ids = get_boundary_node_indices(x, out = "both")
+  ids = edge_boundary_node_indices(x)
   # Get the boundary node geometries of each edge.
   from_nodes = nodes[ids[, 1], ]
   to_nodes = nodes[ids[, 2], ]

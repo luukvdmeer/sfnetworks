@@ -3,19 +3,19 @@
 #' \code{sfnetwork} is a tidy data structure for geospatial networks. It extends
 #' the graph manipulation functionalities of the
 #' \code{\link[tidygraph]{tidygraph-package}} package into the domain of
-#' geospatial networks, where the nodes and optionally also the edges are
-#' embedded in geographical space, and enables to apply the spatial analytical
-#' function from the \code{\link[sf:sf]{sf-package}} directly to the network.
+#' geospatial networks, where the nodes and edges are embedded in geographical 
+#' space, and enables to apply the spatial analytical functions from the 
+#' \code{\link[sf:sf]{sf-package}} directly to the network.
 #'
 #' @param nodes An object containing information about the nodes in the network.
-#' The nodes should contain geospatial coordinates, either by being an \code{sf}
-#' object with \code{POINT} geometry features, or by being convertible to such an
-#' object with \code{\link[sf]{st_as_sf}}.
+#' The nodes should contain geospatial coordinates, either by being an object of
+#' class \code{\link[sf]{sf}} with \code{POINT} geometry features, or by being 
+#' convertible to such an object with \code{\link[sf]{st_as_sf}}.
 #'
 #' @param edges An object containing information about the edges in the network.
-#' This object may contain explicit geospatial information by being an \code{sf}
-#' object with \code{LINESTRING} geometry features. However, this is optional. It
-#' may also be a regular \code{data.frame} or \code{tbl_df} object. In any case,
+#' This object may contain explicit geospatial information by being an object of
+#' class \code{\link[sf]{sf}} with \code{LINESTRING} geometry features. It may 
+#' also be a regular \code{data.frame} or \code{tbl_df} object. In any case,
 #' the adjacent nodes of each edge must either be encoded in a \code{to} and
 #' \code{from} column, or in the two first columns, as integers. These integers
 #' refer to nodes indices, which in turn refer to the position of a node in the
@@ -27,7 +27,7 @@
 #' @param node_key The name of the column in the nodes table that character
 #' represented \code{to} and \code{from} columns should be matched against. If
 #' NA the first column is always chosen. This setting has no effect if \code{to}
-#' and \code{from} are given as integers. Defaults to \code{"name"}.
+#' and \code{from} are given as integers. Defaults to \code{'name'}.
 #'
 #' @param edges_as_lines Should the edges be spatially explicit, i.e. have
 #' \code{LINESTRING} geometries stored in a geometry list column? If \code{NULL},
@@ -44,15 +44,13 @@
 #' CRS and boundary points of edges match their corresponding node coordinates.
 #' These checks are important, but also time consuming. If you are already sure
 #' your input data meet the requirements, the checks are unneccesary and can be
-#' turned off to improve speed.
+#' turned off to improve performance.
 #'
-#' @param ... Arguments passed on to \code{\link[sf]{st_as_sf}}, when
-#' converting the nodes to an \code{sf} object.
+#' @param ... Arguments passed on to \code{\link[sf]{st_as_sf}}, if nodes
+#' need to be converted into an \code{sf} object during construction.
 #'
 #' @return An object of class \code{sfnetwork}.
 #'
-#' @importFrom tidygraph tbl_graph
-#' @export
 #' @examples
 #' # Create sfnetwork from sf objects
 #' p1 = sf::st_point(c(7, 51))
@@ -75,91 +73,66 @@
 #'
 #' ## spatially implicit edges
 #' sfnetwork(nodes, edges, directed = FALSE, edges_as_lines = FALSE)
+#'
+#' @importFrom tidygraph tbl_graph
+#' @export
 sfnetwork = function(nodes, edges, directed = TRUE, node_key = "name",
                      edges_as_lines = NULL, force = FALSE, ...) {
-  # Automatically set edges_as_lines if not given.
-  if (is.null(edges_as_lines)) {
-    edges_as_lines = ifelse(is_spatially_explicit(edges), TRUE, FALSE)
+  # Prepare nodes.
+  # If nodes is not an sf object:
+  # --> Try to convert it to an sf object.
+  # --> Arguments passed in ... will be passed on to st_as_sf.
+  if (! is.sf(nodes)) {
+    tryCatch(
+      sf::st_as_sf(nodes, ...),
+      error = function(e) {
+        stop("Failed to convert nodes to sf object because: ", e)
+      }
+    )
   }
-  # If nodes is not an sf object, try to convert it to an sf object.
-  # Arguments passed in ... will be passed on to st_as_sf.
-  if (! is.sf(nodes)) nodes = nodes_to_sf(nodes, ...)
-  # If edges is an sf object, tidygraph cannot handle it due to sticky geometry.
-  # Therefore it has to be converted into a regular data frame (or tibble).
-  if (is.sf(edges)) {
+  node_sf_attrs = attrs_from_sf(nodes)
+  # Prepare edges.
+  # If edges is not an sf object but does have a geometry list column:
+  # --> First convert it to sf such that the required attributes are present.
+  # --> Then proceed as described below.
+  # If edges is an sf object:
+  # --> Tidygraph cannot handle it due to sticky geometry.
+  # --> Therefore it has to be converted into a regular data frame (or tibble).
+  if (has_sfc(edges)) {
+    if (! is.sf(edges)) edges = sf::st_as_sf(edges)
+    edge_sf_attrs = attrs_from_sf(edges)
     class(edges) = setdiff(class(edges), "sf")
+    # When edges_as_lines was not set, set to TRUE.
+    if (is.null(edges_as_lines)) edges_as_lines = TRUE
   } else {
-    # If there is a geometry list column but no agr attribute, this has to be
-    # created by converting to an sf object first.
-    if (is.null(attr(edges, "agr")) && is_spatially_explicit(edges)) {
-      edges = sf::st_as_sf(edges)
-      class(edges) = setdiff(class(edges), "sf")
-    }
+    edge_sf_attrs = NULL
+    # When edges_as_lines was not set, set to FALSE.
+    if (is.null(edges_as_lines)) edges_as_lines = FALSE
   }
-  # Check network validity.
-  if (! force) check_network_validity(nodes, edges, directed, edges_as_lines)
-  # Create the network with the nodes and edges.
+  # Create network.
   # Store sf attributes of the nodes and edges in a special graph attribute.
   x_tbg = tidygraph::tbl_graph(nodes, edges, directed, node_key)
   x_sfn = structure(
     x_tbg,
     class = c("sfnetwork", class(x_tbg)),
-    sf = list(nodes = attrs_from_sf(nodes), edges = attrs_from_sf(edges))
+    sf = list(nodes = node_sf_attrs, edges = edge_sf_attrs)
   )
-  # Add or remove edge geometries if needed.
+  # Post-process network.
   if (edges_as_lines) {
-    # Reorder agr since 'from' and 'to' are always the first two columns now.
-    explicitize_edges(order_agr(x_sfn))
+    # Run validity check before explicitizing edges.
+    if (! force) require_valid_network_structure(x_sfn)
+    # Add edge geometries if needed.
+    x_sfn = explicitize_edges(x_sfn)
+    # Update agr factor of edges.
+    # Because positions of from and to columns were moved during construction.
+    edge_agr(x_sfn) = updated_edge_agr(x_sfn)
   } else {
-    implicitize_edges(x_sfn)
+    # Remove edge geometries if needed.
+    x_sfn = implicitize_edges(x_sfn)
+    # Run validity check after implicitizing edges.
+    if (! force) require_valid_network_structure(x_sfn)
   }
-}
-
-check_network_validity = function(nodes, edges, directed, edges_as_lines) {
-  message(
-    paste(
-      "Checking validity of network structure...",
-      "Use force=TRUE to force construction without checks"
-    )
-  )
-  # Node validity.
-  # --> Are all node geometries points?
-  if (! st_is_all(nodes, "POINT")) {
-    stop("Only geometries of type POINT are allowed as nodes")
-  }
-  # Edge validity.
-  if (is_spatially_explicit(edges) && edges_as_lines) {
-    edges = sf::st_as_sf(edges)
-    # --> Are all edge geometries linestrings?
-    if (! st_is_all(edges, "LINESTRING")) {
-      stop("Only geometries of type LINESTRING are allowed as edges")
-    }
-    # --> Is the CRS of the edges the same as of the nodes?
-    if (! same_crs(nodes, edges)) {
-      stop("Nodes and edges do not have the same CRS")
-    }
-    # --> Do the edge boundary points match their corresponding nodes?
-    if (directed) {
-      # Start point should match start node.
-      # End point should match end node.
-      if (! nodes_match_edge_boundaries(nodes, edges)) {
-        stop("Boundary points of edges should match their corresponding nodes")
-      }
-    } else {
-      # Start point should match either start or end node.
-      # End point should match either start or end node.
-      if (! nodes_in_edge_boundaries(nodes, edges)) {
-        stop("Boundary points of edges should match their corresponding nodes")
-      }
-    }
-  }
-}
-
-nodes_to_sf = function(nodes, ...) {
-  tryCatch(
-    sf::st_as_sf(nodes, ...),
-    error = function(e) stop("Failed to convert nodes to sf object because: ", e)
-  )
+  x_sfn
 }
 
 #' Convert a foreign object to an sfnetwork object
@@ -169,9 +142,9 @@ nodes_to_sf = function(nodes, ...) {
 #' nodes can be read by \code{\link[sf]{st_as_sf}}, it is automatically
 #' supported by sfnetworks.
 #'
-#' @param x object to be converted into an \code{\link{sfnetwork}} object.
+#' @param x Object to be converted into an \code{\link{sfnetwork}} object.
 #'
-#' @param ... arguments passed on to the \code{\link{sfnetwork}} construction
+#' @param ... Arguments passed on to the \code{\link{sfnetwork}} construction
 #' function.
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
@@ -189,7 +162,6 @@ as_sfnetwork.default = function(x, ...) {
 }
 
 #' @name as_sfnetwork
-#' @export
 #' @examples
 #' # Examples for linnet method
 #' if (require(spatstat)) {
@@ -197,6 +169,7 @@ as_sfnetwork.default = function(x, ...) {
 #' simplenet_as_sfnetwork = as_sfnetwork(simplenet)
 #' plot(simplenet_as_sfnetwork, main = "sfnetworks output")
 #' }
+#' @export
 as_sfnetwork.linnet = function(x, ...) {
   # The easiest approach is the same as for psp objects, i.e. converting the
   # linnet object into a psp format and then applying the corresponding method.
@@ -208,8 +181,6 @@ as_sfnetwork.linnet = function(x, ...) {
 }
 
 #' @name as_sfnetwork
-#' @importFrom sf st_as_sf st_collection_extract
-#' @export
 #' @examples
 #' # Examples for psp method
 #' if (require(spatstat)) {
@@ -219,6 +190,8 @@ as_sfnetwork.linnet = function(x, ...) {
 #' test_psp_as_sfnetwork = as_sfnetwork(test_psp)
 #' plot(test_psp_as_sfnetwork, main = "sfnetworks output")
 #' }
+#' @importFrom sf st_as_sf st_collection_extract
+#' @export
 as_sfnetwork.psp = function(x, ...) {
   # The easiest method for transforming a Line Segment Pattern (psp) object
   # into sfnetwork format is to transform it into sf format and then apply
@@ -233,8 +206,6 @@ as_sfnetwork.psp = function(x, ...) {
 }
 
 #' @name as_sfnetwork
-#' @importFrom sf st_geometry
-#' @export
 #' @examples
 #' # Examples for sf method
 #' ## from POINT geometries
@@ -249,21 +220,26 @@ as_sfnetwork.psp = function(x, ...) {
 #' e3 = sf::st_cast(sf::st_union(p2,p3), "LINESTRING")
 #' lines = sf::st_as_sf(sf::st_sfc(e1, e2, e3, crs = 4326))
 #' as_sfnetwork(lines)
+#' @importFrom sf st_geometry
+#' @export
 as_sfnetwork.sf = function(x, ...) {
-  if (st_is_all(x, "LINESTRING")) {
+  if (has_single_geom_type(x, "LINESTRING")) {
     # Workflow:
     # It is assumed that the given LINESTRING geometries form the edges.
     # Nodes need to be created at the boundary points of the edges.
     # Identical boundary points should become the same node.
     n_lst = create_nodes_from_edges(x)
-  } else if (st_is_all(x, "POINT")) {
+  } else if (has_single_geom_type(x, "POINT")) {
     # Workflow:
     # It is assumed that the given POINT geometries form the nodes.
     # Edges need to be created as linestrings between those nodes.
     # It is assumed that the given nodes are connected sequentially.
     n_lst = create_edges_from_nodes(x)
   } else {
-    stop("Only geometries of type LINESTRING or POINT are allowed")
+    stop(
+      "Geometries are not all of type LINESTRING, or all of type POINT", 
+      call. = FALSE
+    )
   }
   sfnetwork(n_lst$nodes, n_lst$edges, force = TRUE, ...)
 }
@@ -313,14 +289,19 @@ print.sfnetwork = function(x, ...) {
   # Truncate nodes and edges tibbles for printing
   arg_list = list(...)
   not_active = if (active(x) == "nodes") "edges" else "nodes"
-  top = do.call(trunc_mat, utils::modifyList(arg_list, list(x = as_tibble(x), n = 6)))
+  top = do.call(
+    trunc_mat, 
+    utils::modifyList(arg_list, list(x = as_tibble(x), n = 6))
+  )
   top$summary[1] = paste0(top$summary[1], " (active)")
   if (
     active(x) == "edges" &&
     !has_spatially_explicit_edges(x) ||
     nrow(tidygraph::as_tibble(x)) == 0
     ) {
-    names(top$summary)[1] = tools::toTitleCase(paste0(substr(active(x), 1, 4), " data"))
+    names(top$summary)[1] = tools::toTitleCase(
+      paste0(substr(active(x), 1, 4), " data")
+    )
   } else {
     active_geom = sf::st_geometry(sf::st_as_sf(x))
     top$summary[2] = substr(class(active_geom)[1], 5, nchar(class(active_geom)[1]))
@@ -332,19 +313,31 @@ print.sfnetwork = function(x, ...) {
       "Geometry type", "Dimension", "Bounding box"
     )
   }
-  bottom = do.call(trunc_mat, modifyList(arg_list, list(x = as_tibble(x, active = not_active), n = 3)))
+  bottom = do.call(
+    trunc_mat, 
+    modifyList(arg_list, list(x = as_tibble(x, active = not_active), n = 3))
+  )
   if (
     active(x) == "nodes" &&
     !has_spatially_explicit_edges(x) ||
     nrow(tidygraph::as_tibble(activate(x, !!not_active))) == 0
     ) {
-    names(bottom$summary)[1] = tools::toTitleCase(paste0(substr(not_active, 1, 4), " data"))
+    names(bottom$summary)[1] = tools::toTitleCase(
+      paste0(substr(not_active, 1, 4), " data")
+    )
   } else {
     inactive_geom = sf::st_geometry(sf::st_as_sf(activate(x, !!not_active)))
-    bottom$summary[2] = substr(class(inactive_geom)[1], 5, nchar(class(inactive_geom)[1]))
+    bottom$summary[2] = substr(
+      class(inactive_geom)[1], 
+      5, 
+      nchar(class(inactive_geom)[1])
+    )
     bbi = signif(attr(inactive_geom, "bbox"), options("digits")$digits)
     bottom$summary[3] = class(inactive_geom[[1]])[1]
-    bottom$summary[4] = paste(paste(names(bbi), bbi[], sep = ": "), collapse = " ")
+    bottom$summary[4] = paste(
+      paste(names(bbi), bbi[], sep = ": "), 
+      collapse = " "
+    )
     names(bottom$summary) = c(
       tools::toTitleCase(paste0(substr(not_active, 1, 4), " data")),
       "Geometry type", "Dimension", "Bounding box"

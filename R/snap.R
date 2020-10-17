@@ -29,7 +29,7 @@ st_snap_to_network = function(x, graph, method = "nearest_node") {
     method,
     nearest_node = nearest_node(x, graph),
     nearest_point_on_edge = nearest_point_on_edge(x, graph),
-    stop(method, " is not a supported snapping technique")
+    stop("Unknown snapping technique: ", method, call. = FALSE)
   )
 }
 
@@ -44,7 +44,7 @@ nearest_node = function(x, graph) {
 #' @importFrom sf st_boundary st_cast st_crs st_geometry 
 #' st_nearest_feature st_nearest_points st_sfc
 nearest_point_on_edge = function(x, graph) {
-  expect_spatially_explicit_edges(graph)
+  require_spatially_explicit_edges(graph)
   # Extract edge geometries from the given network.
   edges = st_geometry(graph, "edges")
   # Function to find nearest point on edge for a single sfg object.

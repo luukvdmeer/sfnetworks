@@ -68,14 +68,14 @@ as_tibble.sfnetwork = function(x, active = NULL, spatial = TRUE, ...) {
       active,
       nodes = node_spatial_tibble(x),
       edges = edge_spatial_tibble(x),
-      stop("Unknown active element: ", active, ". Only nodes and edges supported")
+      throw_unknown_active_exception(active)
     )
   } else {
     switch(
       active,
       nodes = tidygraph::as_tibble(as_tbl_graph(x), "nodes"),
       edges = tidygraph::as_tibble(as_tbl_graph(x), "edges"),
-      stop("Unknown active element: ", active, ". Only nodes and edges supported")
+      throw_unknown_active_exception(active)
     )
   }
 }
@@ -140,10 +140,7 @@ mutate.sfnetwork = function(.data, ...) {
     return(x)
   }
   # Update the agr sf attribute.
-  agr = st_agr(.data)
-  attrs = get_attr_names(x)
-  new_agr = stats::setNames(agr[attrs], attrs) # NA's new columns
-  sf_attr(x, "agr") = new_agr
+  agr(x) = updated_agr(x)
   # Return x.
   x
 }
@@ -159,10 +156,7 @@ select.sfnetwork = function(.data, ...) {
     return(x)
   }
   # Update the agr sf attribute.
-  agr = st_agr(.data)
-  attrs = get_attr_names(x)
-  new_agr = agr[attrs]
-  sf_attr(x, "agr") = new_agr
+  agr(x) = updated_agr(x)
   # Return x.
   x
 }

@@ -1,41 +1,40 @@
-#' Proceed only when edges are active
+#' Check if a given vector contains duplicates
 #'
-#' @param x An object of class \code{\link{sfnetwork}}.
+#' @param x A vector.
 #'
-#' @return Nothing when the edges of x are activated, an error message
-#' otherwise.
+#' @return \code{TRUE} when the vector contains duplicated values, 
+#' \code{FALSE} otherwise.
 #'
 #' @noRd
-expect_active_edges = function(x) {
-  if (attr(x, "active") == "nodes") {
-    stop("This call requires the edges to be active")
-  }
+has_duplicates = function(x) {
+  any(duplicated(x))
 }
 
-#' Proceed only when edges are spatially explicit
+#' Check if a table has spatial information stored in a geometry list column
 #'
-#' @param x An object of class \code{\link{sfnetwork}}.
+#' @param x A flat table, such as an sf object, data.frame or tibble.
 #'
-#' @return Nothing when the edges of x are spatially explicit, an error message
+#' @return \code{TRUE} if the table has a geometry list column, \code{FALSE}
 #' otherwise.
 #'
 #' @noRd
-expect_spatially_explicit_edges = function(x) {
-  if (! has_spatially_explicit_edges(x)) {
-    stop("This call requires spatially explicit edges")
-  }
+has_sfc = function(x) {
+  any(sapply(x, is.sfc), na.rm = TRUE)
 }
-#' Check if the output of an st_join operation has multiple matches
+
+#' Check if geometries are all of a specific type
 #'
-#' @param x The output of an \code{st_join(a,b)} where the original row
-#' indices of \code{a} are stored in a column named \code{.sfnetwork_index}.
+#' @param x An object of class \code{\link{sfnetwork}} or \code{\link[sf]{sf}}.
 #'
-#' @return \code{TRUE} when there where multiple matches, \code{FALSE}
+#' @param type The geometry type to check for, as a string.
+#'
+#' @return \code{TRUE} when all geometries are of the given type, \code{FALSE}
 #' otherwise.
 #'
+#' @importFrom sf st_is
 #' @noRd
-has_multiple_matches = function(x) {
-  any(table(x$.sfnetwork_index) > 1)
+has_single_geom_type = function(x, type) {
+  all(sf::st_is(x, type))
 }
 
 #' Check if an sfnetwork has spatially explicit edges
@@ -48,7 +47,7 @@ has_multiple_matches = function(x) {
 #' @importFrom igraph edge_attr
 #' @noRd
 has_spatially_explicit_edges = function(x) {
-  any(sapply(igraph::edge_attr(x), is.sfc), na.rm = TRUE)
+  !is.null(edge_geom_colname(x))
 }
 
 #' Check if a graph is directed.
@@ -64,19 +63,7 @@ is_directed = function(x) {
   igraph::is_directed(x)
 }
 
-#' Check if a table has spatial information stored in a geometry list column
-#'
-#' @param x Object to check for spatial explicitness.
-#'
-#' @return \code{TRUE} if the table has a geometry list column, \code{FALSE}
-#' otherwise.
-#'
-#' @noRd
-is_spatially_explicit = function(x) {
-  any(sapply(x, is.sfc), na.rm = TRUE)
-}
-
-#' Check if sf features have the same attributes
+#' Check if sf features have the same attribute values
 #'
 #' @param x A single feature of an object of class \code{\link[sf]{sf}}, or an
 #' object of class \code{\link[sf]{sf}} with multiple features.
@@ -88,7 +75,7 @@ is_spatially_explicit = function(x) {
 #' \code{FALSE} otherwise.
 #'
 #' @noRd
-same_attributes = function(x, y = NULL) {
+have_equal_attributes = function(x, y = NULL) {
   if (nrow(x) == 1 & !is.null(y)) {
     x = rbind(x, y)
   }
@@ -108,7 +95,7 @@ same_attributes = function(x, y = NULL) {
 #'
 #' @importFrom sf st_crs
 #' @noRd
-same_crs = function(x, y) {
+have_equal_crs = function(x, y) {
   sf::st_crs(x) == sf::st_crs(y)
 }
 
@@ -127,8 +114,13 @@ same_crs = function(x, y) {
 #' corresponding row in y. Hence, x and y should be of the same length.
 #'
 #' @noRd
-same_boundary_points = function(x, y) {
-  all(same_geometries(get_boundary_points(x), get_boundary_points(y)))
+have_equal_boundary_points = function(x, y) {
+  all(
+    have_equal_geometries(
+      linestring_boundary_points(x), 
+      linestring_boundary_points(y)
+    )
+  )
 }
 
 #' Check if two sf objects have the same geometries
@@ -144,26 +136,22 @@ same_boundary_points = function(x, y) {
 #'
 #' @importFrom sf st_equals
 #' @noRd
-same_geometries = function(x, y) {
+have_equal_geometries = function(x, y) {
   diag(sf::st_equals(x, y, sparse = FALSE))
 }
 
 #' Check if any of the edge boundary points is equal to any of its boundary nodes
 #'
-#' @param nodes Nodes element of an \code{\link{sfnetwork}}.
-#'
-#' @param edges Edges element of an \code{\link{sfnetwork}}.
+#' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @importFrom sf st_equals
 #' @noRd
-nodes_in_edge_boundaries = function(nodes, edges) {
-  # Get geometries of all edge boundary points.
-  edge_boundary_geoms = get_boundary_points(edges)
-  # Get geometries of all edge boundary nodes.
-  edge_boundary_nodes = get_boundary_nodes(nodes, edges)
+nodes_in_edge_boundaries = function(x) {
+  boundary_points = edge_boundary_points(x)
+  boundary_nodes = edge_boundary_nodes(x)
   # Test for each edge :
   # Does one of the boundary points equals at least one of the boundary nodes.
-  mat = sf::st_equals(edge_boundary_geoms, edge_boundary_nodes, sparse = FALSE)
+  mat = sf::st_equals(boundary_points, boundary_nodes, sparse = FALSE)
   all(
     sapply(
       seq(1, nrow(mat), by = 2),
@@ -172,33 +160,14 @@ nodes_in_edge_boundaries = function(nodes, edges) {
   )
 }
 
-#' Check if edge boundary points of are equal to their corresponding nodes
+#' Check if edge boundary points are equal to their corresponding nodes
 #'
-#' @param nodes Nodes element of an \code{\link{sfnetwork}}.
-#'
-#' @param edges Edges element of an \code{\link{sfnetwork}}.
+#' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @noRd
-nodes_match_edge_boundaries = function(nodes, edges) {
-  # Get geometries of all edge boundary points.
-  edge_boundary_geoms = get_boundary_points(edges)
-  # Get geometries of all edge boundary nodes.
-  edge_boundary_nodes = get_boundary_nodes(nodes, edges)
+nodes_match_edge_boundaries = function(x) {
+  boundary_points = edge_boundary_points(x)
+  boundary_nodes = edge_boundary_nodes(x)
   # Test if the boundary geometries are equal to their corresponding nodes.
-  all(same_geometries(edge_boundary_geoms, edge_boundary_nodes))
-}
-
-#' Check if geometries are all of a specific type
-#'
-#' @param x An object of class \code{\link{sfnetwork}} or \code{\link[sf]{sf}}.
-#'
-#' @param type The geometry type to check for, as a string.
-#'
-#' @return \code{TRUE} when all geometries are of the given type, \code{FALSE}
-#' otherwise.
-#'
-#' @importFrom sf st_is
-#' @noRd
-st_is_all = function(x, type) {
-  all(sf::st_is(x, type))
+  all(have_equal_geometries(boundary_points, boundary_nodes))
 }

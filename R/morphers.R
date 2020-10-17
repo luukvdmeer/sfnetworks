@@ -25,10 +25,10 @@ to_spatial_coordinates = function(graph) {
   coords_graph = add_coordinate_columns(activate(graph, "nodes"))
   # Drop edge geometries if present.
   if (has_spatially_explicit_edges(coords_graph)) {
-    coords_graph = drop_geometry(coords_graph, "edges")
+    coords_graph = drop_edge_geom(coords_graph)
   }
   # Drop original node geometries.
-  coords_graph = drop_geometry(coords_graph, "nodes")
+  coords_graph = drop_node_geom(coords_graph)
   # Return in a list.
   list(
     coords_graph = coords_graph %preserve_active% graph
@@ -48,7 +48,7 @@ add_coordinate_columns = function(x) {
 #' @importFrom sf st_cast st_collection_extract
 #' @export
 to_spatial_dense_graph = function(graph) {
-  expect_spatially_explicit_edges(graph)
+  require_spatially_explicit_edges(graph)
   # Retrieve the edges from the network, without the to and from columns.
   edges = st_as_sf(graph, "edges")
   edges[, c("from", "to")] = NULL
@@ -66,28 +66,28 @@ to_spatial_dense_graph = function(graph) {
 #' @describeIn spatial_morphers Make a graph directed in the direction given by 
 #' the linestring geometries of the edges.
 #' @importFrom lwgeom st_startpoint
-#' @importFrom sf st_geometry
 #' @importFrom tidygraph convert reroute to_directed
 #' @export
 to_spatial_directed = function(graph) {
-  expect_spatially_explicit_edges(graph)
+  require_spatially_explicit_edges(graph)
   # Convert to a directed tbl_graph.
   # Force conversion to sfnetwork (i.e. without valid sfnetwork structure).
   graph = tidygraph::convert(as_tbl_graph(graph), to_directed)
   graph = tbg_to_sfn(graph)
   # Get boundary node indices.
-  node_ids = get_boundary_node_indices(graph, out = "both")
+  # Returns a matrix with source ids in column 1 and target ids in column 2.
+  node_ids = edge_boundary_node_indices(graph)
   from_ids = node_ids[, 1]
   to_ids = node_ids[, 2]
   # Get nodes and edge geometries.
-  nodes = sf::st_geometry(st_as_sf(graph, "nodes"))
-  edges = sf::st_geometry(st_as_sf(graph, "edges"))
+  nodes = st_geometry(graph, "nodes")
+  edges = st_geometry(graph, "edges")
   # Get source node geometries of all edges.
   srcnodes = nodes[from_ids]
   # Get startpoint geometries of all edges.
   stpoints = lwgeom::st_startpoint(edges)
   # Retrieve the edges that don't have a matching source node and startpoint.
-  invalid = which(!same_geometries(srcnodes, stpoints))
+  invalid = which(!have_equal_geometries(srcnodes, stpoints))
   # Swap from and to indices for those "invalid" edges.
   new_from_ids = from_ids
   new_from_ids[invalid] = to_ids[invalid]
@@ -156,9 +156,9 @@ to_spatial_shortest_paths = function(graph, ...) {
 #' @importFrom tidygraph convert to_simple
 #' @export
 to_spatial_simple = function(graph, keep = "shortest", ...) {
-  expect_spatially_explicit_edges(graph)
+  require_spatially_explicit_edges(graph)
   # Retrieve the column name of geometry list column of the edges.
-  sf_colname = sf_attr(graph, "sf_column", "edges")
+  geom_colname = edge_geom_colname(graph)
   # Run tidygraphs to_simple morpher.
   # Force conversion to sfnetwork (i.e. without valid sfnetwork structure).
   simple_graph = tidygraph::convert(graph, to_simple, ...)
@@ -179,7 +179,7 @@ to_spatial_simple = function(graph, keep = "shortest", ...) {
       )
     }
   }
-  edges[[sf_colname]] = do.call(c, lapply(edges[[sf_colname]], select_edge))
+  edges[[geom_colname]] = do.call(c, lapply(edges[[geom_colname]], select_edge))
   new_edges = sf::st_as_sf(edges)
   new_graph = sfnetwork(
     nodes = st_as_sf(simple_graph, "nodes"),
@@ -206,7 +206,7 @@ to_spatial_simple = function(graph, keep = "shortest", ...) {
 #' @export
 to_spatial_smoothed = function(graph, require_equal_attrs = FALSE,
                                store_original_data = TRUE) {
-  expect_spatially_explicit_edges(graph)
+  require_spatially_explicit_edges(graph)
   # Check which nodes in the graph are pseudo nodes.
   pseudo = is_pseudo_node(activate(graph, "nodes"))
   # Initialize the smoothed graph.
@@ -236,7 +236,7 @@ to_spatial_smoothed = function(graph, require_equal_attrs = FALSE,
     # If not, then the node is not a real pseudo node.
     # Mark node as FALSE and move on to the next iteration.
     if (require_equal_attrs) {
-      if (!same_attributes(adj_edges[, !names(adj_edges) %in% c("from", "to")])) {
+      if (!have_equal_attributes(adj_edges[, !names(adj_edges) %in% c("from", "to")])) {
         pseudo[idx] = FALSE
         next
       }
@@ -341,7 +341,7 @@ to_spatial_subgraph = function(graph, ..., subset_by = NULL) {
     subset_by,
     nodes = st_filter(activate(graph, "nodes"), ...),
     edges = st_filter(activate(graph, "edges"), ...),
-    stop("Only possible to subset by nodes and edges")
+    stop("Only possible to subset by nodes and edges", call. = FALSE)
   )
   list(
     sub_graph = sub_graph %preserve_active% graph

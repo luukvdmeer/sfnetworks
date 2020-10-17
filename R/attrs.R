@@ -1,130 +1,141 @@
-attrs_from_sf = function(x) {
-  list(sf_column = attr(x, "sf_column"), agr = attr(x, "agr"))
-}
-
-empty_agr = function(x, active = NULL) {
-  if (is.null(active)) {
-    active = attr(x, "active")
-  }
-  switch(
-    active,
-    nodes = empty_nodes_agr(x),
-    edges = empty_edges_agr(x),
-    stop("Unknown active element: ", active, ". Only nodes and edges supported")
-  )
-}
-
-empty_nodes_agr = function(x) {
-  attrs = get_node_attr_names(x)
-  structure(rep(sf::NA_agr_, length(attrs)), names = attrs)
-}
-
-empty_edges_agr = function(x) {
-  attrs = get_edge_attr_names(x)
-  structure(rep(sf::NA_agr_, length(attrs)), names = attrs)
-}
-
-get_attr_names = function(x) {
-  switch(
-    attr(x, "active"),
-    nodes = get_node_attr_names(x),
-    edges = get_edge_attr_names(x)
-  )
-}
-
-get_node_attr_names = function(x) {
-  igraph::vertex_attr_names(x)[!sapply(igraph::vertex_attr(x), is.sfc)]
-}
-
-# Note:
-# From and to are not really attributes, but still present in the agr specs.
-get_edge_attr_names = function(x) {  
-  c(
-    "from", 
-    "to", 
-    igraph::edge_attr_names(x)[!sapply(igraph::edge_attr(x), is.sfc)]
-  )
-}
-
-# Note:
-# This is needed because an input edge data frame to the sfnetwork construction
-# function can have the required from and to columns at any location. In the
-# resulting network however they will always be the first two columns, so the
-# order of the agr attribute might not match the column order anymore.
-order_agr = function(x) {
-  agr = sf_attr(x, "agr", "edges")
-  ordered_agr = unlist(
-    list(agr["from"], agr["to"], agr[setdiff(names(agr), c("from", "to"))])
-  )
-  sf_attr(x, "agr", "edges") = ordered_agr
-  x
-}
-
-#' Query sf attributes from the active element of an sfnetwork object
+#' Query sf attributes from the active element of an sfnetwork
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @param name Name of the attribute to query. If \code{NULL}, then all sf 
 #' attributes are returned in a list. Defaults to \code{NULL}.
 #'
-#' @param active Which network element (i.e. nodes or edges) to activate before
-#' extracting. If \code{NULL}, it will be set to the current active element of
-#' the given network. Defaults to \code{NULL}.
+#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently 
+#' active element of x will be used.
 #'
-#' @param value The new value of the attribute, or \code{NULL} to remove the 
-#' attribute.
-#'
-#' @return For the extractor: a list of attributes if \code{name} is \code{NULL},
+#' @return A named list of attributes if \code{name} is \code{NULL},
 #' otherwise the value of the attribute matched, or NULL if no exact match is 
 #' found and no or more than one partial match is found.
 #'
 #' @details sf attributes include \code{sf_column} (the name of the sf column)
 #' and \code{agr} (the attribute-geometry-relationships).
 #'
-#' @name sf_attr
-#' @importFrom igraph edge_attr vertex_attr
 #' @export
 sf_attr = function(x, name = NULL, active = NULL) {
-  if (is.null(active)) {
-    active = attr(x, "active")
-  }
-  if (is.null(name)) {
-    switch(
-      active,
-      nodes = attr(x, "sf")[["nodes"]],
-      edges = attr(x, "sf")[["edges"]],
-      stop("Unknown active element: ", active, ". Only nodes and edges supported")
-    )
-  } else {
-    switch(
-      active,
-      nodes = attr(x, "sf")[["nodes"]][[name]],
-      edges = attr(x, "sf")[["edges"]][[name]],
-      stop("Unknown active element: ", active, ". Only nodes and edges supported")
-    )
-  }
+  switch(
+    name,
+    agr = agr(x, active),
+    sf_column = geom_colname(x, active),
+    stop("Unknown sf attribute: ", name)
+  )
 }
 
-#' @name sf_attr
-#' @export
-`sf_attr<-` = function(x, name, active = NULL, value) {
+#' Preserve the value 'active' attribute of the original network
+#'
+#' @param new An object of class \code{\link{sfnetwork}}.
+#'
+#' @param orig An object of class \code{\link{sfnetwork}}.
+#'
+#' @noRd
+`%preserve_active%` = function(new, orig) {
+  switch(
+    attr(orig, "active"),
+    nodes = activate(new, "nodes"),
+    edges = activate(new, "edges")
+  )
+}
+
+#' Throw an error when an unknown value for the active attribute is provided
+#'
+#' @param x The provided value for the active attribute.
+#'
+#' @noRd
+throw_unknown_active_exception = function(x) {
+  stop(
+    "Unknown active element: ", x, ". Only nodes and edges supported",
+    call. = FALSE
+  )
+}
+
+#' Query sf attributes from an sf object
+#'
+#' @param x An object of class \code{\link[sf]{sf}}.
+#'
+#' @return A named list of attributes.
+#'
+#' @details sf attributes include \code{sf_column} (the name of the sf column)
+#' and \code{agr} (the attribute-geometry-relationships).
+#'
+#' @noRd
+attrs_from_sf = function(x) {
+  list(sf_column = attr(x, "sf_column"), agr = attr(x, "agr"))
+}
+
+#' Get attribute column names from the active element of an sfnetwork
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently 
+#' active element of x will be used.
+#'
+#' @return A character vector.
+#'
+#' @details From the graph point of view, the geometry is considered an
+#' attribute of a node or edge, and the indices of the start and end nodes
+#' of an edge are not considered attributes of that edge. From the spatial
+#' point of view, the geometry is never considered an attribute, but the
+#' indices of start and end nodes of an edge are. Hence, the function
+#' \code{graph_attribute_names} will return a vector of names that includes
+#' the name of the geometry column, but - when active = 'edges' - not the
+#' names of the to and from columns. The function \code{spatial_attribute_names}
+#' will return a vector of names that does not include the name of the
+#' geometry column, but - when active = 'edges' - does include the names of
+#' the to and from colums.
+#' 
+#' @name attr_names
+#' @noRd
+graph_attribute_names = function(x, active = NULL) {
   if (is.null(active)) {
     active = attr(x, "active")
   }
   switch(
     active,
-    nodes = set_node_sf_attr(x, name, value),
-    edges = set_edge_sf_attr(x, name, value),
-    stop("Unknown active element: ", active, ". Only nodes and edges supported")
+    nodes = node_graph_attribute_names(x),
+    edges = edge_graph_attribute_names(x),
+    throw_unknown_active_exception(active)
   )
 }
 
-set_node_sf_attr = function(x, name, value) {
-  attr(x, "sf")[["nodes"]][[name]] = value
-  x
+#' @importFrom igraph vertex_attr_names
+node_graph_attribute_names = function(x) {
+  igraph::vertex_attr_names(x)
 }
 
-set_edge_sf_attr = function(x, name, value) {
-  attr(x, "sf")[["edges"]][[name]] = value
-  x
+#' @importFrom igraph edge_attr_names
+edge_graph_attribute_names = function(x) {
+  igraph::edge_attr_names(x)
+}
+
+#' @name attr_names
+#' @noRd
+spatial_attribute_names = function(x, active = NULL) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  switch(
+    active,
+    nodes = node_spatial_attribute_names(x),
+    edges = edge_spatial_attribute_names(x),
+    throw_unknown_active_exception(active)
+  )
+}
+
+node_spatial_attribute_names = function(x) {
+  g_attrs = node_graph_attribute_names(x)
+  g_attrs[g_attrs != node_geom_colname(x)]
+}
+
+edge_spatial_attribute_names = function(x) {
+  g_attrs = edge_graph_attribute_names(x)
+  geom_colname = edge_geom_colname(x)
+  if (is.null(geom_colname)) {
+    character(0)
+  } else {
+    c("from", "to", g_attrs[g_attrs != geom_colname])
+  }
 }

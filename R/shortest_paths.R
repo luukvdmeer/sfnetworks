@@ -6,7 +6,7 @@ set_shortest_paths_parameters = function(graph, from, to, weights, snap) {
     from = switch(
       snap,
       nearest_node = sf::st_nearest_feature(from, activate(graph, "nodes")),
-      stop(snap, " is not a supported snapping technique")
+      stop("Unknown snapping technique: ", snap, call. = FALSE)
     )
   }
   # Get node indices of to nodes.
@@ -14,7 +14,7 @@ set_shortest_paths_parameters = function(graph, from, to, weights, snap) {
     to = switch(
       snap,
       nearest_node = sf::st_nearest_feature(to, activate(graph, "nodes")),
-      stop(snap, " is not a supported snapping technique")
+      stop("Unknown snapping technique: ", snap, call. = FALSE)
     )
   }
   # If weights is a string, retrieve the column which name matches the string.
@@ -75,8 +75,7 @@ NULL
 
 #' @describeIn spatial_shortest_paths Wrapper around
 #' \code{igraph::shortest_paths}.
-#' @importFrom igraph shortest_paths V
-#' @export
+#'
 #' @examples
 #' library(sf)
 #' library(tidygraph)
@@ -112,6 +111,9 @@ NULL
 #'   activate("edges") %>%
 #'   mutate(weight = length)
 #' st_shortest_paths(net, p1, p2)$vpath
+#'
+#' @importFrom igraph shortest_paths V
+#' @export
 st_shortest_paths = function(graph, from, to = V(graph), weights = NULL,
                              snap = "nearest_node", ...) {
   params = set_shortest_paths_parameters(graph, from, to, weights, snap)
@@ -123,13 +125,15 @@ st_shortest_paths = function(graph, from, to = V(graph), weights = NULL,
 
 #' @describeIn spatial_shortest_paths Wrapper around
 #' \code{igraph::all_shortest_paths}.
-#' @importFrom igraph all_shortest_paths V
-#' @export
+#' 
 #' @examples
 #'
 #' ## Calculate all shortest paths between two points
 #'
 #' st_all_shortest_paths(net, 5, 1)$res
+#'
+#' @importFrom igraph all_shortest_paths V
+#' @export
 st_all_shortest_paths = function(graph, from, to = V(graph), weights = NULL,
                                  snap = "nearest_node") {
   params = set_shortest_paths_parameters(graph, from, to, weights, snap)
@@ -140,8 +144,7 @@ st_all_shortest_paths = function(graph, from, to = V(graph), weights = NULL,
 }
 
 #' @describeIn spatial_shortest_paths Wrapper around \code{igraph::distances}.
-#' @importFrom igraph distances V
-#' @export
+#'
 #' @examples
 #'
 #' ## Calculate a distance matrix
@@ -150,6 +153,9 @@ st_all_shortest_paths = function(graph, from, to = V(graph), weights = NULL,
 #' ps2 = c(st_geometry(p2), st_sfc(p4))
 #'
 #' st_network_distance(net, ps1, ps2)
+#'
+#' @importFrom igraph distances V
+#' @export
 st_network_distance = function(graph, from = V(graph), to = V(graph),
                                 weights = NULL, snap = "nearest_node", ...) {
   params = set_shortest_paths_parameters(graph, from, to, weights, snap)
