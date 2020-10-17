@@ -174,8 +174,8 @@ to_spatial_simple = function(graph, keep = "shortest", ...) {
       lengths = sf::st_length(x)
       switch(
         keep,
-        longest = x[which(lengths == max(lengths))],
-        shortest = x[which(lengths == min(lengths))]
+        longest = x[which(lengths == max(lengths))][1],
+        shortest = x[which(lengths == min(lengths))][1]
       )
     }
   }
