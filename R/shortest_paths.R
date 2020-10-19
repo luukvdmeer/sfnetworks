@@ -1,27 +1,25 @@
 #' @importFrom sf st_nearest_feature
 #' @importFrom tidygraph pull
-set_shortest_paths_parameters = function(graph, from, to, weights, snap) {
+set_shortest_paths_parameters = function(x, from, to, weights) {
   # Get node index of from node.
-  if (is.sf(from) | is.sfc(from) | is.sfg(from)) {
-    from = switch(
-      snap,
-      nearest_node = sf::st_nearest_feature(from, activate(graph, "nodes")),
-      stop("Unknown snapping technique: ", snap, call. = FALSE)
+  if (is.sf(from) | is.sfc(from)) {
+    from = sf::st_nearest_feature(from, activate(x, "nodes"))
+  }
+  if (length(from) > 1) {
+    warning(
+      "Multiple from points are given. Only the first one will be used",
+      call. = FALSE
     )
   }
   # Get node indices of to nodes.
-  if (is.sf(to) | is.sfc(to) | is.sfg(to)) {
-    to = switch(
-      snap,
-      nearest_node = sf::st_nearest_feature(to, activate(graph, "nodes")),
-      stop("Unknown snapping technique: ", snap, call. = FALSE)
-    )
+  if (is.sf(to) | is.sfc(to)) {
+    to = sf::st_nearest_feature(to, activate(x, "nodes"))
   }
   # If weights is a string, retrieve the column which name matches the string.
   if (is.character(weights)) {
-    weights = tidygraph::pull(activate(graph, "edges"), weights)
+    weights = tidygraph::pull(activate(x, "edges"), weights)
   }
-  list(graph = graph, from = from, to = to, weights = weights)
+  list(graph = x, from = from, to = to, weights = weights)
 }
 
 #' Shortest paths between points in geographical space
@@ -29,9 +27,11 @@ set_shortest_paths_parameters = function(graph, from, to, weights, snap) {
 #' Wrappers around the shortest path calculation functionalities in
 #' \code{\link[igraph:shortest_paths]{igraph}}, allowing to
 #' provide any geospatial point as `from` argument and any set of geospatial
-#' points as `to` argument.
+#' points as `to` argument. If such a geospatial point is not equal to a node 
+#' in the network, it will be snapped to its nearest node before calculating
+#' the shortest paths.
 #'
-#' @param graph An object of class \code{\link{sfnetwork}}.
+#' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @param from The geospatial point from which the shortest paths will be
 #' calculated. Can be an object an object of class \code{\link[sf]{sf}} or
@@ -44,23 +44,18 @@ set_shortest_paths_parameters = function(graph, from, to, weights, snap) {
 #' object with multiple features, or alternatively a vector of node indices.
 #'
 #' @param to The (set of) geospatial point(s) to which the shortest paths will be
-#' calculated. Can be an object of class \code{\link[sf:st]{sfg}}, or an object
-#' of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}. Alternatively, it can
-#' be a numeric vector, containing the indices of the nodes to which the
-#' shortest paths will be calculated. By default, all nodes in the network are
-#' included.
+#' calculated. Can be an object of  class \code{\link[sf]{sf}} or 
+#' \code{\link[sf]{sfc}}. 
+#' Alternatively, it can be a numeric vector, containing the indices of the nodes 
+#' to which the shortest paths will be calculated. By default, all nodes in the 
+#' network are included.
 #'
-#' @param weights Possibly a numeric vector giving edge weights, or a column
-#' name referring to an attribute column in the edges table that contains those
-#' weights. If set to \code{NULL} and the network has a column named 'weight' in
-#' the edges table, then those values are used. If set to \code{NA} then no
-#' weights are used (even if the edges have a weight attribute).
-#'
-#' @param snap Which technique to use for snapping given geospatial points to the
-#' network. Can be either 'nearest_node', which will use the nearest node to the
-#' given point, or 'nearest_point_on_edge', which will use the nearest location
-#' on the nearest edge to the given point. Defaults to 'nearest_node', which is
-#' currently the only implemented option.
+#' @param weights The edge weights to be used in the shortest path calculation.
+#' Can be a numeric vector giving edge weights, or a column name referring to 
+#' an attribute column in the edges table containing those weights. If set to 
+#' \code{NULL}, the values of a column named 'weight' in the edges table will
+#' be used automatically, as long as this column is present. If set to 
+#' \code{NA}, no weights are used (even if the edges have a weight column).
 #'
 #' @param ... Arguments passed on to the corresponding
 #' \code{\link[igraph:shortest_paths]{igraph}} function.
@@ -114,15 +109,8 @@ NULL
 #'
 #' @importFrom igraph shortest_paths V
 #' @export
-st_shortest_paths = function(graph, from, to = V(graph), weights = NULL,
-                             snap = "nearest_node", ...) {
-  params = set_shortest_paths_parameters(graph, from, to, weights, snap)
-  if (length(params$from) > 1) {
-    warning(
-      "Multiple from points are given. Only the first one will be used",
-      call. = FALSE
-    )
-  }
+st_shortest_paths = function(x, from, to = V(x), weights = NULL, ...) {
+  params = set_shortest_paths_parameters(x, from, to, weights)
   do.call(igraph::shortest_paths, c(params, ...))
 }
 
@@ -137,15 +125,8 @@ st_shortest_paths = function(graph, from, to = V(graph), weights = NULL,
 #'
 #' @importFrom igraph all_shortest_paths V
 #' @export
-st_all_shortest_paths = function(graph, from, to = V(graph), weights = NULL,
-                                 snap = "nearest_node") {
-  params = set_shortest_paths_parameters(graph, from, to, weights, snap)
-  if (length(params$from) > 1) {
-    warning(
-      "Multiple from points are given. Only the first one will be used",
-      call. = FALSE
-    )
-  }
+st_all_shortest_paths = function(x, from, to = V(x), weights = NULL) {
+  params = set_shortest_paths_parameters(x, from, to, weights)
   do.call(igraph::all_shortest_paths, params)
 }
 
@@ -162,9 +143,8 @@ st_all_shortest_paths = function(graph, from, to = V(graph), weights = NULL,
 #'
 #' @importFrom igraph distances V
 #' @export
-st_network_distance = function(graph, from = V(graph), to = V(graph),
-                                weights = NULL, snap = "nearest_node", ...) {
-  params = set_shortest_paths_parameters(graph, from, to, weights, snap)
+st_network_distance = function(x, from = V(x), to = V(x), weights = NULL, ...) {
+  params = set_shortest_paths_parameters(x, from, to, weights)
   names(params)[which(names(params) == "from")] = "v"
   do.call(igraph::distances, c(params, ...))
 }
