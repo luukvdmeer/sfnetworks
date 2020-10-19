@@ -120,7 +120,7 @@ sfnetwork = function(nodes, edges, directed = TRUE, node_key = "name",
   # Post-process network.
   if (edges_as_lines) {
     # Run validity check before explicitizing edges.
-    if (! force) require_valid_network_structure(x_sfn)
+    if (! force) require_valid_network_structure(x_sfn, message = TRUE)
     # Add edge geometries if needed.
     x_sfn = explicitize_edges(x_sfn)
     # Update agr factor of edges.
@@ -130,7 +130,7 @@ sfnetwork = function(nodes, edges, directed = TRUE, node_key = "name",
     # Remove edge geometries if needed.
     x_sfn = implicitize_edges(x_sfn)
     # Run validity check after implicitizing edges.
-    if (! force) require_valid_network_structure(x_sfn)
+    if (! force) require_valid_network_structure(x_sfn, message = TRUE)
   }
   x_sfn
 }

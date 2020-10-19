@@ -53,6 +53,9 @@ expect_spatially_explicit_edges = function(x) {
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
+#' @param message Should a message be printed before and after the validation?
+#' Default to \code{FALSE}.
+#'
 #' @return Nothing when the network has a valid sfnetwork structure, an error 
 #' message otherwise.
 #'
@@ -63,13 +66,13 @@ expect_spatially_explicit_edges = function(x) {
 #' nodes.
 #'
 #' @noRd
-require_valid_network_structure = function(x) {
-  message("Checking if spatial network structure is valid...")
+require_valid_network_structure = function(x, message = FALSE) {
+  if (message) message("Checking if spatial network structure is valid...")
   validate_nodes(x)
   if (has_spatially_explicit_edges(x)) {
   	validate_edges(x)
   }
-  message("Spatial network structure is valid")
+  if (message) message("Spatial network structure is valid")
 }
 
 validate_nodes = function(x) {
