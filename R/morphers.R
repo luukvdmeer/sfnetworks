@@ -134,7 +134,7 @@ to_spatial_implicit_edges = function(graph) {
 #' @export
 to_spatial_shortest_paths = function(graph, ...) {
   args = list(...)
-  args$graph = graph
+  args$x = graph
   args$output = "both"
   # Call st_shortest_paths with the given arguments.
   paths = do.call("st_shortest_paths", args)
