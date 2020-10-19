@@ -121,8 +121,12 @@ mutate_edge_geom = function(x, y) {
       if (has_sfc(igraph::edge_attr(x))) {
         sfc_col = which(sapply(igraph::edge_attr(x), function(x) is.sfc))[1]
         geom_col = igraph::edge_attr_names(x)[sfc_col]
+        warning("Overwriting sfc column '", sfc_col, "'")
       } else {
         geom_col = "geometry"
+        if ("geometry" %in% igraph::edge_attr_names(x)) {
+          warning("Overwriting column 'geometry'")
+        }
       }
     }
     # Replace.
