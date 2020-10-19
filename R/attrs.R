@@ -21,7 +21,7 @@ sf_attr = function(x, name = NULL, active = NULL) {
     name,
     agr = agr(x, active),
     sf_column = geom_colname(x, active),
-    stop("Unknown sf attribute: ", name)
+    stop("Unknown sf attribute: ", name, call. = FALSE)
   )
 }
 

@@ -72,9 +72,13 @@ create_nodes_from_edges = function(edges) {
   # Define for each endpoint if it is a source or target node.
   sources = rep(c(TRUE, FALSE), length(nodes) / 2)
   # Define for each edges which node is its source and target node.
-  if ("from" %in% colnames(edges)) warning("Overwriting column 'from'")
+  if ("from" %in% colnames(edges)) {
+    warning("Overwriting column 'from'", call. = FALSE)
+  }
   edges$from = indices[sources]
-  if ("to" %in% colnames(edges)) warning("Overwriting column 'to'")
+  if ("to" %in% colnames(edges)) {
+    warning("Overwriting column 'to'", call. = FALSE)
+  }
   edges$to = indices[!sources]
   # Remove duplicated nodes from the nodes table.
   nodes = nodes[!duplicated(indices)]

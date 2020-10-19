@@ -287,7 +287,10 @@ st_reverse.sfnetwork = function(x, ...) {
   if (attr(x, "active") == "edges") {
     expect_spatially_explicit_edges(x)
     if (is_directed(x)) {
-      warning("In directed networks st_reverse swaps columns 'to' and 'from'")
+      warning(
+        "In directed networks st_reverse swaps columns 'to' and 'from'",
+        call. = FALSE
+      )
     }
     node_ids = edge_boundary_node_indices(x)
     from_ids = node_ids[, 1]
@@ -295,7 +298,10 @@ st_reverse.sfnetwork = function(x, ...) {
     x_tbg = tidygraph::reroute(as_tbl_graph(x), from = to_ids, to = from_ids)
     x = tbg_to_sfn(x_tbg)
   } else {
-    warning("st_reverse has no effect on nodes. Activate edges first?")
+    warning(
+      "st_reverse has no effect on nodes. Activate edges first?",
+      call. = FALSE
+    )
   }
   geom_unary_ops(sf::st_reverse, x, ...)
 }

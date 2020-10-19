@@ -86,7 +86,7 @@ sfnetwork = function(nodes, edges, directed = TRUE, node_key = "name",
     tryCatch(
       sf::st_as_sf(nodes, ...),
       error = function(e) {
-        stop("Failed to convert nodes to sf object because: ", e)
+        stop("Failed to convert nodes to sf object because: ", e, call. = FALSE)
       }
     )
   }
@@ -174,7 +174,7 @@ as_sfnetwork.linnet = function(x, ...) {
   # The easiest approach is the same as for psp objects, i.e. converting the
   # linnet object into a psp format and then applying the corresponding method.
   if (!requireNamespace("spatstat", quietly = TRUE)) {
-    stop("Package spatstat required, please install it first")
+    stop("Package spatstat required, please install it first", call. = FALSE)
   }
   x_psp = spatstat::as.psp(x)
   as_sfnetwork(x_psp, ...)

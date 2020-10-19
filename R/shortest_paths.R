@@ -118,7 +118,10 @@ st_shortest_paths = function(graph, from, to = V(graph), weights = NULL,
                              snap = "nearest_node", ...) {
   params = set_shortest_paths_parameters(graph, from, to, weights, snap)
   if (length(params$from) > 1) {
-    warning("Multiple from points are given. Only the first one will be used")
+    warning(
+      "Multiple from points are given. Only the first one will be used",
+      call. = FALSE
+    )
   }
   do.call(igraph::shortest_paths, c(params, ...))
 }
@@ -138,7 +141,10 @@ st_all_shortest_paths = function(graph, from, to = V(graph), weights = NULL,
                                  snap = "nearest_node") {
   params = set_shortest_paths_parameters(graph, from, to, weights, snap)
   if (length(params$from) > 1) {
-    warning("Multiple from points are given. Only the first one will be used")
+    warning(
+      "Multiple from points are given. Only the first one will be used",
+      call. = FALSE
+    )
   }
   do.call(igraph::all_shortest_paths, params)
 }
