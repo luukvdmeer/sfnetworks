@@ -146,7 +146,6 @@ morph.sfnetwork = function(.data, .f, ...) {
 
 #' @describeIn tidygraph The sfnetwork method for \code{\link[tidygraph]{mutate}}
 #' works the same, but updates the sf attributes of the resulting network.
-#' @importFrom stats setNames
 #' @importFrom tidygraph mutate
 #' @export
 mutate.sfnetwork = function(.data, ...) {
