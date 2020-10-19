@@ -99,11 +99,9 @@ edge_spatial_tibble = function(x) {
 convert.sfnetwork = function(.data, ...) {
   # Run tidygraphs convert.
   x = NextMethod()
-  if (attr(x, "active") == "edges" && !has_spatially_explicit_edges(x)) {
-    return(x)
-  }
-  # Update the agr sf attribute.
-  agr(x) = updated_agr(x)
+  # Update the agr sf attribute of nodes and edges.
+  node_agr(x) = updated_node_agr(x)
+  if (has_spatially_explicit_edges(x)) edge_agr(x) = updated_edge_agr(x)
   # Return x.
   x
 }
