@@ -92,6 +92,22 @@ edge_spatial_tibble = function(x) {
   }
 }
 
+#' @describeIn tidygraph The sfnetwork method for \code{\link[tidygraph]{convert}}
+#' works the same, but updates the sf attributes of the resulting network.
+#' @importFrom tidygraph convert
+#' @export
+convert.sfnetwork = function(.data, ...) {
+  # Run tidygraphs convert.
+  x = NextMethod()
+  if (attr(x, "active") == "edges" && !has_spatially_explicit_edges(x)) {
+    return(x)
+  }
+  # Update the agr sf attribute.
+  agr(x) = updated_agr(x)
+  # Return x.
+  x
+}
+
 #' @describeIn tidygraph The sfnetwork method for 
 #' \code{\link[tidygraph]{morph}} will first try to input the 
 #' \code{\link{sfnetwork}} object into the morph method for a 
