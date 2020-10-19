@@ -4,6 +4,7 @@
 \alias{tidygraph}
 \alias{as_tbl_graph.sfnetwork}
 \alias{as_tibble.sfnetwork}
+\alias{convert.sfnetwork}
 \alias{morph.sfnetwork}
 \alias{mutate.sfnetwork}
 \alias{select.sfnetwork}
@@ -12,6 +13,8 @@
 \method{as_tbl_graph}{sfnetwork}(x, ...)
 
 \method{as_tibble}{sfnetwork}(x, active = NULL, spatial = TRUE, ...)
+
+\method{convert}{sfnetwork}(.data, ...)
 
 \method{morph}{sfnetwork}(.data, .f, ...)
 
@@ -56,6 +59,9 @@ documentation.
 geometry list column is present, by default it will return a 
 'spatial tibble'. With that we mean an object of class 
 \code{c('sf', 'tbl_df')} instead of an object of class \code{'tbl_df'}.
+
+\item \code{convert.sfnetwork}: The sfnetwork method for \code{\link[tidygraph]{convert}}
+works the same, but updates the sf attributes of the resulting network.
 
 \item \code{morph.sfnetwork}: The sfnetwork method for 
 \code{\link[tidygraph]{morph}} will first try to input the 

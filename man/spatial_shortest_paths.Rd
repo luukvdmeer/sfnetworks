@@ -7,34 +7,14 @@
 \alias{st_network_distance}
 \title{Shortest paths between points in geographical space}
 \usage{
-st_shortest_paths(
-  graph,
-  from,
-  to = V(graph),
-  weights = NULL,
-  snap = "nearest_node",
-  ...
-)
+st_shortest_paths(x, from, to = V(x), weights = NULL, ...)
 
-st_all_shortest_paths(
-  graph,
-  from,
-  to = V(graph),
-  weights = NULL,
-  snap = "nearest_node"
-)
+st_all_shortest_paths(x, from, to = V(x), weights = NULL)
 
-st_network_distance(
-  graph,
-  from = V(graph),
-  to = V(graph),
-  weights = NULL,
-  snap = "nearest_node",
-  ...
-)
+st_network_distance(x, from = V(x), to = V(x), weights = NULL, ...)
 }
 \arguments{
-\item{graph}{An object of class \code{\link{sfnetwork}}.}
+\item{x}{An object of class \code{\link{sfnetwork}}.}
 
 \item{from}{The geospatial point from which the shortest paths will be
 calculated. Can be an object an object of class \code{\link[sf]{sf}} or
@@ -47,23 +27,18 @@ apply. Then, it can also be an \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 object with multiple features, or alternatively a vector of node indices.}
 
 \item{to}{The (set of) geospatial point(s) to which the shortest paths will be
-calculated. Can be an object of class \code{\link[sf:st]{sfg}}, or an object
-of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}. Alternatively, it can
-be a numeric vector, containing the indices of the nodes to which the
-shortest paths will be calculated. By default, all nodes in the network are
-included.}
+calculated. Can be an object of  class \code{\link[sf]{sf}} or 
+\code{\link[sf]{sfc}}. 
+Alternatively, it can be a numeric vector, containing the indices of the nodes 
+to which the shortest paths will be calculated. By default, all nodes in the 
+network are included.}
 
-\item{weights}{Possibly a numeric vector giving edge weights, or a column
-name referring to an attribute column in the edges table that contains those
-weights. If set to \code{NULL} and the network has a column named 'weight' in
-the edges table, then those values are used. If set to \code{NA} then no
-weights are used (even if the edges have a weight attribute).}
-
-\item{snap}{Which technique to use for snapping given geospatial points to the
-network. Can be either 'nearest_node', which will use the nearest node to the
-given point, or 'nearest_point_on_edge', which will use the nearest location
-on the nearest edge to the given point. Defaults to 'nearest_node', which is
-currently the only implemented option.}
+\item{weights}{The edge weights to be used in the shortest path calculation.
+Can be a numeric vector giving edge weights, or a column name referring to 
+an attribute column in the edges table containing those weights. If set to 
+\code{NULL}, the values of a column named 'weight' in the edges table will
+be used automatically, as long as this column is present. If set to 
+\code{NA}, no weights are used (even if the edges have a weight column).}
 
 \item{...}{Arguments passed on to the corresponding
 \code{\link[igraph:shortest_paths]{igraph}} function.}
@@ -76,7 +51,9 @@ function, see \code{\link[igraph:shortest_paths]{here}}.
 Wrappers around the shortest path calculation functionalities in
 \code{\link[igraph:shortest_paths]{igraph}}, allowing to
 provide any geospatial point as `from` argument and any set of geospatial
-points as `to` argument.
+points as `to` argument. If such a geospatial point is not equal to a node 
+in the network, it will be snapped to its nearest node before calculating
+the shortest paths.
 }
 \details{
 See the \code{\link[igraph:shortest_paths]{igraph}} documentation.
