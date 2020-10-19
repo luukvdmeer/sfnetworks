@@ -110,8 +110,9 @@ mutate_edge_geom = function(x, y) {
     stopifnot(is.sfc(igraph::edge_attr(x, y)))
     x_new = x
     edge_geom_colname(x_new) = y
+    edge_agr(x_new) = updated_edge_agr(x_new)
   } else {
-    # Replace the geometries of the current geometry column with new values.
+    # Replace the geometries in the current geometry column with y.
     geom_col = edge_geom_colname(x)
     # What if there is currently no column marked as geometry column?
     # First: check if there are sfc columns and take the first of those.
@@ -123,14 +124,13 @@ mutate_edge_geom = function(x, y) {
       } else {
         geom_col = "geometry"
       }
-      # Store the new geometry column name in the attributes.
-      edge_geom_colname(x) = geom_col
     }
     # Replace.
     x_new = tidygraph::mutate(activate(x, "edges"), !!geom_col := y)
+    # Update sf attributes.
+    edge_geom_colname(x_new) = geom_col
+    edge_agr(x_new) = updated_edge_agr(x_new)
   }
-  # Update agr.
-  edge_agr(x_new) = updated_edge_agr(x_new)
   x_new %preserve_active% x
 }
 
