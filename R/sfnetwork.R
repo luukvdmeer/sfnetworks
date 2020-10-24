@@ -17,9 +17,11 @@
 #' class \code{\link[sf]{sf}} with \code{LINESTRING} geometry features. It may 
 #' also be a regular \code{data.frame} or \code{tbl_df} object. In any case,
 #' the adjacent nodes of each edge must either be encoded in a \code{to} and
-#' \code{from} column, or in the two first columns, as integers. These integers
-#' refer to nodes indices, which in turn refer to the position of a node in the
-#' nodes table.
+#' \code{from} column, as integers or characters. Integers should refer to 
+#' the position of a node in the nodes table, while characters should refer to
+#' the name of a node encoded in the column referred to in the \code{node_key}
+#' argument. Finally, setting edges to \code{NULL} will create a network
+#' without edges.
 #'
 #' @param directed Should the constructed network be directed? Defaults to
 #' \code{TRUE}.
@@ -76,7 +78,7 @@
 #'
 #' @importFrom tidygraph tbl_graph
 #' @export
-sfnetwork = function(nodes, edges, directed = TRUE, node_key = "name",
+sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
                      edges_as_lines = NULL, force = FALSE, ...) {
   # Prepare nodes.
   # If nodes is not an sf object:
@@ -92,22 +94,22 @@ sfnetwork = function(nodes, edges, directed = TRUE, node_key = "name",
   }
   node_sf_attrs = attrs_from_sf(nodes)
   # Prepare edges.
-  # If edges is not an sf object but does have a geometry list column:
-  # --> First convert it to sf such that the required attributes are present.
-  # --> Then proceed as described below.
   # If edges is an sf object:
   # --> Tidygraph cannot handle it due to sticky geometry.
   # --> Therefore it has to be converted into a regular data frame (or tibble).
-  if (has_sfc(edges)) {
-    if (! is.sf(edges)) edges = sf::st_as_sf(edges)
-    edge_sf_attrs = attrs_from_sf(edges)
-    class(edges) = setdiff(class(edges), "sf")
-    # When edges_as_lines was not set, set to TRUE.
-    if (is.null(edges_as_lines)) edges_as_lines = TRUE
+  if (! is.null(edges)) {
+    if (is.sf(edges)) {
+      edge_sf_attrs = attrs_from_sf(edges)
+      class(edges) = setdiff(class(edges), "sf")
+      # When edges_as_lines was not set, set to TRUE.
+      if (is.null(edges_as_lines)) edges_as_lines = TRUE
+    } else {
+      edge_sf_attrs = NULL
+      # When edges_as_lines was not set, set to FALSE.
+      if (is.null(edges_as_lines)) edges_as_lines = FALSE
+    }
   } else {
     edge_sf_attrs = NULL
-    # When edges_as_lines was not set, set to FALSE.
-    if (is.null(edges_as_lines)) edges_as_lines = FALSE
   }
   # Create network.
   # Store sf attributes of the nodes and edges in a special graph attribute.
@@ -118,18 +120,22 @@ sfnetwork = function(nodes, edges, directed = TRUE, node_key = "name",
     sf = list(nodes = node_sf_attrs, edges = edge_sf_attrs)
   )
   # Post-process network.
-  if (edges_as_lines) {
-    # Run validity check before explicitizing edges.
-    if (! force) require_valid_network_structure(x_sfn, message = TRUE)
-    # Add edge geometries if needed.
-    x_sfn = explicitize_edges(x_sfn)
-    # Update agr factor of edges.
-    # Because positions of from and to columns were moved during construction.
-    edge_agr(x_sfn) = updated_edge_agr(x_sfn)
+  if (! is.null(edges)) {
+    if (edges_as_lines) {
+      # Run validity check before explicitizing edges.
+      if (! force) require_valid_network_structure(x_sfn, message = TRUE)
+      # Add edge geometries if needed.
+      x_sfn = explicitize_edges(x_sfn)
+      # Update agr factor of edges.
+      # Because positions of from and to columns were moved during construction.
+      edge_agr(x_sfn) = updated_edge_agr(x_sfn)
+    } else {
+      # Remove edge geometries if needed.
+      x_sfn = implicitize_edges(x_sfn)
+      # Run validity check after implicitizing edges.
+      if (! force) require_valid_network_structure(x_sfn, message = TRUE)
+    }
   } else {
-    # Remove edge geometries if needed.
-    x_sfn = implicitize_edges(x_sfn)
-    # Run validity check after implicitizing edges.
     if (! force) require_valid_network_structure(x_sfn, message = TRUE)
   }
   x_sfn
