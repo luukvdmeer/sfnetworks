@@ -40,8 +40,11 @@ edge_circuity = function() {
 edge_length = function() {
   graph = tidygraph::.G()
   require_active_edges(graph)
-  require_spatially_explicit_edges(graph)
-  sf::st_length(graph)
+  if (has_spatially_explicit_edges(graph)) {
+    sf::st_length(graph)
+  } else {
+    straight_line_distance(graph)
+  }
 }
 
 #' @describeIn spatial_edge_measures The straight-line distance between the two
