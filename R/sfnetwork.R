@@ -297,78 +297,21 @@ as_sfnetwork.tbl_graph = function(x, ...) {
   do.call("sfnetwork", args)
 }
 
-#' @importFrom rlang !!
-#' @importFrom sf st_as_sf st_crs st_geometry
-#' @importFrom tibble trunc_mat
-#' @importFrom tidygraph as_tibble
-#' @importFrom tools toTitleCase
-#' @importFrom utils modifyList
+#' @importFrom igraph ecount vcount
+#' @importFrom sf st_crs st_geometry
+#' @importFrom tibble as_tibble
 #' @export
 print.sfnetwork = function(x, ...) {
-  # Capture graph output.
-  nodes = as_tibble(x, "nodes")
-  edges = as_tibble(x, "edges")
-  # Truncate nodes and edges tibbles for printing
-  arg_list = list(...)
-  not_active = if (active(x) == "nodes") "edges" else "nodes"
-  top = do.call(
-    trunc_mat, 
-    utils::modifyList(arg_list, list(x = as_tibble(x), n = 6))
-  )
-  top$summary[1] = paste0(top$summary[1], " (active)")
-  if (
-    active(x) == "edges" &&
-    !has_spatially_explicit_edges(x) ||
-    nrow(tidygraph::as_tibble(x)) == 0
-    ) {
-    names(top$summary)[1] = tools::toTitleCase(
-      paste0(substr(active(x), 1, 4), " data")
-    )
-  } else {
-    active_geom = sf::st_geometry(sf::st_as_sf(x))
-    top$summary[2] = substr(class(active_geom)[1], 5, nchar(class(active_geom)[1]))
-    bb = signif(attr(active_geom, "bbox"), options("digits")$digits)
-    top$summary[3] = class(active_geom[[1]])[1]
-    top$summary[4] = paste(paste(names(bb), bb[], sep = ": "), collapse = " ")
-    names(top$summary) = c(
-      tools::toTitleCase(paste0(substr(active(x), 1, 4), " data")),
-      "Geometry type", "Dimension", "Bounding box"
-    )
-  }
-  bottom = do.call(
-    trunc_mat, 
-    modifyList(arg_list, list(x = as_tibble(x, active = not_active), n = 3))
-  )
-  if (
-    active(x) == "nodes" &&
-    !has_spatially_explicit_edges(x) ||
-    nrow(tidygraph::as_tibble(activate(x, !!not_active))) == 0
-    ) {
-    names(bottom$summary)[1] = tools::toTitleCase(
-      paste0(substr(not_active, 1, 4), " data")
-    )
-  } else {
-    inactive_geom = sf::st_geometry(sf::st_as_sf(activate(x, !!not_active)))
-    bottom$summary[2] = substr(
-      class(inactive_geom)[1], 
-      5, 
-      nchar(class(inactive_geom)[1])
-    )
-    bbi = signif(attr(inactive_geom, "bbox"), options("digits")$digits)
-    bottom$summary[3] = class(inactive_geom[[1]])[1]
-    bottom$summary[4] = paste(
-      paste(names(bbi), bbi[], sep = ": "), 
-      collapse = " "
-    )
-    names(bottom$summary) = c(
-      tools::toTitleCase(paste0(substr(not_active, 1, 4), " data")),
-      "Geometry type", "Dimension", "Bounding box"
-    )
-  }
-  # Header.
-  cat_subtle(c("# An sfnetwork with", nrow(nodes),"nodes and", nrow(edges), "edges\n"))
+  # Define active and inactive component.
+  active = attr(x, "active")
+  inactive = if (active == "nodes") "edges" else "nodes"
+  # Count number of nodes and edges in the network.
+  nN = igraph::vcount(x) # Number of nodes in network.
+  nE = igraph::ecount(x) # Number of edges in network.
+  # Print header.
+  cat_subtle(c("# An sfnetwork with", nN, "nodes and", nE, "edges\n"))
   cat_subtle("#\n")
-  cat_subtle(c("# CRS: ", sf::st_crs(sf::st_as_sf(activate(x,"nodes")))$input, "\n"))
+  cat_subtle(c("# CRS: ", sf::st_crs(x)$input, "\n"))
   cat_subtle("#\n")
   cat_subtle("#", tidygraph:::describe_graph(as_tbl_graph(x)))
   if (has_spatially_explicit_edges(x)) {
@@ -377,11 +320,53 @@ print.sfnetwork = function(x, ...) {
     cat_subtle(" with spatially implicit edges\n")
   }
   cat_subtle("#\n")
-  # Active data info.
-  print(top)
+  # Print active data summary.
+  active_data = summarise_component(
+    data = tibble::as_tibble(x, active),
+    name = substr(active, 1, 4),
+    active = TRUE,
+    ...
+  )
+  print(active_data)
   cat_subtle("#\n")
-  # Inactive data info.
-  print(bottom)
+  # Print inactive data summary.
+  inactive_data = summarise_component(
+    data = tibble::as_tibble(x, inactive),
+    name = substr(inactive, 1, 4),
+    active = FALSE,
+    ...
+  )
+  print(inactive_data)
+}
+
+#' @importFrom sf st_geometry
+#' @importFrom tibble trunc_mat
+#' @importFrom tools toTitleCase
+#' @importFrom utils modifyList
+summarise_component = function(data, name, active = TRUE, ...) {
+  # Capture ... arguments.
+  args = list(...)
+  # Truncate data.
+  n = if (active) 6 else 3
+  x = do.call(tibble::trunc_mat, utils::modifyList(args, list(x = data, n = n)))
+  # Write summary.
+  x$summary[1] = paste(x$summary[1], if (active) "(active)" else "")
+  if (name == "edge" && (!has_sfc(data) || nrow(data) == 0)) {
+    names(x$summary)[1] = tools::toTitleCase(paste(name, "data"))
+  } else {
+    geom = sf::st_geometry(data)
+    x$summary[2] = substr(class(geom)[1], 5, nchar(class(geom)[1]))
+    x$summary[3] = class(geom[[1]])[1]
+    bb = signif(attr(geom, "bbox"), options("digits")$digits)
+    x$summary[4] = paste(paste(names(bb), bb[], sep = ": "), collapse = " ")
+    names(x$summary) = c(
+      tools::toTitleCase(paste(name, "data")),
+      "Geometry type", 
+      "Dimension", 
+      "Bounding box"
+    )
+  }
+  x
 }
 
 #' Check if an object is an sfnetwork
