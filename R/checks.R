@@ -63,6 +63,18 @@ is_directed = function(x) {
   igraph::is_directed(x)
 }
 
+#' Check for empty geometries
+#'
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
+#'
+#' @return A boolean vector of the same length as the number of features in x.
+#' 
+#' @importFrom sf st_dimension
+#' @noRd
+is_empty = function(x) {
+  is.na(sf::st_dimension(x))
+}
+
 #' Check if sf features have the same attribute values
 #'
 #' @param x A single feature of an object of class \code{\link[sf]{sf}}, or an
@@ -170,4 +182,16 @@ nodes_match_edge_boundaries = function(x) {
   boundary_nodes = edge_boundary_nodes(x)
   # Test if the boundary geometries are equal to their corresponding nodes.
   all(have_equal_geometries(boundary_points, boundary_nodes))
+}
+
+#' Check if sf will assume planar coordinates for some operations on an object
+#'
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
+#'
+#' @return \code{TRUE} when the coordinates of x are longitude-latitude, but sf
+#' will for some operations assume they are planar, \code{FALSE} otherwise.
+#'
+#' @importFrom sf sf_use_s2 st_is_longlat
+will_assume_planar = function(x) {
+  sf::st_is_longlat(x) && !sf::sf_use_s2()
 }
