@@ -29,6 +29,7 @@ LazyData: true
 ByteCompile: true
 Imports:
   crayon,
+  dplyr,
   graphics,
   igraph,
   lwgeom,
@@ -38,7 +39,6 @@ Imports:
   tidygraph,
   utils
 Suggests:
-  dplyr,
   fansi,
   ggplot2,
   knitr,
