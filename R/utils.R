@@ -187,6 +187,20 @@ edge_boundary_points = function(x) {
   linestring_boundary_points(edges)
 }
 
+#' Create an empty point geometry
+#'
+#' @param crs The CRS to assign to the empty point, as an object of class
+#' \code{crs}. Defaults to \code{NA}, meaning that no CRS will be assigned.
+#'
+#' @return An object of class \code{\link[sf]{sfc}} containing a single
+#' feature with an empty \code{POINT} geometry.
+#'
+#' @importFrom sf st_point st_sfc
+#' @noRd
+empty_point = function(crs = NA) {
+  sf::st_sfc(sf::st_point(), crs = crs)
+}
+
 #' Make edges spatially explicit
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
@@ -223,6 +237,32 @@ explicitize_edges = function(x) {
     # Return x_new.
     x_new %preserve_active% x
   }
+}
+
+#' Extend a line in the same direction by a given distance
+#'
+#' @param x The line to extend, as object of class \code{\link[sf]{sf}} or 
+#' \code{\link[sf]{sfc}}, containing a single feature with \code{LINESTRING} 
+#' geometry.
+#'
+#' @param d The distance to extend the line by, in the same units as the CRS 
+#' of x.
+#'
+#' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING} 
+#' geometry.
+#'
+#' @importFrom sf st_cast st_coordinates st_crs st_point st_sfc st_union
+#' @noRd
+extend_line = function(x, d) {
+  x_xy = sf::st_coordinates(x)
+  x_end_x = x_xy[nrow(x_xy), 1]
+  x_end_y = x_xy[nrow(x_xy), 2]
+  x_ext = sf::st_sfc(
+    sf::st_point(c(x_end_x + d, x_end_y + d)), 
+    crs = sf::st_crs(x)
+  )
+  x_pts = sf::st_cast(x, "POINT")
+  sf::st_cast(sf::st_union(c(x_pts, x_ext)), "LINESTRING")
 }
 
 #' Make edges spatially implicit
@@ -285,4 +325,25 @@ linestring_boundary_points = function(x) {
 #' @noRd
 points_to_line = function(x, y) {
   sf::st_cast(sf::st_union(x, y), "LINESTRING")
+}
+
+#' Split lines by other features
+#'
+#' @param x The lines to be splitted, as object of class \code{\link[sf]{sf}} 
+#' or \code{\link[sf]{sfc}} with \code{LINESTRING} geometries.
+#'
+#' @param y The features to split with, as object of class \code{\link[sf]{sf}} 
+#' or \code{\link[sf]{sfc}}.
+#'
+#' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING} 
+#' geometries.
+#'
+#' @details Features in x will only be splitted if they intersect with a 
+#' feature in y.
+#'
+#' @importFrom lwgeom st_split
+#' @importFrom sf st_collection_extract
+#' @noRd
+split_lines = function(x, y) {
+  sf::st_collection_extract(lwgeom::st_split(x, y), "LINESTRING")
 }
