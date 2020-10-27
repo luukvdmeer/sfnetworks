@@ -33,6 +33,7 @@ Imports:
   graphics,
   igraph,
   lwgeom,
+  pbapply,
   rlang,
   sf,
   tibble,
