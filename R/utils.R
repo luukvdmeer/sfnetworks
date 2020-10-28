@@ -313,6 +313,40 @@ linestring_boundary_points = function(x) {
   )
 }
 
+#' Get the points where linestrings cross
+#'
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}} 
+#' with \code{LINESTRING} geometries.
+#'
+#' @param y An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}} 
+#' with \code{LINESTRING} geometries.
+#'
+#' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
+#' geometries.
+#'
+#' @importFrom sf st_crosses st_equals st_geometry st_intersection st_is
+#' @noRd
+linestring_crossings = function(x, y) {
+  # Get geometries of x and y.
+  xgeom = sf::st_geometry(x)
+  ygeom = sf::st_geometry(y)
+  # Find crossing geometries.
+  cross_matrix = suppressMessages(sf::st_crosses(xgeom, ygeom, sparse = FALSE))
+  # Subset geomtries to only keep only those that cross.
+  xgeom_sub = xgeom[apply(cross_matrix, 1, any)]
+  ygeom_sub = ygeom[apply(cross_matrix, 2, any)]
+  # Find intersections between the geometry subsets.
+  all_intrs = suppressMessages(sf::st_intersection(xgeom_sub, ygeom_sub))
+  # Subset intersections to keep only those that are points.
+  pts_intrs = all_intrs[sf::st_is(all_intrs, "POINT")]
+  # Subset point intersections to keep only those that are crossings.
+  boundaries = c(linestring_boundary_points(x), linestring_boundary_points(y))
+  is_boundary = lengths(sf::st_equals(pts_intrs, boundaries)) > 0
+  cross_intrs = pts_intrs[!is_boundary]
+  # Return crossings.
+  cross_intrs 
+}
+
 #' Draw a line between two points
 #'
 #' @param x A \code{POINT} geometry.
