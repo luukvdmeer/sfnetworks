@@ -316,48 +316,64 @@ geom_unary_ops = function(op, x, ...) {
 # =============================================================================
 
 #' @name sf
-#' @importFrom sf st_as_sf st_join
-#' @importFrom tibble as_tibble
-#' @importFrom tidygraph slice
+#' @importFrom sf st_join
 #' @export
 st_join.sfnetwork = function(x, y, ...) {
-  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
+  active = attr(x, "active")
+  switch(
+    active,
+    nodes = join_nodes(x, y, ...),
+    edges = join_edges(x, y, ...),
+    throw_unknown_active_exception(active)
+  )
+}
+
+join_nodes = function(x, y,  ...) {
   # Convert x and y to sf.
   x_sf = sf::st_as_sf(x)
   y_sf = sf::st_as_sf(y)
-  # Capture ... arguments.
-  args = list(...)
   # Add .sfnetwork_index column to keep track of original network indices.
-  if (".sfnetwork_index" %in% names(x_sf)) {
+  if (".sfnetwork_index" %in% c(names(x_sf), names(y_sf))) {
     stop("The attribute name '.sfnetwork_index' is reserved", call. = FALSE)
   }
   x_sf$.sfnetwork_index = seq_len(nrow(x_sf))
   # Join with st_join.
-  d_tmp = sf::st_join(x_sf, y_sf, ...)
-  # If the join was performed on the nodes and there were multiple matches:
+  n_new = sf::st_join(x_sf, y_sf, ...)
+  # If there were multiple matches:
   # --> Raise an error.
   # --> Allowing multiple matches for nodes breaks the valid network structure.
   # --> See the package vignettes for more info. 
-  if (attr(x, "active") == "nodes" && has_duplicates(d_tmp$.sfnetwork_index)) {
+  if (has_duplicates(n_new$.sfnetwork_index)) {
     stop("One or more nodes have multiple matches", call. = FALSE)
   }
   # If an inner join was requested instead of a left join:
-  # --> Filter the original network to keep only the common features of x and y.
+  # --> This means only nodes in x that had a match in y are preserved.
+  # --> The other nodes are not preserved, i.e. removed.
+  # --> Edges adjacent to these removed nodes need to be filtered out as well.
+  args = list(...)
   if (!is.null(args$left) && args$left) {
-    keep_ind = d_tmp$.sfnetwork_index
+    keep_ind = n_new$.sfnetwork_index
     x = tidygraph::slice(x, keep_ind)
   }
   # Create a new network with the updated data.
-  d_tmp$.sfnetwork_index = NULL
-  if (attr(x, "active") == "nodes") {
-    n_tmp = d_tmp
-    e_tmp = tibble::as_tibble(x, "edges")
-  }
-  if (attr(x, "active") == "edges") {
-    n_tmp = sf::st_as_sf(x, "nodes")
-    e_tmp = d_tmp
-  }
-  sfnetwork(n_tmp, e_tmp, directed = is_directed(x), force = TRUE)
+  n_new$.sfnetwork_index = NULL
+  sfnetwork(
+    nodes = n_new,
+    edges = tibble::as_tibble(x, "edges"), 
+    directed = is_directed(x), 
+    force = TRUE
+  )
+}
+
+join_edges = function(x, y, ...) {
+  expect_spatially_explicit_edges(x)
+  e_new = sf::st_join(sf::st_as_sf(x), sf::st_as_sf(y), ...)
+  sfnetwork(
+    nodes = sf::st_as_sf(x, "nodes"),
+    edges = e_new, 
+    directed = is_directed(x), 
+    force = TRUE
+  )
 }
 
 #' @name sf
