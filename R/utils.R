@@ -36,7 +36,7 @@ create_edges_from_nodes = function(nodes) {
   edges = sf::st_sf(
     from = source_ids,
     to = target_ids,
-    geometry = draw_lines(sources, targets)
+    geometry = draw_lines(sf::st_geometry(sources), sf::st_geometry(targets))
   )
   # Use the same sf column name as in the nodes.
   nodes_geom_colname = attr(nodes, "sf_column")
@@ -97,13 +97,11 @@ create_nodes_from_edges = function(edges) {
 
 #' Draw lines between two sets of points, row-wise
 #'
-#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}} 
-#' with \code{POINT} geometries, representing the points where lines need to
-#' start from.
+#' @param x An object of class \code{\link[sf]{sfc}} with \code{POINT} 
+#' geometries, representing the points where lines need to start at.
 #'
-#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}} 
-#' with \code{POINT} geometries, representing the points where lines need to
-#' end at.
+#' @param y An object of class \code{\link[sf]{sfc}} with \code{POINT} 
+#' geometries, representing the points where lines need to end at.
 #'
 #' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
 #' geometries.
@@ -112,16 +110,11 @@ create_nodes_from_edges = function(edges) {
 #' and the first point in y, the second point in x and the second point in y, 
 #' et cetera.
 #'
-#' @importFrom sf st_crs st_geometry st_sfc
+#' @importFrom sf st_crs st_sfc
 #' @noRd
 draw_lines = function(x, y) {
   sf::st_sfc(
-    mapply(
-      function (a,b) points_to_line(a,b),
-      sf::st_geometry(x),
-      sf::st_geometry(y),
-      SIMPLIFY = FALSE
-    ),
+    lapply(seq_along(x), function(i) points_to_line(x[[i]], y[[i]])),
     crs = sf::st_crs(x)
   )
 }
@@ -210,25 +203,25 @@ empty_point = function(crs = NA) {
 #'
 #' @importFrom igraph edge_attr_names
 #' @importFrom rlang !! :=
-#' @importFrom sf NA_agr_
+#' @importFrom sf NA_agr_ st_as_sf st_geometry
 #' @importFrom tidygraph mutate
 #' @noRd
 explicitize_edges = function(x) {
   if (has_spatially_explicit_edges(x)) {
     x
   } else {
-    # Extract the nodes from the network.
-    nodes = st_as_sf(x, "nodes")
+    # Extract the node geometries from the network.
+    nodes = sf::st_geometry(x, "nodes")
     # Get the indices of the boundary nodes of each edge.
     # Returns a matrix with source ids in column 1 and target ids in column 2.
     ids = edge_boundary_node_indices(x)
     # Get the boundary node geometries of each edge.
-    from_nodes = nodes[ids[, 1], ]
-    to_nodes = nodes[ids[, 2], ]
+    from_geoms = nodes[ids[, 1]]
+    to_geoms = nodes[ids[, 2]]
     # Draw linestring geometries between the boundary nodes of each edge.
-    edge_geoms = draw_lines(from_nodes, to_nodes)
+    edge_geoms = draw_lines(from_geoms, to_geoms)
     # Use the same geometry column name as the geometry column of the nodes.
-    col = attr(nodes, "sf_column")
+    col = node_geom_colname(x)
     # Add the geometries as a column.
     x_new = tidygraph::mutate(activate(x, "edges"), !!col := edge_geoms)
     # Set the sf attributes.
@@ -358,7 +351,7 @@ linestring_crossings = function(x, y) {
 #' @importFrom sf st_cast st_union
 #' @noRd
 points_to_line = function(x, y) {
-  sf::st_cast(sf::st_union(x, y), "LINESTRING")
+  sf::st_linestring(c(x, y))
 }
 
 #' Split lines by other features
