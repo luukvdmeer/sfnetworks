@@ -2,14 +2,39 @@
 % Please edit documentation in R/join.R
 \name{st_network_join}
 \alias{st_network_join}
-\title{Join sfnetworks based on equality of node geometries}
+\title{Join two spatial networks based on equality of node geometries}
 \usage{
-st_network_join(x, y, ...)
+st_network_join(
+  x,
+  y,
+  blend_nodes = FALSE,
+  blend_crossings = FALSE,
+  sort = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
 
-\item{y}{An object of class \code{\link{sfnetwork}}.}
+\item{y}{An object of class \code{\link{sfnetwork}}, or directly convertible 
+to it using \code{\link{as_sfnetwork}}.}
+
+\item{blend_nodes}{Should nodes be blended? If \code{TRUE}, edges in x will
+be splitted at each location where they intersect a node in y, and edges in
+y will be splitted at each location where they intersect a node in x. This
+requires edges in both networks to be spatially explicit. Defaults to 
+\code{FALSE}.}
+
+\item{blend_crossings}{Should edge crossings be blended? If \code{TRUE},
+edges in x will be splitted at each location where they cross an edge in y, 
+and edges in y will be splitted at each location where they cross and edge
+in x. This requires edges in both networks to be spatially explicit.
+Defaults to \code{FALSE}.}
+
+\item{sort}{If any of the blend options was set to \code{TRUE}, should the
+nodes in the resulting network be sorted in the same order as those in x, 
+followed by the non-equal nodes in y? Defaults to \code{TRUE}. If set to
+\code{FALSE}, node order might be changed.}
 
 \item{...}{Arguments passed on to \code{\link[tidygraph]{graph_join}}.}
 }
@@ -17,11 +42,16 @@ st_network_join(x, y, ...)
 An object of class \code{\link{sfnetwork}}.
 }
 \description{
-This spatial network specific join function makes a spatial full join on the 
-geometries of the nodes data and updates the edges in y such that they
-match the new indices of the nodes in the resulting network. Edge data is 
-combined using a \code{bind_rows} semantic, meaning that data are matched 
-by column name and filled with `NA` if it is missing in either of the
-networks. Also, this means that two edges with equal geometries will both
-be present in the resulting network.
+A spatial network specific join function which makes a spatial full join on 
+the geometries of the nodes data, based on the \code{st_equals} spatial 
+predicate. Edge data are combined using a \code{bind_rows} semantic, meaning 
+that data are matched by column name and values are filled with `NA` if 
+missing in either of the networks. The \code{from} and \code{to} columns in 
+the edge data are updated such that they match the new node indices of the 
+resulting network.
+}
+\details{
+If requested, edges can be splitted at locations where they either intersect
+with nodes of the other network, or get crossed by edges of the other
+network.
 }

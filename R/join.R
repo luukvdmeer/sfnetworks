@@ -1,12 +1,12 @@
-#' Join sfnetworks based on equality of node geometries
+#' Join two spatial networks based on equality of node geometries
 #'
-#' This spatial network specific join function makes a spatial full join on the 
-#' geometries of the nodes data, based on the \code{st_equals} spatial predicate.
-#' Edge data are combined using a \code{bind_rows} semantic, meaning that data 
-#' are matched by column name and values are filled with `NA` if missing in 
-#' either of the networks. The \code{from} and \code{to} columns in the edge 
-#' data are updated such that they match the new node indices of the resulting 
-#' network.
+#' A spatial network specific join function which makes a spatial full join on 
+#' the geometries of the nodes data, based on the \code{st_equals} spatial 
+#' predicate. Edge data are combined using a \code{bind_rows} semantic, meaning 
+#' that data are matched by column name and values are filled with `NA` if 
+#' missing in either of the networks. The \code{from} and \code{to} columns in 
+#' the edge data are updated such that they match the new node indices of the 
+#' resulting network.
 #'
 #' If requested, edges can be splitted at locations where they either intersect
 #' with nodes of the other network, or get crossed by edges of the other
@@ -14,13 +14,14 @@
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @param y An object of class \code{\link{sfnetwork}}.
+#' @param y An object of class \code{\link{sfnetwork}}, or directly convertible 
+#' to it using \code{\link{as_sfnetwork}}.
 #'
 #' @param blend_nodes Should nodes be blended? If \code{TRUE}, edges in x will
 #' be splitted at each location where they intersect a node in y, and edges in
 #' y will be splitted at each location where they intersect a node in x. This
 #' requires edges in both networks to be spatially explicit. Defaults to 
-#' \code{FALSE.
+#' \code{FALSE}.
 #'
 #' @param blend_crossings Should edge crossings be blended? If \code{TRUE},
 #' edges in x will be splitted at each location where they cross an edge in y, 

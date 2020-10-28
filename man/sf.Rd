@@ -64,11 +64,11 @@
 
 \method{st_simplify}{sfnetwork}(x, ...)
 
-\method{st_join}{sfnetwork}(x, y, join = st_intersects, ..., left = TRUE)
+\method{st_join}{sfnetwork}(x, y, ...)
 
 \method{st_crop}{sfnetwork}(x, y, ...)
 
-\method{st_filter}{sfnetwork}(x, y, ..., .predicate = st_intersects)
+\method{st_filter}{sfnetwork}(x, y, ...)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
@@ -79,18 +79,13 @@ the given network. Defaults to \code{NULL}.}
 
 \item{...}{Arguments passed on the corresponding \code{sf} function.}
 
-\item{value}{See \code{\link[sf]{st_crs}} or \code{\link[sf]{st_geometry}}.}
+\item{value}{See \code{\link[sf]{st_crs}}, \code{\link[sf]{st_geometry}} or 
+\code{\link[sf]{st_agr}}.}
 
-\item{y}{An object of class \link{sfnetwork} or class \code{\link[sf]{sf}}.
-In some cases, it can also be an object of \code{\link[sf]{sfc}},
-\code{\link[sf:st]{sfg}} or \code{\link[sf:st_bbox]{bbox}}. Always look at
-the documentation of the corresponding \code{sf} function for details.}
-
-\item{join}{See \code{\link[sf]{st_join}}.}
-
-\item{left}{See \code{\link[sf]{st_join}}.}
-
-\item{.predicate}{See \code{\link[sf]{st_filter}}.}
+\item{y}{An object of class \code{\link[sf]{sf}}, or directly convertible to 
+it using \code{\link[sf]{st_as_sf}}. In some cases, it can also be an object 
+of \code{\link[sf:st]{sfg}} or \code{\link[sf:st_bbox]{bbox}}. Always look 
+at the documentation of the corresponding \code{sf} function for details.}
 }
 \description{
 \code{\link[sf]{sf}} methods for \code{\link{sfnetwork}} objects. Use these 

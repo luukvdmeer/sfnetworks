@@ -4,7 +4,7 @@
 \alias{st_snap_to_network}
 \title{Update geometries to their nearest point on the network}
 \usage{
-st_snap_to_network(x, graph, method = "nearest_node")
+st_snap_to_network(x, graph, method = "nearest_node", tolerance = Inf)
 }
 \arguments{
 \item{x}{The spatial features to be snapped, either as object of class
@@ -15,22 +15,31 @@ st_snap_to_network(x, graph, method = "nearest_node")
 
 \item{method}{The snapping technique to be used. See details. Defaults to
 \code{'nearest_node'}.}
+
+\item{tolerance}{The tolerance distance to be used. Only features that are
+at least as close to the network as the tolerance distance will be snapped.
+For all other features, an empty geometry will be returned. Should be a
+non-negative number preferably given as an object of class
+\code{\link[units]{units}}. Otherwise, it will be assumed that the unit is
+meters. If set to \code{Inf} all features will be snapped. Defaults to
+\code{Inf}.}
 }
 \value{
 An object of class \code{\link[sf]{sfc}}, containing the snapped
 geometries of x.
 }
 \description{
-Implementation of snapping techniques that find the nearest point on a
-spatial network to a given set of input geometries.
+Implementation of snapping techniques that find the nearest points on a
+spatial network to a given set of input geometries. In theory, the
+input geometries can be of any geometry type, but it is recommended to
+only provide geometries of type \code{POINT}, for example by first
+calculating the centroid of other geometry types.
 }
 \details{
 Implemented snapping techniques are.
 \itemize{
-\item \code{'nearest_node'}: Find the nearest node to the given input geometry.
+\item \code{'nearest_node'}: Find the nearest node to the given features.
 \item \code{'nearest_point_on_edge'}: Finds the nearest point on the nearest
-edge to the given input geometry, no matter if this point is a node in the
-network or a line vertex in the linestring geometry of the edge. This
-technique requires spatially explicit edges.
+edge to the given features. This technique requires spatially explicit edges.
 }
 }

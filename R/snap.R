@@ -1,6 +1,6 @@
 #' Update geometries to their nearest point on the network
 #'
-#' Implementation of snapping techniques that find the nearest point on a
+#' Implementation of snapping techniques that find the nearest points on a
 #' spatial network to a given set of input geometries. In theory, the
 #' input geometries can be of any geometry type, but it is recommended to
 #' only provide geometries of type \code{POINT}, for example by first
@@ -23,14 +23,14 @@
 #' meters. If set to \code{Inf} all features will be snapped. Defaults to 
 #' \code{Inf}.
 #'
+#' @return An object of class \code{\link[sf]{sfc}}, containing the snapped 
+#' geometries of x.
+#'
 #' @details Implemented snapping techniques are.
 #' * \code{'nearest_node'}: Find the nearest node to the given features.
 #' * \code{'nearest_point_on_edge'}: Finds the nearest point on the nearest
 #' edge to the given features. This technique requires spatially explicit edges.
 #' @md
-#' 
-#' @return An object of class \code{\link[sf]{sfc}}, containing the snapped 
-#' geometries of x.
 #' 
 #' @export
 st_snap_to_network = function(x, graph, method = "nearest_node",

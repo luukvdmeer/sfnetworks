@@ -1,3 +1,30 @@
+#' Blend spatial points into a spatial network
+#'
+#' Blending a point into a network is the combined process of first snapping 
+#' the given point to its nearest point on its nearest edge in the network, 
+#' subsequently splitting that edge at the location of the snapped point, and
+#' finally adding the snapped point as node to the network. If the location
+#' of the snapped point is already a node in the network, the attributes of the
+#' point (if any) will be joined to that node.
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param y The spatial features to be blended, either as object of class
+#' \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}, with \code{POINT} geometries.
+#' 
+#' @param tolerance The tolerance distance to be used. Only features that are
+#' at least as close to the network as the tolerance distance will be blended.
+#' Should be a non-negative number preferably given as an object of class 
+#' \code{\link[units]{units}}. Otherwise, it will be assumed that the unit is 
+#' meters. If set to \code{Inf} all features will be blended. Defaults to 
+#' \code{Inf}.
+#'
+#' @param sort Should the nodes in the resulting network be sorted in the same 
+#' order as those in x, followed by the new nodes blended in from y? Defaults 
+#' to \code{FALSE}, meaning that node order might be changed.
+#'
+#' @return An object of class \code{\link{sfnetwork}}.
+#' 
 #' @importFrom sf st_as_sf st_distance st_equals st_geometry st_intersection
 #' st_join st_nearest_feature st_nearest_points st_set_crs
 #' @export

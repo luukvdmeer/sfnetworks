@@ -208,6 +208,7 @@ nodes_match_edge_boundaries = function(x) {
 #' will for some operations assume they are planar, \code{FALSE} otherwise.
 #'
 #' @importFrom sf sf_use_s2 st_is_longlat
+#' @noRd
 will_assume_planar = function(x) {
   sf::st_is_longlat(x) && !sf::sf_use_s2()
 }
