@@ -31,14 +31,15 @@
 #'
 #' @param sort If any of the blend options was set to \code{TRUE}, should the
 #' nodes in the resulting network be sorted in the same order as those in x, 
-#' followed by the non-equal nodes in y? Defaults to \code{TRUE}. If set to
-#' \code{FALSE}, node order might be changed.
+#' followed by the new nodes joined in from y? Defaults to \code{TRUE}. If set 
+#' to \code{FALSE}, node order might be changed. However, sorting
+#' might influence performance.
 #'
 #' @param ... Arguments passed on to \code{\link[tidygraph]{graph_join}}.
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
-#' @importFrom sf st_as_sf
+#' @importFrom sf st_geometry
 #' @importFrom tidygraph graph_join
 #' @export
 st_network_join = function(x, y, blend_nodes = FALSE, 
@@ -57,14 +58,14 @@ st_network_join = function(x, y, blend_nodes = FALSE,
       )
     }
     if (blend_nodes) {
-      x_nodes = sf::st_as_sf(x, "nodes")
-      y_nodes = sf::st_as_sf(y, "nodes")
+      x_nodes = sf::st_geometry(x, "nodes")
+      y_nodes = sf::st_geometry(y, "nodes")
       x = suppressMessages(st_blend(x, y_nodes, tolerance = 0, sort = sort))
       y = suppressMessages(st_blend(y, x_nodes, tolerance = 0, sort = sort))
     }
     if (blend_crossings) {
-      x_edges = sf::st_as_sf(x, "edges")
-      y_edges = sf::st_as_sf(y, "edges")
+      x_edges = sf::st_geometry(x, "edges")
+      y_edges = sf::st_geometry(y, "edges")
       crossings = linestring_crossings(x_edges, y_edges)
       x = suppressMessages(st_blend(x, crossings, tolerance = 0, sort = sort))
       y = suppressMessages(st_blend(y, crossings, tolerance = 0, sort = sort))
