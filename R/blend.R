@@ -21,7 +21,8 @@
 #'
 #' @param sort Should the nodes in the resulting network be sorted in the same 
 #' order as those in x, followed by the new nodes blended in from y? Defaults 
-#' to \code{FALSE}, meaning that node order might be changed.
+#' to \code{FALSE}, meaning that node order might be changed. However, sorting
+#' might influence performance.
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
 #' 
@@ -50,7 +51,7 @@ st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
   # Extract geometries of the edges and of y.
   xgeom = sf::st_geometry(edges)
   ygeom = sf::st_geometry(y)
-  # Find indices of features in x that are located:
+  # Find indices of features in y that are located:
   # --> *on* an edge.
   # --> *close* to an edge, i.e. within the tolerance but not on it.
   relative_feature_locs = locate_features(ygeom, xgeom, tolerance)
@@ -135,14 +136,16 @@ st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
   # --> Features of y had attributes.
   if (is.sf(y) && ncol(y) > 1) {
     # Update geometries of features in y that were snapped to an edge in x.
-    ygeom[close] = do.call(
-      "c",
-      lapply(
-        seq_along(conns), 
-        function(i) suppressMessages(sf::st_intersection(conns[i], Q[i]))
+    if (any(close)) {
+      ygeom[close] = do.call(
+        "c",
+        lapply(
+          seq_along(conns), 
+          function(i) suppressMessages(sf::st_intersection(conns[i], Q[i]))
+        )
       )
-    )
-    sf::st_geometry(y) = ygeom
+      sf::st_geometry(y) = ygeom
+    }
     # Keep only those features in y that were blended.
     y = y[on | close, ]
     # Join spatially with the new network.
