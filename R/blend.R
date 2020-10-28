@@ -25,6 +25,8 @@
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
 #' 
+#' @importFrom dplyr sym
+#' @importFrom rlang !!
 #' @importFrom sf st_as_sf st_distance st_equals st_geometry st_intersection
 #' st_join st_nearest_feature st_nearest_points st_set_crs
 #' @export
@@ -95,6 +97,8 @@ st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
     edges = split_lines(edges, conns)
   }
   # Construct a new network from scratch with the splitted edges.
+  edges$from = NULL
+  edges$to = NULL
   x_new = as_sfnetwork(edges)
   #
   # ===============
@@ -119,7 +123,7 @@ st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
     # Join original nodes spatially with the new network.
     x_new = sf::st_join(x_new, orig_nodes, join = sf::st_equals)
     # Sort based on original node index.
-    x_new = tidygraph::arrange(x_new, .sfnetwork_node_index)
+    x_new = tidygraph::arrange(x_new, !!dplyr::sym(".sfnetwork_node_index"))
     # Remove the node index column.
     x_new = tidygraph::mutate(x_new, .sfnetwork_node_index = NULL)
   } else if (length(node_spatial_attribute_names(x)) > 0) {
