@@ -89,7 +89,7 @@ st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
       # --> See https://github.com/r-spatial/sf/issues/790
       # --> To solve it:
       # --> Extend r in the same direction by 2x the distance d between r and q.
-      # --> Make this extension CRS independent.
+      # --> Assume Euclidean space for convenience.
       # --> This should guarantee intersection between r and q.
       d = sf::st_distance(sf::st_set_crs(r, NA), sf::st_set_crs(q, NA))
       extend_line(r, 2 * d)

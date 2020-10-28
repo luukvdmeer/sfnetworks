@@ -232,9 +232,9 @@ explicitize_edges = function(x) {
   }
 }
 
-#' Extend a line in the same direction by a given distance
+#' Extend a straight line by a given distance
 #'
-#' @param x The line to extend, as object of class \code{\link[sf]{sf}} or 
+#' @param l The line to extend, as object of class \code{\link[sf]{sf}} or 
 #' \code{\link[sf]{sfc}}, containing a single feature with \code{LINESTRING} 
 #' geometry.
 #'
@@ -244,18 +244,29 @@ explicitize_edges = function(x) {
 #' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING} 
 #' geometry.
 #'
-#' @importFrom sf st_cast st_coordinates st_crs st_point st_sfc st_union
+#' @details Euclidean space is assumed no matter the CRS.
+#'
+#' @importFrom sf st_coordinates st_crs st_linestring st_point st_sfc
 #' @noRd
-extend_line = function(x, d) {
-  x_xy = sf::st_coordinates(x)
-  x_end_x = x_xy[nrow(x_xy), 1]
-  x_end_y = x_xy[nrow(x_xy), 2]
-  x_ext = sf::st_sfc(
-    sf::st_point(c(x_end_x + d, x_end_y + d)), 
-    crs = sf::st_crs(x)
-  )
-  x_pts = sf::st_cast(x, "POINT")
-  sf::st_cast(sf::st_union(c(x_pts, x_ext)), "LINESTRING")
+extend_line = function(l, d) {
+  # Get coordinate of endpoints of l.
+  coords = sf::st_coordinates(l)
+  A_x = coords[1, 1] # x coordinate of startpoint of l
+  B_x = coords[nrow(coords), 1] # x coordinate of endpoint of l
+  A_y = coords[1, 2] # y coordinate of startpoint of l
+  B_y = coords[nrow(coords), 2] # y coordinate of endpoint of l
+  # Compute length of l in Euclidean space.
+  length_AB = sqrt((A_x - B_x)^2 + (A_y - B_y)^2)
+  # Create the endpoint of the extended line.
+  C_x = B_x + (B_x - A_x) / length_AB * d # x coordinate of new endpoint
+  C_y = B_y + (B_y - A_y) / length_AB * d # y coordinate of new endpoint
+  # Combine points together in a new line.
+  A = sf::st_point(c(A_x, A_y))
+  B = sf::st_point(c(B_x, B_y))
+  C = sf::st_point(c(C_x, C_y))
+  l_new = sf::st_linestring(c(A, B, C))
+  # Return as sfc.
+  sf::st_sfc(l_new, crs = sf::st_crs(l))
 }
 
 #' Make edges spatially implicit
