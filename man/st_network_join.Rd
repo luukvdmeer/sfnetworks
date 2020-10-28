@@ -33,8 +33,9 @@ Defaults to \code{FALSE}.}
 
 \item{sort}{If any of the blend options was set to \code{TRUE}, should the
 nodes in the resulting network be sorted in the same order as those in x, 
-followed by the non-equal nodes in y? Defaults to \code{TRUE}. If set to
-\code{FALSE}, node order might be changed.}
+followed by the new nodes joined in from y? Defaults to \code{TRUE}. If set 
+to \code{FALSE}, node order might be changed. However, sorting
+might influence performance.}
 
 \item{...}{Arguments passed on to \code{\link[tidygraph]{graph_join}}.}
 }

@@ -21,7 +21,8 @@ meters. If set to \code{Inf} all features will be blended. Defaults to
 
 \item{sort}{Should the nodes in the resulting network be sorted in the same 
 order as those in x, followed by the new nodes blended in from y? Defaults 
-to \code{FALSE}, meaning that node order might be changed.}
+to \code{FALSE}, meaning that node order might be changed. However, sorting
+might influence performance.}
 }
 \value{
 An object of class \code{\link{sfnetwork}}.
