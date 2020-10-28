@@ -37,6 +37,7 @@ Imports:
   sf,
   tibble,
   tidygraph,
+  units,
   utils
 Suggests:
   fansi,
