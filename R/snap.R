@@ -1,7 +1,10 @@
 #' Update geometries to their nearest point on the network
 #'
 #' Implementation of snapping techniques that find the nearest point on a
-#' spatial network to a given set of input geometries.
+#' spatial network to a given set of input geometries. In theory, the
+#' input geometries can be of any geometry type, but it is recommended to
+#' only provide geometries of type \code{POINT}, for example by first
+#' calculating the centroid of other geometry types.
 #'
 #' @param x The spatial features to be snapped, either as object of class
 #' \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
@@ -33,17 +36,13 @@
 st_snap_to_network = function(x, graph, method = "nearest_node",
                               tolerance = Inf) {
   stopifnot(have_equal_crs(x, graph))
-  stopifnot(has_single_geom_type(x, "POINT"))
   stopifnot(as.numeric(tolerance) >= 0)
+  # Inform about sf's planar assumption if needed.
   if (will_assume_planar(x)) {
     message(
       "Although coordinates are longitude/latitude, ",
       "st_snap_to_network assumes that they are planar"
     )
-  }
-  # Set tolerance.
-  if (! (is.infinite(tolerance) || inherits(tolerance, "units"))) {
-    tolerance = units::set_units(tolerance, "m")
   }
   # Call snapping function corresponding to given method.
   switch(
@@ -54,11 +53,12 @@ st_snap_to_network = function(x, graph, method = "nearest_node",
   )
 }
 
-#' @importFrom pbapply pblapply
-#' @importFrom sf st_crs st_intersects st_is_within_distance st_nearest_feature
+#' @importFrom sf st_crs st_geometry st_is_within_distance st_nearest_feature
 nearest_node = function(x, graph, tolerance) {
+  # Set tolerance.
+  tolerance = set_snapping_tolerance(tolerance, soft = FALSE)
   # Extract node geometries from the given network.
-  nodes = st_geometry(graph, "nodes")
+  nodes = sf::st_geometry(graph, "nodes")
   # For each feature p in x:
   # --> Find the nearest node q to p.
   Q = nodes[suppressMessages(sf::st_nearest_feature(x, nodes))]
@@ -72,40 +72,25 @@ nearest_node = function(x, graph, tolerance) {
   Q
 }
 
-#' @importFrom sf st_boundary st_cast st_crs st_geometry st_intersects 
-#' st_is_within_distance st_nearest_feature st_nearest_points
+#' @importFrom sf st_boundary st_cast st_crs st_geometry st_nearest_feature 
+#' st_nearest_points
 nearest_point_on_edge = function(x, graph, tolerance) {
   require_spatially_explicit_edges(graph)
+  # Set tolerance.
+  # Allow a small deviation if tolerance = 0 to account for precision errors.
+  tolerance = set_snapping_tolerance(tolerance, soft = TRUE)
   # Extract geometries.
-  edges = st_geometry(graph, "edges")
+  edges = sf::st_geometry(graph, "edges")
   xgeom = sf::st_geometry(x)
   # Find indices of features in x that are located:
-  # --> *on* their nearest edge.
-  intersects = suppressMessages(sf::st_intersects(xgeom, edges))
-  on = lengths(intersects) > 0
-  # Find indices of features in x that are located:
-  # --> *close* to their nearest edge, i.e. within the tolerance but not on it.
-  if ((as.numeric(tolerance) == 0) || all(on)) {
-    # If tolerance was set to zero:
-    # --> That implies to only snap features that are already on edges.
-    # --> No other feature is within the tolerance.
-    # --> Hence, no feature is 'close'.
-    # If all features are alread on an edge.
-    # --> No feature is 'close'.
-    close = rep(FALSE, length(on))
-  } else if (is.infinite(tolerance)) {
-    # If tolerance was set to infinite:
-    # --> That implies there is no upper bound for what to define as 'close'.
-    # --> Hence, all features that are not 'on' are 'close'.
-    close = !on
-  } else {
-    # If a positive tolerance (but not infinite) was set:
-    # --> Features are 'close' if within tolerance distance from any edge.
-    # --> But not on an edge.
-    within_tolerance = sf::st_is_within_distance(xgeom[!on], edges, tolerance)
-    close = !on # First assume all features that are not 'on' are 'close'.
-    close[close] = lengths(within_tolerance) > 0 # Update. 
-  }
+  # --> *on* an edge.
+  # --> *close* to an edge, i.e. within the tolerance but not on it.
+  relative_feature_locs = locate_features(xgeom, edges, tolerance)
+  on = relative_feature_locs$on
+  close = relative_feature_locs$close
+  # For each feature p in x that is neither on nor close to an edge:
+  # --> Replace the geometry of p by an empty point.
+  xgeom[! (on  | close)] = empty_point(crs = sf::st_crs(x))
   # For each feature p in x that is close to an edge:
   # --> Find the nearest edge q to p.
   # --> Draw a line r that forms the shortest connection between p and q.
@@ -119,10 +104,53 @@ nearest_point_on_edge = function(x, graph, tolerance) {
       r = suppressMessages(sf::st_nearest_points(p, q))
       sf::st_cast(sf::st_boundary(r), "POINT")[2]
     }
-    xgeom[close] = do.call("c", pbapply::pblapply(seq_along(close[close]), snap))
+    snaps = do.call("c", lapply(seq_along(close[close]), snap))
+    xgeom[close] = snaps
   }
-  # Replace features that are not within tolerance by empty geometries.
-  xgeom[! (on  | close)] = empty_point(crs = sf::st_crs(x))
-  # Return the updated geometries.
   xgeom
+}
+
+#' @importFrom units set_units
+set_snapping_tolerance = function(x, soft = FALSE) {
+  # If soft is True:
+  # --> Change a tolerance of 0 to a tolerance of a very small positive number.
+  # --> This is needed to solve precision errors with intersections.
+  # --> See https://github.com/r-spatial/sf/issues/790
+  if (soft && (as.numeric(x) == 0)) x = units::set_units(1e-5, "m")
+  # If tolerance is not a units object:
+  # --> Convert into units object assuming a units of meters.
+  # --> Unless tolerance is infinite.
+  if (! (is.infinite(x) || inherits(x, "units"))) x = units::set_units(x, "m")
+  x
+}
+
+#' @importFrom sf st_intersects st_is_within_distance
+locate_features = function(x, y, tolerance) {
+  # Find indices of features in x that are located:
+  # --> *on* a feature in y.
+  intersects = suppressMessages(sf::st_intersects(x, y))
+  on = lengths(intersects) > 0
+  # Find indices of features in x that are located:
+  # --> *close* to a feature in y.
+  # We define a feature xi being 'close' to a feature yj when: 
+  # --> xi is located within a given tolerance distance from yj.
+  # --> xi is not located on yj.
+  if (all(on)) {
+    # If all features are already on an edge.
+    # --> By definition no feature is 'close'.
+    close = rep(FALSE, length(on))
+  } else if (is.infinite(tolerance)) {
+    # If tolerance was set to infinite:
+    # --> That implies there is no upper bound for what to define as 'close'.
+    # --> Hence, all features that are not on an edge are 'close'.
+    close = !on
+  } else {
+    # If a non-infinite tolerance was set:
+    # --> Features are 'close' if within tolerance distance from an edge.
+    # --> But not on an edge.
+    within_tolerance = sf::st_is_within_distance(x[!on], y, tolerance)
+    close = !on # First assume all features that are not 'on' are 'close'.
+    close[close] = lengths(within_tolerance) > 0 # Update.
+  }
+  list("on" = on, "close" = close)
 }
