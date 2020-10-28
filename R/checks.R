@@ -94,23 +94,6 @@ have_equal_attributes = function(x, y = NULL) {
   all(duplicated(sf::st_drop_geometry(x))[-1])
 }
 
-#' Check if the CRS of two objects are the same
-#'
-#' @param x An object of class \code{\link{sfnetwork}}, \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}.
-#'
-#' @param y An object of class \code{\link{sfnetwork}}, \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}.
-#'
-#' @return \code{TRUE} when the CRS of x and y are the same, \code{FALSE}
-#' otherwise.
-#'
-#' @importFrom sf st_crs
-#' @noRd
-have_equal_crs = function(x, y) {
-  sf::st_crs(x) == sf::st_crs(y)
-}
-
 #' Check if two sf objects have the same LINESTRING boundary points
 #'
 #' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
@@ -133,6 +116,39 @@ have_equal_boundary_points = function(x, y) {
       linestring_boundary_points(y)
     )
   )
+}
+
+#' Check if the CRS of two objects are the same
+#'
+#' @param x An object of class \code{\link{sfnetwork}}, \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}.
+#'
+#' @param y An object of class \code{\link{sfnetwork}}, \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}.
+#'
+#' @return \code{TRUE} when the CRS of x and y are the same, \code{FALSE}
+#' otherwise.
+#'
+#' @importFrom sf st_crs
+#' @noRd
+have_equal_crs = function(x, y) {
+  sf::st_crs(x) == sf::st_crs(y)
+}
+
+#' Check if two sfnetworks have the same type of edges
+#' 
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param y An object of class \code{\link{sfnetwork}}.
+#'
+#' @return \code{TRUE} when the two networks both have spatially explicit edges
+#' OR both have spatially implicit edges, \code{FALSE} otherwise.
+#'
+#' @noRd
+have_equal_edge_type = function(x, y) {
+  both_ex = has_spatially_explicit_edges(x) && has_spatially_explicit_edges(y)
+  both_im = !has_spatially_explicit_edges(x) && !has_spatially_explicit_edges(y)
+  both_ex || both_im
 }
 
 #' Check if two sf objects have the same geometries
