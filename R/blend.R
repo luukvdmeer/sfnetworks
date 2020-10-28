@@ -1,7 +1,7 @@
 #' @importFrom sf st_as_sf st_distance st_equals st_geometry st_intersection
 #' st_join st_nearest_feature st_nearest_points st_set_crs
 #' @export
-st_blend = function(x, y, tolerance = Inf) {
+st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
   require_spatially_explicit_edges(x)
   stopifnot(has_single_geom_type(y, "POINT"))
   stopifnot(have_equal_crs(x, y))
@@ -24,7 +24,7 @@ st_blend = function(x, y, tolerance = Inf) {
   # Find indices of features in x that are located:
   # --> *on* an edge.
   # --> *close* to an edge, i.e. within the tolerance but not on it.
-  relative_feature_locs = locate_features(ygeom, xgeom)
+  relative_feature_locs = locate_features(ygeom, xgeom, tolerance)
   on = relative_feature_locs$on
   close = relative_feature_locs$close
   # If there are neither features in y on or close to any edge in x:
@@ -69,16 +69,41 @@ st_blend = function(x, y, tolerance = Inf) {
   }
   # Construct a new network from scratch with the splitted edges.
   x_new = as_sfnetwork(edges)
-  # Join attributes from x back in.
-  if (length(node_spatial_attribute_names(x)) > 0) {
-    # Extract nodes from the original network.
-    nodes = sf::st_as_sf(x, "nodes")
-    # Join spatially with the new network.
-    x_new = sf::st_join(x_new, nodes, join = sf::st_equals)
+  #
+  # ===============
+  # Post processing
+  # ===============
+  #
+  # Spatial left join between nodes of x_new and original nodes of x. 
+  # This is always needed when:
+  # --> Nodes of x_new need to be sorted in the same order as nodes of x.
+  # In other cases, it is also needed when:
+  # --> Nodes of x had attributes (these got lost when constructing x_new).
+  if (sort) {
+    # Add index column to nodes of x to keep track of original node indices.
+    orig_nodes = sf::st_as_sf(x, "nodes")
+    if (".sfnetwork_node_index" %in% names(orig_nodes)) {
+      stop(
+        "The attribute name '.sfnetwork_node_index' is reserved", 
+        call. = FALSE
+      )
+    }
+    orig_nodes$.sfnetwork_node_index = seq_len(nrow(orig_nodes))
+    # Join original nodes spatially with the new network.
+    x_new = sf::st_join(x_new, orig_nodes, join = sf::st_equals)
+    # Sort based on original node index.
+    x_new = tidygraph::arrange(x_new, .sfnetwork_node_index)
+    # Remove the node index column.
+    x_new = tidygraph::mutate(x_new, .sfnetwork_node_index = NULL)
+  } else if (length(node_spatial_attribute_names(x)) > 0) {
+    # Join original nodes spatially with the new network.
+    x_new = sf::st_join(x_new, sf::st_as_sf(x, "nodes"), join = sf::st_equals)
   }
-  # Join attributes from y in.
+  # Spatial left join between nodes of x_new and point features of y.
+  # This is needed when:
+  # --> Features of y had attributes.
   if (is.sf(y) && ncol(y) > 1) {
-    # Update geometries for features in y that were connected to an edge in x.
+    # Update geometries of features in y that were snapped to an edge in x.
     ygeom[close] = do.call(
       "c",
       lapply(
@@ -87,7 +112,7 @@ st_blend = function(x, y, tolerance = Inf) {
       )
     )
     sf::st_geometry(y) = ygeom
-    # Keep only those features in y that are either on or close to an edge in x.
+    # Keep only those features in y that were blended.
     y = y[on | close, ]
     # Join spatially with the new network.
     x_new = sf::st_join(x_new, y, join = sf::st_equals)
