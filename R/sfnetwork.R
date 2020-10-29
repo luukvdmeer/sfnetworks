@@ -270,6 +270,13 @@ as_sfnetwork.sf = function(x, ...) {
 }
 
 #' @name as_sfnetwork
+#' @importFrom sf st_as_sf
+#' @export
+as_sfnetwork.sfc = function(x, ...) {
+  as_sfnetwork(st_as_sf(x), ...)
+}
+
+#' @name as_sfnetwork
 #' @importFrom igraph is_directed
 #' @export
 as_sfnetwork.sfNetwork = function(x, ...) {
