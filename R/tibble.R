@@ -24,6 +24,7 @@
 #' 
 #' @param ... Arguments passed on to \code{\link[tibble]{as_tibble}}.
 #'
+#' @name as_tibble
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph
 #' @export
