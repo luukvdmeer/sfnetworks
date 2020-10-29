@@ -58,13 +58,13 @@ edge_geom_colname = function(x) {
   )
 }
 
-#' @importFrom igraph vertex_attr
+#' @importFrom igraph vertex_attr<-
 `node_geom_colname<-` = function(x, value) {
   attr(vertex_attr(x), "sf_column") = value
   x
 }
 
-#' @importFrom igraph edge_attr
+#' @importFrom igraph edge_attr<-
 `edge_geom_colname<-` = function(x, value) {
   attr(edge_attr(x), "sf_column") = value
   x
@@ -128,11 +128,16 @@ mutate_edge_geom = function(x, y) {
     # Replace the geometries in the current geometry column with y.
     geom_col = edge_geom_colname(x)
     # What if there is currently no column marked as geometry column?
-    # --> Create a new column named 'geometry'.
+    # --> This means a new geometry column is created.
+    # --> Use the same geometry column name as the one in the nodes.
+    # --> If that is an existing column, create a column named 'geometry'.
     if (is.null(geom_col)) {
-      geom_col = "geometry"
-      if ("geometry" %in% edge_attr_names(x)) {
-        warning("Overwriting column 'geometry'", call. = FALSE)
+      geom_col = node_geom_colname(x)
+      if (geom_col %in% edge_attr_names(x)) {
+        geom_col = "geometry"
+        if (geom_col %in% edge_attr_names(x)) {
+          warning("Overwriting column '", geom_col, "'", call. = FALSE)
+        }
       }
     }
     # Replace.

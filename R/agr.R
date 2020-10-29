@@ -54,13 +54,13 @@ edge_agr = function(x) {
   )
 }
 
-#' @importFrom igraph vertex_attr
+#' @importFrom igraph vertex_attr<-
 `node_agr<-` = function(x, value) {
   attr(vertex_attr(x), "agr") = value
   x
 }
 
-#' @importFrom igraph edge_attr
+#' @importFrom igraph edge_attr<-
 `edge_agr<-` = function(x, value) {
   attr(edge_attr(x), "agr") = value
   x

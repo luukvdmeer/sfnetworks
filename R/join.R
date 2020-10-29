@@ -83,11 +83,5 @@ st_network_join = function(x, y, blend_nodes = FALSE,
   if (has_duplicates(st_geometry(g_sfn, "nodes"))) {
     stop("One or more nodes have multiple matches", call. = FALSE)
   }
-  # Update agr.
-  node_agr(g_sfn) = structure(
-    concat_agr(node_agr(x), node_agr(y)),
-    names = node_spatial_attribute_names(g_sfn)
-  )
-  edge_agr(g_sfn) = empty_edge_agr(g_sfn)
   g_sfn %preserve_active% x
 }

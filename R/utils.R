@@ -220,13 +220,11 @@ explicitize_edges = function(x) {
     to_geoms = nodes[ids[, 2]]
     # Draw linestring geometries between the boundary nodes of each edge.
     edge_geoms = draw_lines(from_geoms, to_geoms)
+    # Add the geometries as a column.
     # Use the same geometry column name as the geometry column of the nodes.
     col = node_geom_colname(x)
-    # Add the geometries as a column.
     x_new = mutate(activate(x, "edges"), !!col := edge_geoms)
-    # Set the sf attributes.
     edge_geom_colname(x_new) = col
-    edge_agr(x_new) = empty_edge_agr(x)
     # Return x_new.
     x_new %preserve_active% x
   }
