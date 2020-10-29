@@ -2,7 +2,7 @@
 % Please edit documentation in R/blend.R
 \name{st_blend}
 \alias{st_blend}
-\title{Blend spatial points into a spatial network}
+\title{Blend geospatial points into a spatial network}
 \usage{
 st_blend(x, y, tolerance = Inf, sort = FALSE)
 }

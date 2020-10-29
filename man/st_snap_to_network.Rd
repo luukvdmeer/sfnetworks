@@ -2,7 +2,7 @@
 % Please edit documentation in R/snap.R
 \name{st_snap_to_network}
 \alias{st_snap_to_network}
-\title{Update geometries to their nearest point on the network}
+\title{Snap geospatial points to their nearest point on the network}
 \usage{
 st_snap_to_network(x, graph, method = "nearest_node", tolerance = Inf)
 }

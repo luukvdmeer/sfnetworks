@@ -1,4 +1,4 @@
-#' Update geometries to their nearest point on the network
+#' Snap geospatial points to their nearest point on the network
 #'
 #' Implementation of snapping techniques that find the nearest points on a
 #' spatial network to a given set of input geometries. In theory, the
@@ -44,7 +44,7 @@ st_snap_to_network = function(x, graph, method = "nearest_node",
     method,
     nearest_node = nearest_node(x, graph, tolerance),
     nearest_point_on_edge = nearest_point_on_edge(x, graph, tolerance),
-    raise_unkown_input(method)
+    raise_unknown_input(method)
   )
 }
 

@@ -1,4 +1,4 @@
-#' Get or set the sf_column attribute of the active element of an sfnetwork
+#' Get or set the sf_column attribute of the active element of a sfnetwork
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -18,7 +18,7 @@ geom_colname = function(x, active = NULL) {
     active,
     nodes = node_geom_colname(x),
     edges = edge_geom_colname(x),
-    raise_unkown_input(active)
+    raise_unknown_input(active)
   )
 }
 
@@ -54,7 +54,7 @@ edge_geom_colname = function(x) {
     active,
     nodes = `node_geom_colname<-`(x, value),
     edges = `edge_geom_colname<-`(x, value),
-    raise_unkown_input(active)
+    raise_unknown_input(active)
   )
 }
 
@@ -70,7 +70,7 @@ edge_geom_colname = function(x) {
   x
 }
 
-#' Mutate the geometry column of the active element of an sfnetwork
+#' Mutate the geometry column of the active element of a sfnetwork
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -94,7 +94,7 @@ mutate_geom = function(x, y, active = NULL) {
     active,
     nodes = mutate_node_geom(x, y),
     edges = mutate_edge_geom(x, y),
-    raise_unkown_input(active)
+    raise_unknown_input(active)
   )
 }
 
@@ -145,7 +145,7 @@ mutate_edge_geom = function(x, y) {
   x_new %preserve_active% x
 }
 
-#' Drop the geometry column of the active element of an sfnetwork
+#' Drop the geometry column of the active element of a sfnetwork
 #'
 #' @param x An object of class \code{\link{sfnetwork}}
 #'
@@ -164,7 +164,7 @@ drop_geom = function(x, active = NULL) {
     active,
     nodes = drop_node_geom(x),
     edges = drop_edge_geom(x),
-    raise_unkown_input(active)
+    raise_unknown_input(active)
   )
 }
 

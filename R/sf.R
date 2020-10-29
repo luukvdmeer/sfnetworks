@@ -10,7 +10,7 @@ is.sfg = function(x) {
   inherits(x, "sfg")
 }
 
-#' sf methods for sfnetwork objects
+#' sf methods for sfnetworks
 #'
 #' \code{\link[sf]{sf}} methods for \code{\link{sfnetwork}} objects. Use these 
 #' methods without the .sfnetwork suffix and after loading the sf package.
@@ -45,7 +45,7 @@ st_as_sf.sfnetwork = function(x, active = NULL, ...) {
     active,
     nodes = nodes_as_sf(x, ...),
     edges = edges_as_sf(x, ...),
-    raise_unkown_active(active)
+    raise_unknown_input(active)
   )
 }
 
@@ -88,7 +88,7 @@ st_geometry.sfnetwork = function(x, active = NULL, ...) {
     active,
     nodes = vertex_attr(x, node_geom_colname(x)),
     edges = edge_attr(x, edge_geom_colname(x)),
-    raise_unkown_active(active)
+    raise_unknown_input(active)
   )
   if (! is.sfc(x_geom)) {
     stop(
@@ -238,7 +238,7 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
     active,
     nodes = node_agr(x),
     edges = edge_agr(x),
-    raise_unkown_active(active)
+    raise_unknown_input(active)
   )
 }
 
@@ -340,7 +340,7 @@ st_join.sfnetwork = function(x, y, ...) {
     active,
     nodes = join_nodes(x, y, ...),
     edges = join_edges(x, y, ...),
-    raise_unkown_active(active)
+    raise_unknown_input(active)
   )
 }
 

@@ -24,7 +24,7 @@
 \alias{st_join.sfnetwork}
 \alias{st_crop.sfnetwork}
 \alias{st_filter.sfnetwork}
-\title{sf methods for sfnetwork objects}
+\title{sf methods for sfnetworks}
 \usage{
 \method{st_as_sf}{sfnetwork}(x, active = NULL, ...)
 

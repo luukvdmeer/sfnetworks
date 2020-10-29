@@ -2,7 +2,7 @@
 % Please edit documentation in R/sfnetwork.R
 \name{sfnetwork}
 \alias{sfnetwork}
-\title{Create an sfnetwork object}
+\title{Create a sfnetwork}
 \usage{
 sfnetwork(
   nodes,
@@ -16,20 +16,20 @@ sfnetwork(
 )
 }
 \arguments{
-\item{nodes}{An object containing information about the nodes in the network.
-The nodes should contain geospatial coordinates, either by being an object of
-class \code{\link[sf]{sf}} with \code{POINT} geometry features, or by being 
-convertible to such an object with \code{\link[sf]{st_as_sf}}.}
+\item{nodes}{The nodes of the network. Should be an object of class 
+\code{\link[sf]{sf}}, or directly convertible to it using 
+\code{\link[sf]{st_as_sf}}. All features should have an associated geometry
+of type \code{POINT}.}
 
-\item{edges}{An object containing information about the edges in the network.
-This object may contain explicit geospatial information by being an object of
-class \code{\link[sf]{sf}} with \code{LINESTRING} geometry features. It may 
-also be a regular \code{data.frame} or \code{tbl_df} object. In any case,
-the adjacent nodes of each edge must either be encoded in a \code{to} and
-\code{from} column, as integers or characters. Integers should refer to 
-the position of a node in the nodes table, while characters should refer to
-the name of a node encoded in the column referred to in the \code{node_key}
-argument. Setting edges to \code{NULL} will create a network without edges.}
+\item{edges}{The edges of the network. May be an object of class
+\code{\link[sf]{sf}}, with all features having an associated geometry of
+type \code{LINESTRING}. It may also be a regular \code{data.frame} or 
+\code{tbl_df} object. In any case, the adjacent nodes of each edge must
+either be encoded in a \code{to} and \code{from} column, as integers or 
+characters. Integers should refer to the position of a node in the nodes 
+table, while characters should refer to the name of a node encoded in the 
+column referred to in the \code{node_key} argument. Setting edges to 
+\code{NULL} will create a network without edges.}
 
 \item{directed}{Should the constructed network be directed? Defaults to
 \code{TRUE}.}
@@ -42,7 +42,7 @@ and \code{from} are given as integers. Defaults to \code{'name'}.}
 \item{edges_as_lines}{Should the edges be spatially explicit, i.e. have
 \code{LINESTRING} geometries stored in a geometry list column? If \code{NULL},
 this will be automatically defined, by setting the argument to \code{TRUE}
-when the given edges object is an object of class \code{\link[sf]{sf}}, and 
+when the edges are given as an object of class \code{\link[sf]{sf}}, and 
 \code{FALSE} otherwise. Defaults to \code{NULL}.}
 
 \item{length_as_weight}{Should the length of the edges be stored in a column
@@ -63,19 +63,18 @@ These checks are important, but also time consuming. If you are already sure
 your input data meet the requirements, the checks are unneccesary and can be
 turned off to improve performance.}
 
-\item{...}{Arguments passed on to \code{\link[sf]{st_as_sf}}, if nodes
-need to be converted into an \code{sf} object during construction.}
+\item{...}{Arguments passed on to \code{\link[sf]{st_as_sf}}, if nodes need 
+to be converted into an \code{\link[sf]{sf}} object during construction.}
 }
 \value{
 An object of class \code{sfnetwork}.
 }
 \description{
-\code{sfnetwork} is a tidy data structure for geospatial networks. It extends
-the graph manipulation functionalities of the
-\code{\link[tidygraph]{tidygraph-package}} package into the domain of
-geospatial networks, where the nodes and edges are embedded in geographical 
-space, and enables to apply the spatial analytical functions from the 
-\code{\link[sf:sf]{sf-package}} directly to the network.
+\code{sfnetwork} is a tidy data structure for geospatial networks. It 
+extends the \code{\link[tidygraph]{tbl_graph}} data structure for
+relational data into the domain of geospatial networks, whith nodes and 
+edges embedded in geographical space, and offers smooth integration with 
+\code{\link[sf]{sf}} for spatial data analysis.
 }
 \examples{
 # Create sfnetwork from sf objects

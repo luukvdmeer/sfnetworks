@@ -6,10 +6,11 @@
 \alias{as_sfnetwork.linnet}
 \alias{as_sfnetwork.psp}
 \alias{as_sfnetwork.sf}
+\alias{as_sfnetwork.sfc}
 \alias{as_sfnetwork.sfNetwork}
 \alias{as_sfnetwork.sfnetwork}
 \alias{as_sfnetwork.tbl_graph}
-\title{Convert a foreign object to an sfnetwork object}
+\title{Convert a foreign object to a sfnetwork}
 \usage{
 as_sfnetwork(x, ...)
 
@@ -21,6 +22,8 @@ as_sfnetwork(x, ...)
 
 \method{as_sfnetwork}{sf}(x, ...)
 
+\method{as_sfnetwork}{sfc}(x, ...)
+
 \method{as_sfnetwork}{sfNetwork}(x, ...)
 
 \method{as_sfnetwork}{sfnetwork}(x, ...)
@@ -28,7 +31,7 @@ as_sfnetwork(x, ...)
 \method{as_sfnetwork}{tbl_graph}(x, ...)
 }
 \arguments{
-\item{x}{Object to be converted into an \code{\link{sfnetwork}} object.}
+\item{x}{Object to be converted into an \code{\link{sfnetwork}}.}
 
 \item{...}{Arguments passed on to the \code{\link{sfnetwork}} construction
 function.}
@@ -40,7 +43,7 @@ An object of class \code{\link{sfnetwork}}.
 Convert a given object into an object of class \code{\link{sfnetwork}}.
 If an object can be read by \code{\link[tidygraph]{as_tbl_graph}} and the
 nodes can be read by \code{\link[sf]{st_as_sf}}, it is automatically
-supported by sfnetworks.
+supported.
 }
 \examples{
 # Examples for linnet method

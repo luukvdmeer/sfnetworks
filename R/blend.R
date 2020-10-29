@@ -1,4 +1,4 @@
-#' Blend spatial points into a spatial network
+#' Blend geospatial points into a spatial network
 #'
 #' Blending a point into a network is the combined process of first snapping 
 #' the given point to its nearest point on its nearest edge in the network, 

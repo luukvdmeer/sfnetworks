@@ -1,4 +1,4 @@
-#' as_tibble method for sfnetwork objects
+#' as_tibble method for sfnetworks
 #'
 #' The sfnetwork method for \code{\link[tibble]{as_tibble}} is conceptually 
 #' different. Whenever a geometry list column is present, it will by default 
@@ -36,14 +36,14 @@ as_tibble.sfnetwork = function(x, active = NULL, spatial = TRUE, ...) {
       active,
       nodes = node_spatial_tibble(x),
       edges = edge_spatial_tibble(x),
-      raise_unkown_input(active)
+      raise_unknown_input(active)
     )
   } else {
     switch(
       active,
       nodes = as_tibble(as_tbl_graph(x), "nodes"),
       edges = as_tibble(as_tbl_graph(x), "edges"),
-      raise_unkown_input(active)
+      raise_unknown_input(active)
     )
   }
 }

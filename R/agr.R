@@ -1,4 +1,4 @@
-#' Get or set the agr attribute of the active element of an sfnetwork
+#' Get or set the agr attribute of the active element of a sfnetwork
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -21,7 +21,7 @@ agr = function(x, active = NULL) {
     active,
     nodes = node_agr(x),
     edges = edge_agr(x),
-    raise_unkown_input(active)
+    raise_unknown_input(active)
   )
 }
 
@@ -50,7 +50,7 @@ edge_agr = function(x) {
     active,
     nodes = `node_agr<-`(x, value),
     edges = `edge_agr<-`(x, value),
-    raise_unkown_input(active)
+    raise_unknown_input(active)
   )
 }
 

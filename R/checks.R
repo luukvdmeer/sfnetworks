@@ -37,7 +37,7 @@ has_single_geom_type = function(x, type) {
   all(st_is(x, type))
 }
 
-#' Check if an sfnetwork has spatially explicit edges
+#' Check if a sfnetwork has spatially explicit edges
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'

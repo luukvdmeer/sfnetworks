@@ -1,4 +1,4 @@
-#' Query sf attributes from the active element of an sfnetwork
+#' Query sf attributes from the active element of a sfnetwork
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -19,7 +19,7 @@ sf_attr = function(x, name, active = NULL) {
     name,
     agr = agr(x, active),
     sf_column = geom_colname(x, active),
-    raise_unkown_attr(name)
+    raise_unknown_input(name)
   )
 }
 
@@ -38,7 +38,7 @@ sf_attr = function(x, name, active = NULL) {
   )
 }
 
-#' Get attribute column names from the active element of an sfnetwork
+#' Get attribute column names from the active element of a sfnetwork
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -69,7 +69,7 @@ graph_attribute_names = function(x, active = NULL) {
     active,
     nodes = node_graph_attribute_names(x),
     edges = edge_graph_attribute_names(x),
-    raise_unkown_input(active)
+    raise_unknown_input(active)
   )
 }
 
@@ -93,7 +93,7 @@ spatial_attribute_names = function(x, active = NULL) {
     active,
     nodes = node_spatial_attribute_names(x),
     edges = edge_spatial_attribute_names(x),
-    raise_unkown_input(active)
+    raise_unknown_input(active)
   )
 }
 
