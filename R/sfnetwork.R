@@ -132,7 +132,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
   }
   if (length_as_weight) {
     if ("weight" %in% edge_graph_attribute_names(x_sfn)) {
-      warning("Overwriting column 'weight'", call. = FALSE)
+      raise_overwrite("weight")
     }
     x_sfn = activate(x_sfn, "edges")
     x_sfn = mutate(x_sfn, weight = edge_length())

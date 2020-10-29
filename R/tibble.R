@@ -36,14 +36,14 @@ as_tibble.sfnetwork = function(x, active = NULL, spatial = TRUE, ...) {
       active,
       nodes = node_spatial_tibble(x),
       edges = edge_spatial_tibble(x),
-      throw_unknown_active_exception(active)
+      raise_unkown_input(active)
     )
   } else {
     switch(
       active,
       nodes = as_tibble(as_tbl_graph(x), "nodes"),
       edges = as_tibble(as_tbl_graph(x), "edges"),
-      throw_unknown_active_exception(active)
+      raise_unkown_input(active)
     )
   }
 }

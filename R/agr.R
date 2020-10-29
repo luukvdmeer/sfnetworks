@@ -21,7 +21,7 @@ agr = function(x, active = NULL) {
     active,
     nodes = node_agr(x),
     edges = edge_agr(x),
-    throw_unknown_active_exception(active)
+    raise_unkown_input(active)
   )
 }
 
@@ -50,7 +50,7 @@ edge_agr = function(x) {
     active,
     nodes = `node_agr<-`(x, value),
     edges = `edge_agr<-`(x, value),
-    throw_unknown_active_exception(active)
+    raise_unkown_input(active)
   )
 }
 

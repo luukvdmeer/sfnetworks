@@ -27,7 +27,7 @@
 #' @return An object of class \code{\link{sfnetwork}}.
 #' 
 #' @importFrom dplyr sym
-#' @importFrom rlang !!
+#' @importFrom rlang !! :=
 #' @importFrom sf st_as_sf st_distance st_equals st_geometry st_intersection
 #' st_join st_nearest_feature st_nearest_points st_set_crs
 #' @importFrom tidygraph arrange mutate
@@ -37,13 +37,7 @@ st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
   stopifnot(has_single_geom_type(y, "POINT"))
   stopifnot(have_equal_crs(x, y))
   stopifnot(as.numeric(tolerance) >= 0)
-  # Inform about sf's planar assumption if needed.
-  if (will_assume_planar(x)) {
-    message(
-      "Although coordinates are longitude/latitude, ",
-      "st_blend assumes that they are planar"
-    )
-  }
+  if (will_assume_planar(x)) raise_assume_planar("st_blend")
   # Set tolerance.
   # Allow a small deviation if tolerance = 0 to account for precision errors.
   tolerance = set_snapping_tolerance(tolerance, soft = TRUE)
@@ -67,6 +61,8 @@ st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
       call. = FALSE
     )
     return (x)
+  } else {
+    raise_assume_constant("st_blend")
   }
   # For each feature p in y that is on an edge in x:
   # --> Split the edges in x by p.
@@ -115,19 +111,15 @@ st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
   if (sort) {
     # Add index column to nodes of x to keep track of original node indices.
     orig_nodes = st_as_sf(x, "nodes")
-    if (".sfnetwork_node_index" %in% names(orig_nodes)) {
-      stop(
-        "The attribute name '.sfnetwork_node_index' is reserved", 
-        call. = FALSE
-      )
-    }
-    orig_nodes$.sfnetwork_node_index = seq_len(nrow(orig_nodes))
+    idx_col = ".sfnetwork_node_index"
+    if (idx_col %in% names(orig_nodes)) raise_reserved_attr(idx_col)
+    orig_nodes[, idx_col] = seq_len(nrow(orig_nodes))
     # Join original nodes spatially with the new network.
     x_new = st_join(x_new, orig_nodes, join = st_equals)
     # Sort based on original node index.
-    x_new = arrange(x_new, !!sym(".sfnetwork_node_index"))
+    x_new = arrange(x_new, !!sym(idx_col))
     # Remove the node index column.
-    x_new = mutate(x_new, .sfnetwork_node_index = NULL)
+    x_new = mutate(x_new, !!idx_col := NULL)
   } else if (length(node_spatial_attribute_names(x)) > 0) {
     # Join original nodes spatially with the new network.
     x_new = st_join(x_new, st_as_sf(x, "nodes"), join = st_equals)

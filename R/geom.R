@@ -18,7 +18,7 @@ geom_colname = function(x, active = NULL) {
     active,
     nodes = node_geom_colname(x),
     edges = edge_geom_colname(x),
-    throw_unknown_active_exception(active)
+    raise_unkown_input(active)
   )
 }
 
@@ -54,7 +54,7 @@ edge_geom_colname = function(x) {
     active,
     nodes = `node_geom_colname<-`(x, value),
     edges = `edge_geom_colname<-`(x, value),
-    throw_unknown_active_exception(active)
+    raise_unkown_input(active)
   )
 }
 
@@ -94,7 +94,7 @@ mutate_geom = function(x, y, active = NULL) {
     active,
     nodes = mutate_node_geom(x, y),
     edges = mutate_edge_geom(x, y),
-    throw_unknown_active_exception(active)
+    raise_unkown_input(active)
   )
 }
 
@@ -135,9 +135,7 @@ mutate_edge_geom = function(x, y) {
       geom_col = node_geom_colname(x)
       if (geom_col %in% edge_attr_names(x)) {
         geom_col = "geometry"
-        if (geom_col %in% edge_attr_names(x)) {
-          warning("Overwriting column '", geom_col, "'", call. = FALSE)
-        }
+        if (geom_col %in% edge_attr_names(x)) raise_overwrite(geom_col)
       }
     }
     # Replace.
@@ -166,7 +164,7 @@ drop_geom = function(x, active = NULL) {
     active,
     nodes = drop_node_geom(x),
     edges = drop_edge_geom(x),
-    throw_unknown_active_exception(active)
+    raise_unkown_input(active)
   )
 }
 

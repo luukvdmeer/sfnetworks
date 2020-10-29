@@ -38,18 +38,13 @@ st_snap_to_network = function(x, graph, method = "nearest_node",
   stopifnot(have_equal_crs(x, graph))
   stopifnot(as.numeric(tolerance) >= 0)
   # Inform about sf's planar assumption if needed.
-  if (will_assume_planar(x)) {
-    message(
-      "Although coordinates are longitude/latitude, ",
-      "st_snap_to_network assumes that they are planar"
-    )
-  }
+  if (will_assume_planar(x)) raise_assume_planar("st_snap_to_network")
   # Call snapping function corresponding to given method.
   switch(
     method,
     nearest_node = nearest_node(x, graph, tolerance),
     nearest_point_on_edge = nearest_point_on_edge(x, graph, tolerance),
-    stop("Unknown snapping technique: ", method, call. = FALSE)
+    raise_unkown_input(method)
   )
 }
 

@@ -51,24 +51,20 @@ st_network_join = function(x, y, blend_nodes = FALSE,
   y_geom_colname = node_geom_colname(y)
   # Blend if requested.
   if (any(c(blend_nodes, blend_crossings))) {
-    if (will_assume_planar(x)) {
-      message(
-        "Although coordinates are longitude/latitude, ",
-        "st_blend assumes that they are planar"
-      )
-    }
+    if (will_assume_planar(x)) raise_assume_planar("st_blend")
+    raise_assume_constant("st_blend")
     if (blend_nodes) {
       x_nodes = st_geometry(x, "nodes")
       y_nodes = st_geometry(y, "nodes")
-      x = suppressMessages(st_blend(x, y_nodes, tolerance = 0, sort = sort))
-      y = suppressMessages(st_blend(y, x_nodes, tolerance = 0, sort = sort))
+      x = suppressWarnings(st_blend(x, y_nodes, tolerance = 0, sort = sort))
+      y = suppressWarnings(st_blend(y, x_nodes, tolerance = 0, sort = sort))
     }
     if (blend_crossings) {
       x_edges = st_geometry(x, "edges")
       y_edges = st_geometry(y, "edges")
       crossings = linestring_crossings(x_edges, y_edges)
-      x = suppressMessages(st_blend(x, crossings, tolerance = 0, sort = sort))
-      y = suppressMessages(st_blend(y, crossings, tolerance = 0, sort = sort))
+      x = suppressWarnings(st_blend(x, crossings, tolerance = 0, sort = sort))
+      y = suppressWarnings(st_blend(y, crossings, tolerance = 0, sort = sort))
     }
   }
   # Regular graph join based on geometry columns.
@@ -80,8 +76,6 @@ st_network_join = function(x, y, blend_nodes = FALSE,
   )
   # Convert back to sfnetwork.
   g_sfn = tbg_to_sfn(g_tbg)
-  if (has_duplicates(st_geometry(g_sfn, "nodes"))) {
-    stop("One or more nodes have multiple matches", call. = FALSE)
-  }
+  if (has_duplicates(st_geometry(g_sfn, "nodes"))) raise_multiple_matches()
   g_sfn %preserve_active% x
 }

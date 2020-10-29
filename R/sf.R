@@ -45,7 +45,7 @@ st_as_sf.sfnetwork = function(x, active = NULL, ...) {
     active,
     nodes = nodes_as_sf(x, ...),
     edges = edges_as_sf(x, ...),
-    throw_unknown_active_exception(active)
+    raise_unkown_active(active)
   )
 }
 
@@ -88,7 +88,7 @@ st_geometry.sfnetwork = function(x, active = NULL, ...) {
     active,
     nodes = vertex_attr(x, node_geom_colname(x)),
     edges = edge_attr(x, edge_geom_colname(x)),
-    throw_unknown_active_exception(active)
+    raise_unkown_active(active)
   )
   if (! is.sfc(x_geom)) {
     stop(
@@ -238,7 +238,7 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
     active,
     nodes = node_agr(x),
     edges = edge_agr(x),
-    throw_unknown_active_exception(active)
+    raise_unkown_active(active)
   )
 }
 
@@ -340,7 +340,7 @@ st_join.sfnetwork = function(x, y, ...) {
     active,
     nodes = join_nodes(x, y, ...),
     edges = join_edges(x, y, ...),
-    throw_unknown_active_exception(active)
+    raise_unkown_active(active)
   )
 }
 
@@ -354,7 +354,7 @@ join_nodes = function(x, y,  ...) {
   y_sf = st_as_sf(y)
   # Add .sfnetwork_index column to keep track of original network indices.
   if (".sfnetwork_index" %in% c(names(x_sf), names(y_sf))) {
-    stop("The attribute name '.sfnetwork_index' is reserved", call. = FALSE)
+    raise_reserved_attr(".sfnetwork_index")
   }
   x_sf$.sfnetwork_index = seq_len(nrow(x_sf))
   # Join with st_join.
@@ -363,9 +363,7 @@ join_nodes = function(x, y,  ...) {
   # --> Raise an error.
   # --> Allowing multiple matches for nodes breaks the valid network structure.
   # --> See the package vignettes for more info. 
-  if (has_duplicates(n_new$.sfnetwork_index)) {
-    stop("One or more nodes have multiple matches", call. = FALSE)
-  }
+  if (has_duplicates(n_new$.sfnetwork_index)) raise_multiple_matches()
   # If an inner join was requested instead of a left join:
   # --> This means only nodes in x that had a match in y are preserved.
   # --> The other nodes are not preserved, i.e. removed.
@@ -422,7 +420,7 @@ filter_network = function(op, x, y, ...) {
   y_sf = st_as_sf(y)
   # Add .sfnetwork_index column to keep track of original network indices.
   if (".sfnetwork_index" %in% names(x_sf)) {
-    stop("The attribute name '.sfnetwork_index' is reserved", call. = FALSE)
+    raise_reserved_attr(".sfnetwork_index")
   }
   x_sf$.sfnetwork_index = seq_len(nrow(x_sf))
   # Filter with the given operator.

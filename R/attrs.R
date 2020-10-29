@@ -19,7 +19,7 @@ sf_attr = function(x, name, active = NULL) {
     name,
     agr = agr(x, active),
     sf_column = geom_colname(x, active),
-    stop("Unknown sf attribute: ", name, call. = FALSE)
+    raise_unkown_attr(name)
   )
 }
 
@@ -35,18 +35,6 @@ sf_attr = function(x, name, active = NULL) {
     attr(orig, "active"),
     nodes = activate(new, "nodes"),
     edges = activate(new, "edges")
-  )
-}
-
-#' Throw an error when an unknown value for the active attribute is provided
-#'
-#' @param x The provided value for the active attribute.
-#'
-#' @noRd
-throw_unknown_active_exception = function(x) {
-  stop(
-    "Unknown active element: ", x, ". Only nodes and edges supported",
-    call. = FALSE
   )
 }
 
@@ -81,7 +69,7 @@ graph_attribute_names = function(x, active = NULL) {
     active,
     nodes = node_graph_attribute_names(x),
     edges = edge_graph_attribute_names(x),
-    throw_unknown_active_exception(active)
+    raise_unkown_input(active)
   )
 }
 
@@ -105,7 +93,7 @@ spatial_attribute_names = function(x, active = NULL) {
     active,
     nodes = node_spatial_attribute_names(x),
     edges = edge_spatial_attribute_names(x),
-    throw_unknown_active_exception(active)
+    raise_unkown_input(active)
   )
 }
 
