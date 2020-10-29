@@ -23,11 +23,23 @@ geom_colname = function(x, active = NULL) {
 }
 
 node_geom_colname = function(x) {
-  attr(x, "sf")[["nodes"]][["sf_column"]]
+  col = attr(igraph::vertex_attr(x), "sf_column")
+  if (is.null(col)) {
+    # Take the name of the first sfc column.
+    sfc_idx = which(sapply(igraph::node_attr(x), is.sfc))[1]
+    col = igraph::node_attr_names(x)[sfc_idx]
+  }
+  col
 }
 
 edge_geom_colname = function(x) {
-  attr(x, "sf")[["edges"]][["sf_column"]]
+  col = attr(igraph::edge_attr(x), "sf_column")
+  if (has_spatially_explicit_edges(x) && is.null(col)) {
+    # Take the name of the first sfc column.
+    sfc_idx = which(sapply(igraph::edge_attr(x), is.sfc))[1]
+    col = igraph::edge_attr_names(x)[sfc_idx]
+  }
+  col
 }
 
 #' @name geom_colname
@@ -45,12 +57,12 @@ edge_geom_colname = function(x) {
 }
 
 `node_geom_colname<-` = function(x, value) {
-  attr(x, "sf")[["nodes"]][["sf_column"]] = value
+  attr(igraph::vertex_attr(x), "sf_column") = value
   x
 }
 
 `edge_geom_colname<-` = function(x, value) {
-  attr(x, "sf")[["edges"]][["sf_column"]] = value
+  attr(igraph::edge_attr(x), "sf_column") = value
   x
 }
 
@@ -96,8 +108,6 @@ mutate_node_geom = function(x, y) {
     geom_col = node_geom_colname(x)
     x_new = tidygraph::mutate(activate(x, "nodes"), !!geom_col := y)
   }
-  # Update agr.
-  node_agr(x_new) = updated_node_agr(x_new)
   x_new %preserve_active% x
 }
 
@@ -110,30 +120,20 @@ mutate_edge_geom = function(x, y) {
     stopifnot(is.sfc(igraph::edge_attr(x, y)))
     x_new = x
     edge_geom_colname(x_new) = y
-    edge_agr(x_new) = updated_edge_agr(x_new)
   } else {
     # Replace the geometries in the current geometry column with y.
     geom_col = edge_geom_colname(x)
     # What if there is currently no column marked as geometry column?
-    # First: check if there are sfc columns and take the first of those.
-    # Then: create a new column named "geometry".
+    # --> Create a new column named 'geometry'.
     if (is.null(geom_col)) {
-      if (has_sfc(igraph::edge_attr(x))) {
-        sfc_col = which(sapply(igraph::edge_attr(x), function(x) is.sfc))[1]
-        geom_col = igraph::edge_attr_names(x)[sfc_col]
-        warning("Overwriting sfc column '", sfc_col, "'", call. = FALSE)
-      } else {
-        geom_col = "geometry"
-        if ("geometry" %in% igraph::edge_attr_names(x)) {
-          warning("Overwriting column 'geometry'", call. = FALSE)
-        }
+      geom_col = "geometry"
+      if ("geometry" %in% igraph::edge_attr_names(x)) {
+        warning("Overwriting column 'geometry'", call. = FALSE)
       }
     }
     # Replace.
     x_new = tidygraph::mutate(activate(x, "edges"), !!geom_col := y)
-    # Update sf attributes.
     edge_geom_colname(x_new) = geom_col
-    edge_agr(x_new) = updated_edge_agr(x_new)
   }
   x_new %preserve_active% x
 }

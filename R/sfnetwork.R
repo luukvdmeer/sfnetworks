@@ -100,59 +100,44 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
       }
     )
   }
-  node_sf_attrs = attrs_from_sf(nodes)
   # Prepare edges.
   # If edges is an sf object:
   # --> Tidygraph cannot handle it due to sticky geometry.
   # --> Therefore it has to be converted into a regular data frame (or tibble).
-  if (! is.null(edges)) {
-    if (is.sf(edges)) {
-      edge_sf_attrs = attrs_from_sf(edges)
-      class(edges) = setdiff(class(edges), "sf")
-      # When edges_as_lines was not set, set to TRUE.
-      if (is.null(edges_as_lines)) edges_as_lines = TRUE
-    } else {
-      edge_sf_attrs = NULL
-      # When edges_as_lines was not set, set to FALSE.
-      if (is.null(edges_as_lines)) edges_as_lines = FALSE
-    }
+  if (is.sf(edges)) {
+    class(edges) = setdiff(class(edges), "sf")
+    if (is.null(edges_as_lines)) edges_as_lines = TRUE
   } else {
-    edge_sf_attrs = NULL
+    if (is.null(edges_as_lines)) edges_as_lines = FALSE
   }
   # Create network.
   # Store sf attributes of the nodes and edges in a special graph attribute.
   x_tbg = tidygraph::tbl_graph(nodes, edges, directed, node_key)
-  x_sfn = structure(
-    x_tbg,
-    class = c("sfnetwork", class(x_tbg)),
-    sf = list(nodes = node_sf_attrs, edges = edge_sf_attrs)
-  )
+  x_sfn = structure(x_tbg, class = c("sfnetwork", class(x_tbg)))
   # Post-process network.
   if (! is.null(edges)) {
-    if (edges_as_lines) {
-      # Run validity check before explicitizing edges.
-      if (! force) require_valid_network_structure(x_sfn, message = TRUE)
-      # Add edge geometries if needed.
-      x_sfn = explicitize_edges(x_sfn)
-      # Update agr factor of edges.
-      # Because positions of from and to columns were moved during construction.
-      edge_agr(x_sfn) = updated_edge_agr(x_sfn)
-    } else {
-      # Remove edge geometries if needed.
-      x_sfn = implicitize_edges(x_sfn)
-      # Run validity check after implicitizing edges.
-      if (! force) require_valid_network_structure(x_sfn, message = TRUE)
-    }
-    if (length_as_weight) {
-      if ("weight" %in% edge_graph_attribute_names(x_sfn)) {
-        warning("Overwriting column 'weight'", call. = FALSE)
-      }
-      x_sfn = activate(x_sfn, "edges")
-      x_sfn = tidygraph::mutate(x_sfn, weight = edge_length())
-      x_sfn = activate(x_sfn, "nodes")
-    }
-  } else {
+    # Run validity check for nodes and return the network.
     if (! force) require_valid_network_structure(x_sfn, message = TRUE)
+    return (x_sfn)
+  }
+  if (edges_as_lines) {
+    # Run validity check before explicitizing edges.
+    if (! force) require_valid_network_structure(x_sfn, message = TRUE)
+    # Add edge geometries if needed.
+    x_sfn = explicitize_edges(x_sfn)
+  } else {
+    # Remove edge geometries if needed.
+    x_sfn = implicitize_edges(x_sfn)
+    # Run validity check after implicitizing edges.
+    if (! force) require_valid_network_structure(x_sfn, message = TRUE)
+  }
+  if (length_as_weight) {
+    if ("weight" %in% edge_graph_attribute_names(x_sfn)) {
+      warning("Overwriting column 'weight'", call. = FALSE)
+    }
+    x_sfn = activate(x_sfn, "edges")
+    x_sfn = tidygraph::mutate(x_sfn, weight = edge_length())
+    x_sfn = activate(x_sfn, "nodes")
   }
   x_sfn
 }

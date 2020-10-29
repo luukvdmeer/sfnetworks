@@ -47,7 +47,7 @@ has_single_geom_type = function(x, type) {
 #' @importFrom igraph edge_attr
 #' @noRd
 has_spatially_explicit_edges = function(x) {
-  !is.null(edge_geom_colname(x))
+  any(sapply(igraph::edge_attr(x), is.sfc), na.rm = TRUE)
 }
 
 #' Check if a graph is directed.

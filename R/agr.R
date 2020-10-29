@@ -26,11 +26,16 @@ agr = function(x, active = NULL) {
 }
 
 node_agr = function(x) {
-  attr(x, "sf")[["nodes"]][["agr"]]
+  agr = attr(igraph::vertex_attr(x), "agr")
+  valid_agr(agr, node_spatial_attribute_names(x))
 }
 
 edge_agr = function(x) {
-  attr(x, "sf")[["edges"]][["agr"]]
+  agr = attr(igraph::edge_attr(x), "agr")
+  if (has_spatially_explicit_edges(x)) {
+    agr = valid_agr(agr, edge_spatial_attribute_names(x))
+  }
+  agr
 }
 
 #' @name agr
@@ -48,133 +53,13 @@ edge_agr = function(x) {
 }
 
 `node_agr<-` = function(x, value) {
-  attr(x, "sf")[["nodes"]][["agr"]] = value
+  attr(igraph::vertex_attr(x), "agr") = value
   x
 }
 
 `edge_agr<-` = function(x, value) {
-  attr(x, "sf")[["edges"]][["agr"]] = value
+  attr(igraph::edge_attr(x), "agr") = value
   x
-}
-
-#' Create an updated agr factor for the active element of an sfnetwork
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently 
-#' active element of x will be used.
-#'
-#' @return A named factor with appropriate levels. Names are guaranteed to 
-#' correspond to the attribute columns of the targeted element of x and are 
-#' guaranteed to be sorted in the same order as those attribute columns. 
-#' Attribute columns do not involve the geometry list column, but do involve 
-#' the from and to columns.
-#'
-#' @noRd
-updated_agr = function(x, active = NULL) {
-  if (is.null(active)) {
-    active = attr(x, "active")
-  }
-  switch(
-    active,
-    nodes = updated_node_agr(x),
-    edges = updated_edge_agr(x),
-    throw_unknown_active_exception(active)
-  )
-}
-
-updated_node_agr = function(x) {
-  agr = node_agr(x)
-  if (is.null(agr)) {
-    new_agr = empty_node_agr(x)
-  } else {
-    cols = node_spatial_attribute_names(x)
-    new_agr = structure(agr[cols], names = cols)
-  } 
-  new_agr
-}
-
-updated_edge_agr = function(x) {
-  agr = edge_agr(x)
-  if (is.null(agr)) {
-    new_agr = empty_edge_agr(x)
-  } else {
-    cols = edge_spatial_attribute_names(x)
-    new_agr = structure(agr[cols], names = cols)
-  } 
-  new_agr
-}
-
-#' Create an empty agr factor for the active element of an sfnetwork
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently 
-#' active element of x will be used.
-#'
-#' @return A named factor with appropriate levels. Values are all equal to
-#' \code{\link[sf]{NA_agr_}}. Names correspond to the  attribute columns of the 
-#' targeted element of x. Attribute columns do not  involve the geometry list 
-#' column, but do involve the from and to columns.
-#'
-#' @noRd
-empty_agr = function(x, active = NULL) {
-  if (is.null(active)) {
-    active = attr(x, "active")
-  }
-  switch(
-    active,
-    nodes = empty_node_agr(x),
-    edges = empty_edge_agr(x),
-    throw_unknown_active_exception(active)
-  )
-}
-
-empty_node_agr = function(x) {
-  cols = node_spatial_attribute_names(x)
-  structure(rep(sf::NA_agr_, length(cols)), names = cols)
-}
-
-empty_edge_agr = function(x) {
-  cols = edge_spatial_attribute_names(x)
-  structure(rep(sf::NA_agr_, length(cols)), names = cols)
-}
-
-#' Create a correctly sorted agr factor for the active element of an sfnetwork
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently 
-#' active element of x will be used.
-#'
-#' @return A named factor with appropriate levels. Names correspond to the 
-#' attribute columns of the targeted element of x and are guaranteed to be 
-#' sorted in the same order as those attribute columns. Attribute columns do not 
-#' involve the geometry list column, but do involve the from and to columns.
-#'
-#' @noRd
-sorted_agr = function(x, active = NULL) {
-    if (is.null(active)) {
-    active = attr(x, "active")
-  }
-  switch(
-    active,
-    nodes = sorted_node_agr(x),
-    edges = sorted_edge_agr(x),
-    throw_unknown_active_exception(active)
-  )
-}
-
-sorted_node_agr = function(x) {
-  agr = node_agr(x)
-  cols = node_spatial_attribute_names(x)
-  agr[cols]
-}
-
-sorted_edge_agr = function(x) {
-  agr = edge_agr(x)
-  cols = edge_spatial_attribute_names(x)
-  agr[cols]
 }
 
 #' Concatenate two agr factors
@@ -188,4 +73,68 @@ sorted_edge_agr = function(x) {
 #' @noRd
 concat_agr = function(x, y) {
   unlist(list(x, y))
+}
+
+#' Create an empty agr factor
+#'
+#' @param names A character vector containing the names that should be present
+#' in the agr factor.
+#'
+#' @return A named factor with appropriate levels. Values are all equal to
+#' \code{\link[sf]{NA_agr_}}. Names correspond to the  attribute columns of the 
+#' targeted element of x. Attribute columns do not  involve the geometry list 
+#' column, but do involve the from and to columns.
+#'
+#' @noRd
+empty_agr = function(names) {
+  structure(rep(sf::NA_agr_, length(names)), names = names)
+}
+
+#' Check if an agr factor is valid
+#'
+#' @param agr The agr factor to be checked.
+#'
+#' @param names A character vector containing the names that should be present
+#' in the agr factor.
+#'
+#' @param levels A character vector containing the levels that should be present
+#' in the agr factor.
+#'
+#' @return \code{TRUE} is the agr factor is valid, \code{FALSE} otherwise. An
+#' agr factor is valid if it is a named factor with appropriate names and 
+#' levels. 
+#'
+#' @noRd
+is_valid_agr = function(agr, names, levels = sf:::agr_levels) {
+  all(
+    is.factor(agr), 
+    identical(levels(agr), levels), 
+    identical(names(agr), names)
+  )
+}
+
+#' Make an agr factor valid
+#'
+#' @param agr The agr factor to be made valid.
+#'
+#' @param names A character vector containing the names that should be present
+#' in the agr factor.
+#'
+#' @param levels A character vector containing the levels that should be present
+#' in the agr factor.
+#'
+#' @return A named factor with appropriate levels. Names are guaranteed to 
+#' correspond to the attribute columns of the targeted element of x and are 
+#' guaranteed to be sorted in the same order as those attribute columns. 
+#' Attribute columns do not involve the geometry list column, but do involve 
+#' the from and to columns.
+#'
+#' @noRd
+valid_agr = function(agr, names, levels = sf:::agr_levels) {
+  if (is.null(agr)) {
+    new_agr = empty_agr(names)
+  } else {
+    new_agr = structure(agr[names], names = names, levels = levels)
+  }
+  new_agr
 }

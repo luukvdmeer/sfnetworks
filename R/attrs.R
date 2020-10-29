@@ -2,21 +2,19 @@
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @param name Name of the attribute to query. If \code{NULL}, then all sf 
-#' attributes are returned in a list. Defaults to \code{NULL}.
+#' @param name Name of the attribute to query. Either 'sf_column' or 'agr'.
 #'
 #' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently 
 #' active element of x will be used.
 #'
-#' @return A named list of attributes if \code{name} is \code{NULL},
-#' otherwise the value of the attribute matched, or NULL if no exact match is 
-#' found and no or more than one partial match is found.
+#' @return The value of the attribute matched, or NULL if no exact match is 
+#' found.
 #'
 #' @details sf attributes include \code{sf_column} (the name of the sf column)
 #' and \code{agr} (the attribute-geometry-relationships).
 #'
 #' @export
-sf_attr = function(x, name = NULL, active = NULL) {
+sf_attr = function(x, name, active = NULL) {
   switch(
     name,
     agr = agr(x, active),
@@ -25,7 +23,7 @@ sf_attr = function(x, name = NULL, active = NULL) {
   )
 }
 
-#' Preserve the value 'active' attribute of the original network
+#' Preserve the value of the 'active' attribute of the original network
 #'
 #' @param new An object of class \code{\link{sfnetwork}}.
 #'
@@ -50,20 +48,6 @@ throw_unknown_active_exception = function(x) {
     "Unknown active element: ", x, ". Only nodes and edges supported",
     call. = FALSE
   )
-}
-
-#' Query sf attributes from an sf object
-#'
-#' @param x An object of class \code{\link[sf]{sf}}.
-#'
-#' @return A named list of attributes.
-#'
-#' @details sf attributes include \code{sf_column} (the name of the sf column)
-#' and \code{agr} (the attribute-geometry-relationships).
-#'
-#' @noRd
-attrs_from_sf = function(x) {
-  list(sf_column = attr(x, "sf_column"), agr = attr(x, "agr"))
 }
 
 #' Get attribute column names from the active element of an sfnetwork

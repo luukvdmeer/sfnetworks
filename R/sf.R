@@ -225,7 +225,16 @@ change_coords = function(x, op, ...) {
 #' @importFrom sf st_agr
 #' @export
 st_agr.sfnetwork = function(x, active = NULL, ...) {
-  agr(x, active)
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  if (active == "edges") expect_spatially_explicit_edges(x)
+  switch(
+    active,
+    nodes = node_agr(x),
+    edges = edge_agr(x),
+    throw_unknown_active_exception(active)
+  )
 }
 
 #' @name sf
