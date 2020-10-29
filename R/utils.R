@@ -330,19 +330,19 @@ linestring_crossings = function(x, y) {
   ygeom = st_geometry(y)
   # Find crossing geometries.
   cross_matrix = suppressMessages(st_crosses(xgeom, ygeom, sparse = FALSE))
-  # Subset geomtries to only keep only those that cross.
+  # Subset geometries to only keep those that cross.
   xgeom_sub = xgeom[apply(cross_matrix, 1, any)]
   ygeom_sub = ygeom[apply(cross_matrix, 2, any)]
   # Find intersections between the geometry subsets.
-  all_intrs = suppressMessages(st_intersection(xgeom_sub, ygeom_sub))
+  all_intersections = suppressMessages(st_intersection(xgeom_sub, ygeom_sub))
   # Subset intersections to keep only those that are points.
-  pts_intrs = all_intrs[st_is(all_intrs, "POINT")]
+  point_intersections = all_intersections[st_is(all_intersections, "POINT")]
   # Subset point intersections to keep only those that are crossings.
   boundaries = c(linestring_boundary_points(x), linestring_boundary_points(y))
-  is_boundary = lengths(st_equals(pts_intrs, boundaries)) > 0
-  cross_intrs = pts_intrs[!is_boundary]
+  is_boundary = lengths(st_equals(point_intersections, boundaries)) > 0
+  crossings = point_intersections[!is_boundary]
   # Return crossings.
-  cross_intrs 
+  crossings
 }
 
 #' Draw a line between two points
