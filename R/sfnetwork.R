@@ -142,6 +142,25 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
   x_sfn
 }
 
+# Simplified construction function.
+# Must be sure that nodes and edges together form a valid sfnetwork.
+# ONLY FOR INTERNAL USE!
+sfnetwork_ = function(nodes, edges = NULL, directed = TRUE) {
+  if (is.sf(edges)) class(edges) = setdiff(class(edges), "sf")
+  structure(
+    tidygraph::tbl_graph(nodes, edges, directed), 
+    class = c("sfnetwork", class(x_tbg))
+  )
+}
+
+# Fast function to convert from tbl_graph to sfnetwork.
+# Must be sure that tbl_graph has already a valid sfnetwork structure.
+# ONLY FOR INTERNAL USE!
+tbg_to_sfn = function(x) {
+  class(x) = c("sfnetwork", class(x))
+  x
+}
+
 #' Convert a foreign object to an sfnetwork object
 #'
 #' Convert a given object into an object of class \code{\link{sfnetwork}}.
