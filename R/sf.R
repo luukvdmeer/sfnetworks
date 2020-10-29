@@ -285,6 +285,7 @@ st_intersects.sfnetwork = function(x, y = x, ...) {
 # target may be switched) as their corresponding LINESTRING geometries in x.
 
 #' @name sf
+#' @importFrom igraph is_directed
 #' @importFrom sf st_reverse
 #' @importFrom tidygraph as_tbl_graph reroute
 #' @export
@@ -343,6 +344,7 @@ st_join.sfnetwork = function(x, y, ...) {
   )
 }
 
+#' @importFrom igraph is_directed
 #' @importFrom sf st_as_sf st_join
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph slice
@@ -383,6 +385,7 @@ join_nodes = function(x, y,  ...) {
   )
 }
 
+#' @importFrom igraph is_directed
 #' @importFrom sf st_as_sf st_join
 join_edges = function(x, y, ...) {
   expect_spatially_explicit_edges(x)

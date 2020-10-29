@@ -50,19 +50,6 @@ has_spatially_explicit_edges = function(x) {
   any(sapply(edge_attr(x), is.sfc), na.rm = TRUE)
 }
 
-#' Check if a graph is directed.
-#'
-#' @param x An object of \code{\link{sfnetwork}}, \code{tbl_graph} 
-#' or \code{igraph}.
-#'
-#' @return \code{TRUE} when the given graph is directed, \code{FALSE} otherwise.
-#'
-#' @importFrom igraph is_directed
-#' @noRd
-is_directed = function(x) {
-  is_directed(x)
-}
-
 #' Check for empty geometries
 #'
 #' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.

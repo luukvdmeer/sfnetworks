@@ -270,6 +270,7 @@ as_sfnetwork.sf = function(x, ...) {
 }
 
 #' @name as_sfnetwork
+#' @importFrom igraph is_directed
 #' @export
 as_sfnetwork.sfNetwork = function(x, ...) {
   args = list(...)
@@ -289,6 +290,7 @@ as_sfnetwork.sfnetwork = function(x, ...) {
 }
 
 #' @name as_sfnetwork
+#' @importFrom igraph is_directed
 #' @export
 as_sfnetwork.tbl_graph = function(x, ...) {
   # Get nodes and edges from the graph and add to the other given arguments.

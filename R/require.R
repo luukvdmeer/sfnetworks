@@ -68,13 +68,14 @@ expect_spatially_explicit_edges = function(x) {
 #' @noRd
 require_valid_network_structure = function(x, message = FALSE) {
   if (message) message("Checking if spatial network structure is valid...")
-  validate_nodes(x)
-  if (has_spatially_explicit_edges(x)) {
-  	validate_edges(x)
+  validate_nodes(x)  
+  if (has_spatially_explicit_edges(x)) {    
+  	validate_edges(x)    
   }
   if (message) message("Spatial network structure is valid")
 }
 
+#' @importFrom sf st_as_sf
 validate_nodes = function(x) {
   nodes = st_as_sf(x, "nodes")
   # --> Are all node geometries points?
@@ -86,6 +87,8 @@ validate_nodes = function(x) {
   }
 }
 
+#' @importFrom igraph is_directed
+#' @importFrom sf st_as_sf
 validate_edges = function(x) {
   nodes = st_as_sf(x, "nodes")
   edges = st_as_sf(x, "edges")
