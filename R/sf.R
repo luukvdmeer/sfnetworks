@@ -49,19 +49,23 @@ st_as_sf.sfnetwork = function(x, active = NULL, ...) {
   )
 }
 
+#' @importFrom sf st_as_sf
 #' @importFrom tibble as_tibble
+#' @importFrom tidygraph as_tbl_graph
 nodes_as_sf = function(x, ...) {
-  sf::st_as_sf(
-    tibble::as_tibble(as_tbl_graph(x), "nodes"),
+  st_as_sf(
+    as_tibble(as_tbl_graph(x), "nodes"),
     agr = node_agr(x),
     sf_column_name = node_geom_colname(x)
   )
 }
 
+#' @importFrom sf st_as_sf
 #' @importFrom tibble as_tibble
+#' @importFrom tidygraph as_tbl_graph
 edges_as_sf = function(x, ...) {
-  sf::st_as_sf(
-    tibble::as_tibble(as_tbl_graph(x), "edges"),
+  st_as_sf(
+    as_tibble(as_tbl_graph(x), "edges"),
     agr = edge_agr(x),
     sf_column_name = edge_geom_colname(x)
   )
@@ -82,8 +86,8 @@ st_geometry.sfnetwork = function(x, active = NULL, ...) {
   if (active == "edges") expect_spatially_explicit_edges(x)
   x_geom = switch(
     active,
-    nodes = igraph::vertex_attr(x, node_geom_colname(x)),
-    edges = igraph::edge_attr(x, edge_geom_colname(x)),
+    nodes = vertex_attr(x, node_geom_colname(x)),
+    edges = edge_attr(x, edge_geom_colname(x)),
     throw_unknown_active_exception(active)
   )
   if (! is.sfc(x_geom)) {
@@ -114,7 +118,7 @@ st_geometry.sfnetwork = function(x, active = NULL, ...) {
 #' @export
 st_bbox.sfnetwork = function(x, ...) {
   if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  sf::st_bbox(sf::st_geometry(x), ...)
+  st_bbox(st_geometry(x), ...)
 }
 
 #' @name sf
@@ -122,7 +126,7 @@ st_bbox.sfnetwork = function(x, ...) {
 #' @export
 st_coordinates.sfnetwork = function(x, ...) {
   if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  sf::st_coordinates(sf::st_geometry(x), ...)
+  st_coordinates(st_geometry(x), ...)
 }
 
 #' @name sf
@@ -130,7 +134,7 @@ st_coordinates.sfnetwork = function(x, ...) {
 #' @export
 st_is.sfnetwork = function(x, ...) {
   if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  sf::st_is(sf::st_geometry(x), ...)
+  st_is(st_geometry(x), ...)
 }
 
 # =============================================================================
@@ -141,7 +145,7 @@ st_is.sfnetwork = function(x, ...) {
 #' @importFrom sf st_crs st_geometry
 #' @export
 st_crs.sfnetwork = function(x, ...) {
-  sf::st_crs(sf::st_geometry(x), ...)
+  st_crs(st_geometry(x), ...)
 }
 
 #' @name sf
@@ -149,12 +153,12 @@ st_crs.sfnetwork = function(x, ...) {
 #' @export
 `st_crs<-.sfnetwork` = function(x, value) {
   if (has_spatially_explicit_edges(x)) {
-    geom = sf::st_geometry(x, "edges")
-    sf::st_crs(geom) = value
+    geom = st_geometry(x, "edges")
+    st_crs(geom) = value
     x = mutate_geom(x, geom, "edges")
   }
-  geom = sf::st_geometry(x, "nodes")
-  sf::st_crs(geom) = value
+  geom = st_geometry(x, "nodes")
+  st_crs(geom) = value
   mutate_geom(x, geom, "nodes")
 }
 
@@ -163,7 +167,7 @@ st_crs.sfnetwork = function(x, ...) {
 #' @export
 st_shift_longitude.sfnetwork = function(x, ...) {
   if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  change_coords(x, op = sf::st_shift_longitude, ...)
+  change_coords(x, op = st_shift_longitude, ...)
 }
 
 #' @name sf
@@ -171,7 +175,7 @@ st_shift_longitude.sfnetwork = function(x, ...) {
 #' @export
 st_transform.sfnetwork = function(x, ...) {
   if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  change_coords(x, op = sf::st_transform, ...)
+  change_coords(x, op = st_transform, ...)
 }
 
 #' @name sf
@@ -179,7 +183,7 @@ st_transform.sfnetwork = function(x, ...) {
 #' @export
 st_wrap_dateline.sfnetwork = function(x, ...) {
   if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  change_coords(x, op = sf::st_wrap_dateline, ...)
+  change_coords(x, op = st_wrap_dateline, ...)
 }
 
 #' @name sf
@@ -187,7 +191,7 @@ st_wrap_dateline.sfnetwork = function(x, ...) {
 #' @export
 st_zm.sfnetwork = function(x, ...) {
   if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  change_coords(x, op = sf::st_zm, ...)
+  change_coords(x, op = st_zm, ...)
 }
 
 #' @name sf
@@ -195,7 +199,7 @@ st_zm.sfnetwork = function(x, ...) {
 #' @export
 st_m_range.sfnetwork = function(x, ...) {
   if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  sf::st_m_range(sf::st_geometry(x))
+  st_m_range(st_geometry(x))
 }
 
 #' @name sf
@@ -203,16 +207,17 @@ st_m_range.sfnetwork = function(x, ...) {
 #' @export
 st_z_range.sfnetwork = function(x, ...) {
   if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  sf::st_z_range(sf::st_geometry(x))
+  st_z_range(st_geometry(x))
 }
 
+#' @importFrom sf st_geometry
 change_coords = function(x, op, ...) {
   if (has_spatially_explicit_edges(x)) {
-    geom = sf::st_geometry(x, "edges")
+    geom = st_geometry(x, "edges")
     new_geom = do.call(match.fun(op), list(geom, ...))
     x = mutate_geom(x, new_geom, "edges")
   }
-  geom = sf::st_geometry(x, "nodes")
+  geom = st_geometry(x, "nodes")
   new_geom = do.call(match.fun(op), list(geom, ...))
   mutate_geom(x, new_geom, "nodes")
 }
@@ -242,9 +247,9 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
 #' @export
 `st_agr<-.sfnetwork` = function(x, value) {
   if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  x_sf = sf::st_as_sf(x)
-  sf::st_agr(x_sf) = value
-  agr(x) = sf::st_agr(x_sf)
+  x_sf = st_as_sf(x)
+  st_agr(x_sf) = value
+  agr(x) = st_agr(x_sf)
   x
 }
 
@@ -262,7 +267,7 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
 #' @export
 st_intersects.sfnetwork = function(x, y = x, ...) {
   if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  sf::st_intersects(sf::st_as_sf(x), sf::st_as_sf(y), ...)
+  st_intersects(st_as_sf(x), st_as_sf(y), ...)
 }
 
 # =============================================================================
@@ -281,7 +286,7 @@ st_intersects.sfnetwork = function(x, y = x, ...) {
 
 #' @name sf
 #' @importFrom sf st_reverse
-#' @importFrom tidygraph reroute
+#' @importFrom tidygraph as_tbl_graph reroute
 #' @export
 st_reverse.sfnetwork = function(x, ...) {
   if (attr(x, "active") == "edges") {
@@ -295,7 +300,7 @@ st_reverse.sfnetwork = function(x, ...) {
     node_ids = edge_boundary_node_indices(x)
     from_ids = node_ids[, 1]
     to_ids = node_ids[, 2]
-    x_tbg = tidygraph::reroute(as_tbl_graph(x), from = to_ids, to = from_ids)
+    x_tbg = reroute(as_tbl_graph(x), from = to_ids, to = from_ids)
     x = tbg_to_sfn(x_tbg)
   } else {
     warning(
@@ -303,7 +308,7 @@ st_reverse.sfnetwork = function(x, ...) {
       call. = FALSE
     )
   }
-  geom_unary_ops(sf::st_reverse, x, ...)
+  geom_unary_ops(st_reverse, x, ...)
 }
 
 #' @name sf
@@ -311,13 +316,14 @@ st_reverse.sfnetwork = function(x, ...) {
 #' @export
 st_simplify.sfnetwork = function(x, ...) {
   if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  geom_unary_ops(sf::st_simplify, x, ...)
+  geom_unary_ops(st_simplify, x, ...)
 }
 
+#' @importFrom sf st_as_sf st_geometry
 geom_unary_ops = function(op, x, ...) {
-  x_sf = sf::st_as_sf(x)
+  x_sf = st_as_sf(x)
   d_tmp = do.call(match.fun(op), list(x_sf, ...))
-  mutate_geom(x, sf::st_geometry(d_tmp))
+  mutate_geom(x, st_geometry(d_tmp))
 }
 
 # =============================================================================
@@ -337,17 +343,20 @@ st_join.sfnetwork = function(x, y, ...) {
   )
 }
 
+#' @importFrom sf st_as_sf st_join
+#' @importFrom tibble as_tibble
+#' @importFrom tidygraph slice
 join_nodes = function(x, y,  ...) {
   # Convert x and y to sf.
-  x_sf = sf::st_as_sf(x)
-  y_sf = sf::st_as_sf(y)
+  x_sf = st_as_sf(x)
+  y_sf = st_as_sf(y)
   # Add .sfnetwork_index column to keep track of original network indices.
   if (".sfnetwork_index" %in% c(names(x_sf), names(y_sf))) {
     stop("The attribute name '.sfnetwork_index' is reserved", call. = FALSE)
   }
   x_sf$.sfnetwork_index = seq_len(nrow(x_sf))
   # Join with st_join.
-  n_new = sf::st_join(x_sf, y_sf, ...)
+  n_new = st_join(x_sf, y_sf, ...)
   # If there were multiple matches:
   # --> Raise an error.
   # --> Allowing multiple matches for nodes breaks the valid network structure.
@@ -362,23 +371,24 @@ join_nodes = function(x, y,  ...) {
   args = list(...)
   if (!is.null(args$left) && args$left) {
     keep_ind = n_new$.sfnetwork_index
-    x = tidygraph::slice(x, keep_ind)
+    x = slice(x, keep_ind)
   }
   # Create a new network with the updated data.
   n_new$.sfnetwork_index = NULL
   sfnetwork(
     nodes = n_new,
-    edges = tibble::as_tibble(x, "edges"), 
+    edges = as_tibble(x, "edges"), 
     directed = is_directed(x), 
     force = TRUE
   )
 }
 
+#' @importFrom sf st_as_sf st_join
 join_edges = function(x, y, ...) {
   expect_spatially_explicit_edges(x)
-  e_new = sf::st_join(sf::st_as_sf(x), sf::st_as_sf(y), ...)
+  e_new = st_join(st_as_sf(x), st_as_sf(y), ...)
   sfnetwork(
-    nodes = sf::st_as_sf(x, "nodes"),
+    nodes = st_as_sf(x, "nodes"),
     edges = e_new, 
     directed = is_directed(x), 
     force = TRUE
@@ -390,7 +400,7 @@ join_edges = function(x, y, ...) {
 #' @export
 st_crop.sfnetwork = function(x, y, ...) {
   if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  filter_network(sf::st_crop, x, y, ...)
+  filter_network(st_crop, x, y, ...)
 }
 
 #' @name sf
@@ -398,13 +408,15 @@ st_crop.sfnetwork = function(x, y, ...) {
 #' @export
 st_filter.sfnetwork = function(x, y, ...) {
   if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  filter_network(sf::st_filter, x, y, ...)
+  filter_network(st_filter, x, y, ...)
 }
 
+#' @importFrom sf st_as_sf
+#' @importFrom tidygraph slice
 filter_network = function(op, x, y, ...) {
   # Convert x and y to sf.
-  x_sf = sf::st_as_sf(x)
-  y_sf = sf::st_as_sf(y)
+  x_sf = st_as_sf(x)
+  y_sf = st_as_sf(y)
   # Add .sfnetwork_index column to keep track of original network indices.
   if (".sfnetwork_index" %in% names(x_sf)) {
     stop("The attribute name '.sfnetwork_index' is reserved", call. = FALSE)
@@ -414,5 +426,5 @@ filter_network = function(op, x, y, ...) {
   d_tmp = do.call(match.fun(op), list(x_sf, y_sf, ...))
   # Subset the original network based on the result of the filter operation.
   keep_ind = d_tmp$.sfnetwork_index
-  tidygraph::slice(x, keep_ind)
+  slice(x, keep_ind)
 }

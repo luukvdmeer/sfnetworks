@@ -1,26 +1,25 @@
-#' Create an sfnetwork object
+#' Create a sfnetwork
 #'
-#' \code{sfnetwork} is a tidy data structure for geospatial networks. It extends
-#' the graph manipulation functionalities of the
-#' \code{\link[tidygraph]{tidygraph-package}} package into the domain of
-#' geospatial networks, where the nodes and edges are embedded in geographical 
-#' space, and enables to apply the spatial analytical functions from the 
-#' \code{\link[sf:sf]{sf-package}} directly to the network.
+#' \code{sfnetwork} is a tidy data structure for geospatial networks. It 
+#' extends the \code{\link[tidygraph]{tbl_graph}} data structure for
+#' relational data into the domain of geospatial networks, whith nodes and 
+#' edges embedded in geographical space, and offers smooth integration with 
+#' \code{\link[sf]{sf}} for spatial data analysis.
 #'
-#' @param nodes An object containing information about the nodes in the network.
-#' The nodes should contain geospatial coordinates, either by being an object of
-#' class \code{\link[sf]{sf}} with \code{POINT} geometry features, or by being 
-#' convertible to such an object with \code{\link[sf]{st_as_sf}}.
+#' @param nodes The nodes of the network. Should be an object of class 
+#' \code{\link[sf]{sf}}, or directly convertible to it using 
+#' \code{\link[sf]{st_as_sf}}. All features should have an associated geometry
+#' of type \code{POINT}.
 #'
-#' @param edges An object containing information about the edges in the network.
-#' This object may contain explicit geospatial information by being an object of
-#' class \code{\link[sf]{sf}} with \code{LINESTRING} geometry features. It may 
-#' also be a regular \code{data.frame} or \code{tbl_df} object. In any case,
-#' the adjacent nodes of each edge must either be encoded in a \code{to} and
-#' \code{from} column, as integers or characters. Integers should refer to 
-#' the position of a node in the nodes table, while characters should refer to
-#' the name of a node encoded in the column referred to in the \code{node_key}
-#' argument. Setting edges to \code{NULL} will create a network without edges.
+#' @param edges The edges of the network. May be an object of class
+#' \code{\link[sf]{sf}}, with all features having an associated geometry of
+#' type \code{LINESTRING}. It may also be a regular \code{data.frame} or 
+#' \code{tbl_df} object. In any case, the adjacent nodes of each edge must
+#' either be encoded in a \code{to} and \code{from} column, as integers or 
+#' characters. Integers should refer to the position of a node in the nodes 
+#' table, while characters should refer to the name of a node encoded in the 
+#' column referred to in the \code{node_key} argument. Setting edges to 
+#' \code{NULL} will create a network without edges.
 #'
 #' @param directed Should the constructed network be directed? Defaults to
 #' \code{TRUE}.
@@ -33,7 +32,7 @@
 #' @param edges_as_lines Should the edges be spatially explicit, i.e. have
 #' \code{LINESTRING} geometries stored in a geometry list column? If \code{NULL},
 #' this will be automatically defined, by setting the argument to \code{TRUE}
-#' when the given edges object is an object of class \code{\link[sf]{sf}}, and 
+#' when the edges are given as an object of class \code{\link[sf]{sf}}, and 
 #' \code{FALSE} otherwise. Defaults to \code{NULL}.
 #'
 #' @param length_as_weight Should the length of the edges be stored in a column
@@ -54,8 +53,8 @@
 #' your input data meet the requirements, the checks are unneccesary and can be
 #' turned off to improve performance.
 #'
-#' @param ... Arguments passed on to \code{\link[sf]{st_as_sf}}, if nodes
-#' need to be converted into an \code{sf} object during construction.
+#' @param ... Arguments passed on to \code{\link[sf]{st_as_sf}}, if nodes need 
+#' to be converted into an \code{\link[sf]{sf}} object during construction.
 #'
 #' @return An object of class \code{sfnetwork}.
 #'
@@ -94,7 +93,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
   # --> Arguments passed in ... will be passed on to st_as_sf.
   if (! is.sf(nodes)) {
     nodes = tryCatch(
-      sf::st_as_sf(nodes, ...),
+      st_as_sf(nodes, ...),
       error = function(e) {
         stop("Failed to convert nodes to sf object because: ", e, call. = FALSE)
       }
@@ -112,7 +111,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
   }
   # Create network.
   # Store sf attributes of the nodes and edges in a special graph attribute.
-  x_tbg = tidygraph::tbl_graph(nodes, edges, directed, node_key)
+  x_tbg = tbl_graph(nodes, edges, directed, node_key)
   x_sfn = structure(x_tbg, class = c("sfnetwork", class(x_tbg)))
   # Post-process network.
   if (! is.null(edges)) {
@@ -136,7 +135,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
       warning("Overwriting column 'weight'", call. = FALSE)
     }
     x_sfn = activate(x_sfn, "edges")
-    x_sfn = tidygraph::mutate(x_sfn, weight = edge_length())
+    x_sfn = mutate(x_sfn, weight = edge_length())
     x_sfn = activate(x_sfn, "nodes")
   }
   x_sfn
@@ -145,30 +144,31 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
 # Simplified construction function.
 # Must be sure that nodes and edges together form a valid sfnetwork.
 # ONLY FOR INTERNAL USE!
+
+#' @importFrom tidygraph tbl_graph
 sfnetwork_ = function(nodes, edges = NULL, directed = TRUE) {
   if (is.sf(edges)) class(edges) = setdiff(class(edges), "sf")
-  structure(
-    tidygraph::tbl_graph(nodes, edges, directed), 
-    class = c("sfnetwork", class(x_tbg))
-  )
+  x_tbg = tbl_graph(nodes, edges, directed)
+  structure(x_tbg, class = c("sfnetwork", class(x_tbg)))
 }
 
 # Fast function to convert from tbl_graph to sfnetwork.
 # Must be sure that tbl_graph has already a valid sfnetwork structure.
 # ONLY FOR INTERNAL USE!
+
 tbg_to_sfn = function(x) {
   class(x) = c("sfnetwork", class(x))
   x
 }
 
-#' Convert a foreign object to an sfnetwork object
+#' Convert a foreign object to a sfnetwork
 #'
 #' Convert a given object into an object of class \code{\link{sfnetwork}}.
 #' If an object can be read by \code{\link[tidygraph]{as_tbl_graph}} and the
 #' nodes can be read by \code{\link[sf]{st_as_sf}}, it is automatically
-#' supported by sfnetworks.
+#' supported.
 #'
-#' @param x Object to be converted into an \code{\link{sfnetwork}} object.
+#' @param x Object to be converted into an \code{\link{sfnetwork}}.
 #'
 #' @param ... Arguments passed on to the \code{\link{sfnetwork}} construction
 #' function.
@@ -184,7 +184,7 @@ as_sfnetwork = function(x, ...) {
 #' @importFrom tidygraph as_tbl_graph
 #' @export
 as_sfnetwork.default = function(x, ...) {
-  as_sfnetwork(tidygraph::as_tbl_graph(x), ...)
+  as_sfnetwork(as_tbl_graph(x), ...)
 }
 
 #' @name as_sfnetwork
@@ -222,11 +222,11 @@ as_sfnetwork.psp = function(x, ...) {
   # The easiest method for transforming a Line Segment Pattern (psp) object
   # into sfnetwork format is to transform it into sf format and then apply
   # the usual methods.
-  x_sf = sf::st_as_sf(x)
+  x_sf = st_as_sf(x)
   # x_sf is an sf object composed by 1 POLYGON (the window of the psp object)
   # and several LINESTRINGs (the line segments). I'm not sure if and how we can
   # use the window object so I will extract only the LINESTRINGs.
-  x_linestring = sf::st_collection_extract(x_sf, "LINESTRING")
+  x_linestring = st_collection_extract(x_sf, "LINESTRING")
   # Apply as_sfnetwork.sf.
   as_sfnetwork(x_linestring, ...)
 }
@@ -246,7 +246,6 @@ as_sfnetwork.psp = function(x, ...) {
 #' e3 = sf::st_cast(sf::st_union(p2,p3), "LINESTRING")
 #' lines = sf::st_as_sf(sf::st_sfc(e1, e2, e3, crs = 4326))
 #' as_sfnetwork(lines)
-#' @importFrom sf st_geometry
 #' @export
 as_sfnetwork.sf = function(x, ...) {
   if (has_single_geom_type(x, "LINESTRING")) {
@@ -302,20 +301,21 @@ as_sfnetwork.tbl_graph = function(x, ...) {
 }
 
 #' @importFrom igraph ecount vcount
-#' @importFrom sf st_crs st_geometry
+#' @importFrom sf st_crs
 #' @importFrom tibble as_tibble
+#' @importFrom tidygraph as_tbl_graph
 #' @export
 print.sfnetwork = function(x, ...) {
   # Define active and inactive component.
   active = attr(x, "active")
   inactive = if (active == "nodes") "edges" else "nodes"
   # Count number of nodes and edges in the network.
-  nN = igraph::vcount(x) # Number of nodes in network.
-  nE = igraph::ecount(x) # Number of edges in network.
+  nN = vcount(x) # Number of nodes in network.
+  nE = ecount(x) # Number of edges in network.
   # Print header.
   cat_subtle(c("# An sfnetwork with", nN, "nodes and", nE, "edges\n"))
   cat_subtle("#\n")
-  cat_subtle(c("# CRS: ", sf::st_crs(x)$input, "\n"))
+  cat_subtle(c("# CRS: ", st_crs(x)$input, "\n"))
   cat_subtle("#\n")
   cat_subtle("#", tidygraph:::describe_graph(as_tbl_graph(x)))
   if (has_spatially_explicit_edges(x)) {
@@ -325,8 +325,8 @@ print.sfnetwork = function(x, ...) {
   }
   cat_subtle("#\n")
   # Print active data summary.
-  active_data = summarise_component(
-    data = tibble::as_tibble(x, active),
+  active_data = summarise_network_element(
+    data = as_tibble(x, active),
     name = substr(active, 1, 4),
     active = TRUE,
     ...
@@ -334,8 +334,8 @@ print.sfnetwork = function(x, ...) {
   print(active_data)
   cat_subtle("#\n")
   # Print inactive data summary.
-  inactive_data = summarise_component(
-    data = tibble::as_tibble(x, inactive),
+  inactive_data = summarise_network_element(
+    data = as_tibble(x, inactive),
     name = substr(inactive, 1, 4),
     active = FALSE,
     ...
@@ -347,24 +347,24 @@ print.sfnetwork = function(x, ...) {
 #' @importFrom tibble trunc_mat
 #' @importFrom tools toTitleCase
 #' @importFrom utils modifyList
-summarise_component = function(data, name, active = TRUE, ...) {
+summarise_network_element = function(data, name, active = TRUE, ...) {
   # Capture ... arguments.
   args = list(...)
   # Truncate data.
   n = if (active) 6 else 3
-  x = do.call(tibble::trunc_mat, utils::modifyList(args, list(x = data, n = n)))
+  x = do.call(trunc_mat, modifyList(args, list(x = data, n = n)))
   # Write summary.
   x$summary[1] = paste(x$summary[1], if (active) "(active)" else "")
   if (name == "edge" && (!has_sfc(data) || nrow(data) == 0)) {
-    names(x$summary)[1] = tools::toTitleCase(paste(name, "data"))
+    names(x$summary)[1] = toTitleCase(paste(name, "data"))
   } else {
-    geom = sf::st_geometry(data)
+    geom = st_geometry(data)
     x$summary[2] = substr(class(geom)[1], 5, nchar(class(geom)[1]))
     x$summary[3] = class(geom[[1]])[1]
     bb = signif(attr(geom, "bbox"), options("digits")$digits)
     x$summary[4] = paste(paste(names(bb), bb[], sep = ": "), collapse = " ")
     names(x$summary) = c(
-      tools::toTitleCase(paste(name, "data")),
+      toTitleCase(paste(name, "data")),
       "Geometry type", 
       "Dimension", 
       "Bounding box"

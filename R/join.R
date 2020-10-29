@@ -40,7 +40,7 @@
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
 #' @importFrom sf st_geometry
-#' @importFrom tidygraph graph_join
+#' @importFrom tidygraph as_tbl_graph graph_join
 #' @export
 st_network_join = function(x, y, blend_nodes = FALSE, 
                            blend_crossings = FALSE, sort = TRUE, ...) {
@@ -58,21 +58,21 @@ st_network_join = function(x, y, blend_nodes = FALSE,
       )
     }
     if (blend_nodes) {
-      x_nodes = sf::st_geometry(x, "nodes")
-      y_nodes = sf::st_geometry(y, "nodes")
+      x_nodes = st_geometry(x, "nodes")
+      y_nodes = st_geometry(y, "nodes")
       x = suppressMessages(st_blend(x, y_nodes, tolerance = 0, sort = sort))
       y = suppressMessages(st_blend(y, x_nodes, tolerance = 0, sort = sort))
     }
     if (blend_crossings) {
-      x_edges = sf::st_geometry(x, "edges")
-      y_edges = sf::st_geometry(y, "edges")
+      x_edges = st_geometry(x, "edges")
+      y_edges = st_geometry(y, "edges")
       crossings = linestring_crossings(x_edges, y_edges)
       x = suppressMessages(st_blend(x, crossings, tolerance = 0, sort = sort))
       y = suppressMessages(st_blend(y, crossings, tolerance = 0, sort = sort))
     }
   }
   # Regular graph join based on geometry columns.
-  g_tbg = tidygraph::graph_join(
+  g_tbg = graph_join(
     x = as_tbl_graph(x),
     y = as_tbl_graph(y),
     by = structure(names = x_geom_colname, .Data = y_geom_colname),

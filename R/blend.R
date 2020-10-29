@@ -30,6 +30,7 @@
 #' @importFrom rlang !!
 #' @importFrom sf st_as_sf st_distance st_equals st_geometry st_intersection
 #' st_join st_nearest_feature st_nearest_points st_set_crs
+#' @importFrom tidyraph arrange mutate
 #' @export
 st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
   require_spatially_explicit_edges(x)
@@ -47,10 +48,10 @@ st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
   # Allow a small deviation if tolerance = 0 to account for precision errors.
   tolerance = set_snapping_tolerance(tolerance, soft = TRUE)
   # Extract edges.
-  edges = sf::st_as_sf(x, "edges")
+  edges = st_as_sf(x, "edges")
   # Extract geometries of the edges and of y.
-  xgeom = sf::st_geometry(edges)
-  ygeom = sf::st_geometry(y)
+  xgeom = st_geometry(edges)
+  ygeom = st_geometry(y)
   # Find indices of features in y that are located:
   # --> *on* an edge.
   # --> *close* to an edge, i.e. within the tolerance but not on it.
@@ -78,11 +79,11 @@ st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
   # --> Make sure r intersects with q.
   # --> Split the edges in x by r.
   if (any(close)) {
-    Q = xgeom[suppressMessages(sf::st_nearest_feature(ygeom[close], xgeom))]
+    Q = xgeom[suppressMessages(st_nearest_feature(ygeom[close], xgeom))]
     connect = function(i) {
       p = ygeom[close][i]
       q = Q[i]
-      r = suppressMessages(sf::st_nearest_points(p, q))
+      r = suppressMessages(st_nearest_points(p, q))
       # If r does not intersect with q:
       # --> That means the created connection is an invalid connection
       # --> This occurs because of precision issues.
@@ -91,7 +92,7 @@ st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
       # --> Extend r in the same direction by 2x the distance d between r and q.
       # --> Assume Euclidean space for convenience.
       # --> This should guarantee intersection between r and q.
-      d = sf::st_distance(sf::st_set_crs(r, NA), sf::st_set_crs(q, NA))
+      d = st_distance(st_set_crs(r, NA), st_set_crs(q, NA))
       extend_line(r, 2 * d)
     }
     conns = do.call("c", lapply(seq_along(close[close]), connect))
@@ -113,7 +114,7 @@ st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
   # --> Nodes of x had attributes (these got lost when constructing x_new).
   if (sort) {
     # Add index column to nodes of x to keep track of original node indices.
-    orig_nodes = sf::st_as_sf(x, "nodes")
+    orig_nodes = st_as_sf(x, "nodes")
     if (".sfnetwork_node_index" %in% names(orig_nodes)) {
       stop(
         "The attribute name '.sfnetwork_node_index' is reserved", 
@@ -122,14 +123,14 @@ st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
     }
     orig_nodes$.sfnetwork_node_index = seq_len(nrow(orig_nodes))
     # Join original nodes spatially with the new network.
-    x_new = sf::st_join(x_new, orig_nodes, join = sf::st_equals)
+    x_new = st_join(x_new, orig_nodes, join = st_equals)
     # Sort based on original node index.
-    x_new = tidygraph::arrange(x_new, !!dplyr::sym(".sfnetwork_node_index"))
+    x_new = arrange(x_new, !!sym(".sfnetwork_node_index"))
     # Remove the node index column.
-    x_new = tidygraph::mutate(x_new, .sfnetwork_node_index = NULL)
+    x_new = mutate(x_new, .sfnetwork_node_index = NULL)
   } else if (length(node_spatial_attribute_names(x)) > 0) {
     # Join original nodes spatially with the new network.
-    x_new = sf::st_join(x_new, sf::st_as_sf(x, "nodes"), join = sf::st_equals)
+    x_new = st_join(x_new, st_as_sf(x, "nodes"), join = st_equals)
   }
   # Spatial left join between nodes of x_new and point features of y.
   # This is needed when:
@@ -141,15 +142,15 @@ st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
         "c",
         lapply(
           seq_along(conns), 
-          function(i) suppressMessages(sf::st_intersection(conns[i], Q[i]))
+          function(i) suppressMessages(st_intersection(conns[i], Q[i]))
         )
       )
-      sf::st_geometry(y) = ygeom
+      st_geometry(y) = ygeom
     }
     # Keep only those features in y that were blended.
     y = y[on | close, ]
     # Join spatially with the new network.
-    x_new = sf::st_join(x_new, y, join = sf::st_equals)
+    x_new = st_join(x_new, y, join = sf::st_equals)
   }
   x_new %preserve_active% x
 }

@@ -26,10 +26,10 @@ NULL
 #' @importFrom tidygraph .G
 #' @export
 edge_circuity = function() {
-  graph = tidygraph::.G()
+  graph = .G()
   require_active_edges(graph)
   require_spatially_explicit_edges(graph)
-  sf::st_length(graph) / straight_line_distance(graph)
+  st_length(graph) / straight_line_distance(graph)
 }
 
 #' @describeIn spatial_edge_measures The length of an edge linestring geometry
@@ -38,10 +38,10 @@ edge_circuity = function() {
 #' @importFrom tidygraph .G
 #' @export
 edge_length = function() {
-  graph = tidygraph::.G()
+  graph = .G()
   require_active_edges(graph)
   if (has_spatially_explicit_edges(graph)) {
-    sf::st_length(graph)
+    st_length(graph)
   } else {
     straight_line_distance(graph)
   }
@@ -52,11 +52,12 @@ edge_length = function() {
 #' @importFrom tidygraph .G
 #' @export
 edge_straight_length = function() {
-  graph = tidygraph::.G()
+  graph = .G()
   require_active_edges(graph)
   straight_line_distance(graph)
 }
 
+#' @importFrom sf st_as_sf st_distance
 straight_line_distance = function(x) {
   # Extract the nodes from the network.
   nodes = st_as_sf(x, "nodes")
@@ -67,5 +68,5 @@ straight_line_distance = function(x) {
   from_nodes = nodes[ids[, 1], ]
   to_nodes = nodes[ids[, 2], ]
   # Calculate distances and return the diagonal of the resulting matrix.
-  diag(sf::st_distance(from_nodes, to_nodes))
+  diag(st_distance(from_nodes, to_nodes))
 }

@@ -25,6 +25,7 @@
 #' @param ... Arguments passed on to \code{\link[tibble]{as_tibble}}.
 #'
 #' @importFrom tibble as_tibble
+#' @importFrom tidygraph as_tbl_graph
 #' @export
 as_tibble.sfnetwork = function(x, active = NULL, spatial = TRUE, ...) {
   if (is.null(active)) {
@@ -40,21 +41,25 @@ as_tibble.sfnetwork = function(x, active = NULL, spatial = TRUE, ...) {
   } else {
     switch(
       active,
-      nodes = tidygraph::as_tibble(as_tbl_graph(x), "nodes"),
-      edges = tidygraph::as_tibble(as_tbl_graph(x), "edges"),
+      nodes = as_tibble(as_tbl_graph(x), "nodes"),
+      edges = as_tibble(as_tbl_graph(x), "edges"),
       throw_unknown_active_exception(active)
     )
   }
 }
 
+#' @importFrom sf st_as_sf
 node_spatial_tibble = function(x) {
-  sf::st_as_sf(x, "nodes")
+  st_as_sf(x, "nodes")
 }
 
+#' @importFrom sf st_as_sf
+#' @importFrom tibble as_tibble
+#' @importFrom tidygraph as_tbl_graph
 edge_spatial_tibble = function(x) {
   if (has_spatially_explicit_edges(x)) {
-    sf::st_as_sf(x, "edges") 
+    st_as_sf(x, "edges") 
   } else {
-    tidygraph::as_tibble(as_tbl_graph(x), "edges")
+    as_tibble(as_tbl_graph(x), "edges")
   }
 }

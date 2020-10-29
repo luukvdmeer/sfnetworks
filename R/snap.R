@@ -58,16 +58,16 @@ nearest_node = function(x, graph, tolerance) {
   # Set tolerance.
   tolerance = set_snapping_tolerance(tolerance, soft = FALSE)
   # Extract node geometries from the given network.
-  nodes = sf::st_geometry(graph, "nodes")
+  nodes = st_geometry(graph, "nodes")
   # For each feature p in x:
   # --> Find the nearest node q to p.
-  Q = nodes[suppressMessages(sf::st_nearest_feature(x, nodes))]
+  Q = nodes[suppressMessages(st_nearest_feature(x, nodes))]
   # If tolerance is not infinite:
   # --> Return nearest node geometries only for features within tolerance.
   # --> Return empty geometries for all other features.
   if (! is.infinite(tolerance)) {
-    within = lengths(sf::st_is_within_distance(x, Q, tolerance)) > 0
-    Q[!within] = empty_point(crs = sf::st_crs(x))
+    within = lengths(st_is_within_distance(x, Q, tolerance)) > 0
+    Q[!within] = empty_point(crs = st_crs(x))
   }
   Q
 }
@@ -80,8 +80,8 @@ nearest_point_on_edge = function(x, graph, tolerance) {
   # Allow a small deviation if tolerance = 0 to account for precision errors.
   tolerance = set_snapping_tolerance(tolerance, soft = TRUE)
   # Extract geometries.
-  edges = sf::st_geometry(graph, "edges")
-  xgeom = sf::st_geometry(x)
+  edges = st_geometry(graph, "edges")
+  xgeom = st_geometry(x)
   # Find indices of features in x that are located:
   # --> *on* an edge.
   # --> *close* to an edge, i.e. within the tolerance but not on it.
@@ -90,19 +90,19 @@ nearest_point_on_edge = function(x, graph, tolerance) {
   close = relative_feature_locs$close
   # For each feature p in x that is neither on nor close to an edge:
   # --> Replace the geometry of p by an empty point.
-  xgeom[! (on  | close)] = empty_point(crs = sf::st_crs(x))
+  xgeom[! (on  | close)] = empty_point(crs = st_crs(x))
   # For each feature p in x that is close to an edge:
   # --> Find the nearest edge q to p.
   # --> Draw a line r that forms the shortest connection between p and q.
   # --> The endpoint of r is the point on q closest to p.
   # --> Replace the geometry of p with that endpoint.
   if (any(close)) {
-    Q = edges[suppressMessages(sf::st_nearest_feature(xgeom[close], edges))]
+    Q = edges[suppressMessages(st_nearest_feature(xgeom[close], edges))]
     snap = function(i) {
       p = xgeom[close][i]
       q = Q[i]
-      r = suppressMessages(sf::st_nearest_points(p, q))
-      sf::st_cast(sf::st_boundary(r), "POINT")[2]
+      r = suppressMessages(st_nearest_points(p, q))
+      st_cast(st_boundary(r), "POINT")[2]
     }
     snaps = do.call("c", lapply(seq_along(close[close]), snap))
     xgeom[close] = snaps
@@ -116,11 +116,11 @@ set_snapping_tolerance = function(x, soft = FALSE) {
   # --> Change a tolerance of 0 to a tolerance of a very small positive number.
   # --> This is needed to solve precision errors with intersections.
   # --> See https://github.com/r-spatial/sf/issues/790
-  if (soft && (as.numeric(x) == 0)) x = units::set_units(1e-5, "m")
+  if (soft && (as.numeric(x) == 0)) x = set_units(1e-5, "m")
   # If tolerance is not a units object:
   # --> Convert into units object assuming a units of meters.
   # --> Unless tolerance is infinite.
-  if (! (is.infinite(x) || inherits(x, "units"))) x = units::set_units(x, "m")
+  if (! (is.infinite(x) || inherits(x, "units"))) x = set_units(x, "m")
   x
 }
 
@@ -128,7 +128,7 @@ set_snapping_tolerance = function(x, soft = FALSE) {
 locate_features = function(x, y, tolerance) {
   # Find indices of features in x that are located:
   # --> *on* a feature in y.
-  intersects = suppressMessages(sf::st_intersects(x, y))
+  intersects = suppressMessages(st_intersects(x, y))
   on = lengths(intersects) > 0
   # Find indices of features in x that are located:
   # --> *close* to a feature in y.
@@ -148,7 +148,7 @@ locate_features = function(x, y, tolerance) {
     # If a non-infinite tolerance was set:
     # --> Features are 'close' if within tolerance distance from an edge.
     # --> But not on an edge.
-    within_tolerance = sf::st_is_within_distance(x[!on], y, tolerance)
+    within_tolerance = st_is_within_distance(x[!on], y, tolerance)
     close = !on # First assume all features that are not 'on' are 'close'.
     close[close] = lengths(within_tolerance) > 0 # Update.
   }

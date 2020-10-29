@@ -87,12 +87,12 @@ graph_attribute_names = function(x, active = NULL) {
 
 #' @importFrom igraph vertex_attr_names
 node_graph_attribute_names = function(x) {
-  igraph::vertex_attr_names(x)
+  vertex_attr_names(x)
 }
 
 #' @importFrom igraph edge_attr_names
 edge_graph_attribute_names = function(x) {
-  igraph::edge_attr_names(x)
+  edge_attr_names(x)
 }
 
 #' @name attr_names

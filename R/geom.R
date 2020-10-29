@@ -22,22 +22,24 @@ geom_colname = function(x, active = NULL) {
   )
 }
 
+#' @importFrom igraph vertex_attr vertex_attr_names
 node_geom_colname = function(x) {
-  col = attr(igraph::vertex_attr(x), "sf_column")
+  col = attr(vertex_attr(x), "sf_column")
   if (is.null(col)) {
     # Take the name of the first sfc column.
-    sfc_idx = which(sapply(igraph::node_attr(x), is.sfc))[1]
-    col = igraph::node_attr_names(x)[sfc_idx]
+    sfc_idx = which(sapply(vertex_attr(x), is.sfc))[1]
+    col = vertex_attr_names(x)[sfc_idx]
   }
   col
 }
 
+#' @importFrom igraph edge_attr edge_attr_names
 edge_geom_colname = function(x) {
-  col = attr(igraph::edge_attr(x), "sf_column")
+  col = attr(edge_attr(x), "sf_column")
   if (has_spatially_explicit_edges(x) && is.null(col)) {
     # Take the name of the first sfc column.
-    sfc_idx = which(sapply(igraph::edge_attr(x), is.sfc))[1]
-    col = igraph::edge_attr_names(x)[sfc_idx]
+    sfc_idx = which(sapply(edge_attr(x), is.sfc))[1]
+    col = edge_attr_names(x)[sfc_idx]
   }
   col
 }
@@ -56,13 +58,15 @@ edge_geom_colname = function(x) {
   )
 }
 
+#' @importFrom igraph vertex_attr
 `node_geom_colname<-` = function(x, value) {
-  attr(igraph::vertex_attr(x), "sf_column") = value
+  attr(vertex_attr(x), "sf_column") = value
   x
 }
 
+#' @importFrom igraph edge_attr
 `edge_geom_colname<-` = function(x, value) {
-  attr(igraph::edge_attr(x), "sf_column") = value
+  attr(edge_attr(x), "sf_column") = value
   x
 }
 
@@ -100,13 +104,13 @@ mutate_geom = function(x, y, active = NULL) {
 mutate_node_geom = function(x, y) {
   if (is.character(y)) {
     # Set another column to be the new geometry column.
-    stopifnot(is.sfc(igraph::vertex_attr(x, y)))
+    stopifnot(is.sfc(vertex_attr(x, y)))
     x_new = x
     node_geom_colname(x_new) = y
   } else {
     # Replace the geometries of the current geometry column with new values.
     geom_col = node_geom_colname(x)
-    x_new = tidygraph::mutate(activate(x, "nodes"), !!geom_col := y)
+    x_new = mutate(activate(x, "nodes"), !!geom_col := y)
   }
   x_new %preserve_active% x
 }
@@ -117,7 +121,7 @@ mutate_node_geom = function(x, y) {
 mutate_edge_geom = function(x, y) {
   if (is.character(y)) {
     # Set another column to be the new geometry column.
-    stopifnot(is.sfc(igraph::edge_attr(x, y)))
+    stopifnot(is.sfc(edge_attr(x, y)))
     x_new = x
     edge_geom_colname(x_new) = y
   } else {
@@ -127,12 +131,12 @@ mutate_edge_geom = function(x, y) {
     # --> Create a new column named 'geometry'.
     if (is.null(geom_col)) {
       geom_col = "geometry"
-      if ("geometry" %in% igraph::edge_attr_names(x)) {
+      if ("geometry" %in% edge_attr_names(x)) {
         warning("Overwriting column 'geometry'", call. = FALSE)
       }
     }
     # Replace.
-    x_new = tidygraph::mutate(activate(x, "edges"), !!geom_col := y)
+    x_new = mutate(activate(x, "edges"), !!geom_col := y)
     edge_geom_colname(x_new) = geom_col
   }
   x_new %preserve_active% x
@@ -162,8 +166,9 @@ drop_geom = function(x, active = NULL) {
 }
 
 #' @importFrom igraph delete_vertex_attr
+#' @importFrom tidygraph as_tbl_graph
 drop_node_geom = function(x) {
-  x_new = igraph::delete_vertex_attr(x, node_geom_colname(x))
+  x_new = delete_vertex_attr(x, node_geom_colname(x))
   node_geom_colname(x_new) = NULL
   node_agr(x_new) = NULL
   as_tbl_graph(x_new)
@@ -175,7 +180,7 @@ drop_edge_geom = function(x) {
   if (is.null(geom_col)) {
     stop("Edges are already spatially implicit", call. = FALSE)
   }
-  x_new = igraph::delete_edge_attr(x, edge_geom_colname(x))
+  x_new = delete_edge_attr(x, edge_geom_colname(x))
   edge_geom_colname(x_new) = NULL
   edge_agr(x_new) = NULL
   x_new

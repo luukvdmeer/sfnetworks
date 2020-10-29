@@ -34,7 +34,7 @@ has_sfc = function(x) {
 #' @importFrom sf st_is
 #' @noRd
 has_single_geom_type = function(x, type) {
-  all(sf::st_is(x, type))
+  all(st_is(x, type))
 }
 
 #' Check if an sfnetwork has spatially explicit edges
@@ -47,7 +47,7 @@ has_single_geom_type = function(x, type) {
 #' @importFrom igraph edge_attr
 #' @noRd
 has_spatially_explicit_edges = function(x) {
-  any(sapply(igraph::edge_attr(x), is.sfc), na.rm = TRUE)
+  any(sapply(edge_attr(x), is.sfc), na.rm = TRUE)
 }
 
 #' Check if a graph is directed.
@@ -60,7 +60,7 @@ has_spatially_explicit_edges = function(x) {
 #' @importFrom igraph is_directed
 #' @noRd
 is_directed = function(x) {
-  igraph::is_directed(x)
+  is_directed(x)
 }
 
 #' Check for empty geometries
@@ -72,7 +72,7 @@ is_directed = function(x) {
 #' @importFrom sf st_dimension
 #' @noRd
 is_empty = function(x) {
-  is.na(sf::st_dimension(x))
+  is.na(st_dimension(x))
 }
 
 #' Check if sf features have the same attribute values
@@ -86,12 +86,13 @@ is_empty = function(x) {
 #' @return \code{TRUE} when the attributes of x and y are the same, 
 #' \code{FALSE} otherwise.
 #'
+#' @importFrom sf st_drop_geometry
 #' @noRd
 have_equal_attributes = function(x, y = NULL) {
   if (nrow(x) == 1 & !is.null(y)) {
     x = rbind(x, y)
   }
-  all(duplicated(sf::st_drop_geometry(x))[-1])
+  all(duplicated(st_drop_geometry(x))[-1])
 }
 
 #' Check if two sf objects have the same LINESTRING boundary points
@@ -132,7 +133,7 @@ have_equal_boundary_points = function(x, y) {
 #' @importFrom sf st_crs
 #' @noRd
 have_equal_crs = function(x, y) {
-  sf::st_crs(x) == sf::st_crs(y)
+  st_crs(x) == st_crs(y)
 }
 
 #' Check if two sfnetworks have the same type of edges
@@ -165,7 +166,7 @@ have_equal_edge_type = function(x, y) {
 #' @importFrom sf st_equals
 #' @noRd
 have_equal_geometries = function(x, y) {
-  diag(sf::st_equals(x, y, sparse = FALSE))
+  diag(st_equals(x, y, sparse = FALSE))
 }
 
 #' Check if any of the edge boundary points is equal to any of its boundary nodes
@@ -179,7 +180,7 @@ nodes_in_edge_boundaries = function(x) {
   boundary_nodes = edge_boundary_nodes(x)
   # Test for each edge :
   # Does one of the boundary points equals at least one of the boundary nodes.
-  mat = sf::st_equals(boundary_points, boundary_nodes, sparse = FALSE)
+  mat = st_equals(boundary_points, boundary_nodes, sparse = FALSE)
   all(
     sapply(
       seq(1, nrow(mat), by = 2),
@@ -210,5 +211,5 @@ nodes_match_edge_boundaries = function(x) {
 #' @importFrom sf sf_use_s2 st_is_longlat
 #' @noRd
 will_assume_planar = function(x) {
-  sf::st_is_longlat(x) && !sf::sf_use_s2()
+  st_is_longlat(x) && !sf_use_s2()
 }

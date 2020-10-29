@@ -7,7 +7,7 @@
 #' @importFrom crayon silver
 #' @noRd
 cat_subtle = function(...) {
-  cat(crayon::silver(...))
+  cat(silver(...))
 }
 
 #' Create edges from nodes
@@ -23,7 +23,7 @@ cat_subtle = function(...) {
 #' with \code{POINT} geometries and the created edges as an object of class
 #' \code{\link[sf]{sf}} with \code{LINESTRING} geometries.
 #'
-#' @importFrom sf st_sf
+#' @importFrom sf st_geometry st_sf
 #' @noRd
 create_edges_from_nodes = function(nodes) {
   # Define indices for source and target nodes.
@@ -33,10 +33,10 @@ create_edges_from_nodes = function(nodes) {
   sources = nodes[source_ids, ]
   targets = nodes[target_ids, ]
   # Create linestrings between the source and target nodes.
-  edges = sf::st_sf(
+  edges = st_sf(
     from = source_ids,
     to = target_ids,
-    geometry = draw_lines(sf::st_geometry(sources), sf::st_geometry(targets))
+    geometry = draw_lines(st_geometry(sources), st_geometry(targets))
   )
   # Use the same sf column name as in the nodes.
   nodes_geom_colname = attr(nodes, "sf_column")
@@ -83,7 +83,7 @@ create_nodes_from_edges = function(edges) {
   # Remove duplicated nodes from the nodes table.
   nodes = nodes[!duplicated(indices)]
   # Convert to sf object
-  nodes = sf::st_sf(geometry = nodes)
+  nodes = st_sf(geometry = nodes)
   # Use the same sf column name as in the edges.
   edges_geom_colname = attr(edges, "sf_column")
   if (edges_geom_colname != "geometry") {
@@ -113,9 +113,9 @@ create_nodes_from_edges = function(edges) {
 #' @importFrom sf st_crs st_sfc
 #' @noRd
 draw_lines = function(x, y) {
-  sf::st_sfc(
+  st_sfc(
     lapply(seq_along(x), function(i) points_to_line(x[[i]], y[[i]])),
-    crs = sf::st_crs(x)
+    crs = st_crs(x)
   )
 }
 
@@ -135,13 +135,13 @@ draw_lines = function(x, y) {
 #' equal to boundary points.
 #'
 #' @importFrom igraph E ends
-#' @importFrom sf st_geometry
+#' @importFrom sf st_as_sf st_geometry
 #' @noRd
 edge_boundary_nodes = function(x) {
   nodes = st_as_sf(x, "nodes")
-  id_mat = igraph::ends(x, igraph::E(x), names = FALSE)
+  id_mat = ends(x, E(x), names = FALSE)
   id_vct = do.call("c", lapply(seq_len(nrow(id_mat)), function(i) id_mat[i, ]))
-  sf::st_geometry(nodes[id_vct, ])
+  st_geometry(nodes[id_vct, ])
 }
 
 #' Get the indices of the boundary nodes of edges in an sfnetwork
@@ -156,7 +156,7 @@ edge_boundary_nodes = function(x) {
 #' @importFrom igraph E ends
 #' @noRd
 edge_boundary_node_indices = function(x) {
-  igraph::ends(x, igraph::E(x), names = FALSE)
+  ends(x, E(x), names = FALSE)
 }
 
 #' Get the geometries of the boundary points of edges in an sfnetwork
@@ -174,6 +174,7 @@ edge_boundary_node_indices = function(x) {
 #' in the edges table. In a valid network structure, boundary nodes should be
 #' equal to boundary points.
 #'
+#' @importFrom sf st_as_sf
 #' @noRd
 edge_boundary_points = function(x) {
   edges = st_as_sf(x, "edges")
@@ -191,7 +192,7 @@ edge_boundary_points = function(x) {
 #' @importFrom sf st_point st_sfc
 #' @noRd
 empty_point = function(crs = NA) {
-  sf::st_sfc(sf::st_point(), crs = crs)
+  st_sfc(st_point(), crs = crs)
 }
 
 #' Make edges spatially explicit
@@ -201,9 +202,8 @@ empty_point = function(crs = NA) {
 #' @return An object of class \code{\link{sfnetwork}} with spatially explicit
 #' edges.
 #'
-#' @importFrom igraph edge_attr_names
 #' @importFrom rlang !! :=
-#' @importFrom sf NA_agr_ st_as_sf st_geometry
+#' @importFrom sf st_geometry
 #' @importFrom tidygraph mutate
 #' @noRd
 explicitize_edges = function(x) {
@@ -211,7 +211,7 @@ explicitize_edges = function(x) {
     x
   } else {
     # Extract the node geometries from the network.
-    nodes = sf::st_geometry(x, "nodes")
+    nodes = st_geometry(x, "nodes")
     # Get the indices of the boundary nodes of each edge.
     # Returns a matrix with source ids in column 1 and target ids in column 2.
     ids = edge_boundary_node_indices(x)
@@ -223,7 +223,7 @@ explicitize_edges = function(x) {
     # Use the same geometry column name as the geometry column of the nodes.
     col = node_geom_colname(x)
     # Add the geometries as a column.
-    x_new = tidygraph::mutate(activate(x, "edges"), !!col := edge_geoms)
+    x_new = mutate(activate(x, "edges"), !!col := edge_geoms)
     # Set the sf attributes.
     edge_geom_colname(x_new) = col
     edge_agr(x_new) = empty_edge_agr(x)
@@ -250,7 +250,7 @@ explicitize_edges = function(x) {
 #' @noRd
 extend_line = function(l, d) {
   # Get coordinate of endpoints of l.
-  coords = sf::st_coordinates(l)
+  coords = st_coordinates(l)
   A_x = coords[1, 1] # x coordinate of startpoint of l
   B_x = coords[nrow(coords), 1] # x coordinate of endpoint of l
   A_y = coords[1, 2] # y coordinate of startpoint of l
@@ -261,12 +261,12 @@ extend_line = function(l, d) {
   C_x = B_x + (B_x - A_x) / length_AB * d # x coordinate of new endpoint
   C_y = B_y + (B_y - A_y) / length_AB * d # y coordinate of new endpoint
   # Combine points together in a new line.
-  A = sf::st_point(c(A_x, A_y))
-  B = sf::st_point(c(B_x, B_y))
-  C = sf::st_point(c(C_x, C_y))
-  l_new = sf::st_linestring(c(A, B, C))
+  A = st_point(c(A_x, A_y))
+  B = st_point(c(B_x, B_y))
+  C = st_point(c(C_x, C_y))
+  l_new = st_linestring(c(A, B, C))
   # Return as sfc.
-  sf::st_sfc(l_new, crs = sf::st_crs(l))
+  st_sfc(l_new, crs = st_crs(l))
 }
 
 #' Make edges spatially implicit
@@ -300,7 +300,7 @@ implicitize_edges = function(x) {
 #' @noRd
 linestring_boundary_points = function(x) {
   # Extract coordinates.
-  x_coordinates = unname(sf::st_coordinates(x))
+  x_coordinates = unname(st_coordinates(x))
   # Find index of L1 column.
   # This column defines to which linestring each coordinate pair belongs.
   L1_index = ncol(x_coordinates)
@@ -311,8 +311,8 @@ linestring_boundary_points = function(x) {
   idxs = first_pair | last_pair
   # Extract boundary points and rebuild sfc.
   x_pairs = x_coordinates[idxs, ]
-  sf::st_cast(
-    sf::st_sfc(sf::st_multipoint(x_pairs[, -L1_index]), crs = sf::st_crs(x)),
+  st_cast(
+    st_sfc(st_multipoint(x_pairs[, -L1_index]), crs = st_crs(x)),
    "POINT"
   )
 }
@@ -332,20 +332,20 @@ linestring_boundary_points = function(x) {
 #' @noRd
 linestring_crossings = function(x, y) {
   # Get geometries of x and y.
-  xgeom = sf::st_geometry(x)
-  ygeom = sf::st_geometry(y)
+  xgeom = st_geometry(x)
+  ygeom = st_geometry(y)
   # Find crossing geometries.
-  cross_matrix = suppressMessages(sf::st_crosses(xgeom, ygeom, sparse = FALSE))
+  cross_matrix = suppressMessages(st_crosses(xgeom, ygeom, sparse = FALSE))
   # Subset geomtries to only keep only those that cross.
   xgeom_sub = xgeom[apply(cross_matrix, 1, any)]
   ygeom_sub = ygeom[apply(cross_matrix, 2, any)]
   # Find intersections between the geometry subsets.
-  all_intrs = suppressMessages(sf::st_intersection(xgeom_sub, ygeom_sub))
+  all_intrs = suppressMessages(st_intersection(xgeom_sub, ygeom_sub))
   # Subset intersections to keep only those that are points.
-  pts_intrs = all_intrs[sf::st_is(all_intrs, "POINT")]
+  pts_intrs = all_intrs[st_is(all_intrs, "POINT")]
   # Subset point intersections to keep only those that are crossings.
   boundaries = c(linestring_boundary_points(x), linestring_boundary_points(y))
-  is_boundary = lengths(sf::st_equals(pts_intrs, boundaries)) > 0
+  is_boundary = lengths(st_equals(pts_intrs, boundaries)) > 0
   cross_intrs = pts_intrs[!is_boundary]
   # Return crossings.
   cross_intrs 
@@ -359,10 +359,10 @@ linestring_crossings = function(x, y) {
 #'
 #' @return A \code{LINESTRING} geometry.
 #'
-#' @importFrom sf st_cast st_union
+#' @importFrom sf st_linestring
 #' @noRd
 points_to_line = function(x, y) {
-  sf::st_linestring(c(x, y))
+  st_linestring(c(x, y))
 }
 
 #' Split lines by other features
@@ -383,5 +383,5 @@ points_to_line = function(x, y) {
 #' @importFrom sf st_collection_extract
 #' @noRd
 split_lines = function(x, y) {
-  sf::st_collection_extract(lwgeom::st_split(x, y), "LINESTRING")
+  st_collection_extract(st_split(x, y), "LINESTRING")
 }

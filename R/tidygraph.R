@@ -17,7 +17,7 @@ as_tbl_graph.sfnetwork = function(x, ...) {
   x
 }
 
-#' @importFrom tidygraph morph
+#' @importFrom tidygraph as_tbl_graph morph
 #' @export
 morph.sfnetwork = function(.data, ...) {
   # Morph using tidygraphs morphing functionality:
@@ -28,7 +28,7 @@ morph.sfnetwork = function(.data, ...) {
     NextMethod(),
     error = function(e1) {
       tryCatch(
-        tidygraph::morph(as_tbl_graph(.data), ...),
+        morph(as_tbl_graph(.data), ...),
         error = function(e2) stop(e1)
       )
     }
@@ -41,6 +41,7 @@ morph.sfnetwork = function(.data, ...) {
   )
 }
 
+#' @importFrom tidygraph as_tbl_graph
 as_morphed_sfn = function(x) {
   structure(
     suppressMessages(lapply(x, as_sfnetwork)),
