@@ -30,7 +30,7 @@
 #' @importFrom rlang !!
 #' @importFrom sf st_as_sf st_distance st_equals st_geometry st_intersection
 #' st_join st_nearest_feature st_nearest_points st_set_crs
-#' @importFrom tidyraph arrange mutate
+#' @importFrom tidygraph arrange mutate
 #' @export
 st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
   require_spatially_explicit_edges(x)
