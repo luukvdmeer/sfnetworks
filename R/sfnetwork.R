@@ -114,7 +114,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
   x_tbg = tbl_graph(nodes, edges, directed, node_key)
   x_sfn = structure(x_tbg, class = c("sfnetwork", class(x_tbg)))
   # Post-process network.
-  if (! is.null(edges)) {
+  if (is.null(edges)) {
     # Run validity check for nodes and return the network.
     if (! force) require_valid_network_structure(x_sfn, message = TRUE)
     return (x_sfn)
