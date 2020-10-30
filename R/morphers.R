@@ -1,194 +1,203 @@
-#' Spatial morphers for sfnetwork objects
+#' Spatial morphers for sfnetworks
 #'
-#' These functions are meant to be passed into [morph()] to create a temporary
-#' alternate representation of the input graph. They are thus not meant to be
-#' called directly. See below for detail of each morpher. For a more detailed
-#' explanations on how to use morphing, see \code{\link[tidygraph]{morph}}.
+#' Spatial morphers form spatial add-ons to the set of 
+#' \code{\link[tidygraph]{morphers}} provided by \code{tidygraph}. These 
+#' functions are not meant to be called directly. They should either be passed 
+#' into \code{\link[tidygraph]{morph}} to create a temporary alternate 
+#' representation of the input network. Such an alternate representation is a 
+#' list of one or more network objects. Single elements of that list can be 
+#' extracted directly as a new network by passing the morpher to
+#' \code{\link[tidygraph]{convert}} instead of \code{\link[tidygraph]{morph}}. 
+#' Alternatively, if the morphed state contains multiple elements, all of them 
+#' can be extracted together inside a \code{\link[tibble]{tibble}} by passing 
+#' the morpher to \code{\link[tidygraph]{crystallise}}.
 #'
-#' @param graph An object of class \code{\link{sfnetwork}}.
+#' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @param ... Arguments to be passed on to other functions. See the description
 #' of each morpher for details.
 #'
-#' @return A list of \code{\link{sfnetwork}} objects.
+#' @return Either a \code{morphed_sfnetwork}, which is a list of one or more
+#' \code{\link{sfnetwork}} objects, or a \code{morphed_tbl_graph}, which is a
+#' list of one or more \code{\link[tidygraph]{tbl_graph}} object. See the
+#' description of each morpher for details.
+#'
+#' @details It also possible to create your own morphers. See the documentation
+#' of \code{\link[tidygraph]{morph}} for the requirements for custom morphers.
 #'
 #' @name spatial_morphers
 NULL
 
 #' @describeIn spatial_morphers Store the spatial coordinates of the nodes in 
-#' separate coordinate columns (e.g. "X" and "Y"), instead of an 
-#' \code{\link[sf]{sfc}} geometry list column. If edges are spatially
-#' explicit, the edge geometries are dropped.
-#' @export
-to_spatial_coordinates = function(graph) {
-  # Create X and Y coordinate columns for the nodes.
-  coords_graph = add_coordinate_columns(activate(graph, "nodes"))
-  # Drop edge geometries if present.
-  if (has_spatially_explicit_edges(coords_graph)) {
-    coords_graph = drop_edge_geom(coords_graph)
-  }
-  # Drop original node geometries.
-  coords_graph = drop_node_geom(coords_graph)
-  # Return in a list.
-  list(
-    coords_graph = coords_graph %preserve_active% graph
-  )
-}
-
+#' separate coordinate columns, instead of a \code{\link[sf]{sfc}} geometry 
+#' list column. If edges are spatially explicit, the edge geometries are 
+#' dropped. Returns a \code{morphed_tbl_graph} containing a single element of 
+#' class \code{\link[tidygraph]{tbl_graph}}.
+#' 
 #' @importFrom rlang !!!
 #' @importFrom sf st_coordinates
 #' @importFrom tidygraph mutate
-add_coordinate_columns = function(x) {
-  tidygraph::mutate(x, !!!as.data.frame(sf::st_coordinates(x)))
+#' @export
+to_spatial_coordinates = function(x) {
+  # Drop edge geometries if present.
+  if (has_spatially_explicit_edges(x)) x = drop_edge_geom(x)
+  # Create X and Y coordinate columns for the nodes.
+  # Drop original node geometries.
+  x_new = activate(x, "nodes")
+  x_new = mutate(x_new, !!!as.data.frame(st_coordinates(x_new)))
+  x_new = drop_node_geom(x_new)
+  # Return in a list.
+  list(
+    coords = x_new %preserve_active% x
+  )
 }
 
-#' @describeIn spatial_morphers Reconstruct the network by using all edge 
-#' linestring points as nodes, instead of only the endpoints.
+#' @describeIn spatial_morphers Reconstruct the network by using all points
+#' that shape the edge linestrings as nodes, instead of only the endpoints.
+#' Returns a \code{morphed_sfnetwork} containing a single element of class
+#' \code{\link{sfnetwork}}. This morpher requires edges to be spatially
+#' explicit.
+#' @importFrom igraph is_directed
 #' @importFrom lwgeom st_split
-#' @importFrom sf st_cast st_collection_extract
+#' @importFrom sf st_as_sf st_cast st_collection_extract st_join
 #' @export
-to_spatial_dense_graph = function(graph) {
-  require_spatially_explicit_edges(graph)
+to_spatial_dense = function(x) {
+  require_spatially_explicit_edges(x)
+  raise_assume_constant("to_spatial_dense")
   # Retrieve the edges from the network, without the to and from columns.
-  edges = st_as_sf(graph, "edges")
+  edges = st_as_sf(x, "edges")
   edges[, c("from", "to")] = NULL
   # Split the edges by the points they are composed of.
-  splitted_edges = lwgeom::st_split(edges, sf::st_cast(edges, "POINT"))
-  # The result are for each original edge a geometrycollection of sub-edges.
-  # These sub-edges need to be extracted as linestrings to form the new edges.
-  new_edges = sf::st_collection_extract(splitted_edges, "LINESTRING")
+  splitted_edges = suppressWarnings(st_split(edges, st_cast(edges, "POINT")))
+  # The result is:
+  # --> For each original edge a geometrycollection of sub-edges.
+  # --> These sub-edges need to be extracted as linestrings.
+  new_edges = st_collection_extract(splitted_edges, "LINESTRING")
   # Reconstruct the network with the new edges.
+  x_new = as_sfnetwork(new_edges, directed = is_directed(x))
+  # Spatial left join between nodes of x_new and original nodes of x. 
+  # This is needed since node attributes got lost when constructing x_new.
+  x_new = st_join(x_new, st_as_sf(x, "nodes"), join = st_equals)
+  # Return in a list.
   list(
-    dense_graph = as_sfnetwork(new_edges) %preserve_active% graph
+    dense = x_new %preserve_active% x
   )
 }
 
-#' @describeIn spatial_morphers Make a graph directed in the direction given by 
-#' the linestring geometries of the edges.
-#' @importFrom lwgeom st_startpoint
-#' @importFrom tidygraph convert reroute to_directed
+#' @describeIn spatial_morphers Make a network directed in the direction given 
+#' by the linestring geometries of the edges. This in contradiction to the
+#' \code{to_directed} morpher of \code{tidygraph}, which makes a network
+#' directed based on the node indices given in the \code{from} and \code{to}
+#' columns. In undirected networks these indices may not correspond with the 
+#' endpoints of the linestring geometries. Returns a \code{morphed_sfnetwork} 
+#' containing a single element of class \code{\link{sfnetwork}}. This morpher 
+#' requires edges to be spatially explicit. 
+#' @importFrom sf st_as_sf st_join
 #' @export
-to_spatial_directed = function(graph) {
-  require_spatially_explicit_edges(graph)
-  # Convert to a directed tbl_graph.
-  # Force conversion to sfnetwork (i.e. without valid sfnetwork structure).
-  graph = tidygraph::convert(as_tbl_graph(graph), to_directed)
-  graph = tbg_to_sfn(graph)
-  # Get boundary node indices.
-  # Returns a matrix with source ids in column 1 and target ids in column 2.
-  node_ids = edge_boundary_node_indices(graph)
-  from_ids = node_ids[, 1]
-  to_ids = node_ids[, 2]
-  # Get nodes and edge geometries.
-  nodes = st_geometry(graph, "nodes")
-  edges = st_geometry(graph, "edges")
-  # Get source node geometries of all edges.
-  srcnodes = nodes[from_ids]
-  # Get startpoint geometries of all edges.
-  stpoints = lwgeom::st_startpoint(edges)
-  # Retrieve the edges that don't have a matching source node and startpoint.
-  invalid = which(!have_equal_geometries(srcnodes, stpoints))
-  # Swap from and to indices for those "invalid" edges.
-  new_from_ids = from_ids
-  new_from_ids[invalid] = to_ids[invalid]
-  new_to_ids = to_ids
-  new_to_ids[invalid] = from_ids[invalid]
-  # Insert the new indices into the graph.
-  repared_graph = tidygraph::reroute(
-    as_tbl_graph(activate(graph, "edges")), 
-    from = new_from_ids, 
-    to = new_to_ids
-  )
-  # Convert to sfnetwork and return in list.
+to_spatial_directed = function(x) {
+  require_spatially_explicit_edges(x)
+  # Retrieve the edges from the network, without the to and from columns.
+  edges = st_as_sf(x, "edges")
+  edges[, c("from", "to")] = NULL
+  # Recreate the network as a directed one.
+  x_new = as_sfnetwork(edges, directed = TRUE)
+  # Spatial left join between nodes of x_new and original nodes of x. 
+  # This is needed since node attributes got lost when constructing x_new.
+  x_new = st_join(x_new, st_as_sf(x, "nodes"), join = st_equals)
+  # Return in a list.
   list(
-    directed_graph = tbg_to_sfn(repared_graph) %preserve_active% graph
+    directed = x_new %preserve_active% x
   )
 }
 
-#' @describeIn spatial_morphers Draw linestring geometries for spatially
-#' implicit edges.
+#' @describeIn spatial_morphers Draw linestring geometries between from and to
+#' nodes of spatially implicit edges. Returns a \code{morphed_sfnetwork} 
+#' containing a single element of class \code{\link{sfnetwork}}.
 #' @export
-to_spatial_explicit_edges = function(graph) {
+to_spatial_explicit_edges = function(x) {
   list(
-    explicit_graph = explicitize_edges(graph)
+    explicit = explicitize_edges(x)
   )
 }
 
 #' @describeIn spatial_morphers Remove linestring geometries of spatially 
-#' explicit edges.
+#' explicit edges. Returns a \code{morphed_sfnetwork} containing a single 
+#' element of class \code{\link{sfnetwork}}.
 #' @export
-to_spatial_implicit_edges = function(graph) {
+to_spatial_implicit_edges = function(x) {
   list(
-    implicit_graph = implicitize_edges(graph)
+    implicit = implicitize_edges(x)
   )
 }
 
-#' @describeIn spatial_morphers Limit a graph to those nodes and edges that are
-#' part of the shortest path between two nodes. If multiple \code{to} nodes are 
-#' given, multiple shortest paths are returned. \code{...} is evaluated in the 
-#' same manner as \code{\link{st_shortest_paths}}, except that the \code{output},
-#' \code{predecessors} and \code{inbound.edges} arguments are ignored. When 
-#' unmorphing only the first instance of both the node and edge data will be 
-#' used, as the the same node and/or edge can be present in multiple paths.
+#' @describeIn spatial_morphers Limit a network to those nodes and edges that 
+#' are part of the shortest path between two nodes. \code{...} is forwarded to
+#' \code{\link{st_shortest_paths}}. Returns a \code{morphed_sfnetwork} that 
+#' may contain multiple elements of class \code{\link{sfnetwork}}, depending on
+#' the number of requested paths. When unmorphing only the first instance of 
+#' both the node and edge data will be used, as the the same node and/or edge 
+#' can be present in multiple paths.
 #' @importFrom tidygraph slice
 #' @export
-to_spatial_shortest_paths = function(graph, ...) {
+to_spatial_shortest_paths = function(x, ...) {
   args = list(...)
-  args$x = graph
+  args$x = x
   args$output = "both"
   # Call st_shortest_paths with the given arguments.
   paths = do.call("st_shortest_paths", args)
-  # Subset the graph for each single shortest path.
+  # Subset the network for each computed shortest path.
   get_single_path = function(i) {
-    epath = tidygraph::slice(activate(graph, "edges"), as.integer(paths$epath[[i]]))
-    npath = tidygraph::slice(activate(epath, "nodes"), as.integer(paths$vpath[[i]]))
-    npath %preserve_active% graph
+    x_new = slice(activate(x, "edges"), as.integer(paths$epath[[i]]))
+    x_new = slice(activate(x_new, "nodes"), as.integer(paths$vpath[[i]]))
+    x_new %preserve_active% x
   }
-  lapply(c(1:length(paths$vpath)), get_single_path)
+  lapply(seq_len(length(paths$vpath)), get_single_path)
 }
 
 #' @describeIn spatial_morphers Remove loops in a graph and collapse parallel
-#' edges by keeping only one of them.
+#' edges. \code{...} is passed on to \code{\link[tidygraph]{to_simple}}. 
+#' Differs from \code{\link[tidygraph]{to_simple}} in the sense that combined 
+#' parallel edges get assigned a single geometry, which is either the geometry 
+#' of the shortest or the longest of the parallel edges. Returns a 
+#' \code{morphed_sfnetwork} containing a single element of class 
+#' \code{\link{sfnetwork}}. This morpher requires edges to be spatially 
+#' explicit. If not, use \code{\link[tidygraph]{to_simple}}.
 #' @param keep Which edge should be kept when collapsing parallel edges. Either
 #' \code{"longest"} or \code{"shortest"}. Defaults to \code{"shortest"}.
-#' \code{...} is passed on to \code{\link[tidygraph]{to_simple}}.
-#' @importFrom sf st_length
+#' @importFrom igraph is_directed
+#' @importFrom sf st_as_sf st_length
+#' @importFrom tibble as_tibble
 #' @importFrom tidygraph convert to_simple
 #' @export
-to_spatial_simple = function(graph, keep = "shortest", ...) {
-  require_spatially_explicit_edges(graph)
+to_spatial_simple = function(x, keep = "shortest", ...) {
+  require_spatially_explicit_edges(x)
   # Retrieve the column name of geometry list column of the edges.
-  geom_colname = edge_geom_colname(graph)
+  geom_colname = edge_geom_colname(x)
   # Run tidygraphs to_simple morpher.
-  # Force conversion to sfnetwork (i.e. without valid sfnetwork structure).
-  simple_graph = tidygraph::convert(graph, to_simple, ...)
-  simple_graph = tbg_to_sfn(simple_graph)
-  simple_graph = activate(simple_graph, "edges")
-  edges = as_tibble(simple_graph)
+  # Extract edges from the result.
+  x_tmp = convert(x, to_simple, ...)
+  edges = as_tibble(x_tmp, "edges")
   # For each of the edges that are a result of a merge of original edges:
-  # Select the geometry of either the longest or shortest edge.
-  select_edge = function(x) {
-    if (length(x) == 1) {
-      x 
-    } else {
-      lengths = sf::st_length(x)
-      switch(
-        keep,
-        longest = x[which(lengths == max(lengths))][1],
-        shortest = x[which(lengths == min(lengths))][1]
-      )
-    }
+  # --> Select the geometry of either the longest or shortest edge.
+  select_edge = function(e) {
+    if (length(e) == 1) return (e)
+    L = st_length(e)
+    switch(
+      keep,
+      longest = e[which(L == max(L))][1],
+      shortest = e[which(L == min(L))][1],
+      raise_unkown_input(keep)
+    )
   }
   edges[[geom_colname]] = do.call(c, lapply(edges[[geom_colname]], select_edge))
-  new_edges = sf::st_as_sf(edges)
-  new_graph = sfnetwork(
-    nodes = st_as_sf(simple_graph, "nodes"),
-    edges = new_edges,
-    directed = is_directed(graph),
-    force = TRUE
+  x_new = sfnetwork_(
+    nodes = st_as_sf(x_tmp, "nodes"),
+    edges = st_as_sf(edges),
+    directed = is_directed(x)
   )
+  # Return in a list.
   list(
-    simple_graph = new_graph %preserve_active% graph
+    simple = x_new %preserve_active% x
   ) 
 }
 
@@ -328,22 +337,27 @@ is_pseudo_node = function(x) {
   }
 }
 
-#' @describeIn spatial_morphers Limit a graph to a single spatial subset. 
+#' @describeIn spatial_morphers Limit a network to a result of a spatial
+#' filter, i.e. a filter on the geometry column based on a spatial predicate.
 #' \code{...} is evaluated in the same manner as \code{\link{st_filter}}.
+#' Returns a \code{morphed_sfnetwork} containing a single element of class
+#' \code{\link{sfnetwork}}. For filters on an attribute column, use
+#' \code{\link[tidygraph]{to_subgraph}}.
 #' @param subset_by Whether to create subgraphs based on nodes or edges.
+#' @importFrom sf st_filter
 #' @export
-to_spatial_subgraph = function(graph, ..., subset_by = NULL) {
+to_spatial_subset = function(x, ..., subset_by = NULL) {
   if (is.null(subset_by)) {
-    subset_by = active(graph)
+    subset_by = attr(x, "active")
     message("Subsetting by ", subset_by)
   }
-  sub_graph = switch(
+  x_new = switch(
     subset_by,
-    nodes = st_filter(activate(graph, "nodes"), ...),
-    edges = st_filter(activate(graph, "edges"), ...),
-    stop("Only possible to subset by nodes and edges", call. = FALSE)
+    nodes = st_filter(activate(x, "nodes"), ...),
+    edges = st_filter(activate(x, "edges"), ...),
+    raise_unkown_input(subset_by)
   )
   list(
-    sub_graph = sub_graph %preserve_active% graph
+    subset = x_new %preserve_active% x
   )
 }
