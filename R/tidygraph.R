@@ -33,20 +33,20 @@ morph.sfnetwork = function(.data, ...) {
       )
     }
   )
-  # Try to convert morphed elements into sfnetwork objects.
-  # If not possible, simply return as morphed_tbl_graph.
-  tryCatch(
-    as_morphed_sfn(morphed_data),
-    error = function(e) morphed_data
-  )
+  # If morphed data still consist of valid sfnetworks:
+  # --> Convert the morphed_tbl_graph into a morphed_sfnetwork.
+  # --> Otherwise, just return the morphed_tbl_graph.
+  if (has_spatial_nodes(morphed_data[[1]])) {
+    morphed_data = morphed_tbg_to_morphed_sfn(morphed_data)
+  }
+  morphed_data
 }
 
-#' @importFrom tidygraph as_tbl_graph
-as_morphed_sfn = function(x) {
+morphed_tbg_to_morphed_sfn = function(x) {
   structure(
-    suppressMessages(lapply(x, as_sfnetwork)),
+    lapply(x, tbg_to_sfn),
     class = c("morphed_sfnetwork", class(x)),
-    .orig_graph = tbg_to_sfn(as_tbl_graph(attr(x, ".orig_graph"))),
+    .orig_graph = attr(x, ".orig_graph"),
     .morpher = attr(x, ".morpher")
   )
 }

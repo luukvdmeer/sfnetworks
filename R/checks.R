@@ -37,6 +37,18 @@ has_single_geom_type = function(x, type) {
   all(st_is(x, type))
 }
 
+#' Check if a tbl_graph has nodes with a geometry list column
+#'
+#' @param x An object of class \code{\link[tidygraph]{tbl_graph}}.
+#'
+#' @return \code{TRUE} if the nodes table of the tbl_graph has a geometry list
+#' column, \code{FALSE} otherwise.
+#'
+#' @noRd
+has_spatial_nodes = function(x) {
+  any(sapply(vertex_attr(x), is.sfc), na.rm = TRUE)
+}
+
 #' Check if a sfnetwork has spatially explicit edges
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
