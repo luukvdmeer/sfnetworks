@@ -103,8 +103,8 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
   # If edges is an sf object:
   # --> Tidygraph cannot handle it due to sticky geometry.
   # --> Therefore it has to be converted into a regular data frame (or tibble).
-  if (is.sf(edges)) {
-    class(edges) = setdiff(class(edges), "sf")
+  if (has_sfc(edges)) {
+    if (is.sf(edges)) class(edges) = setdiff(class(edges), "sf")
     if (is.null(edges_as_lines)) edges_as_lines = TRUE
   } else {
     if (is.null(edges_as_lines)) edges_as_lines = FALSE
