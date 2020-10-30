@@ -7,10 +7,10 @@
 #' representation of the input network. Such an alternate representation is a 
 #' list of one or more network objects. Single elements of that list can be 
 #' extracted directly as a new network by passing the morpher to
-#' \code{\link[tidygraph]{convert}} instead of \code{\link[tidygraph]{morph}}. 
-#' Alternatively, if the morphed state contains multiple elements, all of them 
-#' can be extracted together inside a \code{\link[tibble]{tibble}} by passing 
-#' the morpher to \code{\link[tidygraph]{crystallise}}.
+#' \code{\link[tidygraph]{convert}} instead. Alternatively, if the morphed 
+#' state contains multiple elements, all of them can be extracted together 
+#' inside a \code{\link[tibble]{tibble}} by passing the morpher to 
+#' \code{\link[tidygraph]{crystallise}}.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -52,10 +52,10 @@ to_spatial_coordinates = function(x) {
   )
 }
 
-#' @describeIn spatial_morphers Reconstruct the network by using all points
-#' that shape the edge linestrings as nodes, instead of only the endpoints.
-#' Returns a \code{morphed_sfnetwork} containing a single element of class
-#' \code{\link{sfnetwork}}. This morpher requires edges to be spatially
+#' @describeIn spatial_morphers Reconstruct the network by treating all points
+#' that shape geometries of edge linestrings as nodes, instead of only the 
+#' endpoints. Returns a \code{morphed_sfnetwork} containing a single element of 
+#' class \code{\link{sfnetwork}}. This morpher requires edges to be spatially
 #' explicit.
 #' @importFrom igraph is_directed
 #' @importFrom lwgeom st_split
@@ -85,13 +85,13 @@ to_spatial_dense = function(x) {
 }
 
 #' @describeIn spatial_morphers Make a network directed in the direction given 
-#' by the linestring geometries of the edges. This in contradiction to the
-#' \code{to_directed} morpher of \code{tidygraph}, which makes a network
-#' directed based on the node indices given in the \code{from} and \code{to}
-#' columns. In undirected networks these indices may not correspond with the 
-#' endpoints of the linestring geometries. Returns a \code{morphed_sfnetwork} 
-#' containing a single element of class \code{\link{sfnetwork}}. This morpher 
-#' requires edges to be spatially explicit.
+#' by the linestring geometries of the edges. Differs from 
+#' \code{\link[tidygraph]{to_directed}}, which makes a network directed based 
+#' on the node indices given in the \code{from} and \code{to} columns. In 
+#' undirected networks these indices may not correspond with the endpoints of 
+#' the linestring geometries. Returns a \code{morphed_sfnetwork} containing a 
+#' single element of class \code{\link{sfnetwork}}. This morpher requires edges 
+#' to be spatially explicit. If not, use \code{\link[tidygraph]{to_directed}}.
 #' @importFrom igraph is_directed 
 #' @importFrom sf st_as_sf st_equals st_join
 #' @export
@@ -133,12 +133,12 @@ to_spatial_implicit_edges = function(x) {
 }
 
 #' @describeIn spatial_morphers Limit a network to those nodes and edges that 
-#' are part of the shortest path between two nodes. \code{...} is forwarded to
-#' \code{\link{st_shortest_paths}}. Returns a \code{morphed_sfnetwork} that 
-#' may contain multiple elements of class \code{\link{sfnetwork}}, depending on
-#' the number of requested paths. When unmorphing only the first instance of 
-#' both the node and edge data will be used, as the the same node and/or edge 
-#' can be present in multiple paths.
+#' are part of the shortest path between two nodes. \code{...} is evaluated in
+#' the same manner as \code{\link{st_shortest_paths}}. Returns a 
+#' \code{morphed_sfnetwork} that may contain multiple elements of class 
+#' \code{\link{sfnetwork}}, depending on the number of requested paths. When 
+#' unmorphing only the first instance of both the node and edge data will be 
+#' used, as the the same node and/or edge can be present in multiple paths.
 #' @importFrom tidygraph slice
 #' @export
 to_spatial_shortest_paths = function(x, ...) {
@@ -158,14 +158,15 @@ to_spatial_shortest_paths = function(x, ...) {
 
 #' @describeIn spatial_morphers Remove loops in a graph and collapse parallel
 #' edges. \code{...} is passed on to \code{\link[tidygraph]{to_simple}}. 
-#' Differs from \code{\link[tidygraph]{to_simple}} in the sense that combined 
-#' parallel edges get assigned a single geometry, which is either the geometry 
+#' Differs from \code{\link[tidygraph]{to_simple}} by assigning a single
+#' linestring geometry to combined parallel edges. This is either the geometry 
 #' of the shortest or the longest of the parallel edges. Returns a 
 #' \code{morphed_sfnetwork} containing a single element of class 
 #' \code{\link{sfnetwork}}. This morpher requires edges to be spatially 
 #' explicit. If not, use \code{\link[tidygraph]{to_simple}}.
-#' @param keep Which edge should be kept when collapsing parallel edges. Either
-#' \code{"longest"} or \code{"shortest"}. Defaults to \code{"shortest"}.
+#' @param keep Which geometry should be preserved when collapsing parallel 
+#' edges. Either \code{"longest"} or \code{"shortest"}. Defaults to 
+#' \code{"shortest"}.
 #' @importFrom igraph is_directed
 #' @importFrom sf st_as_sf st_length
 #' @importFrom tibble as_tibble
@@ -208,11 +209,11 @@ to_spatial_simple = function(x, keep = "shortest", ...) {
 #' of directed networks, pseudo nodes are those nodes that have only one 
 #' incoming and one outgoing edge. In undirected networks, pseudo nodes are 
 #' those nodes that have two incident edges. Connectivity of the network is
-#' preserved by merging the incident edges of the removed pseudo node. Returns
+#' preserved by merging the incident edges of each removed pseudo node. Returns
 #' a \code{morphed_sfnetwork} containing a single element of class 
 #' \code{\link{sfnetwork}}.
-#' @param require_equal_attrs Should selected nodes only be removed when the
-#' attributes of their adjacent edges are equal? Defaults to \code{FALSE}.
+#' @param require_equal_attrs Should pseudo nodes only be removed when all
+#' attributes of their incident edges are equal? Defaults to \code{FALSE}.
 #' @importFrom igraph incident is_directed neighbors
 #' @importFrom lwgeom st_endpoint st_startpoint
 #' @importFrom sf st_as_sf st_cast st_crs st_equals st_geometry st_reverse 
@@ -342,7 +343,7 @@ to_spatial_sparse = function(x, require_equal_attrs = FALSE) {
   )
 }
 
-#' @describeIn spatial_morphers Limit a network to a result of a spatial
+#' @describeIn spatial_morphers Subset the network by applying a spatial
 #' filter, i.e. a filter on the geometry column based on a spatial predicate.
 #' \code{...} is evaluated in the same manner as \code{\link{st_filter}}.
 #' Returns a \code{morphed_sfnetwork} containing a single element of class
