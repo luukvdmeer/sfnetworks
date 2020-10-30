@@ -91,11 +91,13 @@ to_spatial_dense = function(x) {
 #' columns. In undirected networks these indices may not correspond with the 
 #' endpoints of the linestring geometries. Returns a \code{morphed_sfnetwork} 
 #' containing a single element of class \code{\link{sfnetwork}}. This morpher 
-#' requires edges to be spatially explicit. 
+#' requires edges to be spatially explicit.
+#' @importFrom igraph is_directed 
 #' @importFrom sf st_as_sf st_join
 #' @export
 to_spatial_directed = function(x) {
   require_spatially_explicit_edges(x)
+  if (is_directed(x)) return (x)
   # Retrieve the edges from the network, without the to and from columns.
   edges = st_as_sf(x, "edges")
   edges[, c("from", "to")] = NULL
@@ -320,6 +322,135 @@ to_spatial_smoothed = function(graph, require_equal_attrs = FALSE,
   }
   list(
     smoothed_graph = smoothed_graph %preserve_active% graph
+  )
+}
+
+#' @importFrom igraph incident is_directed neighbors
+#' @importFrom lwgeom st_endpoint st_startpoint
+#' @importFrom sf st_as_sf st_cast st_crs st_equals st_geometry st_reverse 
+#' st_sfc
+#' @importFrom tibble as_tibble
+#' @importFrom tidygraph centrality_degree filter mutate pull select with_graph
+#' @export
+to_spatial_sparse = function(x, require_equal_attrs = FALSE) {
+  # Extract edges and nodes from x.
+  nodes = st_as_sf(x, "nodes")
+  edges = as_tibble(x, "edges")
+  # Initialize the new network.
+  # Only keep required columns of edges.
+  x_new = activate(x, "edges")
+  x_new = select(x_new, c("from", "to", ".tidygraph_edge_index"))
+  x_new = activate(x, "nodes")
+  # Find pseudo nodes in x.
+  if (is_directed(x)) {
+    # A node is a pseudo node if its in degree is 1 and its out degree is 1.
+    di = with_graph(x, centrality_degree(mode = "in"))
+    do = with_graph(x, centrality_degree(mode = "out"))
+    pseudo = di == 1 & do == 1
+  } else {
+    # A node is a pseudo node if its degree is 2.
+    d = with_graph(x, centrality_degree())
+    pseudo = d == 2
+  }
+  # Iteratively process pseudo nodes:
+  # --> Find incident edges to the node.
+  # --> Merge the incident edges into one to keep connectivity of the graph.
+  # --> Remove the incident edges.
+  # --> Repeat until all pseudo nodes are processed.
+  pseudo_remaining = pseudo
+  while (any(pseudo_remaining)) {
+    # Extract edges from the network updated in the former iteration.
+    E = st_as_sf(x_new, "edges")
+    # Get the index and geometry of the node to be processed in this iteration.
+    i = which(pseudo_remaining)[1]
+    p = nodes[i, ]
+    # Find the indices of incidents edges and neighboring nodes.
+    if (is_directed(x)) {
+      in_edge = incident(x_new, i, "in")
+      out_edge = incident(x_new, i, "out")
+      incidents = as.integer(c(in_edge, out_edge))
+      in_node = neighbors(x_new, i, "in")
+      out_node = neighbors(x_new, i, "out")
+      neighbors = as.integer(c(in_node, out_node))
+    } else {
+      incidents = as.integer(incident(x_new, i))
+      neighbors = as.integer(neighbors(x_new, i))
+    }
+    # Normally, there should be two indicent edges to a pseudo node.
+    # If there is only one indicent edge, this means this edge is a loop.
+    # In that case, mark node as processed and move on to the next iteration.
+    if (length(incidents) == 1) {
+      pseudo_remaining[i] = FALSE
+      next
+    }
+    # Separate the incident edges from the edges data.
+    E_i = E[incidents, ]
+    E = E[-incidents, ]
+    # If equal attributes of incident edges are required:
+    # --> Check if the attributes of the edges are varying.
+    # --> If yes, then the node is not a real pseudo node.
+    # --> Mark node as non-pseudo and move on to the next iteration.
+    if (require_equal_attrs) {
+      if (has_varying_feature_attributes(E)) {
+        pseudo[i] = FALSE
+        pseudo_remaining[i] = FALSE
+        next
+      }
+    }
+    if (has_spatially_explicit_edges(x)) {
+      # In directed networks, a pseudo node will always have:
+      # --> One linestring moving towards the node (the in edge).
+      # --> One linestring moving away from the node (the out edge).
+      # In undirected networks, it can also have either 2 in or 2 out edges.
+      # Note that in or out in that case does not mean anything.
+      # But we do need arranged geometries to correctly merge the edges.
+      # Hence, there is a need to rearrange the edges before proceeding.
+      # The arrangement should be:
+      # --> Edge one has a geometry that moves towards the pseudo node.
+      # --> Edge two has a geometry that moves away from the pseudo node.
+      if (! is_directed(x)) {
+        if (! st_equals(st_endpoint(E_i[1, ]), p, sparse = FALSE)) {
+          E_i[1, ] = st_reverse(E_i[1, ])
+        }
+        if (! st_equals(st_startpoint(E_i[2, ]), p, sparse = FALSE)) {
+          E_i[2, ] = st_reverse(E_i[2, ])
+        }
+      }
+      # Decompose the in and out edges into the points that shape them.
+      # The pseudo node point is in both of them, so should be removed once.
+      pts1 = st_cast(st_geometry(E_i[1, ]), "POINT")
+      pts2 = st_cast(st_geometry(E_i[2, ]), "POINT")[-1]
+      l = st_cast(do.call("c", c(pts1, pts2)), "LINESTRING")
+      l = st_sfc(l, crs = st_crs(E))
+    }
+    # Merge the in and out edges into a single new edge.
+    e = E_i[1, ]
+    e$from = neighbors[1]
+    e$to = neighbors[2]
+    tei_1 = E_i[1, ]$.tidygraph_edge_index
+    tei_2 = E_i[2, ]$.tidygraph_edge_index
+    e$.tidygraph_edge_index = list(c(unlist(tei_1), unlist(tei_2)))
+    if (has_spatially_explicit_edges(x)) st_geometry(e) = l
+    # Reconstruct the network with the new edge added and old ones removed.
+    x_new = sfnetwork_(nodes, rbind(E, e), directed = is_directed(x))
+    # Update list of remaining pseudo nodes.
+    pseudo_remaining[i] = FALSE
+  }
+  # Post-process:
+  # --> Remove pseudo nodes from the new network.
+  # --> Remove original attributes from edges.
+  # --> Store the original edge data in an .orig_data column.
+  x_new = activate(x_new, "nodes")
+  x_new = filter(x_new, !pseudo)
+  x_new = activate(x_new, "edges")
+  orig_data = lapply(
+    pull(x_new, ".tidygraph_edge_index"), 
+    function(i) edges[i, , drop = FALSE]
+  )
+  x_new = mutate(x_new, .orig_data = orig_data)
+  # Return in a list.
+  list(
+    sparse = x_new %preserve_active% x
   )
 }
 

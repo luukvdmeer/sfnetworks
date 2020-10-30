@@ -62,6 +62,20 @@ has_spatially_explicit_edges = function(x) {
   any(sapply(edge_attr(x), is.sfc), na.rm = TRUE)
 }
 
+#' Check if features in a table have varying attribute values
+#'
+#' @param x A flat table, such as an sf object, data.frame or tibble.
+#'
+#' @return \code{TRUE} when the attributes of the features in x are not all
+#' the same, \code{FALSE} otherwise.
+#'
+#' @importFrom sf st_drop_geometry
+#' @noRd
+has_varying_feature_attributes = function(x) {
+  if (is.sf(x)) x = st_drop_geometry(x)
+  !all(duplicated(x)[-1])
+}
+
 #' Check for empty geometries
 #'
 #' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
@@ -72,26 +86,6 @@ has_spatially_explicit_edges = function(x) {
 #' @noRd
 is_empty = function(x) {
   is.na(st_dimension(x))
-}
-
-#' Check if sf features have the same attribute values
-#'
-#' @param x A single feature of an object of class \code{\link[sf]{sf}}, or an
-#' object of class \code{\link[sf]{sf}} with multiple features.
-#'
-#' @param y A single feature of an object of class \code{\link[sf]{sf}}.
-#' Ignored when x contains multiple features.
-#'
-#' @return \code{TRUE} when the attributes of x and y are the same, 
-#' \code{FALSE} otherwise.
-#'
-#' @importFrom sf st_drop_geometry
-#' @noRd
-have_equal_attributes = function(x, y = NULL) {
-  if (nrow(x) == 1 & !is.null(y)) {
-    x = rbind(x, y)
-  }
-  all(duplicated(st_drop_geometry(x))[-1])
 }
 
 #' Check if two sf objects have the same LINESTRING boundary points
