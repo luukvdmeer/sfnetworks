@@ -145,7 +145,7 @@ st_is.sfnetwork = function(x, ...) {
 #' @importFrom sf st_crs st_geometry
 #' @export
 st_crs.sfnetwork = function(x, ...) {
-  st_crs(st_geometry(x), ...)
+  st_crs(st_geometry(x, "nodes"), ...)
 }
 
 #' @name sf
@@ -155,11 +155,11 @@ st_crs.sfnetwork = function(x, ...) {
   if (has_spatially_explicit_edges(x)) {
     geom = st_geometry(x, "edges")
     st_crs(geom) = value
-    x = mutate_geom(x, geom, "edges")
+    x = mutate_edge_geom(x, geom)
   }
   geom = st_geometry(x, "nodes")
   st_crs(geom) = value
-  mutate_geom(x, geom, "nodes")
+  mutate_node_geom(x, geom)
 }
 
 #' @name sf
@@ -215,11 +215,11 @@ change_coords = function(x, op, ...) {
   if (has_spatially_explicit_edges(x)) {
     geom = st_geometry(x, "edges")
     new_geom = do.call(match.fun(op), list(geom, ...))
-    x = mutate_geom(x, new_geom, "edges")
+    x = mutate_edge_geom(x, new_geom)
   }
   geom = st_geometry(x, "nodes")
   new_geom = do.call(match.fun(op), list(geom, ...))
-  mutate_geom(x, new_geom, "nodes")
+  mutate_node_geom(x, new_geom)
 }
 
 # =============================================================================
