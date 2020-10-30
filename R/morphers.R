@@ -59,7 +59,7 @@ to_spatial_coordinates = function(x) {
 #' explicit.
 #' @importFrom igraph is_directed
 #' @importFrom lwgeom st_split
-#' @importFrom sf st_as_sf st_cast st_collection_extract st_join
+#' @importFrom sf st_as_sf st_cast st_collection_extract st_equals st_join
 #' @export
 to_spatial_dense = function(x) {
   require_spatially_explicit_edges(x)
@@ -93,7 +93,7 @@ to_spatial_dense = function(x) {
 #' containing a single element of class \code{\link{sfnetwork}}. This morpher 
 #' requires edges to be spatially explicit.
 #' @importFrom igraph is_directed 
-#' @importFrom sf st_as_sf st_join
+#' @importFrom sf st_as_sf st_equals st_join
 #' @export
 to_spatial_directed = function(x) {
   require_spatially_explicit_edges(x)
@@ -204,127 +204,15 @@ to_spatial_simple = function(x, keep = "shortest", ...) {
 }
 
 #' @describeIn spatial_morphers Reconstruct the network by iteratively removing 
-#' all nodes that have only one incoming and one outgoing edge (or simply a 
-#' degree centrality of 2 in the case of undirected networks), but at the same 
-#' time preserving the connectivity of the graph by merging the incoming and
-#' outgoing edge of the removed node.
+#' pseudo nodes, while preserving the connectivity of the network. In the case 
+#' of directed networks, pseudo nodes are those nodes that have only one 
+#' incoming and one outgoing edge. In undirected networks, pseudo nodes are 
+#' those nodes that have two incident edges. Connectivity of the network is
+#' preserved by merging the incident edges of the removed pseudo node. Returns
+#' a \code{morphed_sfnetwork} containing a single element of class 
+#' \code{\link{sfnetwork}}.
 #' @param require_equal_attrs Should selected nodes only be removed when the
 #' attributes of their adjacent edges are equal? Defaults to \code{FALSE}.
-#' @param store_original_data Should the original edge data be kept in a special
-#' \code{.orig_data} column? Defaults to \code{TRUE}.
-#' @importFrom sf st_boundary st_geometry st_cast st_reverse st_union
-#' @importFrom tidygraph filter
-#' @export
-to_spatial_smoothed = function(graph, require_equal_attrs = FALSE,
-                               store_original_data = TRUE) {
-  require_spatially_explicit_edges(graph)
-  # Check which nodes in the graph are pseudo nodes.
-  pseudo = is_pseudo_node(activate(graph, "nodes"))
-  # Initialize the smoothed graph.
-  smoothed_graph = graph
-  # Iteratively process pseudo nodes until none remain.
-  # Preserve the connectivity of the graph while doing so.
-  while (any(pseudo)) {
-    # Retrieve the nodes and edges from the graph.
-    nodes = st_as_sf(smoothed_graph, "nodes")
-    node_geoms = sf::st_geometry(nodes)
-    edges = st_as_sf(smoothed_graph, "edges")
-    # Get the node index of the first pseudo node.
-    # This is the one that will be processed in this iteration.
-    idx = which(pseudo)[1]
-    # Find the adjacent edges to the pseudo node.
-    adj_edges = rbind(edges[edges$to == idx, ], edges[edges$from == idx, ])
-    # Normally, there should be two adjacent edges to a pseudo node.
-    # If there is only one adjacent edge, this means this edge is a loop.
-    # In that case, filter out this node and edge and move on to next pseudo.
-    if (nrow(adj_edges) == 1) {
-      smoothed_graph = tidygraph::filter(smoothed_graph, !idx)
-      pseudo[idx] = FALSE
-      next
-    }
-    # If equal attributes of adjacent edges are required:
-    # Check if the attributes of the edges are equal.
-    # If not, then the node is not a real pseudo node.
-    # Mark node as FALSE and move on to the next iteration.
-    if (require_equal_attrs) {
-      if (!have_equal_attributes(adj_edges[, !names(adj_edges) %in% c("from", "to")])) {
-        pseudo[idx] = FALSE
-        next
-      }
-    }
-    # In directed networks, a pseudo node will always have:
-    # - One linestring moving towards the node (the in edge).
-    # - One linestring moving away from the node (the out edge).
-    # In undirected networks, it can also have either 2 in or 2 out edges.
-    # Note that in or out in that case does not mean anything.
-    # But we do need arranged geometries to correctly merge the edges.
-    # Hence, there is a need to rearrange the edges before proceeding.
-    # The arrangement should be:
-    # - Edge one has a geometry that moves towards the pseudo node.
-    # - Edge two has a geometry that moves away from the pseudo node.
-    if (!is_directed(graph)) {
-      edge_1_bounds = sf::st_boundary(sf::st_geometry(adj_edges[1, ]))
-      if (sf::st_cast(edge_1_bounds, "POINT")[1] == node_geoms[idx]) {
-        adj_edges[1, ] = sf::st_reverse(adj_edges[1, ])
-      }
-      if (adj_edges[1, ]$from == idx) {
-        adj_edges[1, ]$from = adj_edges[1, ]$to
-        adj_edges[1, ]$to = idx
-      }
-      edge_2_bounds = sf::st_boundary(sf::st_geometry(adj_edges[2, ]))
-      if (sf::st_cast(edge_2_bounds, "POINT")[2] == node_geoms[idx]) {
-        adj_edges[2, ] = sf::st_reverse(adj_edges[2, ])
-      }
-      if (adj_edges[2, ]$to == idx) {
-        adj_edges[2, ]$to = adj_edges[2, ]$from
-        adj_edges[2, ]$from = idx
-      }
-    }
-    # Decompose the in and out edges into their vertices.
-    # The pseudo node vertice is in both of them, so should be removed once.
-    in_pts = sf::st_cast(sf::st_geometry(adj_edges[1, ]), "POINT")
-    out_pts = sf::st_cast(sf::st_geometry(adj_edges[2, ]), "POINT")[-1]
-    line = sf::st_cast(do.call("c", c(in_pts, out_pts)), "LINESTRING")
-    # Merge the in and out edges into a single edge.
-    new_edge = adj_edges[1, ]
-    new_edge$to = adj_edges[2, ]$to
-    new_edge$.tidygraph_edge_index = list(
-      c(
-        unlist(adj_edges[1, ]$.tidygraph_edge_index),
-        unlist(adj_edges[2, ]$.tidygraph_edge_index)
-      )
-    )
-    sf::st_geometry(new_edge) = sf::st_sfc(line, crs = sf::st_crs(edges))
-    # Reconstruct the graph with the new edge added.
-    smoothed_graph = sfnetwork(
-      nodes = nodes, 
-      edges = rbind(edges, new_edge), 
-      directed = is_directed(graph),
-      force = TRUE
-    )
-    # Filter out the processed pseudo node and adjacent edges.
-    smoothed_graph = tidygraph::slice(smoothed_graph, -idx)
-    # Find pseudo nodes in the smoothed graph.
-    pseudo = is_pseudo_node(smoothed_graph)
-  }
-  # Remove attributes from edges.
-  smoothed_graph = activate(smoothed_graph, "edges")
-  keep = c("from", "to", ".tidygraph_edge_index")
-  smoothed_graph = tidygraph::select(smoothed_graph, keep)
-  # Store the original edge data in a special column if requested.
-  if (store_original_data) {
-    orig_edges = st_as_sf(graph, "edges")
-    orig_data = lapply(
-      tidygraph::pull(smoothed_graph, ".tidygraph_edge_index"), 
-      function(i) orig_edges[i, , drop = FALSE]
-    )
-    smoothed_graph = tidygraph::mutate(smoothed_graph, .orig_data = orig_data)
-  }
-  list(
-    smoothed_graph = smoothed_graph %preserve_active% graph
-  )
-}
-
 #' @importFrom igraph incident is_directed neighbors
 #' @importFrom lwgeom st_endpoint st_startpoint
 #' @importFrom sf st_as_sf st_cast st_crs st_equals st_geometry st_reverse 
@@ -391,7 +279,7 @@ to_spatial_sparse = function(x, require_equal_attrs = FALSE) {
     # --> If yes, then the node is not a real pseudo node.
     # --> Mark node as non-pseudo and move on to the next iteration.
     if (require_equal_attrs) {
-      if (has_varying_feature_attributes(E)) {
+      if (has_varying_feature_attributes(E_i)) {
         pseudo[i] = FALSE
         pseudo_remaining[i] = FALSE
         next
@@ -452,20 +340,6 @@ to_spatial_sparse = function(x, require_equal_attrs = FALSE) {
   list(
     sparse = x_new %preserve_active% x
   )
-}
-
-#' @importFrom tidygraph centrality_degree with_graph
-is_pseudo_node = function(x) {
-  if (is_directed(x)) {
-    # A node is a pseudo node if its in degree is 1 and its out degree is 1.
-    d_in = tidygraph::with_graph(x, tidygraph::centrality_degree(mode = "in"))
-    d_out = tidygraph::with_graph(x, tidygraph::centrality_degree(mode = "out"))
-    d_in == 1 & d_out == 1
-  } else {
-    # A node is a pseudo node if its degree is 2.
-    d = tidygraph::with_graph(x, tidygraph::centrality_degree())
-    d == 2
-  }
 }
 
 #' @describeIn spatial_morphers Limit a network to a result of a spatial
