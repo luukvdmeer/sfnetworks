@@ -190,11 +190,11 @@ net %>%
   convert(to_spatial_coordinates)
 ```
 
-`to_spatial_dense_graph` reconstruct the network by using all edge linestring points as nodes, instead of only the endpoints.
+`to_spatial_dense` reconstruct the network by using all edge linestring points as nodes, instead of only the endpoints.
 
 ```{r, fig.show='hold'}
 plot(net)
-plot(convert(net, to_spatial_dense_graph))
+plot(convert(net, to_spatial_dense))
 ```
 
 `to_spatial_directed` makes a graph directed in the direction given by the linestring geometries of the edges. This in contradiction to the `to_directed` morpher of `tidygraph`, which makes a graph directed in the direction given by the `to` and `from` column.
@@ -221,7 +221,7 @@ net %>%
   convert(to_spatial_explicit_edges)
 ```
 
-`to_spatial_subgraph` limits a graph to a single spatial subset. ... is evaluated in the same manner as `st_filter`.
+`to_spatial_subset` limits a graph to a single spatial subset. ... is evaluated in the same manner as `st_filter`.
 
 ```{r}
 e1 = st_point(c(7.53173, 51.95662))
@@ -235,7 +235,7 @@ rect = st_multipoint(c(e1, e2, e3, e4)) %>%
   st_transform(3035)
 
 net %>%
-  convert(to_spatial_subgraph, rect, .predicate = st_intersects)
+  convert(to_spatial_subset, rect, .predicate = st_intersects)
 ```
 
 `to_spatial_shortest_paths` limits a graph to those nodes and edges that are part of the shortest path between two nodes. If multiple `to` nodes are given, multiple shortest path graphs are returned.
