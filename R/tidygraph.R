@@ -50,3 +50,42 @@ morphed_tbg_to_morphed_sfn = function(x) {
     .morpher = attr(x, ".morpher")
   )
 }
+
+#' @importFrom igraph delete_edge_attr delete_vertex_attr edge_attr vertex_attr
+#' edge_attr_names vertex_attr_names
+#' @importFrom tidygraph unmorph
+#' @export
+unmorph.morphed_sfnetwork = function(.data, ...) {
+  # Extract:
+  # --> First graph in the morphed object.
+  # --> Attributes of the morphed object.
+  # --> Original graph before morphing.
+  x1 = .data[[1]]
+  xa = attributes(.data)
+  xo = xa$.orig_graph
+  # If some nodes and/or edges where merged during morphing:
+  # --> This stores original node and/or edge indices in a list column.
+  # --> However, this also keeps a geometry column for the combined features.
+  # --> If a regular tidygraph morpher was used as a list of sfc objects.
+  # --> If spatial morpher was used as single sfc object.
+  # --> This gives problems when unmorphing.
+  # --> Therefore, we need to remove these combined geometries first.
+  # --> Original geometries are stored elsewhere and are not affected.
+  n_idx = ".tidygraph_node_index"
+  e_idx = ".tidygraph_edge_index"
+  n_nms = vertex_attr_names(x1)
+  e_nms = edge_attr_names(x1)
+  if (n_idx %in% n_nms && class(vertex_attr(x1, n_idx)) == "list") {
+    geom_col = node_geom_colname(xo)
+    .data = lapply(.data, function(x) delete_vertex_attr(x, geom_col))
+    attributes(.data) = xa
+  }
+  if (has_spatially_explicit_edges(xo)) {
+    if (e_idx %in% e_nms && class(edge_attr(x1, e_idx)) == "list") {
+      geom_col = edge_geom_colname(xo)
+      .data = lapply(.data, function(x) delete_edge_attr(x, geom_col))
+      attributes(.data) = xa
+    }
+  }
+  NextMethod(.data, ...)
+}
