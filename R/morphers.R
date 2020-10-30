@@ -189,7 +189,7 @@ to_spatial_simple = function(x, keep = "shortest", ...) {
       keep,
       longest = e[which(L == max(L))][1],
       shortest = e[which(L == min(L))][1],
-      raise_unkown_input(keep)
+      raise_unknown_input(keep)
     )
   }
   edges[[geom_colname]] = do.call(c, lapply(edges[[geom_colname]], select_edge))
@@ -361,7 +361,7 @@ to_spatial_subset = function(x, ..., subset_by = NULL) {
     subset_by,
     nodes = st_filter(activate(x, "nodes"), ...),
     edges = st_filter(activate(x, "edges"), ...),
-    raise_unkown_input(subset_by)
+    raise_unknown_input(subset_by)
   )
   list(
     subset = x_new %preserve_active% x
