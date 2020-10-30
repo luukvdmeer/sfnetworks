@@ -226,10 +226,7 @@ to_spatial_sparse = function(x, require_equal_attrs = FALSE) {
   nodes = st_as_sf(x, "nodes")
   edges = as_tibble(x, "edges")
   # Initialize the new network.
-  # Only keep required columns of edges.
-  x_new = activate(x, "edges")
-  x_new = select(x_new, c("from", "to", ".tidygraph_edge_index"))
-  x_new = activate(x, "nodes")
+  x_new = x
   # Find pseudo nodes in x.
   if (is_directed(x)) {
     # A node is a pseudo node if its in degree is 1 and its out degree is 1.
@@ -280,7 +277,11 @@ to_spatial_sparse = function(x, require_equal_attrs = FALSE) {
     # --> If yes, then the node is not a real pseudo node.
     # --> Mark node as non-pseudo and move on to the next iteration.
     if (require_equal_attrs) {
-      if (has_varying_feature_attributes(E_i)) {
+      E_i_attrs = E_i
+      E_i_attrs$from = NULL
+      E_i_attrs$to = NULL
+      E_i_attrs$.tidygraph_edge_index = NULL
+      if (has_varying_feature_attributes(E_i_attrs)) {
         pseudo[i] = FALSE
         pseudo_remaining[i] = FALSE
         next
@@ -332,6 +333,7 @@ to_spatial_sparse = function(x, require_equal_attrs = FALSE) {
   x_new = activate(x_new, "nodes")
   x_new = filter(x_new, !pseudo)
   x_new = activate(x_new, "edges")
+  x_new = select(x_new, c("from", "to", ".tidygraph_edge_index"))
   orig_data = lapply(
     pull(x_new, ".tidygraph_edge_index"), 
     function(i) edges[i, , drop = FALSE]
