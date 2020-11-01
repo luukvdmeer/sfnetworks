@@ -17,17 +17,16 @@
 #' and others.
 #'
 #' @examples
-#'
 #' net = as_sfnetwork(roxel)
 #' plot(net)
 #'
 #' # When lines are spatially implicit
-#' net = as_sfnetwork(roxel, edges_as_lines = F)
+#' net = as_sfnetwork(roxel, edges_as_lines = FALSE)
 #' plot(net)
 #'
 #' # Changing plot parameters like `col` will affect
-#' both edges and nodes, while e.g. `lwd` only affects the edges
-#' and `pch` and `cex` the nodes.
+#' # both edges and nodes, while e.g. `lwd` only affects
+#' # the edges and `pch` and `cex` the nodes.
 #'
 #' plot(net, col = 'blue', pch = 18, lwd = 1, cex = 2)
 #'
@@ -55,51 +54,50 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
   do.call(plot, dots)
 }
 
-#' @importFrom ggplot2 autoplot
-#' @export
-ggplot2::autoplot
-
-#' Autoplot sfnetwork object
-#'
-#' Autoplot an object of class \code{\link{sfnetwork}} as a ggplot object.
-#'
-#' @param x Object of class \code{\link{sfnetwork}}.
-#'
-#' @details This is a basic ggploting functionality, for a quick assessment of
-#' the network but on a \code{ggplot2} format.
-#'
-#' @examples
-#'
-#' net = as_sfnetwork(roxel)
-#'
-#' # Quick overview of the network in `ggplot2` style
-#' autoplot(net)
-#'
-#' # Other `ggplot2` elements can be added
-#' points = net %>%
-#'   st_bbox() %>%
-#'   st_as_sfc() %>%
-#'   st_sample(10, type = 'random') %>%
-#'   st_set_crs(4326) %>%
-#'   st_cast('POINT')
-#'
-#' autoplot(net) +
-#'    # The theme can be customized
-#'    ggplot2::theme_minimal() +
-#'    # Labels cna be added
-#'    ggplot2::labs(title = 'Nice ggplot') +
-#'    # And extra `geom_sf` layers can be included
-#'    ggplot2::geom_sf(data = points, color = 'red', size = 2)
-#'
 #' @importFrom sf st_as_sf
-#' @export
 autoplot.sfnetwork = function(x) {
+  ggplot2::ggplot() +
+    ggplot2::geom_sf(data = st_as_sf(x, 'nodes')) +
+    ggplot2::geom_sf(data = st_as_sf(x, 'edges'))
+}
 
-  if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop('The "ggplot2" package is needed for this functionality to work', call. = FALSE)
+# from: https://github.com/r-spatial/sf/blob/master/R/tidyverse.R
+# 2020-11-01 17:03:36 CET
+
+# nocov start
+
+.onLoad = function(...) {
+  # has_ggplot2_3.0 =
+  #   requireNamespace("ggplot2", quietly = TRUE) &&
+  #   utils::packageVersion("ggplot2") >= "3.0.0"
+  #
+  # if (has_ggplot2_3.0)
+
+  register_s3_method("ggplot2", "autoplot", "sfnetwork")
+  invisible()
+}
+
+register_s3_method <- function(pkg, generic, class, fun = NULL) {
+  stopifnot(is.character(pkg), length(pkg) == 1)
+  stopifnot(is.character(generic), length(generic) == 1)
+  stopifnot(is.character(class), length(class) == 1)
+
+  if (is.null(fun)) {
+    fun <- get(paste0(generic, ".", class), envir = parent.frame())
+  } else {
+    stopifnot(is.function(fun))
   }
 
-  ggplot2::ggplot() +
-    ggplot2::geom_sf(data = sf::st_as_sf(x, 'nodes')) +
-    ggplot2::geom_sf(data = sf::st_as_sf(x, 'edges'))
+  if (pkg %in% loadedNamespaces()) {
+    registerS3method(generic, class, fun, envir = asNamespace(pkg))
+  }
+
+  # Always register hook in case package is later unloaded & reloaded
+  setHook(
+    packageEvent(pkg, "onLoad"),
+    function(...) {
+      registerS3method(generic, class, fun, envir = asNamespace(pkg))
+    }
+  )
 }
+# nocov end
