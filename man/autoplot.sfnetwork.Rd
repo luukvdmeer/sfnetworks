@@ -4,7 +4,7 @@
 \alias{autoplot.sfnetwork}
 \title{Autoplot sfnetwork object}
 \usage{
-\method{autoplot}{sfnetwork}(object, ...)
+autoplot.sfnetwork(object, ...)
 }
 \arguments{
 \item{object}{An object of class \code{\link{sfnetwork}}.}
