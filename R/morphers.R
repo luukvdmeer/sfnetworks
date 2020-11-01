@@ -140,7 +140,6 @@ to_spatial_implicit_edges = function(x) {
 #' unmorphing only the first instance of both the node and edge data will be
 #' used, as the the same node and/or edge can be present in multiple paths.
 #' @importFrom tidygraph slice
-#' @importFrom tidygraph pull
 #' @export
 to_spatial_shortest_paths = function(x, ...) {
   args = list(...)
@@ -150,8 +149,8 @@ to_spatial_shortest_paths = function(x, ...) {
   paths = do.call("st_shortest_paths", args)
   # Subset the network for each computed shortest path.
   get_single_path = function(i) {
-    x_new = slice(activate(x, "edges"), unlist(pull(paths, "edge_path")[[i]]))
-    x_new = slice(activate(x_new, "nodes"), unlist(pull(paths, "node_path")[[i]]))
+    x_new = slice(activate(x, "edges"), as.integer(paths$edge_path[[i]]))
+    x_new = slice(activate(x_new, "nodes"), as.integer(paths$node_path[[i]]))
     x_new %preserve_active% x
   }
   lapply(seq_len(length(paths$node_path)), get_single_path)
