@@ -3,11 +3,11 @@
 set_shortest_paths_parameters = function(x, from, to, weights) {
   # Check if single to point has empty geometry.
   if (is.sf(to) | is.sfc(to) | is.sf(from) | is.sfc(from)) {
-    if (length(to) == length(which(is_empty(to)))) {
-      stop("To points provided have empty geometries", call. = F)
-    }
     if (length(from) == length(which(is_empty(from)))) {
-      stop("From points provided have empty geometries", call. = F)
+      stop("From points contain only empty geometries", call. = F)
+    }
+    if (length(to) == length(which(is_empty(to)))) {
+      stop("To points contain only empty geometries", call. = F)
     }
   }
   # Get node index of from node.
