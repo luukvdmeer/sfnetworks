@@ -41,7 +41,7 @@ Imports:
   utils
 Suggests:
   fansi,
-  ggplot2,
+  ggplot2 (>= 3.0.0),
   knitr,
   spatstat,
   testthat  
