@@ -16,6 +16,20 @@
 #' as can be found in \code{sf}, \code{tmap}, \code{ggplot2}, \code{ggspatial},
 #' and others.
 #'
+#' @examples
+#' net = as_sfnetwork(roxel)
+#' plot(net)
+#'
+#' # When lines are spatially implicit
+#' net = as_sfnetwork(roxel, edges_as_lines = FALSE)
+#' plot(net)
+#'
+#' # Changing plot parameters like `col` will affect
+#' # both edges and nodes, while e.g. `lwd` only affects
+#' # the edges and `pch` and `cex` the nodes.
+#'
+#' plot(net, col = 'blue', pch = 18, lwd = 1, cex = 2)
+#'
 #' @importFrom graphics plot
 #' @importFrom sf st_geometry
 #' @export
