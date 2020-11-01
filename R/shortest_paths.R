@@ -1,19 +1,37 @@
 #' @importFrom sf st_nearest_feature
 #' @importFrom tidygraph pull
 set_shortest_paths_parameters = function(x, from, to, weights) {
-  # Get node index of from node.
-  if (is.sf(from) | is.sfc(from)) {
-    from = sf::st_nearest_feature(from, activate(x, "nodes"))
+  # Check if single to point has empty geometry.
+  if (is.sf(to) | is.sfc(to) | is.sf(from) | is.sfc(from)) {
+    if (length(to) == length(which(is_empty(to)))) {
+      stop("To points provided have empty geometries", call. = F)
+    }
+    if (length(from) == length(which(is_empty(from)))) {
+      stop("From points provided have empty geometries", call. = F)
+    }
   }
+  # Get node index of from node.
   if (length(from) > 1) {
     warning(
-      "Multiple from points are given. Only the first one will be used",
+      "Multiple from points are given. Only the first (non-empty) one will be used",
       call. = FALSE
     )
   }
+  if (is.sf(from) | is.sfc(from)) {
+    from = from[!is_empty(from)]
+    from = sf::st_nearest_feature(from, activate(x, "nodes"))
+  }
   # Get node indices of to nodes.
   if (is.sf(to) | is.sfc(to)) {
+    if (any(is_empty(to))) {
+      warning(
+        "To points containing empty geometries have been removed",
+        call. = FALSE
+      )
+    }
+    to = to[!is_empty(to)]
     to = sf::st_nearest_feature(to, activate(x, "nodes"))
+    # Warning for empty geometry removal.
   }
   # If weights is a string, retrieve the column which name matches the string.
   if (is.character(weights)) {
