@@ -241,26 +241,26 @@ net %>%
 `to_spatial_shortest_paths` limits a graph to those nodes and edges that are part of the shortest path between two nodes. If multiple `to` nodes are given, multiple shortest path graphs are returned.
 
 ```{r}
-net %>%
-  convert(to_spatial_shortest_paths, p3, p4)
+# net %>%
+  # convert(to_spatial_shortest_paths, p3, p4)
 ```
 
 This morpher can be very useful for plotting shortest paths on top of the original graph.
 
 ```{r}
-plot(net)
-plot(
-  net %>% convert(to_spatial_shortest_paths, p3, p4),
-  col = "red",
-  add = TRUE
-)
+# plot(net)
+# plot(
+#   net %>% convert(to_spatial_shortest_paths, p3, p4),
+#   col = "red",
+#   add = TRUE
+# )
 ```
 
 Or, for calculating the lengths of multiple shortest paths.
 
 ```{r}
-net %>%
-  activate("edges") %>%
-  morph(to_spatial_shortest_paths, p1, c(p3, p4)) %>%
-  sapply(function(x) sum(st_length(x)))
+# net %>%
+#   activate("edges") %>%
+#   morph(to_spatial_shortest_paths, p1, c(p3, p4)) %>%
+#   sapply(function(x) sum(st_length(x)))
 ```
