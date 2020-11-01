@@ -37,8 +37,8 @@ to_spatial_subset(x, ..., subset_by = NULL)
 \item{...}{Arguments to be passed on to other functions. See the description
 of each morpher for details.}
 
-\item{keep}{Which geometry should be preserved when collapsing parallel 
-edges. Either \code{"longest"} or \code{"shortest"}. Defaults to 
+\item{keep}{Which geometry should be preserved when collapsing parallel
+edges. Either \code{"longest"} or \code{"shortest"}. Defaults to
 \code{"shortest"}.}
 
 \item{require_equal_attrs}{Should pseudo nodes only be removed when all
@@ -53,16 +53,16 @@ list of one or more \code{\link[tidygraph]{tbl_graph}} object. See the
 description of each morpher for details.
 }
 \description{
-Spatial morphers form spatial add-ons to the set of 
-\code{\link[tidygraph]{morphers}} provided by \code{tidygraph}. These 
-functions are not meant to be called directly. They should either be passed 
-into \code{\link[tidygraph]{morph}} to create a temporary alternate 
-representation of the input network. Such an alternate representation is a 
-list of one or more network objects. Single elements of that list can be 
+Spatial morphers form spatial add-ons to the set of
+\code{\link[tidygraph]{morphers}} provided by \code{tidygraph}. These
+functions are not meant to be called directly. They should either be passed
+into \code{\link[tidygraph]{morph}} to create a temporary alternate
+representation of the input network. Such an alternate representation is a
+list of one or more network objects. Single elements of that list can be
 extracted directly as a new network by passing the morpher to
-\code{\link[tidygraph]{convert}} instead. Alternatively, if the morphed 
-state contains multiple elements, all of them can be extracted together 
-inside a \code{\link[tibble]{tibble}} by passing the morpher to 
+\code{\link[tidygraph]{convert}} instead. Alternatively, if the morphed
+state contains multiple elements, all of them can be extracted together
+inside a \code{\link[tibble]{tibble}} by passing the morpher to
 \code{\link[tidygraph]{crystallise}}.
 }
 \details{
@@ -71,59 +71,59 @@ of \code{\link[tidygraph]{morph}} for the requirements for custom morphers.
 }
 \section{Functions}{
 \itemize{
-\item \code{to_spatial_coordinates}: Store the spatial coordinates of the nodes in 
-separate coordinate columns, instead of a \code{\link[sf]{sfc}} geometry 
-list column. If edges are spatially explicit, the edge geometries are 
-dropped. Returns a \code{morphed_tbl_graph} containing a single element of 
+\item \code{to_spatial_coordinates}: Store the spatial coordinates of the nodes in
+separate coordinate columns, instead of a \code{\link[sf]{sfc}} geometry
+list column. If edges are spatially explicit, the edge geometries are
+dropped. Returns a \code{morphed_tbl_graph} containing a single element of
 class \code{\link[tidygraph]{tbl_graph}}.
 
 \item \code{to_spatial_dense}: Reconstruct the network by treating all points
-that shape geometries of edge linestrings as nodes, instead of only the 
-endpoints. Returns a \code{morphed_sfnetwork} containing a single element of 
+that shape geometries of edge linestrings as nodes, instead of only the
+endpoints. Returns a \code{morphed_sfnetwork} containing a single element of
 class \code{\link{sfnetwork}}. This morpher requires edges to be spatially
 explicit.
 
-\item \code{to_spatial_directed}: Make a network directed in the direction given 
-by the linestring geometries of the edges. Differs from 
-\code{\link[tidygraph]{to_directed}}, which makes a network directed based 
-on the node indices given in the \code{from} and \code{to} columns. In 
-undirected networks these indices may not correspond with the endpoints of 
-the linestring geometries. Returns a \code{morphed_sfnetwork} containing a 
-single element of class \code{\link{sfnetwork}}. This morpher requires edges 
+\item \code{to_spatial_directed}: Make a network directed in the direction given
+by the linestring geometries of the edges. Differs from
+\code{\link[tidygraph]{to_directed}}, which makes a network directed based
+on the node indices given in the \code{from} and \code{to} columns. In
+undirected networks these indices may not correspond with the endpoints of
+the linestring geometries. Returns a \code{morphed_sfnetwork} containing a
+single element of class \code{\link{sfnetwork}}. This morpher requires edges
 to be spatially explicit. If not, use \code{\link[tidygraph]{to_directed}}.
 
 \item \code{to_spatial_explicit_edges}: Draw linestring geometries between from and to
-nodes of spatially implicit edges. Returns a \code{morphed_sfnetwork} 
+nodes of spatially implicit edges. Returns a \code{morphed_sfnetwork}
 containing a single element of class \code{\link{sfnetwork}}.
 
-\item \code{to_spatial_implicit_edges}: Remove linestring geometries of spatially 
-explicit edges. Returns a \code{morphed_sfnetwork} containing a single 
+\item \code{to_spatial_implicit_edges}: Remove linestring geometries of spatially
+explicit edges. Returns a \code{morphed_sfnetwork} containing a single
 element of class \code{\link{sfnetwork}}.
 
-\item \code{to_spatial_shortest_paths}: Limit a network to those nodes and edges that 
+\item \code{to_spatial_shortest_paths}: Limit a network to those nodes and edges that
 are part of the shortest path between two nodes. \code{...} is evaluated in
-the same manner as \code{\link{st_shortest_paths}}. Returns a 
-\code{morphed_sfnetwork} that may contain multiple elements of class 
-\code{\link{sfnetwork}}, depending on the number of requested paths. When 
-unmorphing only the first instance of both the node and edge data will be 
+the same manner as \code{\link{st_shortest_paths}}. Returns a
+\code{morphed_sfnetwork} that may contain multiple elements of class
+\code{\link{sfnetwork}}, depending on the number of requested paths. When
+unmorphing only the first instance of both the node and edge data will be
 used, as the the same node and/or edge can be present in multiple paths.
 
 \item \code{to_spatial_simple}: Remove loops in a graph and collapse parallel
-edges. \code{...} is passed on to \code{\link[tidygraph]{to_simple}}. 
+edges. \code{...} is passed on to \code{\link[tidygraph]{to_simple}}.
 Differs from \code{\link[tidygraph]{to_simple}} by assigning a single
-linestring geometry to combined parallel edges. This is either the geometry 
-of the shortest or the longest of the parallel edges. Returns a 
-\code{morphed_sfnetwork} containing a single element of class 
-\code{\link{sfnetwork}}. This morpher requires edges to be spatially 
+linestring geometry to combined parallel edges. This is either the geometry
+of the shortest or the longest of the parallel edges. Returns a
+\code{morphed_sfnetwork} containing a single element of class
+\code{\link{sfnetwork}}. This morpher requires edges to be spatially
 explicit. If not, use \code{\link[tidygraph]{to_simple}}.
 
-\item \code{to_spatial_sparse}: Reconstruct the network by iteratively removing 
-pseudo nodes, while preserving the connectivity of the network. In the case 
-of directed networks, pseudo nodes are those nodes that have only one 
-incoming and one outgoing edge. In undirected networks, pseudo nodes are 
+\item \code{to_spatial_sparse}: Reconstruct the network by iteratively removing
+pseudo nodes, while preserving the connectivity of the network. In the case
+of directed networks, pseudo nodes are those nodes that have only one
+incoming and one outgoing edge. In undirected networks, pseudo nodes are
 those nodes that have two incident edges. Connectivity of the network is
 preserved by merging the incident edges of each removed pseudo node. Returns
-a \code{morphed_sfnetwork} containing a single element of class 
+a \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}.
 
 \item \code{to_spatial_subset}: Subset the network by applying a spatial
