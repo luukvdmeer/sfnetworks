@@ -112,14 +112,31 @@ to_spatial_directed = function(x) {
   )
 }
 
-#' @describeIn spatial_morphers Draw linestring geometries between from and to
-#' nodes of spatially implicit edges. Returns a \code{morphed_sfnetwork}
-#' containing a single element of class \code{\link{sfnetwork}}.
+#' @describeIn spatial_morphers Create linestring geometries between from and 
+#' to nodes of spatially implicit edges. If the edges data can be directly
+#' converted to an object of class \code{\link[sf]{sf}} using
+#' \code{\link[sf]{st_as_sf}}, extra arguments can be provided as \code{...} 
+#' which will be forwarded to st_as_sf internally. Otherwise, straight lines 
+#' will be drawn between source and target nodes of edges. Returns a 
+#' \code{morphed_sfnetwork} containing a single element of class 
+#' \code{\link{sfnetwork}}.
 #' @export
-to_spatial_explicit_edges = function(x) {
-  list(
-    explicit = explicitize_edges(x)
-  )
+to_spatial_explicit_edges = function(x, ...) {
+  args = list(...)
+  if (length(args) > 0) {
+    # Convert edges to sf by forwarding ... to st_as_sf.
+    e = as_tibble(x, "edges")
+    e_sf = st_as_sf(e, ...)
+    x_new = activate(x, "edges")
+    st_geometry(x_new) = st_geometry(e_sf)
+    list(
+      explicit = x_new %preserve_active% x
+    )
+  } else {
+    list(
+      explicit = explicitize_edges(x)
+    )
+  }
 }
 
 #' @describeIn spatial_morphers Remove linestring geometries of spatially

@@ -212,17 +212,10 @@ explicitize_edges = function(x) {
     # Returns a matrix with source ids in column 1 and target ids in column 2.
     ids = edge_boundary_node_indices(x)
     # Get the boundary node geometries of each edge.
-    from_geoms = nodes[ids[, 1]]
-    to_geoms = nodes[ids[, 2]]
+    from = nodes[ids[, 1]]
+    to = nodes[ids[, 2]]
     # Draw linestring geometries between the boundary nodes of each edge.
-    edge_geoms = draw_lines(from_geoms, to_geoms)
-    # Add the geometries as a column.
-    # Use the same geometry column name as the geometry column of the nodes.
-    col = node_geom_colname(x)
-    x_new = mutate(activate(x, "edges"), !!col := edge_geoms)
-    edge_geom_colname(x_new) = col
-    # Return x_new.
-    x_new %preserve_active% x
+    mutate_edge_geom(x, draw_lines(from, to))
   }
 }
 
