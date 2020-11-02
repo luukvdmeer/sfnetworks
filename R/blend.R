@@ -26,13 +26,18 @@
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
 #' 
+#' @export
+st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
+  UseMethod("st_blend")
+}
+
 #' @importFrom dplyr sym
 #' @importFrom rlang !! :=
 #' @importFrom sf st_as_sf st_distance st_equals st_geometry st_intersection
 #' st_join st_nearest_feature st_nearest_points st_set_crs
 #' @importFrom tidygraph arrange mutate
 #' @export
-st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
+st_blend.sfnetwork = function(x, y, tolerance = Inf, sort = FALSE) {
   require_spatially_explicit_edges(x)
   stopifnot(has_single_geom_type(y, "POINT"))
   stopifnot(have_equal_crs(x, y))
