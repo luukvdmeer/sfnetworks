@@ -61,15 +61,15 @@ st_network_join.sfnetwork = function(x, y, blend_nodes = FALSE,
     if (blend_nodes) {
       x_nodes = st_geometry(x, "nodes")
       y_nodes = st_geometry(y, "nodes")
-      x = suppressWarnings(st_blend(x, y_nodes, tolerance = 0, sort = sort))
-      y = suppressWarnings(st_blend(y, x_nodes, tolerance = 0, sort = sort))
+      x = suppressWarnings(blend_(x, y_nodes, tolerance = 0, sort = sort))
+      y = suppressWarnings(blend_(y, x_nodes, tolerance = 0, sort = sort))
     }
     if (blend_crossings) {
       x_edges = st_geometry(x, "edges")
       y_edges = st_geometry(y, "edges")
       crossings = linestring_crossings(x_edges, y_edges)
-      x = suppressWarnings(st_blend(x, crossings, tolerance = 0, sort = sort))
-      y = suppressWarnings(st_blend(y, crossings, tolerance = 0, sort = sort))
+      x = suppressWarnings(blend_(x, crossings, tolerance = 0, sort = sort))
+      y = suppressWarnings(blend_(y, crossings, tolerance = 0, sort = sort))
     }
   }
   # Regular graph join based on geometry columns.

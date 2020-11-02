@@ -202,8 +202,6 @@ set_paths_args = function(x, from, to, weights) {
 set_path_endpoints = function(x, p, name) {
   # Case 1: input is geospatial point geometries.
   if (is.sf(p) || is.sfc(p)) {
-    nodes = st_geometry(x, "nodes")
-    stopifnot(have_equal_crs(nodes, p))
     missing = is_empty(p)
     if (any(missing)) {
       if (all(missing)) {
@@ -218,7 +216,7 @@ set_path_endpoints = function(x, p, name) {
         )
       }
     }
-    return (st_nearest_feature(p[!missing], nodes))
+    return (st_nearest_node(p[!missing], x, geometries = FALSE))
   } 
   # Case 2: input is numeric node indices.
   if (is.numeric(p)) {
