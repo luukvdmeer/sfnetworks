@@ -13,14 +13,7 @@
 #' object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
 #'
 #' @param ... Arguments passed on to the corresponding spatial predicate
-#' function of sf. See \code{\link[sf]{geos_binary_pred}}. Just as with all 
-#' query functions in tidygraph, spatial node measures are meant to be called 
-#' inside tidygraph verbs such as \code{\link[tidygraph]{mutate}} or 
-#' \code{\link[tidygraph]{filter}}, where the network that is currently being 
-#' worked on is known and thus not needed as an argument to the function. If 
-#' you want to use an algorithm outside of the tidygraph framework you can use 
-#' \code{\link[tidygraph]{with_graph}} to set the context temporarily while the 
-#' algorithm is being evaluated.
+#' function of sf. See \code{\link[sf]{geos_binary_pred}}.
 #'
 #' @return A logical vector of the same length as the number of nodes in the 
 #' network.
