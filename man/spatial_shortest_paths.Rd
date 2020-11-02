@@ -130,7 +130,7 @@ net \%>\%
 
 net \%>\%
   activate("edges") \%>\%
-  mutate(weight = length) \%>\%
+  mutate(weight = edge_length()) \%>\%
   st_shortest_paths(p1, p2)
 
 # 7. Calculate all shortest paths between two points

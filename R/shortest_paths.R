@@ -95,7 +95,7 @@ NULL
 #'
 #' net %>%
 #'   activate("edges") %>%
-#'   mutate(weight = length) %>%
+#'   mutate(weight = edge_length()) %>%
 #'   st_shortest_paths(p1, p2)
 #'
 #' @importFrom igraph V

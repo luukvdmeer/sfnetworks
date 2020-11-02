@@ -149,11 +149,11 @@ to_spatial_shortest_paths = function(x, ...) {
   paths = do.call("st_shortest_paths", args)
   # Subset the network for each computed shortest path.
   get_single_path = function(i) {
-    x_new = slice(activate(x, "edges"), as.integer(paths$edge_path[[i]]))
-    x_new = slice(activate(x_new, "nodes"), as.integer(paths$node_path[[i]]))
+    x_new = slice(activate(x, "edges"), as.integer(paths$edge_paths[[i]]))
+    x_new = slice(activate(x_new, "nodes"), as.integer(paths$node_paths[[i]]))
     x_new %preserve_active% x
   }
-  lapply(seq_len(length(paths$node_path)), get_single_path)
+  lapply(seq_len(nrow(paths)), get_single_path)
 }
 
 #' @describeIn spatial_morphers Remove loops in a graph and collapse parallel

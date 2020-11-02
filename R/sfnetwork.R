@@ -383,6 +383,7 @@ summarise_network_element = function(data, name, active = TRUE, ...) {
 }
 
 #' @importFrom sf st_crs
+#' @importFrom utils capture.output
 #' @export
 print.morphed_sfnetwork = function(x, ...) {
   x_tbg = structure(x, class = setdiff(class(x), "morphed_sfnetwork"))
