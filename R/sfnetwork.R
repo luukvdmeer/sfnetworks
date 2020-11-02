@@ -352,16 +352,6 @@ print.sfnetwork = function(x, ...) {
   print(inactive_data)
 }
 
-#' @importFrom igraph ecount vcount
-#' @export
-print.morphed_sfnetwork = function(x, ...) {
-  graph = attr(x, '.orig_graph')
-  cat('# An sfnetwork temporarily morphed to a ', gsub('_', ' ', sub('to_', '', attr(x, '.morpher'))), ' representation\n', sep = '')
-  cat('# \n')
-  cat('# Original network is ', tolower(tidygraph:::describe_graph(graph)), '\n', sep = '')
-  cat('# consisting of ', ecount(graph), ' nodes and ', vcount(graph), ' edges\n', sep = '')
-}
-
 #' @importFrom sf st_geometry
 #' @importFrom tibble trunc_mat
 #' @importFrom tools toTitleCase
