@@ -54,15 +54,17 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
   do.call(plot, dots)
 }
 
-#' Autoplot sfnetwork object
+#' autoplot method for sfnetworks
 #'
-#' Autoplot an object of class \code{\link{sfnetwork}} as a ggplot object.
+#' Plot the geometries of an object of class \code{\link{sfnetwork}} 
+#' automatically as a \code{\link[ggplot2]{ggplot}} object. Use this method 
+#' without the .sfnetwork suffix and after loading the ggplot2 package.
 #'
 #' @param object An object of class \code{\link{sfnetwork}}.
-#' @param ... ignored
+#' 
+#' @param ... Ignored.
 #'
-#' @details This is a basic ggploting functionality, for a quick
-#' assessment of the network but on a \code{ggplot2} format.
+#' @details See \code{\link[ggplot2]{autoplot}}.
 #'
 #' @examples
 #' library(ggplot2)
@@ -87,6 +89,8 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
 #'    labs(title = 'Nice ggplot') +
 #'    # And extra `geom_sf` layers can be included
 #'    geom_sf(data = points, color = 'red', size = 2)
+#'
+#' @name autoplot
 #' @importFrom sf st_as_sf
 autoplot.sfnetwork = function(object, ...) {
   ggplot2::ggplot() +

@@ -49,10 +49,7 @@ predicate. Edge data are combined using a \code{bind_rows} semantic, meaning
 that data are matched by column name and values are filled with `NA` if 
 missing in either of the networks. The \code{from} and \code{to} columns in 
 the edge data are updated such that they match the new node indices of the 
-resulting network.
-}
-\details{
-If requested, edges can be splitted at locations where they either intersect
-with nodes of the other network, or get crossed by edges of the other
-network.
+resulting network. If requested, edges can be splitted at locations where 
+they either intersect with nodes of the other network, or get crossed by 
+edges of the other network.
 }
