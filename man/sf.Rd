@@ -88,8 +88,7 @@ of \code{\link[sf:st]{sfg}} or \code{\link[sf:st_bbox]{bbox}}. Always look
 at the documentation of the corresponding \code{sf} function for details.}
 }
 \description{
-\code{\link[sf]{sf}} methods for \code{\link{sfnetwork}} objects. Use these 
-methods without the .sfnetwork suffix and after loading the sf package.
+\code{\link[sf]{sf}} methods for \code{\link{sfnetwork}} objects.
 }
 \details{
 See the \code{\link[sf]{sf}} documentation.

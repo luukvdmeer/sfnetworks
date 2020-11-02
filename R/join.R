@@ -6,11 +6,9 @@
 #' that data are matched by column name and values are filled with `NA` if 
 #' missing in either of the networks. The \code{from} and \code{to} columns in 
 #' the edge data are updated such that they match the new node indices of the 
-#' resulting network.
-#'
-#' If requested, edges can be splitted at locations where they either intersect
-#' with nodes of the other network, or get crossed by edges of the other
-#' network.
+#' resulting network. If requested, edges can be splitted at locations where 
+#' they either intersect with nodes of the other network, or get crossed by 
+#' edges of the other network.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -39,10 +37,17 @@
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
+#' @export
+#'
+st_network_join = function(x, y, blend_nodes = FALSE, 
+                           blend_crossings = FALSE, sort = TRUE, ...) {
+  UseMethod("st_network_join")
+}
+
 #' @importFrom sf st_geometry
 #' @importFrom tidygraph as_tbl_graph graph_join
 #' @export
-st_network_join = function(x, y, blend_nodes = FALSE, 
+st_network_join.sfnetwork = function(x, y, blend_nodes = FALSE, 
                            blend_crossings = FALSE, sort = TRUE, ...) {
   if (! is.sfnetwork(y)) y = as_sfnetwork(y)
   stopifnot(have_equal_crs(x, y))
@@ -56,15 +61,15 @@ st_network_join = function(x, y, blend_nodes = FALSE,
     if (blend_nodes) {
       x_nodes = st_geometry(x, "nodes")
       y_nodes = st_geometry(y, "nodes")
-      x = suppressWarnings(st_blend(x, y_nodes, tolerance = 0, sort = sort))
-      y = suppressWarnings(st_blend(y, x_nodes, tolerance = 0, sort = sort))
+      x = suppressWarnings(blend_(x, y_nodes, tolerance = 0, sort = sort))
+      y = suppressWarnings(blend_(y, x_nodes, tolerance = 0, sort = sort))
     }
     if (blend_crossings) {
       x_edges = st_geometry(x, "edges")
       y_edges = st_geometry(y, "edges")
       crossings = linestring_crossings(x_edges, y_edges)
-      x = suppressWarnings(st_blend(x, crossings, tolerance = 0, sort = sort))
-      y = suppressWarnings(st_blend(y, crossings, tolerance = 0, sort = sort))
+      x = suppressWarnings(blend_(x, crossings, tolerance = 0, sort = sort))
+      y = suppressWarnings(blend_(y, crossings, tolerance = 0, sort = sort))
     }
   }
   # Regular graph join based on geometry columns.

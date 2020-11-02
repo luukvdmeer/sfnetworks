@@ -7,11 +7,24 @@
 \alias{st_network_distance}
 \title{Shortest paths between points in geographical space}
 \usage{
-st_shortest_paths(x, from, to = V(x), weights = NULL, ...)
+st_shortest_paths(
+  x,
+  from,
+  to = igraph::V(x),
+  weights = NULL,
+  output = "both",
+  ...
+)
 
-st_all_shortest_paths(x, from, to = V(x), weights = NULL)
+st_all_shortest_paths(x, from, to = igraph::V(x), weights = NULL)
 
-st_network_distance(x, from = V(x), to = V(x), weights = NULL, ...)
+st_network_distance(
+  x,
+  from = igraph::V(x),
+  to = igraph::V(x),
+  weights = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
@@ -19,7 +32,7 @@ st_network_distance(x, from = V(x), to = V(x), weights = NULL, ...)
 \item{from}{The geospatial point from which the shortest paths will be
 calculated. Can be an object an object of class \code{\link[sf]{sf}} or
 \code{\link[sf]{sfc}}, containing a single feature. When multiple features
-are given, only the first one is taken.
+are given, only the first one is taken. Empty geometries are ignored.
 Alternatively, it can be a numeric constant, referring to the index of the
 node from which the shortest paths will be calculated. Only in the case of
 \code{st_network_distances} the restriction of a single feature does not
@@ -28,7 +41,7 @@ object with multiple features, or alternatively a vector of node indices.}
 
 \item{to}{The (set of) geospatial point(s) to which the shortest paths will be
 calculated. Can be an object of  class \code{\link[sf]{sf}} or
-\code{\link[sf]{sfc}}.
+\code{\link[sf]{sfc}}. Empty geometries will be ignored.
 Alternatively, it can be a numeric vector, containing the indices of the nodes
 to which the shortest paths will be calculated. By default, all nodes in the
 network are included.}
@@ -40,12 +53,26 @@ an attribute column in the edges table containing those weights. If set to
 be used automatically, as long as this column is present. If set to
 \code{NA}, no weights are used (even if the edges have a weight column).}
 
+\item{output}{Character defining how to report the shortest paths. Can be 
+\code{'nodes'} meaning that only indices of nodes in the paths are
+returned, \code{'edges'} meaning that only indices of edges in the paths
+are returned, or \code{'both'} meaning that both node and edge indices are
+returned. Defaults to \code{'both'}.}
+
 \item{...}{Arguments passed on to the corresponding
-\code{\link[igraph:shortest_paths]{igraph}} function.}
+\code{\link[igraph:shortest_paths]{igraph}} function. Arguments 
+\code{predecessors} and \code{inbound.edges} are ignored.}
 }
 \value{
-The return value is the same as for the corresponding \code{igraph}
-function, see \code{\link[igraph:shortest_paths]{here}}.
+For \code{st_shortest_paths} and \code{st_all_shortest_paths}, an 
+object of class \code{\link[tibble]{tbl_df}} with one row per returned 
+path. Depending on the setting of the 'output' argument, columns can
+be \code{node_paths} (a list column with for each path the ordered indices 
+of nodes present in that path) and \code{edge_paths} (a list column with 
+for each path the ordered indices of edges present in that path). 
+
+For \code{st_network_distance}, an nxm matrix where n is the length of the 
+'from' argument, and m is the length of the 'to' argument.
 }
 \description{
 Wrappers around the shortest path calculation functionalities in
@@ -73,19 +100,20 @@ See the \code{\link[igraph:shortest_paths]{igraph}} documentation.
 library(sf)
 library(tidygraph)
 
-net = st_transform(as_sfnetwork(roxel, directed = FALSE), 3035)
+net = as_sfnetwork(roxel, directed = FALSE) \%>\%
+  st_transform(3035)
 
-# 1. providing node indices
+# 1. Providing node indices
 
 st_shortest_paths(net, 1, 9)
 
-# 2. providing nodes as spatial points
+# 2. Providing nodes as spatial points
 
 p1 = st_geometry(net, "nodes")[1]
 p2 = st_geometry(net, "nodes")[9]
 st_shortest_paths(net, p1, p2)
 
-# 3. providing spatial points outside of the network
+# 3. Providing spatial points outside of the network
 
 p3 = st_sfc(p1[[1]] + st_point(c(500, 500)), crs = st_crs(p1))
 p4 = st_sfc(p2[[1]] + st_point(c(-500, -500)), crs = st_crs(p2))
@@ -93,29 +121,26 @@ st_shortest_paths(net, p3, p4)
 
 # 4. Providing weights from column name
 
-net = net \%>\%
+net \%>\%
   activate("edges") \%>\%
-  mutate(length = sf::st_length(.))
-st_shortest_paths(net, p1, p2, weights = "length")
+  mutate(length = edge_length()) \%>\%
+  st_shortest_paths(p1, p2, weights = "length")
 
 # 5. Providing weights from column named 'weight'
 
-net = net \%>\%
+net \%>\%
   activate("edges") \%>\%
-  mutate(weight = length)
-st_shortest_paths(net, p1, p2)
+  mutate(weight = edge_length()) \%>\%
+  st_shortest_paths(p1, p2)
 
-
-## Calculate all shortest paths between two points
+# 7. Calculate all shortest paths between two points
 
 st_all_shortest_paths(net, 5, 1)
 
+# 8. Compute a distance matrix with network distances
 
-## Calculate a distance matrix
-
-ps1 = c(st_geometry(p1), st_sfc(p3))
-ps2 = c(st_geometry(p2), st_sfc(p4))
-
-st_network_distance(net, ps1, ps2)
+pts1 = c(p1, p3)
+pts2 = c(p2, p4)
+st_network_distance(net, pts1, pts2)
 
 }

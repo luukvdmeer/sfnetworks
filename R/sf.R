@@ -12,8 +12,7 @@ is.sfg = function(x) {
 
 #' sf methods for sfnetworks
 #'
-#' \code{\link[sf]{sf}} methods for \code{\link{sfnetwork}} objects. Use these 
-#' methods without the .sfnetwork suffix and after loading the sf package.
+#' \code{\link[sf]{sf}} methods for \code{\link{sfnetwork}} objects.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
