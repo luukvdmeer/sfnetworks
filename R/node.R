@@ -27,11 +27,16 @@
 #' the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to 
 #' set the context temporarily while the algorithm is being evaluated.
 #'
+#' @note Note that \code{node_is_within_distance} is a wrapper around the
+#' \code{st_is_within_distance} predicate from sf. Hence, it is based on
+#' 'as-the-crow-flies' distance, and not on distances over the network.
+#'
 #' @name spatial_node_predicates
 NULL
 
 #' @name spatial_node_predicates
 #' @importFrom sf st_intersects
+#' @export
 node_intersects = function(y, ...) {
   x = .G()
   require_active_nodes(x)
@@ -40,6 +45,7 @@ node_intersects = function(y, ...) {
 
 #' @name spatial_node_predicates
 #' @importFrom sf st_disjoint
+#' @export
 node_is_disjoint = function(y, ...) {
   x = .G()
   require_active_nodes(x)
@@ -48,6 +54,7 @@ node_is_disjoint = function(y, ...) {
 
 #' @name spatial_node_predicates
 #' @importFrom sf st_touches
+#' @export
 node_touches = function(y, ...) {
   x = .G()
   require_active_nodes(x)
@@ -56,6 +63,7 @@ node_touches = function(y, ...) {
 
 #' @name spatial_node_predicates
 #' @importFrom sf st_within
+#' @export
 node_is_within = function(y, ...) {
   x = .G()
   require_active_nodes(x)
@@ -64,6 +72,7 @@ node_is_within = function(y, ...) {
 
 #' @name spatial_node_predicates
 #' @importFrom sf st_equals
+#' @export
 node_equals = function(y, ...) {
   x = .G()
   require_active_nodes(x)
@@ -72,6 +81,7 @@ node_equals = function(y, ...) {
 
 #' @name spatial_node_predicates
 #' @importFrom sf st_covered_by
+#' @export
 node_is_covered_by = function(y, ...) {
   x = .G()
   require_active_nodes(x)
@@ -80,6 +90,7 @@ node_is_covered_by = function(y, ...) {
 
 #' @name spatial_node_predicates
 #' @importFrom sf st_is_within_distance
+#' @export
 node_is_within_distance = function(y, ...) {
   x = .G()
   require_active_nodes(x)

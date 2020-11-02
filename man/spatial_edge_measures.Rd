@@ -46,3 +46,8 @@ as calculated by \code{\link[sf]{st_length}}.
 boundary nodes of an edge, as calculated by \code{\link[sf]{st_distance}}.
 }}
 
+\note{
+Note that \code{edge_is_within_distance} is a wrapper around the
+\code{st_is_within_distance} predicate from sf. Hence, it is based on
+'as-the-crow-flies' distance, and not on distances over the network.
+}

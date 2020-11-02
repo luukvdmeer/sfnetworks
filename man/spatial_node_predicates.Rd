@@ -56,3 +56,8 @@ as an argument to the function. If you want to use an algorithm outside of
 the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to 
 set the context temporarily while the algorithm is being evaluated.
 }
+\note{
+Note that \code{node_is_within_distance} is a wrapper around the
+\code{st_is_within_distance} predicate from sf. Hence, it is based on
+'as-the-crow-flies' distance, and not on distances over the network.
+}

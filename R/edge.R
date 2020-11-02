@@ -12,6 +12,10 @@
 #' the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to 
 #' set the context temporarily while the algorithm is being evaluated.
 #'
+#' @note Note that \code{edge_is_within_distance} is a wrapper around the
+#' \code{st_is_within_distance} predicate from sf. Hence, it is based on
+#' 'as-the-crow-flies' distance, and not on distances over the network.
+#'
 #' @return A numeric vector of the same length as the number of edges in the
 #' graph.
 #'
@@ -106,6 +110,7 @@ NULL
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_intersects
+#' @export
 edge_intersects = function(y, ...) {
   x = .G()
   require_active_edges(x)
@@ -115,6 +120,7 @@ edge_intersects = function(y, ...) {
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_disjoint
+#' @export
 edge_is_disjoint = function(y, ...) {
   x = .G()
   require_active_edges(x)
@@ -124,6 +130,7 @@ edge_is_disjoint = function(y, ...) {
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_touches
+#' @export
 edge_touches = function(y, ...) {
   x = .G()
   require_active_edges(x)
@@ -133,6 +140,7 @@ edge_touches = function(y, ...) {
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_crosses
+#' @export
 edge_crosses = function(y, ...) {
   x = .G()
   require_active_edges(x)
@@ -142,6 +150,7 @@ edge_crosses = function(y, ...) {
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_within
+#' @export
 edge_is_within = function(y, ...) {
   x = .G()
   require_active_edges(x)
@@ -151,6 +160,7 @@ edge_is_within = function(y, ...) {
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_contains
+#' @export
 edge_contains = function(y, ...) {
   x = .G()
   require_active_edges(x)
@@ -160,6 +170,7 @@ edge_contains = function(y, ...) {
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_contains_properly
+#' @export
 edge_contains_properly = function(y, ...) {
   x = .G()
   require_active_edges(x)
@@ -169,6 +180,7 @@ edge_contains_properly = function(y, ...) {
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_overlaps
+#' @export
 edge_overlaps = function(y, ...) {
   x = .G()
   require_active_edges(x)
@@ -178,6 +190,7 @@ edge_overlaps = function(y, ...) {
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_equals
+#' @export
 edge_equals = function(y, ...) {
   x = .G()
   require_active_edges(x)
@@ -187,6 +200,7 @@ edge_equals = function(y, ...) {
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_covers
+#' @export
 edge_covers = function(y, ...) {
   x = .G()
   require_active_edges(x)
@@ -196,6 +210,7 @@ edge_covers = function(y, ...) {
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_covered_by
+#' @export
 edge_is_covered_by = function(y, ...) {
   x = .G()
   require_active_edges(x)
@@ -205,6 +220,7 @@ edge_is_covered_by = function(y, ...) {
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_is_within_distance
+#' @export
 edge_is_within_distance = function(y, ...) {
   x = .G()
   require_active_edges(x)
