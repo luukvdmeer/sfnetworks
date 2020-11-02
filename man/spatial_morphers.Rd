@@ -134,3 +134,88 @@ Returns a \code{morphed_sfnetwork} containing a single element of class
 \code{\link[tidygraph]{to_subgraph}}.
 }}
 
+\examples{
+library(sf)
+library(tidygraph)
+
+net = as_sfnetwork(roxel, directed = FALSE) \%>\%
+    st_transform(3035)
+
+net \%>\%
+    convert(to_spatial_coordinates)
+
+par(mar = c(1, 1, 1, 1), mfrow = c(1,2))
+plot(net)
+net \%>\%
+    convert(to_spatial_dense) \%>\%
+    plot()
+
+net \%>\%
+  activate("edges") \%>\%
+  st_reverse() \%>\%
+  convert(to_spatial_directed)
+
+par(mar = c(1, 1, 1, 1), mfrow = c(1,2))
+plot(net)
+net \%>\%
+ convert(to_spatial_implicit_edges) \%>\%
+ convert(to_spatial_explicit_edges) \%>\%
+ plot()
+
+net \%>\%
+ convert(to_spatial_implicit_edges)
+
+net \%>\%
+  convert(to_spatial_shortest_paths, 171, 190)
+
+# Plot shortest paths:
+par(mar = c(1, 1, 1, 1), mfrow = c(1,1))
+plot(net)
+plot(
+  net \%>\% convert(to_spatial_shortest_paths, 171, 190),
+  col = "red",
+  add = TRUE
+)
+
+# Calculate lengths of multiple shortest paths
+net \%>\%
+ activate("edges") \%>\%
+ morph(to_spatial_shortest_paths, 1, c(171, 190)) \%>\%
+ sapply(function(x) sum(st_length(x)))
+
+# Original number of edges
+net \%>\%
+  activate("edges") \%>\%
+  st_as_sf() \%>\%
+  nrow()
+# Simplify parallel edges
+net \%>\%
+  activate("edges") \%>\%
+  convert(to_spatial_simple) \%>\%
+  st_as_sf() \%>\%
+  nrow()
+
+netw = as_sfnetwork(roxel[c(4, 5, 8), ], directed = FALSE)
+# Remove pseudo nodes
+netw_sparse1 = tidygraph::convert(netw, to_spatial_sparse)
+# Only merge edges when their attributes are equal
+netw_sparse2 = tidygraph::convert(netw, to_spatial_sparse, require_equal_attrs = TRUE)
+# Compare results
+par(mar = c(1, 1, 1, 1), mfrow = c(1,3))
+plot(netw, cex = 3, main = "Network with pseudo nodes")
+plot(netw_sparse1, cex = 3, main = "Pseudo nodes removed")
+plot(netw_sparse2, cex = 3, main = "Only edges with equal attributes merged")
+
+e1 = st_point(c(7.53173, 51.95662))
+e2 = st_point(c(7.53173, 51.95190))
+e3 = st_point(c(7.53778, 51.95190))
+e4 = st_point(c(7.53778, 51.95662))
+
+rect = st_multipoint(c(e1, e2, e3, e4)) \%>\%
+  st_cast('POLYGON') \%>\%
+  st_sfc(crs = 4326) \%>\%
+  st_transform(3035)
+
+net \%>\%
+  convert(to_spatial_subset, rect, .predicate = st_intersects)
+}

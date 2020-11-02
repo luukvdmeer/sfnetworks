@@ -17,6 +17,7 @@
 #' and others.
 #'
 #' @examples
+#' par(mar = c(1, 1, 1, 1), mfrow = c(1,1))
 #' net = as_sfnetwork(roxel)
 #' plot(net)
 #'
@@ -56,12 +57,12 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
 
 #' autoplot method for sfnetworks
 #'
-#' Plot the geometries of an object of class \code{\link{sfnetwork}} 
-#' automatically as a \code{\link[ggplot2]{ggplot}} object. Use this method 
+#' Plot the geometries of an object of class \code{\link{sfnetwork}}
+#' automatically as a \code{\link[ggplot2]{ggplot}} object. Use this method
 #' without the .sfnetwork suffix and after loading the ggplot2 package.
 #'
 #' @param object An object of class \code{\link{sfnetwork}}.
-#' 
+#'
 #' @param ... Ignored.
 #'
 #' @details See \code{\link[ggplot2]{autoplot}}.

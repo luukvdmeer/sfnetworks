@@ -13,8 +13,8 @@ autoplot.sfnetwork(object, ...)
 \item{...}{Ignored.}
 }
 \description{
-Plot the geometries of an object of class \code{\link{sfnetwork}} 
-automatically as a \code{\link[ggplot2]{ggplot}} object. Use this method 
+Plot the geometries of an object of class \code{\link{sfnetwork}}
+automatically as a \code{\link[ggplot2]{ggplot}} object. Use this method
 without the .sfnetwork suffix and after loading the ggplot2 package.
 }
 \details{
