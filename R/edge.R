@@ -26,10 +26,10 @@ NULL
 #' @importFrom tidygraph .G
 #' @export
 edge_circuity = function() {
-  graph = .G()
-  require_active_edges(graph)
-  require_spatially_explicit_edges(graph)
-  st_length(graph) / straight_line_distance(graph)
+  x = .G()
+  require_active_edges(x)
+  require_spatially_explicit_edges(x)
+  st_length(x) / straight_line_distance(x)
 }
 
 #' @describeIn spatial_edge_measures The length of an edge linestring geometry
@@ -38,12 +38,12 @@ edge_circuity = function() {
 #' @importFrom tidygraph .G
 #' @export
 edge_length = function() {
-  graph = .G()
-  require_active_edges(graph)
-  if (has_spatially_explicit_edges(graph)) {
-    st_length(graph)
+  x = .G()
+  require_active_edges(x)
+  if (has_spatially_explicit_edges(x)) {
+    st_length(x)
   } else {
-    straight_line_distance(graph)
+    straight_line_distance(x)
   }
 }
 
@@ -52,9 +52,9 @@ edge_length = function() {
 #' @importFrom tidygraph .G
 #' @export
 edge_straight_length = function() {
-  graph = .G()
-  require_active_edges(graph)
-  straight_line_distance(graph)
+  x = .G()
+  require_active_edges(x)
+  straight_line_distance(x)
 }
 
 #' @importFrom sf st_as_sf st_distance
@@ -65,8 +65,8 @@ straight_line_distance = function(x) {
   # Returns a matrix with source ids in column 1 and target ids in column 2.
   ids = edge_boundary_node_indices(x)
   # Get the boundary node geometries of each edge.
-  from_nodes = nodes[ids[, 1], ]
-  to_nodes = nodes[ids[, 2], ]
-  # Calculate distances and return the diagonal of the resulting matrix.
-  diag(st_distance(from_nodes, to_nodes))
+  from = nodes[ids[, 1], ]
+  to = nodes[ids[, 2], ]
+  # Calculate distances pairwise.
+  st_distance(from, to, by_element = TRUE)
 }
