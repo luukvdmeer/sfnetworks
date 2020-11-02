@@ -92,13 +92,13 @@ the linestring geometries. Returns a \code{morphed_sfnetwork} containing a
 single element of class \code{\link{sfnetwork}}. This morpher requires edges
 to be spatially explicit. If not, use \code{\link[tidygraph]{to_directed}}.
 
-\item \code{to_spatial_explicit_edges}: Create linestring geometries between from and 
+\item \code{to_spatial_explicit_edges}: Create linestring geometries between from and
 to nodes of spatially implicit edges. If the edges data can be directly
 converted to an object of class \code{\link[sf]{sf}} using
-\code{\link[sf]{st_as_sf}}, extra arguments can be provided as \code{...} 
-which will be forwarded to st_as_sf internally. Otherwise, straight lines 
-will be drawn between source and target nodes of edges. Returns a 
-\code{morphed_sfnetwork} containing a single element of class 
+\code{\link[sf]{st_as_sf}}, extra arguments can be provided as \code{...}
+which will be forwarded to st_as_sf internally. Otherwise, straight lines
+will be drawn between source and target nodes of edges. Returns a
+\code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}.
 
 \item \code{to_spatial_implicit_edges}: Remove linestring geometries of spatially
