@@ -33,12 +33,6 @@
 #' be used automatically, as long as this column is present. If set to
 #' \code{NA}, no weights are used (even if the edges have a weight column).
 #'
-#' @param output Character defining how to report the shortest paths. Can be 
-#' \code{'nodes'} meaning that only indices of nodes in the paths are
-#' returned, \code{'edges'} meaning that only indices of edges in the paths
-#' are returned, or \code{'both'} meaning that both node and edge indices are
-#' returned. Defaults to \code{'both'}.
-#'
 #' @param ... Arguments passed on to the corresponding
 #' \code{\link[igraph:shortest_paths]{igraph}} function. Arguments 
 #' \code{predecessors} and \code{inbound.edges} are ignored.
@@ -50,8 +44,9 @@
 #' path. Depending on the setting of the 'output' argument, columns can
 #' be \code{node_paths} (a list column with for each path the ordered indices 
 #' of nodes present in that path) and \code{edge_paths} (a list column with 
-#' for each path the ordered indices of edges present in that path). For 
-#' \code{st_network_distance}, an nxm matrix where n is the length of the 
+#' for each path the ordered indices of edges present in that path). 
+#' 
+#' For \code{st_network_distance}, an nxm matrix where n is the length of the 
 #' 'from' argument, and m is the length of the 'to' argument.
 #'
 #' @name spatial_shortest_paths
@@ -60,6 +55,12 @@ NULL
 #' @describeIn spatial_shortest_paths Wrapper around
 #' \code{igraph::shortest_paths}.
 #'
+#' @param output Character defining how to report the shortest paths. Can be 
+#' \code{'nodes'} meaning that only indices of nodes in the paths are
+#' returned, \code{'edges'} meaning that only indices of edges in the paths
+#' are returned, or \code{'both'} meaning that both node and edge indices are
+#' returned. Defaults to \code{'both'}.
+#' 
 #' @examples
 #' library(sf)
 #' library(tidygraph)
@@ -97,11 +98,18 @@ NULL
 #'   mutate(weight = length) %>%
 #'   st_shortest_paths(p1, p2)
 #'
+#' @importFrom igraph V
+#' @export
+st_shortest_paths = function(x, from, to = igraph::V(x), weights = NULL, 
+                             output = "both", ...) {
+  UseMethod("st_shortest_paths")
+}
+
 #' @importFrom igraph shortest_paths V
 #' @importFrom tibble as_tibble
 #' @export
-st_shortest_paths = function(x, from, to = V(x), weights = NULL, 
-                             output = "both", ...) {
+st_shortest_paths.sfnetwork = function(x, from, to = igraph::V(x), 
+                                       weights = NULL, output = "both", ...) {
   # Set common shortest paths arguments.
   args = set_paths_args(x, from, to, weights)
   # Set output.
@@ -125,14 +133,20 @@ st_shortest_paths = function(x, from, to = V(x), weights = NULL,
 #' \code{igraph::all_shortest_paths}.
 #'
 #' @examples
-#'
 #' # 7. Calculate all shortest paths between two points
 #'
 #' st_all_shortest_paths(net, 5, 1)
 #'
+#' @importFrom igraph V
+#' @export
+st_all_shortest_paths = function(x, from, to = igraph::V(x), weights = NULL) {
+  UseMethod("st_all_shortest_paths")
+}
+
 #' @importFrom igraph all_shortest_paths V
 #' @export
-st_all_shortest_paths = function(x, from, to = V(x), weights = NULL) {
+st_all_shortest_paths.sfnetwork = function(x, from, to = igraph::V(x), 
+                                           weights = NULL) {
   args = set_paths_args(x, from, to, weights)
   paths = do.call(all_shortest_paths, args)
   # Extract paths of node indices.
@@ -144,16 +158,23 @@ st_all_shortest_paths = function(x, from, to = V(x), weights = NULL) {
 #' @describeIn spatial_shortest_paths Wrapper around \code{igraph::distances}.
 #'
 #' @examples
-#'
 #' # 8. Compute a distance matrix with network distances
 #'
 #' pts1 = c(p1, p3)
 #' pts2 = c(p2, p4)
 #' st_network_distance(net, pts1, pts2)
 #'
+#' @importFrom igraph V
+#' @export
+st_network_distance = function(x, from = igraph::V(x), to = igraph::V(x), 
+                               weights = NULL, ...) {
+  UseMethod("st_network_distance")
+}
+
 #' @importFrom igraph distances V
 #' @export
-st_network_distance = function(x, from = V(x), to = V(x), weights = NULL, ...) {
+st_network_distance.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x), 
+                                         weights = NULL, ...) {
   args = set_paths_args(x, from, to, weights)
   names(args)[2] = "v" # In igraph::distances argument 'from' is called 'v'
   do.call(distances, c(args, ...))
