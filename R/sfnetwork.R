@@ -1,24 +1,24 @@
 #' Create a sfnetwork
 #'
-#' \code{sfnetwork} is a tidy data structure for geospatial networks. It 
+#' \code{sfnetwork} is a tidy data structure for geospatial networks. It
 #' extends the \code{\link[tidygraph]{tbl_graph}} data structure for
-#' relational data into the domain of geospatial networks, whith nodes and 
-#' edges embedded in geographical space, and offers smooth integration with 
+#' relational data into the domain of geospatial networks, whith nodes and
+#' edges embedded in geographical space, and offers smooth integration with
 #' \code{\link[sf]{sf}} for spatial data analysis.
 #'
-#' @param nodes The nodes of the network. Should be an object of class 
-#' \code{\link[sf]{sf}}, or directly convertible to it using 
+#' @param nodes The nodes of the network. Should be an object of class
+#' \code{\link[sf]{sf}}, or directly convertible to it using
 #' \code{\link[sf]{st_as_sf}}. All features should have an associated geometry
 #' of type \code{POINT}.
 #'
 #' @param edges The edges of the network. May be an object of class
 #' \code{\link[sf]{sf}}, with all features having an associated geometry of
-#' type \code{LINESTRING}. It may also be a regular \code{data.frame} or 
+#' type \code{LINESTRING}. It may also be a regular \code{data.frame} or
 #' \code{tbl_df} object. In any case, the adjacent nodes of each edge must
-#' either be encoded in a \code{to} and \code{from} column, as integers or 
-#' characters. Integers should refer to the position of a node in the nodes 
-#' table, while characters should refer to the name of a node encoded in the 
-#' column referred to in the \code{node_key} argument. Setting edges to 
+#' either be encoded in a \code{to} and \code{from} column, as integers or
+#' characters. Integers should refer to the position of a node in the nodes
+#' table, while characters should refer to the name of a node encoded in the
+#' column referred to in the \code{node_key} argument. Setting edges to
 #' \code{NULL} will create a network without edges.
 #'
 #' @param directed Should the constructed network be directed? Defaults to
@@ -32,14 +32,14 @@
 #' @param edges_as_lines Should the edges be spatially explicit, i.e. have
 #' \code{LINESTRING} geometries stored in a geometry list column? If \code{NULL},
 #' this will be automatically defined, by setting the argument to \code{TRUE}
-#' when the edges are given as an object of class \code{\link[sf]{sf}}, and 
+#' when the edges are given as an object of class \code{\link[sf]{sf}}, and
 #' \code{FALSE} otherwise. Defaults to \code{NULL}.
 #'
 #' @param length_as_weight Should the length of the edges be stored in a column
 #' named \code{weight}? If set to \code{TRUE}, this will calculate the length
-#' of the linestring geometry of the edge in the case of spatially explicit 
-#' edges, and the straight-line distance between the source and target node in 
-#' the case of spatially implicit edges. If there is already a column named 
+#' of the linestring geometry of the edge in the case of spatially explicit
+#' edges, and the straight-line distance between the source and target node in
+#' the case of spatially implicit edges. If there is already a column named
 #' \code{weight}, it will be overwritten. Defaults to \code{FALSE}.
 #'
 #' @param force Should network validity checks be skipped? Defaults to
@@ -53,7 +53,7 @@
 #' your input data meet the requirements, the checks are unneccesary and can be
 #' turned off to improve performance.
 #'
-#' @param ... Arguments passed on to \code{\link[sf]{st_as_sf}}, if nodes need 
+#' @param ... Arguments passed on to \code{\link[sf]{st_as_sf}}, if nodes need
 #' to be converted into an \code{\link[sf]{sf}} object during construction.
 #'
 #' @return An object of class \code{sfnetwork}.
@@ -85,7 +85,7 @@
 #' @importFrom tidygraph mutate tbl_graph
 #' @export
 sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
-                     edges_as_lines = NULL, length_as_weight = FALSE, 
+                     edges_as_lines = NULL, length_as_weight = FALSE,
                      force = FALSE, ...) {
   # Prepare nodes.
   # If nodes is not an sf object:
@@ -262,7 +262,7 @@ as_sfnetwork.sf = function(x, ...) {
     n_lst = create_edges_from_nodes(x)
   } else {
     stop(
-      "Geometries are not all of type LINESTRING, or all of type POINT", 
+      "Geometries are not all of type LINESTRING, or all of type POINT",
       call. = FALSE
     )
   }
@@ -352,6 +352,16 @@ print.sfnetwork = function(x, ...) {
   print(inactive_data)
 }
 
+#' @importFrom igraph ecount vcount
+#' @export
+print.morphed_sfnetwork = function(x, ...) {
+  graph = attr(x, '.orig_graph')
+  cat('# An sfnetwork temporarily morphed to a ', gsub('_', ' ', sub('to_', '', attr(x, '.morpher'))), ' representation\n', sep = '')
+  cat('# \n')
+  cat('# Original network is ', tolower(tidygraph:::describe_graph(graph)), '\n', sep = '')
+  cat('# consisting of ', ecount(graph), ' nodes and ', vcount(graph), ' edges\n', sep = '')
+}
+
 #' @importFrom sf st_geometry
 #' @importFrom tibble trunc_mat
 #' @importFrom tools toTitleCase
@@ -374,8 +384,8 @@ summarise_network_element = function(data, name, active = TRUE, ...) {
     x$summary[4] = paste(paste(names(bb), bb[], sep = ": "), collapse = " ")
     names(x$summary) = c(
       toTitleCase(paste(name, "data")),
-      "Geometry type", 
-      "Dimension", 
+      "Geometry type",
+      "Dimension",
       "Bounding box"
     )
   }
