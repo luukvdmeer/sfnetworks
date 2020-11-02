@@ -382,6 +382,18 @@ summarise_network_element = function(data, name, active = TRUE, ...) {
   x
 }
 
+#' @importFrom sf st_crs
+#' @export
+print.morphed_sfnetwork = function(x, ...) {
+  x_tbg = structure(x, class = setdiff(class(x), "morphed_sfnetwork"))
+  out = capture.output(print(x_tbg), ...)
+  cat(gsub("tbl_graph", "sfnetwork", out[[1]]), "\n")
+  cat(out[[2]], "\n")
+  cat(out[[3]], "\n")
+  cat(out[[4]], "\n")
+  cat("# with CRS", st_crs(attr(x, ".orig_graph"))$input)
+}
+
 #' Check if an object is an sfnetwork
 #'
 #' @param x Object to be checked.
