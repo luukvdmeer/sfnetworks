@@ -6,11 +6,9 @@
 #' that data are matched by column name and values are filled with `NA` if 
 #' missing in either of the networks. The \code{from} and \code{to} columns in 
 #' the edge data are updated such that they match the new node indices of the 
-#' resulting network.
-#'
-#' If requested, edges can be splitted at locations where they either intersect
-#' with nodes of the other network, or get crossed by edges of the other
-#' network.
+#' resulting network. If requested, edges can be splitted at locations where 
+#' they either intersect with nodes of the other network, or get crossed by 
+#' edges of the other network.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -39,10 +37,17 @@
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
+#' @export
+#'
+st_network_join = function(x, y, blend_nodes = FALSE, 
+                           blend_crossings = FALSE, sort = TRUE, ...) {
+  UseMethod("st_network_join")
+}
+
 #' @importFrom sf st_geometry
 #' @importFrom tidygraph as_tbl_graph graph_join
 #' @export
-st_network_join = function(x, y, blend_nodes = FALSE, 
+st_network_join.sfnetwork = function(x, y, blend_nodes = FALSE, 
                            blend_crossings = FALSE, sort = TRUE, ...) {
   if (! is.sfnetwork(y)) y = as_sfnetwork(y)
   stopifnot(have_equal_crs(x, y))
