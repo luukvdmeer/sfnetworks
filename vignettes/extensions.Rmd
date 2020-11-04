@@ -190,11 +190,11 @@ net %>%
   convert(to_spatial_coordinates)
 ```
 
-`to_spatial_dense` reconstruct the network by using all edge linestring points as nodes, instead of only the endpoints.
+`to_spatial_subdivision` reconstruct the network by using all edge linestring points as nodes, instead of only the endpoints.
 
 ```{r, fig.show='hold'}
 plot(net)
-plot(convert(net, to_spatial_dense))
+plot(convert(net, to_spatial_subdivision))
 ```
 
 `to_spatial_directed` makes a graph directed in the direction given by the linestring geometries of the edges. This in contradiction to the `to_directed` morpher of `tidygraph`, which makes a graph directed in the direction given by the `to` and `from` column.
