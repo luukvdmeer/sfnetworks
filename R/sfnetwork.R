@@ -322,7 +322,7 @@ print.sfnetwork = function(x, ...) {
   nN = vcount(x) # Number of nodes in network.
   nE = ecount(x) # Number of edges in network.
   # Print header.
-  cat_subtle(c("# An sfnetwork with", nN, "nodes and", nE, "edges\n"))
+  cat_subtle(c("# A sfnetwork with", nN, "nodes and", nE, "edges\n"))
   cat_subtle("#\n")
   cat_subtle(c("# CRS: ", st_crs(x)$input, "\n"))
   cat_subtle("#\n")
@@ -364,7 +364,7 @@ summarise_network_element = function(data, name, active = TRUE, ...) {
   x = do.call(trunc_mat, modifyList(args, list(x = data, n = n)))
   # Write summary.
   x$summary[1] = paste(x$summary[1], if (active) "(active)" else "")
-  if (name == "edge" && (!has_sfc(data) || nrow(data) == 0)) {
+  if (!has_sfc(data) || nrow(data) == 0) {
     names(x$summary)[1] = toTitleCase(paste(name, "data"))
   } else {
     geom = st_geometry(data)
@@ -388,11 +388,11 @@ summarise_network_element = function(data, name, active = TRUE, ...) {
 print.morphed_sfnetwork = function(x, ...) {
   x_tbg = structure(x, class = setdiff(class(x), "morphed_sfnetwork"))
   out = capture.output(print(x_tbg), ...)
-  cat(gsub("tbl_graph", "sfnetwork", out[[1]]), "\n")
-  cat(out[[2]], "\n")
-  cat(out[[3]], "\n")
-  cat(out[[4]], "\n")
-  cat("# with CRS", st_crs(attr(x, ".orig_graph"))$input)
+  cat_subtle(gsub("tbl_graph", "sfnetwork", out[[1]]), "\n")
+  cat_subtle(out[[2]], "\n")
+  cat_subtle(out[[3]], "\n")
+  cat_subtle(out[[4]], "\n")
+  cat_subtle("# with CRS", st_crs(attr(x, ".orig_graph"))$input)
 }
 
 #' Check if an object is an sfnetwork
