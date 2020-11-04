@@ -4,14 +4,19 @@
 #'
 #' @param name Name of the attribute to query. Either 'sf_column' or 'agr'.
 #'
-#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently 
+#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently
 #' active element of x will be used.
 #'
-#' @return The value of the attribute matched, or NULL if no exact match is 
+#' @return The value of the attribute matched, or NULL if no exact match is
 #' found.
 #'
 #' @details sf attributes include \code{sf_column} (the name of the sf column)
 #' and \code{agr} (the attribute-geometry-relationships).
+#'
+#' @examples
+#' net = as_sfnetwork(roxel)
+#' sf_attr(net, "agr", active = "edges")
+#' sf_attr(net, "sf_column", active = "edges")
 #'
 #' @export
 sf_attr = function(x, name, active = NULL) {
@@ -42,7 +47,7 @@ sf_attr = function(x, name, active = NULL) {
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently 
+#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently
 #' active element of x will be used.
 #'
 #' @return A character vector.
@@ -58,7 +63,7 @@ sf_attr = function(x, name, active = NULL) {
 #' will return a vector of names that does not include the name of the
 #' geometry column, but - when active = 'edges' - does include the names of
 #' the to and from colums.
-#' 
+#'
 #' @name attr_names
 #' @noRd
 graph_attribute_names = function(x, active = NULL) {

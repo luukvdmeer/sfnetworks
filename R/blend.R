@@ -1,7 +1,7 @@
 #' Blend geospatial points into a spatial network
 #'
-#' Blending a point into a network is the combined process of first snapping 
-#' the given point to its nearest point on its nearest edge in the network, 
+#' Blending a point into a network is the combined process of first snapping
+#' the given point to its nearest point on its nearest edge in the network,
 #' subsequently splitting that edge at the location of the snapped point, and
 #' finally adding the snapped point as node to the network. If the location
 #' of the snapped point is already a node in the network, the attributes of the
@@ -11,21 +11,72 @@
 #'
 #' @param y The spatial features to be blended, either as object of class
 #' \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}, with \code{POINT} geometries.
-#' 
+#'
 #' @param tolerance The tolerance distance to be used. Only features that are
 #' at least as close to the network as the tolerance distance will be blended.
-#' Should be a non-negative number preferably given as an object of class 
-#' \code{\link[units]{units}}. Otherwise, it will be assumed that the unit is 
-#' meters. If set to \code{Inf} all features will be blended. Defaults to 
+#' Should be a non-negative number preferably given as an object of class
+#' \code{\link[units]{units}}. Otherwise, it will be assumed that the unit is
+#' meters. If set to \code{Inf} all features will be blended. Defaults to
 #' \code{Inf}.
 #'
-#' @param sort Should the nodes in the resulting network be sorted in the same 
-#' order as those in x, followed by the new nodes blended in from y? Defaults 
+#' @param sort Should the nodes in the resulting network be sorted in the same
+#' order as those in x, followed by the new nodes blended in from y? Defaults
 #' to \code{FALSE}, meaning that node order might be changed. However, sorting
 #' might influence performance.
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
-#' 
+#'
+#' @examples
+#' library(sf)
+#'
+#' # First, create a network and a set of points to blend.
+#' n11 = st_point(c(0,0))
+#' n12 = st_point(c(1,1))
+#' e1 = st_sfc(st_linestring(c(n11, n12)), crs = 4326)
+#'
+#' n21 = n12
+#' n22 = st_point(c(0,2))
+#' e2 = st_sfc(st_linestring(c(n21, n22)), crs = 4326)
+#'
+#' n31 = n22
+#' n32 = st_point(c(-1,1))
+#' e3 = st_sfc(st_linestring(c(n31, n32)), crs = 4326)
+#'
+#' net = as_sfnetwork(st_as_sf(c(e1,e2,e3)))
+#'
+#' pts = net %>%
+#'   st_bbox() %>%
+#'   st_as_sfc() %>%
+#'   st_sample(10, type = "random") %>%
+#'   st_set_crs(4326) %>%
+#'   st_cast('POINT')
+#'
+#' # Blend points into the network.
+#' # --> By default tolerance is set to Inf
+#' # --> Meaning that all points get blended
+#' b1 = st_blend(net, pts)
+#' b1
+#'
+#' # Blend points with a tolerance.
+#' tol = units::set_units(40, "km")
+#' b2 = st_blend(net, pts, tolerance = tol)
+#' b2
+#'
+#' # Plot results.
+#' # Initial network and points.
+#' par(mar = c(1,1,1,1), mfrow = c(1,3))
+#' plot(net, main = "Network + set of points")
+#' plot(pts, col = "red", pch = 20, add = TRUE)
+#' # Blend with no tolerance
+#' plot(b1, main = "Blend points with no tolerance")
+#' plot(pts, col = "red", pch = 20, add = TRUE)
+#' # Blend with tolerance.
+#' within = st_is_within_distance(pts, st_geometry(net, "edges"), tol)
+#' pts_within = pts[lengths(within) > 0]
+#' plot(b2, "Blend with tolerance (points in red are within tolerance")
+#' plot(pts, col = "grey", pch = 20, add = TRUE)
+#' plot(pts_within, col = "red", pch = 20, add = TRUE)
+#'
 #' @export
 st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
   UseMethod("st_blend")
@@ -44,7 +95,7 @@ st_blend.sfnetwork = function(x, y, tolerance = Inf, sort = FALSE) {
 #' @importFrom dplyr sym
 #' @importFrom rlang !! :=
 #' @importFrom sf st_as_sf st_distance st_equals st_geometry st_intersection
-#' st_intersects st_is_within_distance st_join st_nearest_feature 
+#' st_intersects st_is_within_distance st_join st_nearest_feature
 #' st_nearest_points st_set_crs
 #' @importFrom tidygraph arrange mutate
 #' @importFrom units set_units
@@ -76,7 +127,7 @@ blend_ = function(x, y, tolerance, sort) {
     on = lengths(intersects) > 0
     # Find indices of features in y that are located:
     # --> *close* to an edge in x.
-    # We define a feature yi being 'close' to an edge xj when: 
+    # We define a feature yi being 'close' to an edge xj when:
     # --> yi is located within a given tolerance distance from xj.
     # --> yi is not located on xj.
     if (all(on)) {
@@ -148,7 +199,7 @@ blend_ = function(x, y, tolerance, sort) {
     # ============
     # POST PROCESS
     # ============
-    # Spatial left join between nodes of x_new and original nodes of x. 
+    # Spatial left join between nodes of x_new and original nodes of x.
     # This is always needed when:
     # --> Nodes of x_new need to be sorted in the same order as nodes of x.
     # In other cases, it is also needed when:
@@ -178,7 +229,7 @@ blend_ = function(x, y, tolerance, sort) {
         ygeom[close] = do.call(
           "c",
           lapply(
-            seq_along(conns), 
+            seq_along(conns),
             function(i) suppressMessages(st_intersection(conns[i], Q[i]))
           )
         )

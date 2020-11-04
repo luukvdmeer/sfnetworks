@@ -14,13 +14,13 @@ st_blend(x, y, tolerance = Inf, sort = FALSE)
 
 \item{tolerance}{The tolerance distance to be used. Only features that are
 at least as close to the network as the tolerance distance will be blended.
-Should be a non-negative number preferably given as an object of class 
-\code{\link[units]{units}}. Otherwise, it will be assumed that the unit is 
-meters. If set to \code{Inf} all features will be blended. Defaults to 
+Should be a non-negative number preferably given as an object of class
+\code{\link[units]{units}}. Otherwise, it will be assumed that the unit is
+meters. If set to \code{Inf} all features will be blended. Defaults to
 \code{Inf}.}
 
-\item{sort}{Should the nodes in the resulting network be sorted in the same 
-order as those in x, followed by the new nodes blended in from y? Defaults 
+\item{sort}{Should the nodes in the resulting network be sorted in the same
+order as those in x, followed by the new nodes blended in from y? Defaults
 to \code{FALSE}, meaning that node order might be changed. However, sorting
 might influence performance.}
 }
@@ -28,10 +28,62 @@ might influence performance.}
 An object of class \code{\link{sfnetwork}}.
 }
 \description{
-Blending a point into a network is the combined process of first snapping 
-the given point to its nearest point on its nearest edge in the network, 
+Blending a point into a network is the combined process of first snapping
+the given point to its nearest point on its nearest edge in the network,
 subsequently splitting that edge at the location of the snapped point, and
 finally adding the snapped point as node to the network. If the location
 of the snapped point is already a node in the network, the attributes of the
 point (if any) will be joined to that node.
+}
+\examples{
+library(sf)
+
+# First, create a network and a set of points to blend.
+n11 = st_point(c(0,0))
+n12 = st_point(c(1,1))
+e1 = st_sfc(st_linestring(c(n11, n12)), crs = 4326)
+
+n21 = n12
+n22 = st_point(c(0,2))
+e2 = st_sfc(st_linestring(c(n21, n22)), crs = 4326)
+
+n31 = n22
+n32 = st_point(c(-1,1))
+e3 = st_sfc(st_linestring(c(n31, n32)), crs = 4326)
+
+net = as_sfnetwork(st_as_sf(c(e1,e2,e3)))
+
+pts = net \%>\%
+  st_bbox() \%>\%
+  st_as_sfc() \%>\%
+  st_sample(10, type = "random") \%>\%
+  st_set_crs(4326) \%>\%
+  st_cast('POINT')
+
+# Blend points into the network.
+# --> By default tolerance is set to Inf
+# --> Meaning that all points get blended
+b1 = st_blend(net, pts)
+b1
+
+# Blend points with a tolerance.
+tol = units::set_units(40, "km")
+b2 = st_blend(net, pts, tolerance = tol)
+b2
+
+# Plot results.
+# Initial network and points.
+par(mar = c(1,1,1,1), mfrow = c(1,3))
+plot(net, main = "Network + set of points")
+plot(pts, col = "red", pch = 20, add = TRUE)
+# Blend with no tolerance
+plot(b1, main = "Blend points with no tolerance")
+plot(pts, col = "red", pch = 20, add = TRUE)
+# Blend with tolerance.
+within = st_is_within_distance(pts, st_geometry(net, "edges"), tol)
+pts_within = pts[lengths(within) > 0]
+plot(b2, "Blend with tolerance (points in red are within tolerance")
+plot(pts, col = "grey", pch = 20, add = TRUE)
+plot(pts_within, col = "red", pch = 20, add = TRUE)
+
 }

@@ -11,11 +11,11 @@ sf_attr(x, name, active = NULL)
 
 \item{name}{Name of the attribute to query. Either 'sf_column' or 'agr'.}
 
-\item{active}{Either 'nodes' or 'edges'. If \code{NULL}, the currently 
+\item{active}{Either 'nodes' or 'edges'. If \code{NULL}, the currently
 active element of x will be used.}
 }
 \value{
-The value of the attribute matched, or NULL if no exact match is 
+The value of the attribute matched, or NULL if no exact match is
 found.
 }
 \description{
@@ -24,4 +24,10 @@ Query sf attributes from the active element of a sfnetwork
 \details{
 sf attributes include \code{sf_column} (the name of the sf column)
 and \code{agr} (the attribute-geometry-relationships).
+}
+\examples{
+net = as_sfnetwork(roxel)
+sf_attr(net, "agr", active = "edges")
+sf_attr(net, "sf_column", active = "edges")
+
 }
