@@ -62,20 +62,6 @@ has_spatially_explicit_edges = function(x) {
   any(sapply(edge_attr(x), is.sfc), na.rm = TRUE)
 }
 
-#' Check if features in a table have varying attribute values
-#'
-#' @param x A flat table, such as an sf object, data.frame or tibble.
-#'
-#' @return \code{TRUE} when the attributes of the features in x are not all
-#' the same, \code{FALSE} otherwise.
-#'
-#' @importFrom sf st_drop_geometry
-#' @noRd
-has_varying_feature_attributes = function(x) {
-  if (is.sf(x)) x = st_drop_geometry(x)
-  !all(duplicated(x)[-1])
-}
-
 #' Check for empty geometries
 #'
 #' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.

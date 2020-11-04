@@ -447,6 +447,165 @@ to_spatial_sparse = function(x, require_equal_attrs = FALSE) {
   )
 }
 
+#' @describeIn spatial_morphers Construct a smoothed version of the network by
+#' iteratively removing pseudo nodes, while preserving the connectivity of the 
+#' network. In the case of directed networks, pseudo nodes are those nodes that 
+#' have only one incoming and one outgoing edge. In undirected networks, pseudo 
+#' nodes are those nodes that have two incident edges. Connectivity of the 
+#' network is preserved by concatenating the incident edges of each removed 
+#' pseudo node. Returns a \code{morphed_sfnetwork} containing a single element 
+#' of class \code{\link{sfnetwork}}.
+#'
+#' @param require_equal_attrs Should pseudo nodes only be removed when all
+#' attributes of their incident edges are equal? Defaults to \code{FALSE}.
+#'
+#' @examples
+#' library(tidygraph)
+#' net = as_sfnetwork(roxel[c(4, 5, 8), ], directed = FALSE)
+#' # Remove pseudo nodes.
+#' smoothed_net_1 = convert(net, to_spatial_smooth)
+#' # Only remove pseudo nodes when attributes of incident edges are equal.
+#' smoothed_net_2 = convert(net, to_spatial_smooth, require_equal_attrs = TRUE)
+#' # Compare results.
+#' par(mar = c(1, 1, 1, 1), mfrow = c(1,3))
+#' plot(net, cex = 3, main = "Original network")
+#' plot(smoothed_net_1, cex = 3, main = "Smoothed network 1")
+#' plot(smoothed_net_2, cex = 3, main = "Smoothed network 2")
+#'
+#' @importFrom igraph add_edges degree delete_edges delete_edge_attr edge_attr
+#' edge_attr_names incident is_directed neighbors
+#' @importFrom sf st_equals st_geometry st_reverse
+#' @importFrom tibble as_tibble
+#' @importFrom tidygraph as_tbl_graph filter
+#' @export
+to_spatial_smooth = function(x, require_equal_attrs = FALSE) {
+  # Extract edges and geometries of nodes from x.
+  edges = as_tibble(x, "edges")
+  nodes = st_geometry(x, "nodes")
+  # Check if edges are spatially explicit and if network is directed.
+  spatial = has_sfc(edges)
+  directed = is_directed(x)
+  # Find pseudo nodes in x.
+  if (directed) {
+    # A node is a pseudo node if its in degree is 1 and its out degree is 1.
+    pseudo = degree(x, mode = "in") == 1 & degree(x, mode = "out") == 1
+  } else {
+    # A node is a pseudo node if its degree is 2.
+    pseudo = degree(x) == 2
+  }
+  # Pre-process.
+  # --> Create network to be updated iteratively when processing pseudo nodes.
+  # --> Separate the original edge indices column.
+  # --> Separate the geometry column if present.
+  # --> These columns will be updated separately from the network structure.
+  G = x
+  I = edges$.tidygraph_edge_index
+  G = delete_edge_attr(x, ".tidygraph_edge_index")
+  if (spatial) {
+    L = st_geometry(edges)
+    G = drop_edge_geom(G)
+  }
+  # Iteratively process pseudo nodes:
+  # --> Find incident edges to the node.
+  # --> Concatenate the incident edges and add this as a new edge.
+  # --> Remove the original incident edges.
+  # --> Update the original edge indices data accordingly.
+  # --> Update the edge geometries accordingly.
+  # --> Repeat until all pseudo nodes are processed.
+  pseudo_remaining = pseudo
+  while (any(pseudo_remaining)) {
+    # Get the index j and geometry p of the processed pseudo node.
+    j = which(pseudo_remaining)[1]
+    p = nodes[j]
+    # Find the indices of incidents edges and neighboring nodes.
+    if (directed) {
+      incidents = as.integer(c(incident(G, j, "in"), incident(G, j, "out")))
+      neighbors = as.integer(c(neighbors(G, j, "in"), neighbors(G, j, "out")))
+    } else {
+      incidents = as.integer(incident(G, j))
+      neighbors = as.integer(neighbors(G, j))
+    }
+    # If there is only one indicent edge:
+    # --> This means this edge is a loop.
+    # --> There is no need to add a new, concatenated edge.
+    # --> Hence, mark node as processed and move on to the next iteration.
+    if (length(incidents) == 1) {
+      pseudo_remaining[j] = FALSE
+      next
+    }
+    # If equal attributes of incident edges are required:
+    # --> Check for each edge attr if it has the same value for both incidents.
+    # --> If not all attr values are equal the node is not a real pseudo node.
+    # --> In that case, mark node as non-pseudo and move on to next iteration.
+    if (require_equal_attrs) {
+      eq = sapply(edge_attr(G), function(x) x[incidents[1]] == x[incidents[2]])
+      if (! all(eq, na.rm = TRUE)) {
+        pseudo[j] = FALSE
+        pseudo_remaining[j] = FALSE
+        next
+      }
+    }
+    # Process the pseudo node by:
+    # --> Removing its incident edges.
+    # --> Adding a new edge between its neighbors.
+    # --> Note that we don't remove the node itself at this stage.
+    # --> This will happen all at once during post-processing.
+    G = delete_edges(G, incidents)
+    G = add_edges(G, neighbors)
+    # Update the original indices object of the edges accordingly.
+    i = list(c(unlist(I[incidents[1]]), unlist(I[incidents[2]])))
+    I = c(I[-incidents], i)
+    # Update the geometry object of the edges accordingly.
+    if (spatial) {
+      # Extract geometries of the incident edges.
+      l1 = L[incidents[1]]
+      l2 = L[incidents[2]]
+      # In directed networks:
+      # --> The pseudo node is always the endpoint of the 1st incident edge.
+      # --> The pseudo node is always the startpoint of the 2nd indicdent edge.
+      # In undirected networks, it may be that:
+      # --> The pseudo node is the startpoint of the 1st incident edge.
+      # --> The pseudo node is the endpoint of the 2nd incident edge.
+      # In those cases, we can not easily concatenate the incident edges.
+      # Hence, we should re-arrange their geometries first.
+      if (! directed) {
+        ep = linestring_boundary_points(l1)[2]
+        if (! st_equals(ep, p, sparse = FALSE)) {
+          l1 = st_reverse(l1)
+        }
+        sp = linestring_boundary_points(l2)[1]
+        if (! st_equals(sp, p, sparse = FALSE)) {
+          l2 = st_reverse(l2)
+        }
+      }
+      # Concatenate the two incident edges.
+      l = concat_lines(l1, l2)
+      # Remove the original incident edge geometries.
+      # Add the concatenated edge geometry.
+      L = c(L[-incidents], l)
+    }
+    # Mark node as processed.
+    pseudo_remaining[j] = FALSE
+  }
+  # Post-process.
+  # --> Convert the updated network back to a sfnetwork.
+  x_new = tbg_to_sfn(as_tbl_graph(G))
+  # --> Remove attributes from edges.
+  for (i in edge_attr_names(x_new)) x_new = delete_edge_attr(x_new, i)
+  # --> Add original indices of concatenated edges.
+  # --> Add original data of concatenated edges.
+  edge_attr(x_new, ".tidygraph_edge_index") = I
+  edge_attr(x_new, ".orig_data") = lapply(I, function(i) edges[i, , drop = F])
+  # --> Add updated edge geometries.
+  if (spatial) x_new = mutate_edge_geom(x_new, L)
+  # --> Remove pseudo nodes all at once.
+  x_new = filter(activate(x_new, "nodes"), !pseudo)
+  # Return in a list.
+  list(
+    smooth = x_new %preserve_active% x
+  )
+}
+
 #' @describeIn spatial_morphers Subset the network by applying a spatial
 #' filter, i.e. a filter on the geometry column based on a spatial predicate.
 #' \code{...} is evaluated in the same manner as \code{\link{st_filter}}.
