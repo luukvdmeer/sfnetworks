@@ -182,13 +182,14 @@ nodes_match_edge_boundaries = function(x) {
 
 #' Check if sf will assume planar coordinates for some operations on an object
 #'
-#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
+#' @param x An object of class \code{\link{sfnetwork}}, \code{\link[sf]{sf}}, 
+#' \code{\link[sf]{sfc}}.
 #'
 #' @return \code{TRUE} when the coordinates of x are longitude-latitude, but sf
 #' will for some operations assume they are planar, \code{FALSE} otherwise.
 #'
-#' @importFrom sf sf_use_s2 st_is_longlat
+#' @importFrom sf sf_use_s2 st_crs st_is_longlat
 #' @noRd
 will_assume_planar = function(x) {
-  st_is_longlat(x) && !sf_use_s2()
+  (!is.na(st_crs(x)) && st_is_longlat(x)) && !sf_use_s2()
 }
