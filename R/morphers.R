@@ -38,11 +38,11 @@ NULL
 #' library(sf)
 #' library(tidygraph)
 #'
-#' net = as_sfnetwork(roxel, directed = FALSE) %>%
-#'     st_transform(3035)
+#' net = as_sfnetwork(roxel, directed = FALSE) %>% 
+#'   st_transform(3035) 
 #'
-#' net %>%
-#'     convert(to_spatial_coordinates)
+#' ## to_spatial_coordinates 
+#' convert(net, to_spatial_coordinates)
 #'
 #' @importFrom rlang !!!
 #' @importFrom sf st_coordinates
@@ -62,35 +62,38 @@ to_spatial_coordinates = function(x) {
   )
 }
 
-#' @describeIn spatial_morphers Reconstruct the network by treating all points
-#' that shape geometries of edge linestrings as nodes, instead of only the
-#' endpoints. Returns a \code{morphed_sfnetwork} containing a single element of
-#' class \code{\link{sfnetwork}}. This morpher requires edges to be spatially
-#' explicit.
+#' @describeIn spatial_morphers Construct a subdivision of the network by 
+#' subdividing all edges at those points that are included in their linestring
+#' geometry feature but are not endpoints of it. The network is reconstructed 
+#' afterwards such that edges which did share points in their geometries but 
+#' not endpoints are now connected as well. Returns a \code{morphed_sfnetwork} 
+#' containing a single element of class \code{\link{sfnetwork}}. This morpher 
+#' requires edges to be spatially explicit.
 #'
 #' @examples
+#' ## to_spatial_subdivision
 #' par(mar = c(1, 1, 1, 1), mfrow = c(1,2))
 #' plot(net)
 #' net %>%
-#'     convert(to_spatial_dense) %>%
-#'     plot()
+#'   convert(to_spatial_subdivision) %>%
+#'   plot()
 #'
 #' @importFrom igraph is_directed
 #' @importFrom lwgeom st_split
 #' @importFrom sf st_as_sf st_cast st_collection_extract st_equals st_join
 #' @export
-to_spatial_dense = function(x) {
+to_spatial_subdivision = function(x) {
   require_spatially_explicit_edges(x)
   raise_assume_constant("to_spatial_dense")
   # Retrieve the edges from the network, without the to and from columns.
   edges = st_as_sf(x, "edges")
   edges[, c("from", "to")] = NULL
-  # Split the edges by the points they are composed of.
-  splitted_edges = suppressWarnings(st_split(edges, st_cast(edges, "POINT")))
+  # Divide the edges at the points they are composed of.
+  division = suppressWarnings(st_split(edges, st_cast(edges, "POINT")))
   # The result is:
   # --> For each original edge a geometrycollection of sub-edges.
   # --> These sub-edges need to be extracted as linestrings.
-  new_edges = st_collection_extract(splitted_edges, "LINESTRING")
+  new_edges = st_collection_extract(division, "LINESTRING")
   # Reconstruct the network with the new edges.
   x_new = as_sfnetwork(new_edges, directed = is_directed(x))
   # Spatial left join between nodes of x_new and original nodes of x.
@@ -98,7 +101,7 @@ to_spatial_dense = function(x) {
   x_new = st_join(x_new, st_as_sf(x, "nodes"), join = st_equals)
   # Return in a list.
   list(
-    dense = x_new %preserve_active% x
+    subdivision = x_new %preserve_active% x
   )
 }
 
@@ -112,6 +115,7 @@ to_spatial_dense = function(x) {
 #' to be spatially explicit. If not, use \code{\link[tidygraph]{to_directed}}.
 #'
 #' @examples
+#' ## to_spatial_directed
 #' net %>%
 #'   activate("edges") %>%
 #'   st_reverse() %>%
@@ -147,6 +151,7 @@ to_spatial_directed = function(x) {
 #' \code{\link{sfnetwork}}.
 #'
 #' @examples
+#' ## to_spatial_explicit_edges
 #' par(mar = c(1, 1, 1, 1), mfrow = c(1,2))
 #' plot(net)
 #' net %>%
@@ -178,6 +183,7 @@ to_spatial_explicit_edges = function(x, ...) {
 #' element of class \code{\link{sfnetwork}}.
 #'
 #' @examples
+#' ## to_spatial_implicit_edges
 #' net %>%
 #'  convert(to_spatial_implicit_edges)
 #'
@@ -197,19 +203,14 @@ to_spatial_implicit_edges = function(x) {
 #' used, as the the same node and/or edge can be present in multiple paths.
 #'
 #' @examples
-#' net %>%
-#'   convert(to_spatial_shortest_paths, 171, 190)
-#'
-#' # Plot shortest paths:
+#' ## to_spatial_shortest_paths
+#' # Plot shortest path.
 #' par(mar = c(1, 1, 1, 1), mfrow = c(1,1))
 #' plot(net)
-#' plot(
-#'   net %>% convert(to_spatial_shortest_paths, 171, 190),
-#'   col = "red",
-#'   add = TRUE
-#' )
-#'
-#' # Calculate lengths of multiple shortest paths
+#' net %>% 
+#'   convert(to_spatial_shortest_paths, 171, 190) %>%
+#'   plot(col = "red", add = TRUE)
+#' # Calculate lengths of multiple shortest paths.
 #' net %>%
 #'  activate("edges") %>%
 #'  morph(to_spatial_shortest_paths, 1, c(171, 190)) %>%
@@ -240,17 +241,19 @@ to_spatial_shortest_paths = function(x, ...) {
 #' \code{morphed_sfnetwork} containing a single element of class
 #' \code{\link{sfnetwork}}. This morpher requires edges to be spatially
 #' explicit. If not, use \code{\link[tidygraph]{to_simple}}.
+#'
 #' @param keep Which geometry should be preserved when collapsing parallel
 #' edges. Either \code{"longest"} or \code{"shortest"}. Defaults to
 #' \code{"shortest"}.
 #'
 #' @examples
-#' # Original number of edges
+#' ## to_spatial_simple
+#' # Number of edges in original network.
 #' net %>%
 #'   activate("edges") %>%
 #'   st_as_sf() %>%
 #'   nrow()
-#' # Simplify parallel edges
+#' # Number of edges in simplified network.
 #' net %>%
 #'   activate("edges") %>%
 #'   convert(to_spatial_simple) %>%
@@ -294,159 +297,6 @@ to_spatial_simple = function(x, keep = "shortest", ...) {
   )
 }
 
-#' @describeIn spatial_morphers Reconstruct the network by iteratively removing
-#' pseudo nodes, while preserving the connectivity of the network. In the case
-#' of directed networks, pseudo nodes are those nodes that have only one
-#' incoming and one outgoing edge. In undirected networks, pseudo nodes are
-#' those nodes that have two incident edges. Connectivity of the network is
-#' preserved by merging the incident edges of each removed pseudo node. Returns
-#' a \code{morphed_sfnetwork} containing a single element of class
-#' \code{\link{sfnetwork}}.
-#' @param require_equal_attrs Should pseudo nodes only be removed when all
-#' attributes of their incident edges are equal? Defaults to \code{FALSE}.
-#' @examples
-#' netw = as_sfnetwork(roxel[c(4, 5, 8), ], directed = FALSE)
-#' # Remove pseudo nodes
-#' netw_sparse1 = tidygraph::convert(netw, to_spatial_sparse)
-#' # Only merge edges when their attributes are equal
-#' netw_sparse2 = tidygraph::convert(netw, to_spatial_sparse, require_equal_attrs = TRUE)
-#' # Compare results
-#' par(mar = c(1, 1, 1, 1), mfrow = c(1,3))
-#' plot(netw, cex = 3, main = "Network with pseudo nodes")
-#' plot(netw_sparse1, cex = 3, main = "Pseudo nodes removed")
-#' plot(netw_sparse2, cex = 3, main = "Only edges with equal attributes merged")
-#'
-#' @importFrom igraph incident is_directed neighbors
-#' @importFrom lwgeom st_endpoint st_startpoint
-#' @importFrom sf st_as_sf st_cast st_crs st_equals st_geometry st_reverse
-#' st_sfc
-#' @importFrom tibble as_tibble
-#' @importFrom tidygraph centrality_degree filter mutate pull select with_graph
-#' @export
-to_spatial_sparse = function(x, require_equal_attrs = FALSE) {
-  # Extract edges and nodes from x.
-  nodes = st_as_sf(x, "nodes")
-  edges = as_tibble(x, "edges")
-  # Initialize the new network.
-  x_new = x
-  # Find pseudo nodes in x.
-  if (is_directed(x)) {
-    # A node is a pseudo node if its in degree is 1 and its out degree is 1.
-    di = with_graph(x, centrality_degree(mode = "in"))
-    do = with_graph(x, centrality_degree(mode = "out"))
-    pseudo = di == 1 & do == 1
-  } else {
-    # A node is a pseudo node if its degree is 2.
-    d = with_graph(x, centrality_degree())
-    pseudo = d == 2
-  }
-  # Iteratively process pseudo nodes:
-  # --> Find incident edges to the node.
-  # --> Merge the incident edges into one to keep connectivity of the graph.
-  # --> Remove the incident edges.
-  # --> Repeat until all pseudo nodes are processed.
-  pseudo_remaining = pseudo
-  while (any(pseudo_remaining)) {
-    # Extract edges from the network updated in the former iteration.
-    E = st_as_sf(x_new, "edges")
-    # Get the index and geometry of the node to be processed in this iteration.
-    i = which(pseudo_remaining)[1]
-    p = nodes[i, ]
-    # Find the indices of incidents edges and neighboring nodes.
-    if (is_directed(x)) {
-      in_edge = incident(x_new, i, "in")
-      out_edge = incident(x_new, i, "out")
-      incidents = as.integer(c(in_edge, out_edge))
-      in_node = neighbors(x_new, i, "in")
-      out_node = neighbors(x_new, i, "out")
-      neighbors = as.integer(c(in_node, out_node))
-    } else {
-      incidents = as.integer(incident(x_new, i))
-      neighbors = as.integer(neighbors(x_new, i))
-    }
-    # Normally, there should be two indicent edges to a pseudo node.
-    # If there is only one indicent edge, this means this edge is a loop.
-    # In that case, mark node as processed and move on to the next iteration.
-    if (length(incidents) == 1) {
-      pseudo_remaining[i] = FALSE
-      next
-    }
-    # Separate the incident edges from the edges data.
-    E_i = E[incidents, ]
-    E = E[-incidents, ]
-    # If equal attributes of incident edges are required:
-    # --> Check if the attributes of the edges are varying.
-    # --> If yes, then the node is not a real pseudo node.
-    # --> Mark node as non-pseudo and move on to the next iteration.
-    if (require_equal_attrs) {
-      E_i_attrs = E_i
-      E_i_attrs$from = NULL
-      E_i_attrs$to = NULL
-      E_i_attrs$.tidygraph_edge_index = NULL
-      if (has_varying_feature_attributes(E_i_attrs)) {
-        pseudo[i] = FALSE
-        pseudo_remaining[i] = FALSE
-        next
-      }
-    }
-    if (has_spatially_explicit_edges(x)) {
-      # In directed networks, a pseudo node will always have:
-      # --> One linestring moving towards the node (the in edge).
-      # --> One linestring moving away from the node (the out edge).
-      # In undirected networks, it can also have either 2 in or 2 out edges.
-      # Note that in or out in that case does not mean anything.
-      # But we do need arranged geometries to correctly merge the edges.
-      # Hence, there is a need to rearrange the edges before proceeding.
-      # The arrangement should be:
-      # --> Edge one has a geometry that moves towards the pseudo node.
-      # --> Edge two has a geometry that moves away from the pseudo node.
-      if (! is_directed(x)) {
-        if (! st_equals(st_endpoint(E_i[1, ]), p, sparse = FALSE)) {
-          E_i[1, ] = st_reverse(E_i[1, ])
-        }
-        if (! st_equals(st_startpoint(E_i[2, ]), p, sparse = FALSE)) {
-          E_i[2, ] = st_reverse(E_i[2, ])
-        }
-      }
-      # Decompose the in and out edges into the points that shape them.
-      # The pseudo node point is in both of them, so should be removed once.
-      pts1 = st_cast(st_geometry(E_i[1, ]), "POINT")
-      pts2 = st_cast(st_geometry(E_i[2, ]), "POINT")[-1]
-      l = st_cast(do.call("c", c(pts1, pts2)), "LINESTRING")
-      l = st_sfc(l, crs = st_crs(E))
-    }
-    # Merge the in and out edges into a single new edge.
-    e = E_i[1, ]
-    e$from = neighbors[1]
-    e$to = neighbors[2]
-    tei_1 = E_i[1, ]$.tidygraph_edge_index
-    tei_2 = E_i[2, ]$.tidygraph_edge_index
-    e$.tidygraph_edge_index = list(c(unlist(tei_1), unlist(tei_2)))
-    if (has_spatially_explicit_edges(x)) st_geometry(e) = l
-    # Reconstruct the network with the new edge added and old ones removed.
-    x_new = sfnetwork_(nodes, rbind(E, e), directed = is_directed(x))
-    # Update list of remaining pseudo nodes.
-    pseudo_remaining[i] = FALSE
-  }
-  # Post-process:
-  # --> Remove pseudo nodes from the new network.
-  # --> Remove original attributes from edges.
-  # --> Store the original edge data in an .orig_data column.
-  x_new = activate(x_new, "nodes")
-  x_new = filter(x_new, !pseudo)
-  x_new = activate(x_new, "edges")
-  x_new = select(x_new, c("from", "to", ".tidygraph_edge_index"))
-  orig_data = lapply(
-    pull(x_new, ".tidygraph_edge_index"),
-    function(i) edges[i, , drop = FALSE]
-  )
-  x_new = mutate(x_new, .orig_data = orig_data)
-  # Return in a list.
-  list(
-    sparse = x_new %preserve_active% x
-  )
-}
-
 #' @describeIn spatial_morphers Construct a smoothed version of the network by
 #' iteratively removing pseudo nodes, while preserving the connectivity of the 
 #' network. In the case of directed networks, pseudo nodes are those nodes that 
@@ -460,17 +310,17 @@ to_spatial_sparse = function(x, require_equal_attrs = FALSE) {
 #' attributes of their incident edges are equal? Defaults to \code{FALSE}.
 #'
 #' @examples
-#' library(tidygraph)
-#' net = as_sfnetwork(roxel[c(4, 5, 8), ], directed = FALSE)
+#' ## to_spatial_smoothed
+#' G = as_sfnetwork(roxel[c(4, 5, 8), ], directed = FALSE)
 #' # Remove pseudo nodes.
-#' smoothed_net_1 = convert(net, to_spatial_smooth)
+#' smoothed_1 = convert(G, to_spatial_smooth)
 #' # Only remove pseudo nodes when attributes of incident edges are equal.
-#' smoothed_net_2 = convert(net, to_spatial_smooth, require_equal_attrs = TRUE)
+#' smoothed_2 = convert(G, to_spatial_smooth, require_equal_attrs = TRUE)
 #' # Compare results.
 #' par(mar = c(1, 1, 1, 1), mfrow = c(1,3))
-#' plot(net, cex = 3, main = "Original network")
-#' plot(smoothed_net_1, cex = 3, main = "Smoothed network 1")
-#' plot(smoothed_net_2, cex = 3, main = "Smoothed network 2")
+#' plot(G, cex = 3, main = "Original network")
+#' plot(smoothed_1, cex = 3, main = "Smoothed network 1")
+#' plot(smoothed_2, cex = 3, main = "Smoothed network 2")
 #'
 #' @importFrom igraph add_edges degree delete_edges delete_edge_attr edge_attr
 #' edge_attr_names incident is_directed neighbors
@@ -612,21 +462,22 @@ to_spatial_smooth = function(x, require_equal_attrs = FALSE) {
 #' Returns a \code{morphed_sfnetwork} containing a single element of class
 #' \code{\link{sfnetwork}}. For filters on an attribute column, use
 #' \code{\link[tidygraph]{to_subgraph}}.
+#'
 #' @param subset_by Whether to create subgraphs based on nodes or edges.
 #'
 #' @examples
-#' e1 = st_point(c(7.53173, 51.95662))
-#' e2 = st_point(c(7.53173, 51.95190))
-#' e3 = st_point(c(7.53778, 51.95190))
-#' e4 = st_point(c(7.53778, 51.95662))
-#'
-#' rect = st_multipoint(c(e1, e2, e3, e4)) %>%
+#' ## to_spatial_subset
+#' p1 = st_point(c(7.53173, 51.95662))
+#' p2 = st_point(c(7.53173, 51.95190))
+#' p3 = st_point(c(7.53778, 51.95190))
+#' p4 = st_point(c(7.53778, 51.95662))
+#' rect = st_multipoint(c(p1, p2, p3, p4)) %>%
 #'   st_cast('POLYGON') %>%
 #'   st_sfc(crs = 4326) %>%
 #'   st_transform(3035)
-#'
 #' net %>%
 #'   convert(to_spatial_subset, rect, .predicate = st_intersects)
+#'
 #' @importFrom sf st_filter
 #' @export
 to_spatial_subset = function(x, ..., subset_by = NULL) {
