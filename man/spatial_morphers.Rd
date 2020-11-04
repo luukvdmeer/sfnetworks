@@ -3,19 +3,19 @@
 \name{spatial_morphers}
 \alias{spatial_morphers}
 \alias{to_spatial_coordinates}
-\alias{to_spatial_dense}
+\alias{to_spatial_subdivision}
 \alias{to_spatial_directed}
 \alias{to_spatial_explicit_edges}
 \alias{to_spatial_implicit_edges}
 \alias{to_spatial_shortest_paths}
 \alias{to_spatial_simple}
-\alias{to_spatial_sparse}
+\alias{to_spatial_smooth}
 \alias{to_spatial_subset}
 \title{Spatial morphers for sfnetworks}
 \usage{
 to_spatial_coordinates(x)
 
-to_spatial_dense(x)
+to_spatial_subdivision(x)
 
 to_spatial_directed(x)
 
@@ -27,7 +27,7 @@ to_spatial_shortest_paths(x, ...)
 
 to_spatial_simple(x, keep = "shortest", ...)
 
-to_spatial_sparse(x, require_equal_attrs = FALSE)
+to_spatial_smooth(x, require_equal_attrs = FALSE)
 
 to_spatial_subset(x, ..., subset_by = NULL)
 }
@@ -77,11 +77,13 @@ list column. If edges are spatially explicit, the edge geometries are
 dropped. Returns a \code{morphed_tbl_graph} containing a single element of
 class \code{\link[tidygraph]{tbl_graph}}.
 
-\item \code{to_spatial_dense}: Reconstruct the network by treating all points
-that shape geometries of edge linestrings as nodes, instead of only the
-endpoints. Returns a \code{morphed_sfnetwork} containing a single element of
-class \code{\link{sfnetwork}}. This morpher requires edges to be spatially
-explicit.
+\item \code{to_spatial_subdivision}: Construct a subdivision of the network by 
+subdividing all edges at those points that are included in their linestring
+geometry feature but are not endpoints of it. The network is reconstructed 
+afterwards such that edges which did share points in their geometries but 
+not endpoints are now connected as well. Returns a \code{morphed_sfnetwork} 
+containing a single element of class \code{\link{sfnetwork}}. This morpher 
+requires edges to be spatially explicit.
 
 \item \code{to_spatial_directed}: Make a network directed in the direction given
 by the linestring geometries of the edges. Differs from
@@ -122,14 +124,14 @@ of the shortest or the longest of the parallel edges. Returns a
 \code{\link{sfnetwork}}. This morpher requires edges to be spatially
 explicit. If not, use \code{\link[tidygraph]{to_simple}}.
 
-\item \code{to_spatial_sparse}: Reconstruct the network by iteratively removing
-pseudo nodes, while preserving the connectivity of the network. In the case
-of directed networks, pseudo nodes are those nodes that have only one
-incoming and one outgoing edge. In undirected networks, pseudo nodes are
-those nodes that have two incident edges. Connectivity of the network is
-preserved by merging the incident edges of each removed pseudo node. Returns
-a \code{morphed_sfnetwork} containing a single element of class
-\code{\link{sfnetwork}}.
+\item \code{to_spatial_smooth}: Construct a smoothed version of the network by
+iteratively removing pseudo nodes, while preserving the connectivity of the 
+network. In the case of directed networks, pseudo nodes are those nodes that 
+have only one incoming and one outgoing edge. In undirected networks, pseudo 
+nodes are those nodes that have two incident edges. Connectivity of the 
+network is preserved by concatenating the incident edges of each removed 
+pseudo node. Returns a \code{morphed_sfnetwork} containing a single element 
+of class \code{\link{sfnetwork}}.
 
 \item \code{to_spatial_subset}: Subset the network by applying a spatial
 filter, i.e. a filter on the geometry column based on a spatial predicate.
@@ -143,23 +145,26 @@ Returns a \code{morphed_sfnetwork} containing a single element of class
 library(sf)
 library(tidygraph)
 
-net = as_sfnetwork(roxel, directed = FALSE) \%>\%
-    st_transform(3035)
+net = as_sfnetwork(roxel, directed = FALSE) \%>\% 
+  st_transform(3035) 
 
-net \%>\%
-    convert(to_spatial_coordinates)
+## to_spatial_coordinates 
+convert(net, to_spatial_coordinates)
 
+## to_spatial_subdivision
 par(mar = c(1, 1, 1, 1), mfrow = c(1,2))
 plot(net)
 net \%>\%
-    convert(to_spatial_dense) \%>\%
-    plot()
+  convert(to_spatial_subdivision) \%>\%
+  plot()
 
+## to_spatial_directed
 net \%>\%
   activate("edges") \%>\%
   st_reverse() \%>\%
   convert(to_spatial_directed)
 
+## to_spatial_explicit_edges
 par(mar = c(1, 1, 1, 1), mfrow = c(1,2))
 plot(net)
 net \%>\%
@@ -167,60 +172,58 @@ net \%>\%
  convert(to_spatial_explicit_edges) \%>\%
  plot()
 
+## to_spatial_implicit_edges
 net \%>\%
  convert(to_spatial_implicit_edges)
 
-net \%>\%
-  convert(to_spatial_shortest_paths, 171, 190)
-
-# Plot shortest paths:
+## to_spatial_shortest_paths
+# Plot shortest path.
 par(mar = c(1, 1, 1, 1), mfrow = c(1,1))
 plot(net)
-plot(
-  net \%>\% convert(to_spatial_shortest_paths, 171, 190),
-  col = "red",
-  add = TRUE
-)
-
-# Calculate lengths of multiple shortest paths
+net \%>\% 
+  convert(to_spatial_shortest_paths, 171, 190) \%>\%
+  plot(col = "red", add = TRUE)
+# Calculate lengths of multiple shortest paths.
 net \%>\%
  activate("edges") \%>\%
  morph(to_spatial_shortest_paths, 1, c(171, 190)) \%>\%
  sapply(function(x) sum(st_length(x)))
 
-# Original number of edges
+## to_spatial_simple
+# Number of edges in original network.
 net \%>\%
   activate("edges") \%>\%
   st_as_sf() \%>\%
   nrow()
-# Simplify parallel edges
+# Number of edges in simplified network.
 net \%>\%
   activate("edges") \%>\%
   convert(to_spatial_simple) \%>\%
   st_as_sf() \%>\%
   nrow()
 
-netw = as_sfnetwork(roxel[c(4, 5, 8), ], directed = FALSE)
-# Remove pseudo nodes
-netw_sparse1 = tidygraph::convert(netw, to_spatial_sparse)
-# Only merge edges when their attributes are equal
-netw_sparse2 = tidygraph::convert(netw, to_spatial_sparse, require_equal_attrs = TRUE)
-# Compare results
+## to_spatial_smoothed
+G = as_sfnetwork(roxel[c(4, 5, 8), ], directed = FALSE)
+# Remove pseudo nodes.
+smoothed_1 = convert(G, to_spatial_smooth)
+# Only remove pseudo nodes when attributes of incident edges are equal.
+smoothed_2 = convert(G, to_spatial_smooth, require_equal_attrs = TRUE)
+# Compare results.
 par(mar = c(1, 1, 1, 1), mfrow = c(1,3))
-plot(netw, cex = 3, main = "Network with pseudo nodes")
-plot(netw_sparse1, cex = 3, main = "Pseudo nodes removed")
-plot(netw_sparse2, cex = 3, main = "Only edges with equal attributes merged")
+plot(G, cex = 3, main = "Original network")
+plot(smoothed_1, cex = 3, main = "Smoothed network 1")
+plot(smoothed_2, cex = 3, main = "Smoothed network 2")
 
-e1 = st_point(c(7.53173, 51.95662))
-e2 = st_point(c(7.53173, 51.95190))
-e3 = st_point(c(7.53778, 51.95190))
-e4 = st_point(c(7.53778, 51.95662))
-
-rect = st_multipoint(c(e1, e2, e3, e4)) \%>\%
+## to_spatial_subset
+p1 = st_point(c(7.53173, 51.95662))
+p2 = st_point(c(7.53173, 51.95190))
+p3 = st_point(c(7.53778, 51.95190))
+p4 = st_point(c(7.53778, 51.95662))
+rect = st_multipoint(c(p1, p2, p3, p4)) \%>\%
   st_cast('POLYGON') \%>\%
   st_sfc(crs = 4326) \%>\%
   st_transform(3035)
-
 net \%>\%
   convert(to_spatial_subset, rect, .predicate = st_intersects)
+
 }
