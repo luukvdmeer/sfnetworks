@@ -65,17 +65,17 @@
 #' # Plot results.
 #' # Initial network and points.
 #' par(mar = c(1,1,1,1), mfrow = c(1,3))
-#' plot(net, main = "Network + set of points")
-#' plot(pts, col = "red", pch = 20, add = TRUE)
+#' plot(net, cex = 2, main = "Network + set of points")
+#' plot(pts, cex = 2, col = "red", pch = 20, add = TRUE)
 #' # Blend with no tolerance
-#' plot(b1, main = "Blend points with no tolerance")
-#' plot(pts, col = "red", pch = 20, add = TRUE)
+#' plot(b1, cex = 2, main = "Blend with tolerance = Inf")
+#' plot(pts, cex = 2, col = "red", pch = 20, add = TRUE)
 #' # Blend with tolerance.
 #' within = st_is_within_distance(pts, st_geometry(net, "edges"), tol)
 #' pts_within = pts[lengths(within) > 0]
-#' plot(b2, "Blend with tolerance (points in red are within tolerance")
-#' plot(pts, col = "grey", pch = 20, add = TRUE)
-#' plot(pts_within, col = "red", pch = 20, add = TRUE)
+#' plot(b2, cex = 2, main = "Blend with tolerance = 40 km")
+#' plot(pts, cex = 2, col = "grey", pch = 20, add = TRUE)
+#' plot(pts_within, cex = 2, col = "red", pch = 20, add = TRUE)
 #'
 #' @export
 st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
