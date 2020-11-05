@@ -16,24 +16,24 @@ st_network_join(
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
 
-\item{y}{An object of class \code{\link{sfnetwork}}, or directly convertible 
+\item{y}{An object of class \code{\link{sfnetwork}}, or directly convertible
 to it using \code{\link{as_sfnetwork}}.}
 
 \item{blend_nodes}{Should nodes be blended? If \code{TRUE}, edges in x will
 be splitted at each location where they intersect a node in y, and edges in
 y will be splitted at each location where they intersect a node in x. This
-requires edges in both networks to be spatially explicit. Defaults to 
+requires edges in both networks to be spatially explicit. Defaults to
 \code{FALSE}.}
 
 \item{blend_crossings}{Should edge crossings be blended? If \code{TRUE},
-edges in x will be splitted at each location where they cross an edge in y, 
+edges in x will be splitted at each location where they cross an edge in y,
 and edges in y will be splitted at each location where they cross and edge
 in x. This requires edges in both networks to be spatially explicit.
 Defaults to \code{FALSE}.}
 
 \item{sort}{If any of the blend options was set to \code{TRUE}, should the
-nodes in the resulting network be sorted in the same order as those in x, 
-followed by the new nodes joined in from y? Defaults to \code{TRUE}. If set 
+nodes in the resulting network be sorted in the same order as those in x,
+followed by the new nodes joined in from y? Defaults to \code{TRUE}. If set
 to \code{FALSE}, node order might be changed. However, sorting
 might influence performance.}
 
@@ -43,13 +43,77 @@ might influence performance.}
 An object of class \code{\link{sfnetwork}}.
 }
 \description{
-A spatial network specific join function which makes a spatial full join on 
-the geometries of the nodes data, based on the \code{st_equals} spatial 
-predicate. Edge data are combined using a \code{bind_rows} semantic, meaning 
-that data are matched by column name and values are filled with `NA` if 
-missing in either of the networks. The \code{from} and \code{to} columns in 
-the edge data are updated such that they match the new node indices of the 
-resulting network. If requested, edges can be splitted at locations where 
-they either intersect with nodes of the other network, or get crossed by 
+A spatial network specific join function which makes a spatial full join on
+the geometries of the nodes data, based on the \code{st_equals} spatial
+predicate. Edge data are combined using a \code{bind_rows} semantic, meaning
+that data are matched by column name and values are filled with `NA` if
+missing in either of the networks. The \code{from} and \code{to} columns in
+the edge data are updated such that they match the new node indices of the
+resulting network. If requested, edges can be splitted at locations where
+they either intersect with nodes of the other network, or get crossed by
 edges of the other network.
+}
+\examples{
+library(sfnetworks)
+library(sf)
+
+# Create two networks.
+n11 = st_point(c(0,0))
+n12 = st_point(c(1,1))
+e1 = st_sfc(st_linestring(c(n11, n12)), crs = 4326)
+
+n21 = n12
+n22 = st_point(c(0,2))
+e2 = st_sfc(st_linestring(c(n21, n22)), crs = 4326)
+
+n31 = n22
+n32 = st_point(c(-1,1))
+e3 = st_sfc(st_linestring(c(n31, n32)), crs = 4326)
+
+n41 = st_point(c(0.5,0.5))
+n42 = st_point(c(-1,2))
+e4 = st_sfc(st_linestring(c(n41, n42)), crs = 4326)
+
+n51 = n42
+n52 = n22
+e5 = st_sfc(st_linestring(c(n51, n52)), crs = 4326)
+
+net1 = as_sfnetwork(st_as_sf(c(e1,e2,e3)))
+net2 = as_sfnetwork(st_as_sf(c(e4, e5)))
+
+# The basic st_network_join does the following:
+# --> Full spatial join on the nodes, based on st_equals
+# --> Bind edges
+# --> Update from and to columns of edges accordingly
+(j1 = st_network_join(net1, net2))
+
+# Set blend_nodes to TRUE. This will:
+# --> Split edges in x that intersect with a node in y
+# --> Split edges in y that intersect with a node in x
+(j2 = st_network_join(net1, net2, blend_nodes = TRUE))
+
+# Set blend_crossings to TRUE. This will:
+# --> Split edges in x where they cross an edge in y
+# --> Split edges in y where they cross an edge in x
+(j3 = st_network_join(net1, net2, blend_crossings = TRUE))
+
+# Of course we can also blend nodes AND crossings.
+(j4 = st_network_join(net1, net2, blend_nodes = TRUE, blend_crossings = TRUE))
+
+# Notice that nodes are always sorted just as in x.
+# This takes a little extra processing.
+# If you dont care about this you can also set sort to FALSE.
+(j5 = st_network_join(net1, net2, blend_nodes = TRUE, sort = FALSE))
+
+# Plot results
+par(mfrow = c(2,2))
+plot(net1, col = "blue", cex = 2, main = "Two networks")
+plot(net2, cex = 1.5, col = "red", add = TRUE)
+plot(j1, cex = 2, main = "Joined networks...")
+mtext("6 nodes and 5 edges", side = 1)
+plot(j2, cex = 2, main = "...with blended nodes")
+mtext("6 nodes and 6 edges", side = 1)
+plot(j3, cex = 2, main = "...with blended crossings")
+mtext("7 nodes and 7 edges", side = 1)
+
 }
