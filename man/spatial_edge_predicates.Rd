@@ -48,26 +48,45 @@ object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.}
 function of sf. See \code{\link[sf]{geos_binary_pred}}.}
 }
 \value{
-A logical vector of the same length as the number of edges in the 
+A logical vector of the same length as the number of edges in the
 network.
 }
 \description{
 These functions allow to interpretate spatial relations between edges and
-other geospatial features directly inside \code{\link[tidygraph]{filter}} 
-and \code{\link[tidygraph]{mutate}} calls. All functions return a logical 
+other geospatial features directly inside \code{\link[tidygraph]{filter}}
+and \code{\link[tidygraph]{mutate}} calls. All functions return a logical
 vector of the same length as the number of edges in the network. Element i
 in that vector is \code{TRUE} whenever \code{any(predicate(x[i], y[j]))} is
 \code{TRUE}. Hence, in the case of using \code{edge_intersects}, element i
-in the returned vector is \code{TRUE} when edge i intersects with any of 
+in the returned vector is \code{TRUE} when edge i intersects with any of
 the features given in y.
 }
 \details{
 See \code{\link[sf]{geos_binary_pred}} for details on each spatial
-predicate. Just as with all query functions in tidygraph, spatial edge 
-measures are meant to be called inside tidygraph verbs such as 
-\code{\link[tidygraph]{mutate}} or \code{\link[tidygraph]{filter}}, where 
-the network that is currently being worked on is known and thus not needed 
+predicate. Just as with all query functions in tidygraph, spatial edge
+measures are meant to be called inside tidygraph verbs such as
+\code{\link[tidygraph]{mutate}} or \code{\link[tidygraph]{filter}}, where
+the network that is currently being worked on is known and thus not needed
 as an argument to the function. If you want to use an algorithm outside of
-the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to 
+the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to
 set the context temporarily while the algorithm is being evaluated.
+}
+\examples{
+library(sf)
+library(tidygraph)
+
+net = as_sfnetwork(roxel)
+p1 = st_point(c(7.53173, 51.95662))
+p2 = st_point(c(7.53173, 51.95190))
+p3 = st_point(c(7.53778, 51.95190))
+p4 = st_point(c(7.53778, 51.95662))
+rect = st_multipoint(c(p1, p2, p3, p4)) \%>\%
+  st_cast('POLYGON') \%>\%
+  st_sfc(crs = 4326)
+
+# Use predicate queries in a mutate call.
+net \%>\%
+  activate(edges) \%>\%
+  mutate(predicate = edge_is_disjoint(rect)) \%>\%
+  select(predicate)
 }

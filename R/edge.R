@@ -1,15 +1,15 @@
 #' Query spatial edge measures
 #'
 #' These functions are a collection of specific spatial edge measures, that
-#' form a spatial extension to edge measures in 
+#' form a spatial extension to edge measures in
 #' \code{\link[tidygraph:tidygraph-package]{tidygraph}}.
 #'
-#' @details Just as with all query functions in tidygraph, spatial edge 
-#' measures are meant to be called inside tidygraph verbs such as 
-#' \code{\link[tidygraph]{mutate}} or \code{\link[tidygraph]{filter}}, where 
-#' the network that is currently being worked on is known and thus not needed 
+#' @details Just as with all query functions in tidygraph, spatial edge
+#' measures are meant to be called inside tidygraph verbs such as
+#' \code{\link[tidygraph]{mutate}} or \code{\link[tidygraph]{filter}}, where
+#' the network that is currently being worked on is known and thus not needed
 #' as an argument to the function. If you want to use an algorithm outside of
-#' the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to 
+#' the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to
 #' set the context temporarily while the algorithm is being evaluated.
 #'
 #' @note Note that \code{edge_is_within_distance} is a wrapper around the
@@ -27,6 +27,18 @@ NULL
 #' nodes, as described in
 #' \href{https://journals.sagepub.com/doi/10.1068/b130131p}{Giacomin & Levinson,
 #' 2015}.
+#'
+#' @examples
+#' library(sf)
+#' library(tidygraph)
+#'
+#' net = as_sfnetwork(roxel, directed = FALSE) %>%
+#'   st_transform(3035)
+#'
+#' net %>%
+#'   activate("edges") %>%
+#'   mutate(circuity = edge_circuity())
+#'
 #' @importFrom sf st_length
 #' @importFrom tidygraph .G
 #' @export
@@ -39,6 +51,12 @@ edge_circuity = function() {
 
 #' @describeIn spatial_edge_measures The length of an edge linestring geometry
 #' as calculated by \code{\link[sf]{st_length}}.
+#'
+#' @examples
+#' net %>%
+#'   activate("edges") %>%
+#'   mutate(length = edge_length())
+#'
 #' @importFrom sf st_length
 #' @importFrom tidygraph .G
 #' @export
@@ -54,6 +72,12 @@ edge_length = function() {
 
 #' @describeIn spatial_edge_measures The straight-line distance between the two
 #' boundary nodes of an edge, as calculated by \code{\link[sf]{st_distance}}.
+#'
+#' @examples
+#' net %>%
+#'   activate("edges") %>%
+#'   mutate(displacement = edge_displacement())
+#'
 #' @importFrom tidygraph .G
 #' @export
 edge_displacement = function() {
@@ -79,12 +103,12 @@ straight_line_distance = function(x) {
 #' Query edges with spatial predicates
 #'
 #' These functions allow to interpretate spatial relations between edges and
-#' other geospatial features directly inside \code{\link[tidygraph]{filter}} 
-#' and \code{\link[tidygraph]{mutate}} calls. All functions return a logical 
+#' other geospatial features directly inside \code{\link[tidygraph]{filter}}
+#' and \code{\link[tidygraph]{mutate}} calls. All functions return a logical
 #' vector of the same length as the number of edges in the network. Element i
 #' in that vector is \code{TRUE} whenever \code{any(predicate(x[i], y[j]))} is
 #' \code{TRUE}. Hence, in the case of using \code{edge_intersects}, element i
-#' in the returned vector is \code{TRUE} when edge i intersects with any of 
+#' in the returned vector is \code{TRUE} when edge i intersects with any of
 #' the features given in y.
 #'
 #' @param y The geospatial features to test the edges against, either as an
@@ -93,18 +117,36 @@ straight_line_distance = function(x) {
 #' @param ... Arguments passed on to the corresponding spatial predicate
 #' function of sf. See \code{\link[sf]{geos_binary_pred}}.
 #'
-#' @return A logical vector of the same length as the number of edges in the 
+#' @return A logical vector of the same length as the number of edges in the
 #' network.
 #'
 #' @details See \code{\link[sf]{geos_binary_pred}} for details on each spatial
-#' predicate. Just as with all query functions in tidygraph, spatial edge 
-#' measures are meant to be called inside tidygraph verbs such as 
-#' \code{\link[tidygraph]{mutate}} or \code{\link[tidygraph]{filter}}, where 
-#' the network that is currently being worked on is known and thus not needed 
+#' predicate. Just as with all query functions in tidygraph, spatial edge
+#' measures are meant to be called inside tidygraph verbs such as
+#' \code{\link[tidygraph]{mutate}} or \code{\link[tidygraph]{filter}}, where
+#' the network that is currently being worked on is known and thus not needed
 #' as an argument to the function. If you want to use an algorithm outside of
-#' the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to 
+#' the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to
 #' set the context temporarily while the algorithm is being evaluated.
 #'
+#' @examples
+#' library(sf)
+#' library(tidygraph)
+#'
+#' net = as_sfnetwork(roxel)
+#' p1 = st_point(c(7.53173, 51.95662))
+#' p2 = st_point(c(7.53173, 51.95190))
+#' p3 = st_point(c(7.53778, 51.95190))
+#' p4 = st_point(c(7.53778, 51.95662))
+#' rect = st_multipoint(c(p1, p2, p3, p4)) %>%
+#'   st_cast('POLYGON') %>%
+#'   st_sfc(crs = 4326)
+#'
+#' # Use predicate queries in a mutate call.
+#' net %>%
+#'   activate(edges) %>%
+#'   mutate(predicate = edge_is_disjoint(rect)) %>%
+#'   select(predicate)
 #' @name spatial_edge_predicates
 NULL
 

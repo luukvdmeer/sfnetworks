@@ -19,16 +19,16 @@ graph.
 }
 \description{
 These functions are a collection of specific spatial edge measures, that
-form a spatial extension to edge measures in 
+form a spatial extension to edge measures in
 \code{\link[tidygraph:tidygraph-package]{tidygraph}}.
 }
 \details{
-Just as with all query functions in tidygraph, spatial edge 
-measures are meant to be called inside tidygraph verbs such as 
-\code{\link[tidygraph]{mutate}} or \code{\link[tidygraph]{filter}}, where 
-the network that is currently being worked on is known and thus not needed 
+Just as with all query functions in tidygraph, spatial edge
+measures are meant to be called inside tidygraph verbs such as
+\code{\link[tidygraph]{mutate}} or \code{\link[tidygraph]{filter}}, where
+the network that is currently being worked on is known and thus not needed
 as an argument to the function. If you want to use an algorithm outside of
-the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to 
+the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to
 set the context temporarily while the algorithm is being evaluated.
 }
 \section{Functions}{
@@ -50,4 +50,24 @@ boundary nodes of an edge, as calculated by \code{\link[sf]{st_distance}}.
 Note that \code{edge_is_within_distance} is a wrapper around the
 \code{st_is_within_distance} predicate from sf. Hence, it is based on
 'as-the-crow-flies' distance, and not on distances over the network.
+}
+\examples{
+library(sf)
+library(tidygraph)
+
+net = as_sfnetwork(roxel, directed = FALSE) \%>\%
+  st_transform(3035)
+
+net \%>\%
+  activate("edges") \%>\%
+  mutate(circuity = edge_circuity())
+
+net \%>\%
+  activate("edges") \%>\%
+  mutate(length = edge_length())
+
+net \%>\%
+  activate("edges") \%>\%
+  mutate(displacement = edge_displacement())
+
 }
