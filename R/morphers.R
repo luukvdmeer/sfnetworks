@@ -80,13 +80,13 @@ to_spatial_coordinates = function(x) {
 #'
 #' @importFrom igraph is_directed
 #' @importFrom lwgeom st_split
-#' @importFrom sf st_as_sf st_cast st_collection_extract st_equals st_join
+#' @importFrom sf st_cast st_collection_extract st_equals
 #' @export
 to_spatial_subdivision = function(x) {
   require_spatially_explicit_edges(x)
   raise_assume_constant("to_spatial_dense")
   # Retrieve the edges from the network, without the to and from columns.
-  edges = st_as_sf(x, "edges")
+  edges = edges_as_sf(x)
   edges[, c("from", "to")] = NULL
   # Divide the edges at the points they are composed of.
   division = suppressWarnings(st_split(edges, st_cast(edges, "POINT")))
@@ -98,7 +98,7 @@ to_spatial_subdivision = function(x) {
   x_new = as_sfnetwork(new_edges, directed = is_directed(x))
   # Spatial left join between nodes of x_new and original nodes of x.
   # This is needed since node attributes got lost when constructing x_new.
-  x_new = st_join(x_new, st_as_sf(x, "nodes"), join = st_equals)
+  x_new = join_nodes(x_new, nodes_as_sf(x), join = st_equals)
   # Return in a list.
   list(
     subdivision = x_new %preserve_active% x
@@ -122,19 +122,19 @@ to_spatial_subdivision = function(x) {
 #'   convert(to_spatial_directed)
 #'
 #' @importFrom igraph is_directed
-#' @importFrom sf st_as_sf st_equals st_join
+#' @importFrom sf st_equals
 #' @export
 to_spatial_directed = function(x) {
   require_spatially_explicit_edges(x)
   if (is_directed(x)) return (x)
   # Retrieve the edges from the network, without the to and from columns.
-  edges = st_as_sf(x, "edges")
+  edges = edges_as_sf(x)
   edges[, c("from", "to")] = NULL
   # Recreate the network as a directed one.
   x_new = as_sfnetwork(edges, directed = TRUE)
   # Spatial left join between nodes of x_new and original nodes of x.
   # This is needed since node attributes got lost when constructing x_new.
-  x_new = st_join(x_new, st_as_sf(x, "nodes"), join = st_equals)
+  x_new = join_nodes(x_new, nodes_as_sf(x), join = st_equals)
   # Return in a list.
   list(
     directed = x_new %preserve_active% x
@@ -159,17 +159,18 @@ to_spatial_directed = function(x) {
 #'  convert(to_spatial_explicit_edges) %>%
 #'  plot()
 #'
+#' @importFrom sf st_as_sf st_geometry
+#' @importFrom tibble as_tibble
+#' @importFrom tidygraph as_tbl_graph
 #' @export
 to_spatial_explicit_edges = function(x, ...) {
   args = list(...)
   if (length(args) > 0) {
     # Convert edges to sf by forwarding ... to st_as_sf.
-    e = as_tibble(x, "edges")
+    e = as_tibble(as_tbl_graph(x), "edges")
     e_sf = st_as_sf(e, ...)
-    x_new = activate(x, "edges")
-    st_geometry(x_new) = st_geometry(e_sf)
     list(
-      explicit = x_new %preserve_active% x
+      explicit = mutate_edge_geom(x, st_geometry(e_sf))
     )
   } else {
     list(
@@ -263,7 +264,7 @@ to_spatial_shortest_paths = function(x, ...) {
 #' @importFrom igraph is_directed
 #' @importFrom sf st_as_sf st_length
 #' @importFrom tibble as_tibble
-#' @importFrom tidygraph convert to_simple
+#' @importFrom tidygraph as_tbl_graph convert to_simple
 #' @export
 to_spatial_simple = function(x, keep = "shortest", ...) {
   require_spatially_explicit_edges(x)
@@ -272,7 +273,7 @@ to_spatial_simple = function(x, keep = "shortest", ...) {
   # Run tidygraphs to_simple morpher.
   # Extract edges from the result.
   x_tmp = convert(x, to_simple, ...)
-  edges = as_tibble(x_tmp, "edges")
+  edges = as_tibble(as_tbl_graph(x_tmp), "edges")
   # For each of the edges that are a result of a merge of original edges:
   # --> Select the geometry of either the longest or shortest edge.
   select_edge = function(e) {
@@ -287,7 +288,7 @@ to_spatial_simple = function(x, keep = "shortest", ...) {
   }
   edges[[geom_colname]] = do.call(c, lapply(edges[[geom_colname]], select_edge))
   x_new = sfnetwork_(
-    nodes = st_as_sf(x_tmp, "nodes"),
+    nodes = nodes_as_sf(x_tmp),
     edges = st_as_sf(edges),
     directed = is_directed(x)
   )
@@ -326,15 +327,17 @@ to_spatial_simple = function(x, keep = "shortest", ...) {
 #' edge_attr_names incident is_directed neighbors
 #' @importFrom sf st_equals st_geometry st_reverse
 #' @importFrom tibble as_tibble
-#' @importFrom tidygraph as_tbl_graph filter
+#' @importFrom tidygraph as_tbl_graph filter mutate
 #' @export
 to_spatial_smooth = function(x, require_equal_attrs = FALSE) {
-  # Extract edges and geometries of nodes from x.
-  edges = as_tibble(x, "edges")
-  nodes = st_geometry(x, "nodes")
   # Check if edges are spatially explicit and if network is directed.
-  spatial = has_sfc(edges)
+  spatial = has_spatially_explicit_edges(x)
   directed = is_directed(x)
+  # Extract edges and geometries of nodes from x.
+  edges = if (spatial) edges_as_sf(x) else as_tibble(as_tbl_graph(x), "edges")
+  nodes = node_geom(x)
+  # Extract geometry column name from edges.
+  edge_geom_colname = attr(edges, "sf_column")
   # Find pseudo nodes in x.
   if (directed) {
     # A node is a pseudo node if its in degree is 1 and its out degree is 1.
@@ -447,7 +450,7 @@ to_spatial_smooth = function(x, require_equal_attrs = FALSE) {
   edge_attr(x_new, ".tidygraph_edge_index") = I
   edge_attr(x_new, ".orig_data") = lapply(I, function(i) edges[i, , drop = F])
   # --> Add updated edge geometries.
-  if (spatial) x_new = mutate_edge_geom(x_new, L)
+  if (spatial) x_new = mutate(activate(x_new, "edges"), !!edge_geom_colname := L)
   # --> Remove pseudo nodes all at once.
   x_new = filter(activate(x_new, "nodes"), !pseudo)
   # Return in a list.

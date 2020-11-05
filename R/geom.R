@@ -105,14 +105,13 @@ mutate_node_geom = function(x, y) {
   if (is.character(y)) {
     # Set another column to be the new geometry column.
     stopifnot(is.sfc(vertex_attr(x, y)))
-    x_new = x
-    node_geom_colname(x_new) = y
+    node_geom_colname(x) = y
   } else {
     # Replace the geometries of the current geometry column with new values.
     geom_col = node_geom_colname(x)
-    x_new = mutate(activate(x, "nodes"), !!geom_col := y)
+    x = mutate(activate(x, "nodes"), !!geom_col := y) %preserve_active% x
   }
-  x_new %preserve_active% x
+  x
 }
 
 #' @importFrom igraph edge_attr edge_attr_names
@@ -122,8 +121,7 @@ mutate_edge_geom = function(x, y) {
   if (is.character(y)) {
     # Set another column to be the new geometry column.
     stopifnot(is.sfc(edge_attr(x, y)))
-    x_new = x
-    edge_geom_colname(x_new) = y
+    edge_geom_colname(x) = y
   } else {
     # Replace the geometries in the current geometry column with y.
     geom_col = edge_geom_colname(x)
@@ -139,10 +137,10 @@ mutate_edge_geom = function(x, y) {
       }
     }
     # Replace.
-    x_new = mutate(activate(x, "edges"), !!geom_col := y)
-    edge_geom_colname(x_new) = geom_col
+    x = mutate(activate(x, "edges"), !!geom_col := y) %preserve_active% x
+    edge_geom_colname(x) = geom_col
   }
-  x_new %preserve_active% x
+  x
 }
 
 #' Drop the geometry column of the active element of a sfnetwork

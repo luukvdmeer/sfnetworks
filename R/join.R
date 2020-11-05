@@ -44,7 +44,6 @@ st_network_join = function(x, y, blend_nodes = FALSE,
   UseMethod("st_network_join")
 }
 
-#' @importFrom sf st_geometry
 #' @importFrom tidygraph as_tbl_graph graph_join
 #' @export
 st_network_join.sfnetwork = function(x, y, blend_nodes = FALSE, 
@@ -59,14 +58,14 @@ st_network_join.sfnetwork = function(x, y, blend_nodes = FALSE,
     if (will_assume_planar(x)) raise_assume_planar("st_blend")
     raise_assume_constant("st_blend")
     if (blend_nodes) {
-      x_nodes = st_geometry(x, "nodes")
-      y_nodes = st_geometry(y, "nodes")
+      x_nodes = node_geom(x)
+      y_nodes = node_geom(y)
       x = suppressWarnings(blend_(x, y_nodes, tolerance = 0, sort = sort))
       y = suppressWarnings(blend_(y, x_nodes, tolerance = 0, sort = sort))
     }
     if (blend_crossings) {
-      x_edges = st_geometry(x, "edges")
-      y_edges = st_geometry(y, "edges")
+      x_edges = edge_geom(x)
+      y_edges = edge_geom(y)
       crossings = linestring_crossings(x_edges, y_edges)
       x = suppressWarnings(blend_(x, crossings, tolerance = 0, sort = sort))
       y = suppressWarnings(blend_(y, crossings, tolerance = 0, sort = sort))
@@ -81,6 +80,5 @@ st_network_join.sfnetwork = function(x, y, blend_nodes = FALSE,
   )
   # Convert back to sfnetwork.
   g_sfn = tbg_to_sfn(g_tbg)
-  if (has_duplicates(st_geometry(g_sfn, "nodes"))) raise_multiple_matches()
   g_sfn %preserve_active% x
 }

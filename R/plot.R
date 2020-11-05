@@ -37,7 +37,7 @@
 plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
   dots = list(...)
   # Get geometries of nodes.
-  nsf = st_geometry(x, "nodes")
+  nsf = node_geom(x)
   # Combine node geometries with edge geometries if needed.
   use_edges = TRUE
   if (! has_spatially_explicit_edges(x)) {
@@ -47,7 +47,7 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
       use_edges = FALSE
     }
   }
-  dots$x = if (use_edges) c(nsf, st_geometry(x, "edges")) else nsf
+  dots$x = if (use_edges) c(nsf, edge_geom(x)) else nsf
   # Use pch of 20 by default.
   pch_missing = is.null(dots$pch)
   dots$pch = if (pch_missing) 20 else dots$pch

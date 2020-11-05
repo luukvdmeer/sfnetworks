@@ -42,15 +42,6 @@ morph.sfnetwork = function(.data, ...) {
   morphed_data
 }
 
-morphed_tbg_to_morphed_sfn = function(x) {
-  structure(
-    lapply(x, tbg_to_sfn),
-    class = c("morphed_sfnetwork", class(x)),
-    .orig_graph = attr(x, ".orig_graph"),
-    .morpher = attr(x, ".morpher")
-  )
-}
-
 #' @importFrom igraph delete_edge_attr delete_vertex_attr edge_attr vertex_attr
 #' edge_attr_names vertex_attr_names
 #' @importFrom tidygraph unmorph

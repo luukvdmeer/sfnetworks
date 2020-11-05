@@ -216,7 +216,7 @@ set_path_endpoints = function(x, p, name) {
         )
       }
     }
-    return (st_nearest_node(p[!missing], x, geometries = FALSE))
+    return (st_nearest_feature(p[!missing], nodes_as_sf(x)))
   } 
   # Case 2: input is numeric node indices.
   if (is.numeric(p)) {

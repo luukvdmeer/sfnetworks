@@ -76,7 +76,6 @@ edges_as_sf = function(x, ...) {
 
 #' @name sf
 #' @importFrom sf st_geometry
-#' @importFrom igraph edge_attr vertex_attr
 #' @export
 st_geometry.sfnetwork = function(x, active = NULL, ...) {
   if (is.null(active)) {
@@ -85,8 +84,8 @@ st_geometry.sfnetwork = function(x, active = NULL, ...) {
   if (active == "edges") expect_spatially_explicit_edges(x)
   x_geom = switch(
     active,
-    nodes = vertex_attr(x, node_geom_colname(x)),
-    edges = edge_attr(x, edge_geom_colname(x)),
+    nodes = node_geom(x),
+    edges = edge_geom(x),
     raise_unknown_input(active)
   )
   if (! is.sfc(x_geom)) {
@@ -97,6 +96,16 @@ st_geometry.sfnetwork = function(x, active = NULL, ...) {
     )
   }
   x_geom
+}
+
+#' @importFrom igraph vertex_attr
+node_geom = function(x) {
+  vertex_attr(x, node_geom_colname(x))
+}
+
+#' @importFrom igraph edge_attr
+edge_geom = function(x) {
+  edge_attr(x, edge_geom_colname(x))
 }
 
 #' @name sf
@@ -141,22 +150,22 @@ st_is.sfnetwork = function(x, ...) {
 # =============================================================================
 
 #' @name sf
-#' @importFrom sf st_crs st_geometry
+#' @importFrom sf st_crs
 #' @export
 st_crs.sfnetwork = function(x, ...) {
-  st_crs(st_geometry(x, "nodes"), ...)
+  st_crs(node_geom(x), ...)
 }
 
 #' @name sf
-#' @importFrom sf st_crs<- st_crs st_geometry
+#' @importFrom sf st_crs<- st_crs
 #' @export
 `st_crs<-.sfnetwork` = function(x, value) {
   if (has_spatially_explicit_edges(x)) {
-    geom = st_geometry(x, "edges")
+    geom = edge_geom(x)
     st_crs(geom) = value
     x = mutate_edge_geom(x, geom)
   }
-  geom = st_geometry(x, "nodes")
+  geom = node_geom(x)
   st_crs(geom) = value
   mutate_node_geom(x, geom)
 }
@@ -209,14 +218,13 @@ st_z_range.sfnetwork = function(x, ...) {
   st_z_range(st_geometry(x))
 }
 
-#' @importFrom sf st_geometry
 change_coords = function(x, op, ...) {
   if (has_spatially_explicit_edges(x)) {
-    geom = st_geometry(x, "edges")
+    geom = edge_geom(x)
     new_geom = do.call(match.fun(op), list(geom, ...))
     x = mutate_edge_geom(x, new_geom)
   }
-  geom = st_geometry(x, "nodes")
+  geom = node_geom(x)
   new_geom = do.call(match.fun(op), list(geom, ...))
   mutate_node_geom(x, new_geom)
 }
@@ -345,11 +353,9 @@ st_join.sfnetwork = function(x, y, ...) {
 
 #' @importFrom igraph is_directed
 #' @importFrom sf st_as_sf st_join
-#' @importFrom tibble as_tibble
-#' @importFrom tidygraph slice
 join_nodes = function(x, y,  ...) {
   # Convert x and y to sf.
-  x_sf = st_as_sf(x)
+  x_sf = nodes_as_sf(x)
   y_sf = st_as_sf(y)
   # Add .sfnetwork_index column to keep track of original network indices.
   if (".sfnetwork_index" %in% c(names(x_sf), names(y_sf))) {
@@ -370,29 +376,26 @@ join_nodes = function(x, y,  ...) {
   args = list(...)
   if (!is.null(args$left) && args$left) {
     keep_ind = n_new$.sfnetwork_index
-    x = slice(x, keep_ind)
+    x = slice(activate(x, "nodes"), keep_ind)
   }
   # Create a new network with the updated data.
   n_new$.sfnetwork_index = NULL
-  sfnetwork(
-    nodes = n_new,
-    edges = as_tibble(x, "edges"), 
-    directed = is_directed(x), 
-    force = TRUE
-  )
+  x_new = sfnetwork_(n_new, edges_as_table(x), directed = is_directed(x))
+  x_new %preserve_active% x
 }
 
 #' @importFrom igraph is_directed
 #' @importFrom sf st_as_sf st_join
 join_edges = function(x, y, ...) {
   expect_spatially_explicit_edges(x)
-  e_new = st_join(st_as_sf(x), st_as_sf(y), ...)
-  sfnetwork(
-    nodes = st_as_sf(x, "nodes"),
-    edges = e_new, 
-    directed = is_directed(x), 
-    force = TRUE
-  )
+  # Convert x and y to sf.
+  x_sf = edges_as_sf(x)
+  y_sf = st_as_sf(y)
+  # Join with st_join.
+  e_new = st_join(x_sf, y_sf, ...)
+  # Create a new network with the updated data.
+  x_new = sfnetwork_(nodes_as_sf(x), e_new, directed = is_directed(x))
+  x_new %preserve_active% x
 }
 
 #' @name sf

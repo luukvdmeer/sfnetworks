@@ -94,7 +94,7 @@ require_valid_network_structure = function(x, message = FALSE) {
 
 #' @importFrom sf st_as_sf
 validate_nodes = function(x) {
-  nodes = st_as_sf(x, "nodes")
+  nodes = nodes_as_sf(x)
   # --> Are all node geometries points?
   if (! has_single_geom_type(nodes, "POINT")) {
     stop(
@@ -107,8 +107,8 @@ validate_nodes = function(x) {
 #' @importFrom igraph is_directed
 #' @importFrom sf st_as_sf
 validate_edges = function(x) {
-  nodes = st_as_sf(x, "nodes")
-  edges = st_as_sf(x, "edges")
+  nodes = nodes_as_sf(x)
+  edges = edges_as_sf(x)
   # --> Are all edge geometries linestrings?
   if (! has_single_geom_type(edges, "LINESTRING")) {
     stop(

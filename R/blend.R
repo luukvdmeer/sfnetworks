@@ -94,8 +94,8 @@ st_blend.sfnetwork = function(x, y, tolerance = Inf, sort = FALSE) {
 
 #' @importFrom dplyr sym
 #' @importFrom rlang !! :=
-#' @importFrom sf st_as_sf st_distance st_equals st_geometry st_intersection
-#' st_intersects st_is_within_distance st_join st_nearest_feature
+#' @importFrom sf st_distance st_equals st_geometry st_intersection
+#' st_intersects st_is_within_distance st_nearest_feature
 #' st_nearest_points st_set_crs
 #' @importFrom tidygraph arrange mutate
 #' @importFrom units set_units
@@ -117,13 +117,14 @@ blend_ = function(x, y, tolerance, sort) {
     # LOCATE FEATURES
     # ===============
     # Extract edges.
-    edges = st_as_sf(x, "edges")
-    # Extract geometries of the edges and of y.
-    xgeom = st_geometry(edges)
-    ygeom = st_geometry(y)
+    edges = edges_as_sf(x, "edges")
+    # Extract the set of linestring geometries from the edges.
+    # Extract the set of point geometries from y.
+    L = st_geometry(edges)
+    P = st_geometry(y)
     # Find indices of features in y that are located:
     # --> *on* an edge in x.
-    intersects = suppressMessages(st_intersects(ygeom, xgeom))
+    intersects = suppressMessages(st_intersects(P, L))
     on = lengths(intersects) > 0
     # Find indices of features in y that are located:
     # --> *close* to an edge in x.
@@ -143,7 +144,7 @@ blend_ = function(x, y, tolerance, sort) {
       # If a non-infinite tolerance was set:
       # --> Features are 'close' if within tolerance distance from an edge.
       # --> But not on an edge.
-      within_tolerance = st_is_within_distance(ygeom[!on], xgeom, tolerance)
+      within_tolerance = st_is_within_distance(P[!on], L, tolerance)
       close = !on # First assume all features that are not 'on' are 'close'.
       close[close] = lengths(within_tolerance) > 0 # Update.
     }
@@ -165,17 +166,17 @@ blend_ = function(x, y, tolerance, sort) {
     # For each feature p in y that is on an edge in x:
     # --> Split the edges in x by p.
     if (any(on)) {
-      edges = split_lines(edges, ygeom[on])
+      edges = split_lines(edges, P[on])
     }
-    # For each feature p in y that is close to an edge in x:
+    # For each point p in P that is close to an edge l in L:
     # --> Find the nearest edge q to p.
     # --> Draw a line r that forms the shortest connection between p and q.
     # --> Make sure r intersects with q.
     # --> Split the edges in x by r.
     if (any(close)) {
-      Q = xgeom[suppressMessages(st_nearest_feature(ygeom[close], xgeom))]
+      Q = L[suppressMessages(st_nearest_feature(P[close], L))]
       connect = function(i) {
-        p = ygeom[close][i]
+        p = P[close][i]
         q = Q[i]
         r = suppressMessages(st_nearest_points(p, q))
         # If r does not intersect with q:
@@ -206,19 +207,19 @@ blend_ = function(x, y, tolerance, sort) {
     # --> Nodes of x had attributes (these got lost when constructing x_new).
     if (sort) {
       # Add index column to nodes of x to keep track of original node indices.
-      orig_nodes = st_as_sf(x, "nodes")
+      nodes = nodes_as_sf(x)
       idx_col = ".sfnetwork_node_index"
-      if (idx_col %in% names(orig_nodes)) raise_reserved_attr(idx_col)
-      orig_nodes[, idx_col] = seq_len(nrow(orig_nodes))
+      if (idx_col %in% names(nodes)) raise_reserved_attr(idx_col)
+      nodes[, idx_col] = seq_len(nrow(nodes))
       # Join original nodes spatially with the new network.
-      x_new = st_join(x_new, orig_nodes, join = st_equals)
+      x_new = join_nodes(x_new, nodes, join = st_equals)
       # Sort based on original node index.
       x_new = arrange(x_new, !!sym(idx_col))
       # Remove the node index column.
       x_new = mutate(x_new, !!idx_col := NULL)
     } else if (length(node_spatial_attribute_names(x)) > 0) {
       # Join original nodes spatially with the new network.
-      x_new = st_join(x_new, st_as_sf(x, "nodes"), join = st_equals)
+      x_new = join_nodes(x_new, nodes_as_sf(x), join = st_equals)
     }
     # Spatial left join between nodes of x_new and point features of y.
     # This is needed when:
@@ -226,19 +227,19 @@ blend_ = function(x, y, tolerance, sort) {
     if (is.sf(y) && ncol(y) > 1) {
       # Update geometries of features in y that were snapped to an edge in x.
       if (any(close)) {
-        ygeom[close] = do.call(
+        P[close] = do.call(
           "c",
           lapply(
             seq_along(conns),
             function(i) suppressMessages(st_intersection(conns[i], Q[i]))
           )
         )
-        st_geometry(y) = ygeom
+        st_geometry(y) = P
       }
       # Keep only those features in y that were blended.
       y = y[on | close, ]
       # Join spatially with the new network.
-      x_new = st_join(x_new, y, join = sf::st_equals)
+      x_new = join_nodes(x_new, y, join = sf::st_equals)
     }
     x_new %preserve_active% x
 }

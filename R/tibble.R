@@ -33,8 +33,8 @@ as_tibble.sfnetwork = function(x, active = NULL, spatial = TRUE, ...) {
   if (spatial) {
     switch(
       active,
-      nodes = node_spatial_tibble(x),
-      edges = edge_spatial_tibble(x),
+      nodes = nodes_as_sf(x),
+      edges = edges_as_table(x),
       raise_unknown_input(active)
     )
   } else {
@@ -47,17 +47,11 @@ as_tibble.sfnetwork = function(x, active = NULL, spatial = TRUE, ...) {
   }
 }
 
-#' @importFrom sf st_as_sf
-node_spatial_tibble = function(x) {
-  st_as_sf(x, "nodes")
-}
-
-#' @importFrom sf st_as_sf
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph
-edge_spatial_tibble = function(x) {
+edges_as_table = function(x) {
   if (has_spatially_explicit_edges(x)) {
-    st_as_sf(x, "edges") 
+    edges_as_sf(x)
   } else {
     as_tibble(as_tbl_graph(x), "edges")
   }

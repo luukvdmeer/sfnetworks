@@ -62,10 +62,10 @@ edge_straight_length = function() {
   straight_line_distance(x)
 }
 
-#' @importFrom sf st_as_sf st_distance
+#' @importFrom sf st_distance
 straight_line_distance = function(x) {
   # Extract the nodes from the network.
-  nodes = st_as_sf(x, "nodes")
+  nodes = nodes_as_sf(x)
   # Get the indices of the boundary nodes of each edge.
   # Returns a matrix with source ids in column 1 and target ids in column 2.
   ids = edge_boundary_node_indices(x)
