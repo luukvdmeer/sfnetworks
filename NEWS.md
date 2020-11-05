@@ -24,7 +24,7 @@
   - The `to_spatial_simple` morpher now correctly handles parallel edges of the same length. Fixes [#75](https://github.com/luukvdmeer/sfnetworks/issues/75)
   - The shortest path functions now correctly handle empty geometries. Refs [#87](https://github.com/luukvdmeer/sfnetworks/issues/87)
 * Documentation improvements:
-  - Examples are added to the function documentations. Refs [#45]((https://github.com/luukvdmeer/sfnetworks/issues/45))
+  - Examples are added to the function documentations. Refs [#45](https://github.com/luukvdmeer/sfnetworks/issues/45)
 * The internal code base is completely restructured, such that it is more performant and easier to read, debug and extend.
 
 # sfnetworks v0.3.1 
