@@ -140,7 +140,7 @@ st_shortest_paths(net, p1, p2) %>% pull(node_paths) %>% unlist()
 
 We now showed 1-to-1 shortest paths. You can also calculate 1-to-many shortest paths, by giving a multiple feature `sf` or `sfc` object as `to` argument. Having multiple features as `from` argument is not possible in this case (since `igraph` does not support it).
 
-Having multiple features as `from` argument ìs possible in `st_network_distance()`, which is a wrapper around `igraph::distances`. This returns a distance matrix.
+Having multiple features as `from` argument ìs possible in `st_cost()`, which is a wrapper around `igraph::distances`. This returns a cost matrix.
 
 ```{r}
 ps1 = c(st_geometry(p1), st_sfc(p3))
@@ -152,7 +152,7 @@ ps2 = c(st_geometry(p2), st_sfc(p4))
 ps2
 
 # Note that our net object now has a weight column which will be automatically used.
-st_network_distance(net, ps1, ps2)
+st_cost(net, ps1, ps2)
 ```
 
 Finally, there is also `st_all_shortest_paths()`, which is a wrapper around `igraph::all_shortest_paths`. It works the same as `st_shortest_paths()`, but in case there are multiple shortest paths from A to B, it will return all of them, instead of only one.
