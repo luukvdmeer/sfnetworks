@@ -12,6 +12,7 @@
   - The `to_spatial_explicit_edges` morpher now accepts arguments that are forwarded directly to `st_as_sf`. Refs [#83](https://github.com/luukvdmeer/sfnetworks/issues/83)
   - Functions that split edges now give a warning that attributes are assumed to be constant. Refs [#84](https://github.com/luukvdmeer/sfnetworks/issues/84)
   - The `edge_length` function can now also be applied to spatially implicit edges.
+  - The sfnetwork methods for `st_as_sf`, `st_geometry` and `st_agr` now have an argument 'active' to directly retrieve information from a network element without activating it. Use as `st_as_sf(x, active = "nodes")`, et cetera.
 * New functions:
     - The new function `st_blend` implements a process that we called 'blending points into a network'. The functions accepts a network and a set of points. For each point p in the set of given points, it finds the projection p\* of p on the network, splits the edges of the network at the location of p\*, and finally adds p\* along with the attributes of p as a node to the network. Refs [#27](https://github.com/luukvdmeer/sfnetworks/issues/27) and [#54](https://github.com/luukvdmeer/sfnetworks/issues/27)
     - The new function `st_network_join` does a network specific join of two sfnetworks. It combines a spatial full join on the nodes data with a bind_rows operation on the edges data, and updates the from and to indices of the edges accordingly. Refs [#22](https://github.com/luukvdmeer/sfnetworks/issues/22)
