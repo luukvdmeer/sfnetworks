@@ -18,6 +18,7 @@
     - The new spatial morpher `to_spatial_smooth` iteratively removes pseudo-nodes from the network. Refs [#70](https://github.com/luukvdmeer/sfnetworks/issues/70)
     - Several spatial predicates are implemented as node and edge query functions, to interpretate spatial relations between network elements and other geospatial features directly inside tidy filter and mutate calls. Refs [#60](https://github.com/luukvdmeer/sfnetworks/issues/60)
     - There is now an `autoplot` method for sfnetworks, allowing to easily plot a sfnetwork as a `ggplot2` object. Refs [#86](https://github.com/luukvdmeer/sfnetworks/issues/86)
+    - There is now a `print` method for morphed sfnetworks. Refs [#88](https://github.com/luukvdmeer/sfnetworks/issues/88)
 * Bug fixes:
   - Networks can now be constructed by only providing nodes, and no edges. Refs [#81](https://github.com/luukvdmeer/sfnetworks/issues/81)
   - The print method for sfnetwork objects now correctly handles networks without edges as well as completely empty networks. Fixes [#69](https://github.com/luukvdmeer/sfnetworks/issues/69) and [#89](https://github.com/luukvdmeer/sfnetworks/issues/89)
