@@ -38,10 +38,10 @@ NULL
 #' library(sf)
 #' library(tidygraph)
 #'
-#' net = as_sfnetwork(roxel, directed = FALSE) %>% 
-#'   st_transform(3035) 
+#' net = as_sfnetwork(roxel, directed = FALSE) %>%
+#'   st_transform(3035)
 #'
-#' ## to_spatial_coordinates 
+#' ## to_spatial_coordinates
 #' convert(net, to_spatial_coordinates)
 #'
 #' @importFrom rlang !!!
@@ -62,12 +62,12 @@ to_spatial_coordinates = function(x) {
   )
 }
 
-#' @describeIn spatial_morphers Construct a subdivision of the network by 
+#' @describeIn spatial_morphers Construct a subdivision of the network by
 #' subdividing all edges at those points that are included in their linestring
-#' geometry feature but are not endpoints of it. The network is reconstructed 
-#' afterwards such that edges which did share points in their geometries but 
-#' not endpoints are now connected as well. Returns a \code{morphed_sfnetwork} 
-#' containing a single element of class \code{\link{sfnetwork}}. This morpher 
+#' geometry feature but are not endpoints of it. The network is reconstructed
+#' afterwards such that edges which did share points in their geometries but
+#' not endpoints are now connected as well. Returns a \code{morphed_sfnetwork}
+#' containing a single element of class \code{\link{sfnetwork}}. This morpher
 #' requires edges to be spatially explicit.
 #'
 #' @examples
@@ -84,7 +84,7 @@ to_spatial_coordinates = function(x) {
 #' @export
 to_spatial_subdivision = function(x) {
   require_spatially_explicit_edges(x)
-  raise_assume_constant("to_spatial_dense")
+  raise_assume_constant("to_spatial_subdivision")
   # Retrieve the edges from the network, without the to and from columns.
   edges = edges_as_sf(x)
   edges[, c("from", "to")] = NULL
@@ -208,7 +208,7 @@ to_spatial_implicit_edges = function(x) {
 #' # Plot shortest path.
 #' par(mar = c(1, 1, 1, 1), mfrow = c(1,1))
 #' plot(net)
-#' net %>% 
+#' net %>%
 #'   convert(to_spatial_shortest_paths, 171, 190) %>%
 #'   plot(col = "red", add = TRUE)
 #' # Calculate lengths of multiple shortest paths.
@@ -299,12 +299,12 @@ to_spatial_simple = function(x, keep = "shortest", ...) {
 }
 
 #' @describeIn spatial_morphers Construct a smoothed version of the network by
-#' iteratively removing pseudo nodes, while preserving the connectivity of the 
-#' network. In the case of directed networks, pseudo nodes are those nodes that 
-#' have only one incoming and one outgoing edge. In undirected networks, pseudo 
-#' nodes are those nodes that have two incident edges. Connectivity of the 
-#' network is preserved by concatenating the incident edges of each removed 
-#' pseudo node. Returns a \code{morphed_sfnetwork} containing a single element 
+#' iteratively removing pseudo nodes, while preserving the connectivity of the
+#' network. In the case of directed networks, pseudo nodes are those nodes that
+#' have only one incoming and one outgoing edge. In undirected networks, pseudo
+#' nodes are those nodes that have two incident edges. Connectivity of the
+#' network is preserved by concatenating the incident edges of each removed
+#' pseudo node. Returns a \code{morphed_sfnetwork} containing a single element
 #' of class \code{\link{sfnetwork}}.
 #'
 #' @param require_equal_attrs Should pseudo nodes only be removed when all

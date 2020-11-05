@@ -77,12 +77,12 @@ list column. If edges are spatially explicit, the edge geometries are
 dropped. Returns a \code{morphed_tbl_graph} containing a single element of
 class \code{\link[tidygraph]{tbl_graph}}.
 
-\item \code{to_spatial_subdivision}: Construct a subdivision of the network by 
+\item \code{to_spatial_subdivision}: Construct a subdivision of the network by
 subdividing all edges at those points that are included in their linestring
-geometry feature but are not endpoints of it. The network is reconstructed 
-afterwards such that edges which did share points in their geometries but 
-not endpoints are now connected as well. Returns a \code{morphed_sfnetwork} 
-containing a single element of class \code{\link{sfnetwork}}. This morpher 
+geometry feature but are not endpoints of it. The network is reconstructed
+afterwards such that edges which did share points in their geometries but
+not endpoints are now connected as well. Returns a \code{morphed_sfnetwork}
+containing a single element of class \code{\link{sfnetwork}}. This morpher
 requires edges to be spatially explicit.
 
 \item \code{to_spatial_directed}: Make a network directed in the direction given
@@ -125,12 +125,12 @@ of the shortest or the longest of the parallel edges. Returns a
 explicit. If not, use \code{\link[tidygraph]{to_simple}}.
 
 \item \code{to_spatial_smooth}: Construct a smoothed version of the network by
-iteratively removing pseudo nodes, while preserving the connectivity of the 
-network. In the case of directed networks, pseudo nodes are those nodes that 
-have only one incoming and one outgoing edge. In undirected networks, pseudo 
-nodes are those nodes that have two incident edges. Connectivity of the 
-network is preserved by concatenating the incident edges of each removed 
-pseudo node. Returns a \code{morphed_sfnetwork} containing a single element 
+iteratively removing pseudo nodes, while preserving the connectivity of the
+network. In the case of directed networks, pseudo nodes are those nodes that
+have only one incoming and one outgoing edge. In undirected networks, pseudo
+nodes are those nodes that have two incident edges. Connectivity of the
+network is preserved by concatenating the incident edges of each removed
+pseudo node. Returns a \code{morphed_sfnetwork} containing a single element
 of class \code{\link{sfnetwork}}.
 
 \item \code{to_spatial_subset}: Subset the network by applying a spatial
@@ -145,10 +145,10 @@ Returns a \code{morphed_sfnetwork} containing a single element of class
 library(sf)
 library(tidygraph)
 
-net = as_sfnetwork(roxel, directed = FALSE) \%>\% 
-  st_transform(3035) 
+net = as_sfnetwork(roxel, directed = FALSE) \%>\%
+  st_transform(3035)
 
-## to_spatial_coordinates 
+## to_spatial_coordinates
 convert(net, to_spatial_coordinates)
 
 ## to_spatial_subdivision
@@ -180,7 +180,7 @@ net \%>\%
 # Plot shortest path.
 par(mar = c(1, 1, 1, 1), mfrow = c(1,1))
 plot(net)
-net \%>\% 
+net \%>\%
   convert(to_spatial_shortest_paths, 171, 190) \%>\%
   plot(col = "red", add = TRUE)
 # Calculate lengths of multiple shortest paths.

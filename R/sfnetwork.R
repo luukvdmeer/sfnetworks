@@ -339,7 +339,7 @@ print.sfnetwork = function(x, ...) {
   cat_subtle("#\n")
   cat_subtle(c("# CRS: ", st_crs(x)$input, "\n"))
   cat_subtle("#\n")
-  cat_subtle("#", tidygraph:::describe_graph(as_tbl_graph(x)))
+  cat_subtle("#", describe_graph(as_tbl_graph(x)))
   if (has_spatially_explicit_edges(x)) {
     cat_subtle(" with spatially explicit edges\n")
   } else {
@@ -405,7 +405,7 @@ print.morphed_sfnetwork = function(x, ...) {
   cat_subtle(out[[2]], "\n")
   cat_subtle(out[[3]], "\n")
   cat_subtle(out[[4]], "\n")
-  cat_subtle("# with CRS", st_crs(attr(x, ".orig_graph"))$input)
+  cat_subtle("# with CRS", st_crs(attr(x, ".orig_graph"))$input, "\n")
 }
 
 #' Check if an object is an sfnetwork

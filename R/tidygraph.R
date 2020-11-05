@@ -80,3 +80,57 @@ unmorph.morphed_sfnetwork = function(.data, ...) {
   }
   NextMethod(.data, ...)
 }
+
+#' Describe graph function for print method
+#' From: https://github.com/thomasp85/tidygraph/blob/master/R/tbl_graph.R
+#' November 5, 2020
+#'
+#' @importFrom igraph is_simple is_directed is_bipartite is_connected is_dag gorder
+#' @noRd
+describe_graph = function(x) {
+  if (gorder(x) == 0) return('An empty graph')
+  prop = list(
+    simple = is_simple(x),
+    directed = is_directed(x),
+    bipartite = is_bipartite(x),
+    connected = is_connected(x),
+    tree = is_tree(x),
+    forest = is_forest(x),
+    DAG = is_dag(x))
+  desc = c()
+  if (prop$tree || prop$forest) {
+    desc[1] = if (prop$directed) 'A rooted'
+              else 'An unrooted'
+    desc[2] = if (prop$tree) 'tree'
+              else paste0(
+                'forest with ',
+                count_components(x),
+                ' trees'
+              )
+  } else {
+    desc[1] = if (prop$DAG) 'A directed acyclic'
+              else if (prop$bipartite) 'A bipartite'
+              else if (prop$directed) 'A directed'
+              else 'An undirected'
+    desc[2] = if (prop$simple) 'simple graph'
+              else 'multigraph'
+    n_comp = count_components(x)
+    desc[3] = paste0(
+      'with ' , n_comp, ' component',
+      if (n_comp > 1) 's' else ''
+    )
+  }
+  paste(desc, collapse = ' ')
+}
+#' @importFrom igraph is_connected is_simple gorder gsize is_directed
+is_tree = function(x) {
+  is_connected(x) &&
+    is_simple(x) &&
+    (gorder(x) - gsize(x) == 1)
+}
+#' @importFrom igraph is_connected is_simple gorder gsize count_components is_directed
+is_forest = function(x) {
+  !is_connected(x) &&
+    is_simple(x) &&
+    (gorder(x) - gsize(x) - count_components(x) == 0)
+}
