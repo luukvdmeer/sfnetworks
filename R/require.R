@@ -127,7 +127,7 @@ validate_edges = function(x) {
   if (is_directed(x)) {
     # Start point should match start node.
     # End point should match end node.
-    if (! nodes_match_edge_boundaries(x)) {
+    if (! all(nodes_match_edge_boundaries(x))) {
       stop(
         "Edge boundaries do not match their corresponding nodes", 
         call. = FALSE
@@ -136,7 +136,7 @@ validate_edges = function(x) {
   } else {
     # Start point should match either start or end node.
     # End point should match either start or end node.
-    if (! nodes_in_edge_boundaries(x)) {
+    if (! all(nodes_in_edge_boundaries(x))) {
       stop(
         "Edge boundaries do not match their corresponding nodes", 
         call. = FALSE

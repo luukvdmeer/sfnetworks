@@ -159,13 +159,8 @@ nodes_in_edge_boundaries = function(x) {
   boundary_nodes = edge_boundary_nodes(x)
   # Test for each edge :
   # Does one of the boundary points equals at least one of the boundary nodes.
-  mat = st_equals(boundary_points, boundary_nodes, sparse = FALSE)
-  all(
-    sapply(
-      seq(1, nrow(mat), by = 2),
-      function(x) sum(mat[x:(x + 1), x:(x + 1)]) > 1
-    )
-  )
+  M = st_equals(boundary_points, boundary_nodes, sparse = FALSE)
+  sapply(seq(1, nrow(M), by = 2), function(x) sum(M[x:(x + 1), x:(x + 1)]) > 1)
 }
 
 #' Check if edge boundary points are equal to their corresponding nodes
@@ -177,7 +172,7 @@ nodes_match_edge_boundaries = function(x) {
   boundary_points = edge_boundary_points(x)
   boundary_nodes = edge_boundary_nodes(x)
   # Test if the boundary geometries are equal to their corresponding nodes.
-  all(have_equal_geometries(boundary_points, boundary_nodes))
+  have_equal_geometries(boundary_points, boundary_nodes)
 }
 
 #' Check if sf will assume planar coordinates for some operations on an object
