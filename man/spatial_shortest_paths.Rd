@@ -4,7 +4,6 @@
 \alias{spatial_shortest_paths}
 \alias{st_shortest_paths}
 \alias{st_all_shortest_paths}
-\alias{st_network_distance}
 \title{Shortest paths between points in geographical space}
 \usage{
 st_shortest_paths(
@@ -17,14 +16,6 @@ st_shortest_paths(
 )
 
 st_all_shortest_paths(x, from, to = igraph::V(x), weights = NULL)
-
-st_network_distance(
-  x,
-  from = igraph::V(x),
-  to = igraph::V(x),
-  weights = NULL,
-  ...
-)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
@@ -34,10 +25,7 @@ calculated. Can be an object an object of class \code{\link[sf]{sf}} or
 \code{\link[sf]{sfc}}, containing a single feature. When multiple features
 are given, only the first one is taken. Empty geometries are ignored.
 Alternatively, it can be a numeric constant, referring to the index of the
-node from which the shortest paths will be calculated. Only in the case of
-\code{st_network_distances} the restriction of a single feature does not
-apply. Then, it can also be an \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
-object with multiple features, or alternatively a vector of node indices.}
+node from which the shortest paths will be calculated.}
 
 \item{to}{The (set of) geospatial point(s) to which the shortest paths will be
 calculated. Can be an object of  class \code{\link[sf]{sf}} or
@@ -64,15 +52,11 @@ returned. Defaults to \code{'both'}.}
 \code{predecessors} and \code{inbound.edges} are ignored.}
 }
 \value{
-For \code{st_shortest_paths} and \code{st_all_shortest_paths}, an 
-object of class \code{\link[tibble]{tbl_df}} with one row per returned 
-path. Depending on the setting of the 'output' argument, columns can
-be \code{node_paths} (a list column with for each path the ordered indices 
-of nodes present in that path) and \code{edge_paths} (a list column with 
-for each path the ordered indices of edges present in that path). 
-
-For \code{st_network_distance}, an nxm matrix where n is the length of the 
-'from' argument, and m is the length of the 'to' argument.
+An object of class \code{\link[tibble]{tbl_df}} with one row per 
+returned path. Depending on the setting of the 'output' argument, columns 
+can be \code{node_paths} (a list column with for each path the ordered 
+indices of nodes present in that path) and \code{edge_paths} (a list column 
+with for each path the ordered indices of edges present in that path).
 }
 \description{
 Wrappers around the shortest path calculation functionalities in
@@ -92,8 +76,6 @@ See the \code{\link[igraph:shortest_paths]{igraph}} documentation.
 
 \item \code{st_all_shortest_paths}: Wrapper around
 \code{igraph::all_shortest_paths}.
-
-\item \code{st_network_distance}: Wrapper around \code{igraph::distances}.
 }}
 
 \examples{
@@ -137,10 +119,7 @@ net \%>\%
 
 st_all_shortest_paths(net, 5, 1)
 
-# 8. Compute a distance matrix with network distances
-
-pts1 = c(p1, p3)
-pts2 = c(p2, p4)
-st_network_distance(net, pts1, pts2)
-
+}
+\seealso{
+\code{\link{st_shortest_paths}}
 }

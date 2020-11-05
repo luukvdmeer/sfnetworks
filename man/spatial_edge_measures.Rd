@@ -4,14 +4,14 @@
 \alias{spatial_edge_measures}
 \alias{edge_circuity}
 \alias{edge_length}
-\alias{edge_straight_length}
+\alias{edge_displacement}
 \title{Query spatial edge measures}
 \usage{
 edge_circuity()
 
 edge_length()
 
-edge_straight_length()
+edge_displacement()
 }
 \value{
 A numeric vector of the same length as the number of edges in the
@@ -42,7 +42,7 @@ nodes, as described in
 \item \code{edge_length}: The length of an edge linestring geometry
 as calculated by \code{\link[sf]{st_length}}.
 
-\item \code{edge_straight_length}: The straight-line distance between the two
+\item \code{edge_displacement}: The straight-line distance between the two
 boundary nodes of an edge, as calculated by \code{\link[sf]{st_distance}}.
 }}
 
