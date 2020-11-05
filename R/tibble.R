@@ -1,13 +1,13 @@
 #' as_tibble method for sfnetworks
 #'
-#' The sfnetwork method for \code{\link[tibble]{as_tibble}} is conceptually 
-#' different. Whenever a geometry list column is present, it will by default 
-#' return what we call a 'spatial tibble'. With that we mean an object of 
-#' class \code{c('sf', 'tbl_df')} instead of an object of class 
+#' The sfnetwork method for \code{\link[tibble]{as_tibble}} is conceptually
+#' different. Whenever a geometry list column is present, it will by default
+#' return what we call a 'spatial tibble'. With that we mean an object of
+#' class \code{c('sf', 'tbl_df')} instead of an object of class
 #' \code{'tbl_df'}. This little conceptual trick is essential for how
-#' tidyverse functions handle \code{\link{sfnetwork}} objects, i.e. always 
-#' using the corresponding \code{\link[sf]{sf}} method if present. When using 
-#' \code{\link[tibble]{as_tibble}} on \code{\link{sfnetwork}} objects directly 
+#' tidyverse functions handle \code{\link{sfnetwork}} objects, i.e. always
+#' using the corresponding \code{\link[sf]{sf}} method if present. When using
+#' \code{\link[tibble]{as_tibble}} on \code{\link{sfnetwork}} objects directly
 #' as a user, you can disable this behaviour by setting \code{spatial = FALSE}.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
@@ -18,11 +18,25 @@
 #'
 #' @param spatial Should te extracted tibble be a 'spatial tibble', i.e. an
 #' object of class \code{c('sf', 'tbl_df')}, if it contains a geometry list
-#' column. Defaults to \code{TRUE}. 
-#' 
+#' column. Defaults to \code{TRUE}.
+#'
 #' @param ... Arguments passed on to \code{\link[tibble]{as_tibble}}.
 #'
 #' @name as_tibble
+#'
+#' @examples
+#' library(tidygraph)
+#' net = as_sfnetwork(roxel)
+#'
+#' # Convert network to "spatial tibble", takes active element
+#' as_tibble(net)
+#'
+#' # Convert network edges to a "spatial tibble"
+#' as_tibble(net, active = 'edges')
+#'
+#' # Convert network edges to a tibble object
+#' as_tibble(net, active = 'edges', spatial = FALSE)
+#'
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph
 #' @export
