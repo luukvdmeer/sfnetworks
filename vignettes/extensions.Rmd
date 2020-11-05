@@ -34,7 +34,7 @@ The `sfnetworks` package extends this ecosystem by adding specific
 spatial algorithms. In the current state, the offer contains three spatial edge measures:
 
 - `edge_length`: The length of an edge linestring geometry as calculated by `st_length`.
-- `edge_straight_length`: The straight-line distance (i.e. euclidean distance for projected coordinates, and great-circle-distance for geographic coordinates) between the two boundary nodes of an edge, as calculated by `st_distance`.
+- `edge_displacement`: The straight-line distance (i.e. euclidean distance for projected coordinates, and great-circle-distance for geographic coordinates) between the two boundary nodes of an edge, as calculated by `st_distance`.
 - `edge_circuity`: The ratio of the length of an edge linestring geometry versus the straight-line distance between its boundary nodes, as described in [Giacomin & Levinson, 2015](https://journals.sagepub.com/doi/10.1068/b130131p).
 
 Just as with all tidygraph algorithms, spatial edge measures are meant to be called inside `tidygraph` verbs such as `mutate()`, where the graph that is currently being worked on is known and thus not needed as an argument to the function.
@@ -50,12 +50,8 @@ net = as_sfnetwork(roxel, directed = FALSE) %>%
 
 net %>%
   activate("edges") %>%
-  mutate(
-    length = edge_length(), 
-    straight = edge_straight_length(),
-    circuity = edge_circuity()
-  ) %>%
-  select(length, straight, circuity)
+  mutate(len = edge_length(), dis = edge_displacement(), cir = edge_circuity()) %>%
+  select(len, dis, cir)
 ```
 
 If you want to use an algorithm outside of a verb you can use `with_graph()` to set the graph context temporarily.

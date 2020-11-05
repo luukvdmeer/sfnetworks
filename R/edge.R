@@ -56,7 +56,7 @@ edge_length = function() {
 #' boundary nodes of an edge, as calculated by \code{\link[sf]{st_distance}}.
 #' @importFrom tidygraph .G
 #' @export
-edge_straight_length = function() {
+edge_displacement = function() {
   x = .G()
   require_active_edges(x)
   straight_line_distance(x)
