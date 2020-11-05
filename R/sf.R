@@ -16,9 +16,9 @@ is.sfg = function(x) {
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @param y An object of class \code{\link[sf]{sf}}, or directly convertible to 
-#' it using \code{\link[sf]{st_as_sf}}. In some cases, it can also be an object 
-#' of \code{\link[sf:st]{sfg}} or \code{\link[sf:st_bbox]{bbox}}. Always look 
+#' @param y An object of class \code{\link[sf]{sf}}, or directly convertible to
+#' it using \code{\link[sf]{st_as_sf}}. In some cases, it can also be an object
+#' of \code{\link[sf:st]{sfg}} or \code{\link[sf:st_bbox]{bbox}}. Always look
 #' at the documentation of the corresponding \code{sf} function for details.
 #'
 #' @param ... Arguments passed on the corresponding \code{sf} function.
@@ -27,12 +27,32 @@ is.sfg = function(x) {
 #' extracting. If \code{NULL}, it will be set to the current active element of
 #' the given network. Defaults to \code{NULL}.
 #'
-#' @param value See \code{\link[sf]{st_crs}}, \code{\link[sf]{st_geometry}} or 
+#' @param value See \code{\link[sf]{st_crs}}, \code{\link[sf]{st_geometry}} or
 #' \code{\link[sf]{st_agr}}.
 #'
 #' @details See the \code{\link[sf]{sf}} documentation.
 #'
 #' @name sf
+#'
+#' @examples
+#' library(sf)
+#' net = as_sfnetwork(roxel)
+#'
+#' # Convert and sfnetwork object to an sf object
+#' # This takes the current active object
+#' active(net)
+#' net %>%
+#'   st_as_sf()
+#'
+#' # Convert the edges
+#' net %>%
+#'   activate('edges') %>%
+#'   st_as_sf()
+#'
+#' # Activate the network element inside st_as_sf()
+#' net %>%
+#'   st_as_sf(active = 'nodes')
+#'
 #' @importFrom sf st_as_sf
 #' @export
 st_as_sf.sfnetwork = function(x, active = NULL, ...) {
@@ -75,6 +95,10 @@ edges_as_sf = function(x, ...) {
 # =============================================================================
 
 #' @name sf
+#' @examples
+#' # Get geometry of network element
+#' net %>% st_geometry(active = 'nodes')
+#'
 #' @importFrom sf st_geometry
 #' @export
 st_geometry.sfnetwork = function(x, active = NULL, ...) {
@@ -113,7 +137,7 @@ edge_geom = function(x) {
 #' @export
 `st_geometry<-.sfnetwork` = function(x, value) {
   if (is.null(value)) {
-    x_new = drop_geom(x) 
+    x_new = drop_geom(x)
   } else  {
     x_new = mutate_geom(x, value)
     require_valid_network_structure(x_new)
@@ -234,6 +258,9 @@ change_coords = function(x, op, ...) {
 # =============================================================================
 
 #' @name sf
+#' @examples
+#' # Get agr of network element
+#' net %>% st_agr(active = 'edges')
 #' @importFrom sf st_agr
 #' @export
 st_agr.sfnetwork = function(x, active = NULL, ...) {
@@ -264,7 +291,7 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
 # Geometric binary predicates
 # =============================================================================
 
-# Geometric binary predicates internally are applied to the geometry of the 
+# Geometric binary predicates internally are applied to the geometry of the
 # given object. Since there is a st_geometry.sfnetwork method, they work
 # automatically on sfnetwork objects too. However, st_intersects is the only one
 # that is a generic, and thus an sfnetwork method needs to be created for it.
@@ -367,7 +394,7 @@ join_nodes = function(x, y,  ...) {
   # If there were multiple matches:
   # --> Raise an error.
   # --> Allowing multiple matches for nodes breaks the valid network structure.
-  # --> See the package vignettes for more info. 
+  # --> See the package vignettes for more info.
   if (has_duplicates(n_new$.sfnetwork_index)) raise_multiple_matches()
   # If an inner join was requested instead of a left join:
   # --> This means only nodes in x that had a match in y are preserved.

@@ -79,12 +79,12 @@ the given network. Defaults to \code{NULL}.}
 
 \item{...}{Arguments passed on the corresponding \code{sf} function.}
 
-\item{value}{See \code{\link[sf]{st_crs}}, \code{\link[sf]{st_geometry}} or 
+\item{value}{See \code{\link[sf]{st_crs}}, \code{\link[sf]{st_geometry}} or
 \code{\link[sf]{st_agr}}.}
 
-\item{y}{An object of class \code{\link[sf]{sf}}, or directly convertible to 
-it using \code{\link[sf]{st_as_sf}}. In some cases, it can also be an object 
-of \code{\link[sf:st]{sfg}} or \code{\link[sf:st_bbox]{bbox}}. Always look 
+\item{y}{An object of class \code{\link[sf]{sf}}, or directly convertible to
+it using \code{\link[sf]{st_as_sf}}. In some cases, it can also be an object
+of \code{\link[sf:st]{sfg}} or \code{\link[sf:st_bbox]{bbox}}. Always look
 at the documentation of the corresponding \code{sf} function for details.}
 }
 \description{
@@ -92,4 +92,29 @@ at the documentation of the corresponding \code{sf} function for details.}
 }
 \details{
 See the \code{\link[sf]{sf}} documentation.
+}
+\examples{
+library(sf)
+net = as_sfnetwork(roxel)
+
+# Convert and sfnetwork object to an sf object
+# This takes the current active object
+active(net)
+net \%>\%
+  st_as_sf()
+
+# Convert the edges
+net \%>\%
+  activate('edges') \%>\%
+  st_as_sf()
+
+# Activate the network element inside st_as_sf()
+net \%>\%
+  st_as_sf(active = 'nodes')
+
+# Get geometry of network element
+net \%>\% st_geometry(active = 'nodes')
+
+# Get agr of network element
+net \%>\% st_agr(active = 'edges')
 }
