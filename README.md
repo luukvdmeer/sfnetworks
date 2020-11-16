@@ -45,3 +45,11 @@ remotes::install_github("luukvdmeer/sfnetworks@v0.1")
 We look very much forward to contributions to the package. Please refer to the [contributing](CONTRIBUTING.md) guide for further details. 
 
 This project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.  
+
+## Acknowledgment
+
+This project gratefully acknowledges financial [support](https://www.r-consortium.org/projects) from the
+
+<a href="https://www.r-consortium.org/projects/awarded-projects">
+<img src="https://raw.githubusercontent.com/RConsortium/artwork/main/r_consortium/R_Consortium-logo-horizontal-color.png" width="300">
+</a>
