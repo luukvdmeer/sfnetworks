@@ -12,7 +12,9 @@ test_that('st_set_geometry(NULL) for activated nodes changes the class to tbl_gr
 
 test_that('st_set_geometry gives an error when replacing edges geometry type', {
   net = roxel %>% as_sfnetwork()
-  new_geom = st_geometry(sf::st_centroid(roxel))
+  # warnings are suppressed since they relate to the sf package
+  suppressWarnings({centroids = sf::st_centroid(roxel)})
+  new_geom = st_geometry(centroids)
   expect_error(net %>% activate('edges') %>% sf::st_set_geometry(new_geom))
 })
 
@@ -22,9 +24,8 @@ test_that('st_set_geometry gives an error when replacing edges geometry CRS', {
   expect_error(net %>% activate('edges') %>% sf::st_set_geometry(new_geom))
 })
 
-# Cannot test because GEOS does not load correctly with my sf library
-# test_that('st_set_geometry gives an error when replacing edges geometry endpoints', {
-#   net = roxel %>% as_sfnetwork()
-#   new_geom = st_geometry(sf::st_reverse(roxel, 5))
-#   expect_error(net %>% activate('edges') %>% sf::st_set_geometry(new_geom))
-# })
+test_that('st_set_geometry gives an error when replacing edges geometry endpoints', {
+  net = roxel %>% as_sfnetwork()
+  new_geom = sf::st_geometry(sf::st_reverse(roxel))
+  expect_error(net %>% activate('edges') %>% sf::st_set_geometry(new_geom))
+})

@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+<meta name="date" content="2020-11-20" />
+
+<title>Extending the vocabulary</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Extending the vocabulary</h1>
+<h4 class="date">2020-11-20</h4>
+
+
+
+<STYLE type="text/css" scoped>
+PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
+</STYLE>
+<p>The core of the package is a data structure that can be provided directly to both graph analytical functions of <code>tidygraph</code> and spatial analytical functions of <code>sf</code>. However, there might be problems that are so specific to spatial networks, that they can neither be solved by <code>tidygraph</code> nor <code>sf</code>. Therefore, <code>sfnetworks</code> contains several extensions to the current offer of the two “parent packages”. We want to prevent that <code>sfnetworks</code> goes too much into a single application - it should remain a lower-level package - but basic, widely used spatial network operations should be supported. The ones that are currently supported are presented in this vignette.</p>
+<div id="spatial-graph-node-and-edge-information" class="section level2">
+<h2>Spatial graph, node and edge information</h2>
+<p>The <code>tidygraph</code> package has a very organized structure, in which it offers a wide range of algorithms for extracting information about either the graph itself, its nodes, or its edges. Think for example about centrality measures (e.g. <code>centrality_betweenness</code>), other node, edge or graph measures (e.g. <code>node_eccentricity</code>, <code>graph_diameter</code>) and node, edge or graph type queries (e.g. <code>node_is_center</code>, <code>edge_is_loop</code>, <code>graph_is_connected</code>).</p>
+<p>The <code>sfnetworks</code> package extends this ecosystem by adding specific spatial algorithms. In the current state, the offer contains three spatial edge measures:</p>
+<ul>
+<li><code>edge_length</code>: The length of an edge linestring geometry as calculated by <code>st_length</code>.</li>
+<li><code>edge_displacement</code>: The straight-line distance (i.e. euclidean distance for projected coordinates, and great-circle-distance for geographic coordinates) between the two boundary nodes of an edge, as calculated by <code>st_distance</code>.</li>
+<li><code>edge_circuity</code>: The ratio of the length of an edge linestring geometry versus the straight-line distance between its boundary nodes, as described in <a href="https://journals.sagepub.com/doi/10.1068/b130131p">Giacomin &amp; Levinson, 2015</a>.</li>
+</ul>
+<p>Just as with all tidygraph algorithms, spatial edge measures are meant to be called inside <code>tidygraph</code> verbs such as <code>mutate()</code>, where the graph that is currently being worked on is known and thus not needed as an argument to the function.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(sfnetworks)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(sf)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="co">#&gt; Warning: package &#39;sf&#39; was built under R version 4.0.3</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">library</span>(tidygraph)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>net =<span class="st"> </span><span class="kw">as_sfnetwork</span>(roxel, <span class="dt">directed =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dv">3035</span>)</span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a>net <span class="op">%&gt;%</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="st">  </span><span class="kw">activate</span>(<span class="st">&quot;edges&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">len =</span> <span class="kw">edge_length</span>(), <span class="dt">dis =</span> <span class="kw">edge_displacement</span>(), <span class="dt">cir =</span> <span class="kw">edge_circuity</span>()) <span class="op">%&gt;%</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="st">  </span><span class="kw">select</span>(len, dis, cir)</span></code></pre></div>
+<PRE class="fansi fansi-output"><CODE>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
+#&gt; #
+#&gt; # An undirected multigraph with 14 components with spatially explicit edges
+#&gt; #
+#&gt; # Edge Data:     851 x 6 (active)</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;    from    to       len      dis      cir                               geometry
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>       </span><span style="color: #555555;">[m]</span><span>      </span><span style="color: #555555;">[m]</span><span>      </span><span style="color: #555555;">[1]</span><span>                       </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     1     2  28.85977  28.859~ 1.000000     (4151491 3207923, 4151474 3207946)
+#&gt; </span><span style="color: #555555;">2</span><span>     3     4 107.71403 107.082~ 1.005894 (4151398 3207777, 4151390 3207727, 41~
+#&gt; </span><span style="color: #555555;">3</span><span>     5     6  54.36729  54.341~ 1.000471 (4151408 3207539, 4151417 3207573, 41~
+#&gt; </span><span style="color: #555555;">4</span><span>     7     8 155.22303 153.908~ 1.008540 (4151885 3206698, 4151861 3206711, 41~
+#&gt; </span><span style="color: #555555;">5</span><span>     9    10 208.68255 208.682~ 1.000000     (4151732 3207017, 4151721 3206809)
+#&gt; </span><span style="color: #555555;">6</span><span>    11    12  63.02856  61.708~ 1.021397 (4152152 3206984, 4152143 3206932, 41~
+#&gt; </span><span style="color: #555555;"># ... with 845 more rows</span><span>
+#&gt; </span><span style="color: #555555;">#
+#&gt; # Node Data:     701 x 1</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;            geometry
+#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923)
+#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946)
+#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777)
+#&gt; </span><span style="color: #555555;"># ... with 698 more rows</span><span>
+</span></CODE></PRE>
+<p>If you want to use an algorithm outside of a verb you can use <code>with_graph()</code> to set the graph context temporarily.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>circuities =<span class="st"> </span><span class="kw">with_graph</span>(<span class="kw">activate</span>(net, <span class="st">&quot;edges&quot;</span>), <span class="kw">edge_circuity</span>())</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">head</span>(circuities)</span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co">#&gt; Units: [1]</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="co">#&gt; [1] 1.000000 1.005894 1.000471 1.008540 1.000000 1.021397</span></span></code></pre></div>
+</div>
+<div id="spatial-shortest-paths" class="section level2">
+<h2>Spatial shortest paths</h2>
+<p><code>sfnetworks</code> also offers spatial wrappers around the shortest path calculation functionalities from <code>igraph</code>. The spatial wrappers all start with <code>st_</code>, just as the spatial analytical functions from the <code>sf</code> packages. Instead of providing the node indices of the <code>from</code> and <code>to</code> nodes of the shortest path, it is possible to provide sf-formatted points in geographical space instead.</p>
+<p>Providing node indices:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">st_shortest_paths</span>(net, <span class="dv">1</span>, <span class="dv">9</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>(node_paths) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unlist</span>()</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="co">#&gt;  [1]   1 644 579 260 164 208 426 424 533 657 512 506 111 524 292 167   9</span></span></code></pre></div>
+<p>Providing the same nodes as spatial points instead:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>p1 =<span class="st"> </span>net <span class="op">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="st">  </span><span class="kw">activate</span>(<span class="st">&quot;nodes&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="st">  </span><span class="kw">st_as_sf</span>() <span class="op">%&gt;%</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="st">  </span><span class="kw">slice</span>(<span class="dv">1</span>)</span>
+<span id="cb5-5"><a href="#cb5-5"></a></span>
+<span id="cb5-6"><a href="#cb5-6"></a>p1</span></code></pre></div>
+<PRE class="fansi fansi-output"><CODE>#&gt; Simple feature collection with 1 feature and 0 fields
+#&gt; geometry type:  POINT
+#&gt; dimension:      XY
+#&gt; bbox:           xmin: 4151491 ymin: 3207923 xmax: 4151491 ymax: 3207923
+#&gt; projected CRS:  ETRS89-extended / LAEA Europe
+#&gt; <span style="color: #555555;"># A tibble: 1 x 1</span><span>
+#&gt;            geometry
+#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923)
+</span></CODE></PRE>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2"></a>p2 =<span class="st"> </span>net <span class="op">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="st">  </span><span class="kw">activate</span>(<span class="st">&quot;nodes&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="st">  </span><span class="kw">st_as_sf</span>() <span class="op">%&gt;%</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="st">  </span><span class="kw">slice</span>(<span class="dv">9</span>)</span>
+<span id="cb6-6"><a href="#cb6-6"></a></span>
+<span id="cb6-7"><a href="#cb6-7"></a>p2</span></code></pre></div>
+<PRE class="fansi fansi-output"><CODE>#&gt; Simple feature collection with 1 feature and 0 fields
+#&gt; geometry type:  POINT
+#&gt; dimension:      XY
+#&gt; bbox:           xmin: 4151732 ymin: 3207017 xmax: 4151732 ymax: 3207017
+#&gt; projected CRS:  ETRS89-extended / LAEA Europe
+#&gt; <span style="color: #555555;"># A tibble: 1 x 1</span><span>
+#&gt;            geometry
+#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span> (4151732 3207017)
+</span></CODE></PRE>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="kw">st_shortest_paths</span>(net, p1, p2) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>(node_paths) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unlist</span>()</span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="co">#&gt;  [1]   1 644 579 260 164 208 426 424 533 657 512 506 111 524 292 167   9</span></span></code></pre></div>
+<p>In the case above, the locations of these spatial points are exactly equal to the locations of nodes in the network. However, they don’t have to be. Points that don’t lie on the network will be replaced by their nearest node.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>p3 =<span class="st"> </span><span class="kw">st_sfc</span>(</span>
+<span id="cb8-2"><a href="#cb8-2"></a>  <span class="kw">st_geometry</span>(p1)[[<span class="dv">1</span>]] <span class="op">+</span><span class="st"> </span><span class="kw">st_point</span>(<span class="kw">c</span>(<span class="dv">500</span>, <span class="dv">500</span>)), </span>
+<span id="cb8-3"><a href="#cb8-3"></a>  <span class="dt">crs =</span> <span class="kw">st_crs</span>(p1)</span>
+<span id="cb8-4"><a href="#cb8-4"></a>)</span>
+<span id="cb8-5"><a href="#cb8-5"></a></span>
+<span id="cb8-6"><a href="#cb8-6"></a>p4 =<span class="st"> </span><span class="kw">st_sfc</span>(</span>
+<span id="cb8-7"><a href="#cb8-7"></a>  <span class="kw">st_geometry</span>(p2)[[<span class="dv">1</span>]] <span class="op">+</span><span class="st"> </span><span class="kw">st_point</span>(<span class="kw">c</span>(<span class="op">-</span><span class="dv">500</span>, <span class="dv">-500</span>)), </span>
+<span id="cb8-8"><a href="#cb8-8"></a>  <span class="dt">crs =</span> <span class="kw">st_crs</span>(p2)</span>
+<span id="cb8-9"><a href="#cb8-9"></a>)</span>
+<span id="cb8-10"><a href="#cb8-10"></a></span>
+<span id="cb8-11"><a href="#cb8-11"></a><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb8-12"><a href="#cb8-12"></a><span class="kw">plot</span>(net)</span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="kw">plot</span>(p3, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">pch =</span> <span class="dv">20</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb8-14"><a href="#cb8-14"></a><span class="kw">plot</span>(p4, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">pch =</span> <span class="dv">20</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="kw">lengths</span>(<span class="kw">st_intersects</span>(p3, net)) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="co">#&gt; [1] FALSE</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a></span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="kw">lengths</span>(<span class="kw">st_intersects</span>(p4, net)) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="co">#&gt; [1] FALSE</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="kw">st_shortest_paths</span>(net, p3, p4) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>(node_paths) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unlist</span>()</span>
+<span id="cb9-9"><a href="#cb9-9"></a><span class="co">#&gt;  [1] 178 179 601 121 120 700 691 635 636 588 260 164 208 426 424 533 657 512 506</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a><span class="co">#&gt; [20] 111 524 292 167   9  10 168 496 495 485 162 628 242 493 240 157 158</span></span></code></pre></div>
+<p>All paths above are calculated without taking into account weights of edges. Just as in <code>igraph::shortest_paths</code>, you can provide such weights through the weights argument. However, in <code>st_shortest_path</code> you also have the option to just provide a column name to the weights argument, which should match an existing column in the networks edges table, whose values will then be used as weights.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>net  =<span class="st"> </span>net <span class="op">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="st">  </span><span class="kw">activate</span>(edges) <span class="op">%&gt;%</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">length =</span> sf<span class="op">::</span><span class="kw">st_length</span>(.))</span>
+<span id="cb10-4"><a href="#cb10-4"></a></span>
+<span id="cb10-5"><a href="#cb10-5"></a>net</span></code></pre></div>
+<PRE class="fansi fansi-output"><CODE>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
+#&gt; #
+#&gt; # An undirected multigraph with 14 components with spatially explicit edges
+#&gt; #
+#&gt; # Edge Data:     851 x 6 (active)</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;    from    to name       type                                  geometry   length
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>      </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                         </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>      </span><span style="color: #555555;">[m]</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbeck~ reside~     (4151491 3207923, 4151474 3207946)  28.859~
+#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersal~ second~ (4151398 3207777, 4151390 3207727, 41~ 107.714~
+#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-B~ reside~ (4151408 3207539, 4151417 3207573, 41~  54.367~
+#&gt; </span><span style="color: #555555;">4</span><span>     7     8 </span><span style="color: #BB0000;">NA</span><span>         path    (4151885 3206698, 4151861 3206711, 41~ 155.223~
+#&gt; </span><span style="color: #555555;">5</span><span>     9    10 Welsinghe~ reside~     (4151732 3207017, 4151721 3206809) 208.682~
+#&gt; </span><span style="color: #555555;">6</span><span>    11    12 </span><span style="color: #BB0000;">NA</span><span>         footway (4152152 3206984, 4152143 3206932, 41~  63.028~
+#&gt; </span><span style="color: #555555;"># ... with 845 more rows</span><span>
+#&gt; </span><span style="color: #555555;">#
+#&gt; # Node Data:     701 x 1</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;            geometry
+#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923)
+#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946)
+#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777)
+#&gt; </span><span style="color: #555555;"># ... with 698 more rows</span><span>
+</span></CODE></PRE>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="kw">st_shortest_paths</span>(net, p1, p2, <span class="dt">weights =</span> <span class="st">&quot;length&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>(node_paths) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unlist</span>()</span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="co">#&gt;  [1]   1 645 481 263 164 208 426 424 533 657 512 506 111 524 292 167   9</span></span></code></pre></div>
+<p>Alternatively, you can name your weights column weight. That is the same as having a weight attribute in an <code>igraph</code> object. The weight values will then be automatically detected and do not have to be provided explicitly.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>net  =<span class="st"> </span>net <span class="op">%&gt;%</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="st">  </span><span class="kw">activate</span>(<span class="st">&quot;edges&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="st">  </span><span class="kw">rename</span>(<span class="dt">weight =</span> length) <span class="op">%&gt;%</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="st">  </span><span class="kw">activate</span>(<span class="st">&quot;nodes&quot;</span>)</span>
+<span id="cb12-5"><a href="#cb12-5"></a></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="kw">st_shortest_paths</span>(net, p1, p2) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>(node_paths) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unlist</span>()</span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="co">#&gt;  [1]   1 645 481 263 164 208 426 424 533 657 512 506 111 524 292 167   9</span></span></code></pre></div>
+<p>We now showed 1-to-1 shortest paths. You can also calculate 1-to-many shortest paths, by giving a multiple feature <code>sf</code> or <code>sfc</code> object as <code>to</code> argument. Having multiple features as <code>from</code> argument is not possible in this case (since <code>igraph</code> does not support it).</p>
+<p>Having multiple features as <code>from</code> argument ìs possible in <code>st_cost()</code>, which is a wrapper around <code>igraph::distances</code>. This returns a cost matrix.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>ps1 =<span class="st"> </span><span class="kw">c</span>(<span class="kw">st_geometry</span>(p1), <span class="kw">st_sfc</span>(p3))</span>
+<span id="cb13-2"><a href="#cb13-2"></a></span>
+<span id="cb13-3"><a href="#cb13-3"></a>ps1</span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="co">#&gt; Geometry set for 2 features </span></span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="co">#&gt; geometry type:  POINT</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="co">#&gt; dimension:      XY</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="co">#&gt; bbox:           xmin: 4151491 ymin: 3207923 xmax: 4151991 ymax: 3208423</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="co">#&gt; projected CRS:  ETRS89-extended / LAEA Europe</span></span>
+<span id="cb13-9"><a href="#cb13-9"></a><span class="co">#&gt; POINT (4151491 3207923)</span></span>
+<span id="cb13-10"><a href="#cb13-10"></a><span class="co">#&gt; POINT (4151991 3208423)</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a></span>
+<span id="cb13-12"><a href="#cb13-12"></a>ps2 =<span class="st"> </span><span class="kw">c</span>(<span class="kw">st_geometry</span>(p2), <span class="kw">st_sfc</span>(p4))</span>
+<span id="cb13-13"><a href="#cb13-13"></a></span>
+<span id="cb13-14"><a href="#cb13-14"></a>ps2</span>
+<span id="cb13-15"><a href="#cb13-15"></a><span class="co">#&gt; Geometry set for 2 features </span></span>
+<span id="cb13-16"><a href="#cb13-16"></a><span class="co">#&gt; geometry type:  POINT</span></span>
+<span id="cb13-17"><a href="#cb13-17"></a><span class="co">#&gt; dimension:      XY</span></span>
+<span id="cb13-18"><a href="#cb13-18"></a><span class="co">#&gt; bbox:           xmin: 4151232 ymin: 3206517 xmax: 4151732 ymax: 3207017</span></span>
+<span id="cb13-19"><a href="#cb13-19"></a><span class="co">#&gt; projected CRS:  ETRS89-extended / LAEA Europe</span></span>
+<span id="cb13-20"><a href="#cb13-20"></a><span class="co">#&gt; POINT (4151732 3207017)</span></span>
+<span id="cb13-21"><a href="#cb13-21"></a><span class="co">#&gt; POINT (4151232 3206517)</span></span>
+<span id="cb13-22"><a href="#cb13-22"></a></span>
+<span id="cb13-23"><a href="#cb13-23"></a><span class="co"># Note that our net object now has a weight column which will be automatically used.</span></span>
+<span id="cb13-24"><a href="#cb13-24"></a><span class="kw">st_cost</span>(net, ps1, ps2)</span>
+<span id="cb13-25"><a href="#cb13-25"></a><span class="co">#&gt; Warning: Although argument &#39;from&#39; has length &gt; 1, only the first element is used</span></span>
+<span id="cb13-26"><a href="#cb13-26"></a><span class="co">#&gt;          [,1]     [,2]</span></span>
+<span id="cb13-27"><a href="#cb13-27"></a><span class="co">#&gt; [1,] 1040.299 1948.543</span></span>
+<span id="cb13-28"><a href="#cb13-28"></a><span class="co">#&gt; [2,] 1763.122 2792.150</span></span></code></pre></div>
+<p>Finally, there is also <code>st_all_shortest_paths()</code>, which is a wrapper around <code>igraph::all_shortest_paths</code>. It works the same as <code>st_shortest_paths()</code>, but in case there are multiple shortest paths from A to B, it will return all of them, instead of only one.</p>
+<p><em>Note: if you provide points that are not network nodes, the nearest node to those points will be taken. We would like to also give the option to take the nearest point on the nearest edge. See <a href="https://github.com/luukvdmeer/sfnetworks/issues/54">here</a></em></p>
+</div>
+<div id="spatial-morphers" class="section level2">
+<h2>Spatial morphers</h2>
+<p>Before we get to the spatial morphing extensions, we need to shortly introduce the concept. Morphing is a <code>tidygraph</code> functionality to morph a graph into a different representation. Then, any of the supported <code>dplyr</code> verbs can be applied to this morphed graph (which sub-classes a <code>list</code>), and changes to the data are merged back into the original graph when calling <code>unmorph()</code>. A “different representation of a graph” sounds like a broad term, and it is! A large amount of morphing functions are offered by <code>tidygraph</code>, and they all work on <code>sfnetwork</code> objects as well. See the <a href="https://tidygraph.data-imaginist.com/index.html">tidygraph documentation</a> for an overview of all of them, and more details on the morphing concept.</p>
+<p>Lets look at an example, in which we morph a graph into a representation where all its components are a graph on its own, combined together in a list structure. Since <code>net</code> has 14 components, the morphed representation is a list with 14 elements.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="co"># Mutate will be applied to each component separately.</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a>net <span class="op">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="st">  </span><span class="kw">morph</span>(to_components) <span class="op">%&gt;%</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">is_comp_center =</span> <span class="kw">node_is_center</span>()) <span class="op">%&gt;%</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="st">  </span><span class="kw">unmorph</span>() <span class="op">%&gt;%</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="st">  </span><span class="kw">filter</span>(is_comp_center)</span></code></pre></div>
+<PRE class="fansi fansi-output"><CODE>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">27</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">13</span><span> </span><span style="color: #555555;">edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
+#&gt; #
+#&gt; # An unrooted forest with 14 trees with spatially explicit edges
+#&gt; #
+#&gt; # Node Data:     27 x 2 (active)</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150894 ymin: 3206493 xmax: 4152033 ymax: 3208245</span><span>
+#&gt;            geometry is_comp_center
+#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;lgl&gt;</span><span>         
+#&gt; </span><span style="color: #555555;">1</span><span> (4150894 3207618) TRUE          
+#&gt; </span><span style="color: #555555;">2</span><span> (4150900 3207592) TRUE          
+#&gt; </span><span style="color: #555555;">3</span><span> (4151123 3206503) TRUE          
+#&gt; </span><span style="color: #555555;">4</span><span> (4151065 3206493) TRUE          
+#&gt; </span><span style="color: #555555;">5</span><span> (4151970 3207214) TRUE          
+#&gt; </span><span style="color: #555555;">6</span><span> (4151986 3207186) TRUE          
+#&gt; </span><span style="color: #555555;"># ... with 21 more rows</span><span>
+#&gt; </span><span style="color: #555555;">#
+#&gt; # Edge Data:     13 x 6</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150894 ymin: 3206493 xmax: 4152033 ymax: 3208245</span><span>
+#&gt;    from    to name            type                             geometry   weight
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>           </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                    </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>      </span><span style="color: #555555;">[m]</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Stellmacherweg  resident~ (4150894 3207618, 4150900 3207~ 26.62661
+#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Lise-Meitner-S~ resident~ (4151123 3206503, 4151065 3206~ 58.68811
+#&gt; </span><span style="color: #555555;">3</span><span>     5     6 </span><span style="color: #BB0000;">NA</span><span>              service   (4151970 3207214, 4151986 3207~ 32.03462
+#&gt; </span><span style="color: #555555;"># ... with 10 more rows</span><span>
+</span></CODE></PRE>
+<p>The <code>crystallise()</code> verb will turn a morphed graph into a tibble, where each row represents one of the elements of the list, which the corresponding graph object stored in a column named <code>graph</code>. Alternatively, the <code>convert()</code> verb takes one element of the list, and returns the graph stored in that element. For example, <code>convert(net, to_components, .select = 1)</code> will convert the first (and largest) component of our network. A lot of morphers create a list with only a single element. In that case, the <code>.select</code> argument of <code>convert()</code> can be left out, since the only graph of the morphed representation will always be returned.</p>
+<p>Now, lets move on to the spatial morphers, that <code>sfnetworks</code> adds to the exsting set of tidygraphs offer. All spatial morpher functions start with <code>to_spatial_</code>, to distinguish them for the others. Just as in <code>tidygraph</code>, morphers are only meant to be called inside either <code>morph()</code> or <code>convert()</code> verbs, and not to be applied to the graph directly.</p>
+<p>The following spatial morphers are currently offered by <code>sfnetwork</code>:</p>
+<p><code>to_spatial_coordinates</code> drops the geometry list column of the edges (if present), and represents the node geometries with an <code>X</code> and <code>Y</code> column, instead of a geometry list column.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>net <span class="op">%&gt;%</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="st">  </span><span class="kw">convert</span>(to_spatial_coordinates)</span></code></pre></div>
+<PRE class="fansi fansi-output"><CODE>#&gt; <span style="color: #555555;"># A tbl_graph: 701 nodes and 851 edges
+#&gt; #
+#&gt; # An undirected multigraph with 14 components
+#&gt; #
+#&gt; # Node Data: 701 x 3 (active)</span><span>
+#&gt;   .tidygraph_node_index        X        Y
+#&gt;                   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>    </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span>    </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>                     1 4</span><span style="text-decoration: underline;">151</span><span>491. 3</span><span style="text-decoration: underline;">207</span><span>923.
+#&gt; </span><span style="color: #555555;">2</span><span>                     2 4</span><span style="text-decoration: underline;">151</span><span>474. 3</span><span style="text-decoration: underline;">207</span><span>946.
+#&gt; </span><span style="color: #555555;">3</span><span>                     3 4</span><span style="text-decoration: underline;">151</span><span>398. 3</span><span style="text-decoration: underline;">207</span><span>777.
+#&gt; </span><span style="color: #555555;">4</span><span>                     4 4</span><span style="text-decoration: underline;">151</span><span>370. 3</span><span style="text-decoration: underline;">207</span><span>673.
+#&gt; </span><span style="color: #555555;">5</span><span>                     5 4</span><span style="text-decoration: underline;">151</span><span>408. 3</span><span style="text-decoration: underline;">207</span><span>539.
+#&gt; </span><span style="color: #555555;">6</span><span>                     6 4</span><span style="text-decoration: underline;">151</span><span>421. 3</span><span style="text-decoration: underline;">207</span><span>592.
+#&gt; </span><span style="color: #555555;"># ... with 695 more rows</span><span>
+#&gt; </span><span style="color: #555555;">#
+#&gt; # Edge Data: 851 x 6</span><span>
+#&gt;    from    to name                  type           weight .tidygraph_edge_index
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                 </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>             </span><span style="color: #555555;">[m]</span><span>                 </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbecker Strasse   residential  28.85977                     1
+#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersallee          secondary   107.71403                     2
+#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-Bernd-Strasse residential  54.36729                     3
+#&gt; </span><span style="color: #555555;"># ... with 848 more rows</span><span>
+</span></CODE></PRE>
+<p><code>to_spatial_subdivision</code> reconstruct the network by using all edge linestring points as nodes, instead of only the endpoints.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">plot</span>(net)</span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="kw">plot</span>(<span class="kw">convert</span>(net, to_spatial_subdivision))</span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="co">#&gt; Warning: to_spatial_subdivision assumes attributes are constant over geometries</span></span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><img src="data:image/png;base64,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" /></p>
+<p><code>to_spatial_directed</code> makes a graph directed in the direction given by the linestring geometries of the edges. This in contradiction to the <code>to_directed</code> morpher of <code>tidygraph</code>, which makes a graph directed in the direction given by the <code>to</code> and <code>from</code> column.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>net <span class="op">%&gt;%</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="st">  </span><span class="kw">activate</span>(<span class="st">&quot;edges&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="st">  </span><span class="kw">st_reverse</span>() <span class="op">%&gt;%</span></span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="st">  </span><span class="kw">convert</span>(to_spatial_directed)</span></code></pre></div>
+<PRE class="fansi fansi-output"><CODE>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
+#&gt; #
+#&gt; # A directed multigraph with 14 components with spatially explicit edges
+#&gt; #
+#&gt; # Edge Data:     851 x 7 (active)</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;    from    to name   type                     geometry   weight .tidygraph_edge~
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>  </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>            </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>      </span><span style="color: #555555;">[m]</span><span>            </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havix~ resid~ (4151474 3207946, 4151491~  28.859~                1
+#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Piene~ secon~ (4151370 3207673, 4151390~ 107.714~                2
+#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schul~ resid~ (4151421 3207592, 4151417~  54.367~                3
+#&gt; </span><span style="color: #555555;">4</span><span>     7     8 </span><span style="color: #BB0000;">NA</span><span>     path   (4151762 3206789, 4151771~ 155.223~                4
+#&gt; </span><span style="color: #555555;">5</span><span>     9    10 Welsi~ resid~ (4151721 3206809, 4151732~ 208.682~                5
+#&gt; </span><span style="color: #555555;">6</span><span>    11    12 </span><span style="color: #BB0000;">NA</span><span>     footw~ (4152147 3206923, 4152143~  63.028~                6
+#&gt; </span><span style="color: #555555;"># ... with 845 more rows</span><span>
+#&gt; </span><span style="color: #555555;">#
+#&gt; # Node Data:     701 x 2</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;            geometry .tidygraph_node_index
+#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span>                 </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span> (4151474 3207946)                     2
+#&gt; </span><span style="color: #555555;">2</span><span> (4151491 3207923)                     1
+#&gt; </span><span style="color: #555555;">3</span><span> (4151370 3207673)                     4
+#&gt; </span><span style="color: #555555;"># ... with 698 more rows</span><span>
+</span></CODE></PRE>
+<p><code>to_spatial_implicit_edges</code> drops the geometries of spatially explicit edges.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>net <span class="op">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="st">  </span><span class="kw">convert</span>(to_spatial_implicit_edges)</span></code></pre></div>
+<PRE class="fansi fansi-output"><CODE>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
+#&gt; #
+#&gt; # An undirected multigraph with 14 components with spatially implicit edges
+#&gt; #
+#&gt; # Node Data:     701 x 2 (active)</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;            geometry .tidygraph_node_index
+#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span>                 </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923)                     1
+#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946)                     2
+#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777)                     3
+#&gt; </span><span style="color: #555555;">4</span><span> (4151370 3207673)                     4
+#&gt; </span><span style="color: #555555;">5</span><span> (4151408 3207539)                     5
+#&gt; </span><span style="color: #555555;">6</span><span> (4151421 3207592)                     6
+#&gt; </span><span style="color: #555555;"># ... with 695 more rows</span><span>
+#&gt; </span><span style="color: #555555;">#
+#&gt; # Edge Data: 851 x 6</span><span>
+#&gt;    from    to name                  type           weight .tidygraph_edge_index
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                 </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>             </span><span style="color: #555555;">[m]</span><span>                 </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbecker Strasse   residential  28.85977                     1
+#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersallee          secondary   107.71403                     2
+#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-Bernd-Strasse residential  54.36729                     3
+#&gt; </span><span style="color: #555555;"># ... with 848 more rows</span><span>
+</span></CODE></PRE>
+<p><code>to_spatial_explicit_edges</code> draws straight linestring geometries between the <code>to</code> and <code>from</code> nodes of spatially implicit edges.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>net <span class="op">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="st">  </span><span class="kw">convert</span>(to_spatial_implicit_edges) <span class="op">%&gt;%</span></span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="st">  </span><span class="kw">convert</span>(to_spatial_explicit_edges)</span></code></pre></div>
+<PRE class="fansi fansi-output"><CODE>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
+#&gt; #
+#&gt; # An undirected multigraph with 14 components with spatially explicit edges
+#&gt; #
+#&gt; # Node Data:     701 x 2 (active)</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;            geometry .tidygraph_node_index
+#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span>                 </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923)                     1
+#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946)                     2
+#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777)                     3
+#&gt; </span><span style="color: #555555;">4</span><span> (4151370 3207673)                     4
+#&gt; </span><span style="color: #555555;">5</span><span> (4151408 3207539)                     5
+#&gt; </span><span style="color: #555555;">6</span><span> (4151421 3207592)                     6
+#&gt; </span><span style="color: #555555;"># ... with 695 more rows</span><span>
+#&gt; </span><span style="color: #555555;">#
+#&gt; # Edge Data:     851 x 7</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;    from    to name    type     weight .tidygraph_edge~                  geometry
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>   </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>       </span><span style="color: #555555;">[m]</span><span>            </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>          </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixb~ resid~  28.859~                1 (4151491 3207923, 415147~
+#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Piener~ secon~ 107.714~                2 (4151398 3207777, 415137~
+#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schult~ resid~  54.367~                3 (4151408 3207539, 415142~
+#&gt; </span><span style="color: #555555;"># ... with 848 more rows</span><span>
+</span></CODE></PRE>
+<p><code>to_spatial_subset</code> limits a graph to a single spatial subset. … is evaluated in the same manner as <code>st_filter</code>.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>e1 =<span class="st"> </span><span class="kw">st_point</span>(<span class="kw">c</span>(<span class="fl">7.53173</span>, <span class="fl">51.95662</span>))</span>
+<span id="cb20-2"><a href="#cb20-2"></a>e2 =<span class="st"> </span><span class="kw">st_point</span>(<span class="kw">c</span>(<span class="fl">7.53173</span>, <span class="fl">51.95190</span>))</span>
+<span id="cb20-3"><a href="#cb20-3"></a>e3 =<span class="st"> </span><span class="kw">st_point</span>(<span class="kw">c</span>(<span class="fl">7.53778</span>, <span class="fl">51.95190</span>))</span>
+<span id="cb20-4"><a href="#cb20-4"></a>e4 =<span class="st"> </span><span class="kw">st_point</span>(<span class="kw">c</span>(<span class="fl">7.53778</span>, <span class="fl">51.95662</span>))</span>
+<span id="cb20-5"><a href="#cb20-5"></a></span>
+<span id="cb20-6"><a href="#cb20-6"></a>rect =<span class="st"> </span><span class="kw">st_multipoint</span>(<span class="kw">c</span>(e1, e2, e3, e4)) <span class="op">%&gt;%</span></span>
+<span id="cb20-7"><a href="#cb20-7"></a><span class="st">  </span><span class="kw">st_cast</span>(<span class="st">&#39;POLYGON&#39;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb20-8"><a href="#cb20-8"></a><span class="st">  </span><span class="kw">st_sfc</span>(<span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span></span>
+<span id="cb20-9"><a href="#cb20-9"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dv">3035</span>)</span>
+<span id="cb20-10"><a href="#cb20-10"></a></span>
+<span id="cb20-11"><a href="#cb20-11"></a>net <span class="op">%&gt;%</span></span>
+<span id="cb20-12"><a href="#cb20-12"></a><span class="st">  </span><span class="kw">convert</span>(to_spatial_subset, rect, <span class="dt">.predicate =</span> st_intersects)</span>
+<span id="cb20-13"><a href="#cb20-13"></a><span class="co">#&gt; Subsetting by nodes</span></span></code></pre></div>
+<PRE class="fansi fansi-output"><CODE>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">89</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">104</span><span> </span><span style="color: #555555;">edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
+#&gt; #
+#&gt; # An undirected simple graph with 8 components with spatially explicit edges
+#&gt; #
+#&gt; # Node Data:     89 x 2 (active)</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4151344 ymin: 3207528 xmax: 4151757 ymax: 3208041</span><span>
+#&gt;            geometry .tidygraph_node_index
+#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span>                 </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923)                     1
+#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946)                     2
+#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777)                     3
+#&gt; </span><span style="color: #555555;">4</span><span> (4151370 3207673)                     4
+#&gt; </span><span style="color: #555555;">5</span><span> (4151408 3207539)                     5
+#&gt; </span><span style="color: #555555;">6</span><span> (4151421 3207592)                     6
+#&gt; </span><span style="color: #555555;"># ... with 83 more rows</span><span>
+#&gt; </span><span style="color: #555555;">#
+#&gt; # Edge Data:     104 x 7</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4151348 ymin: 3207539 xmax: 4151757 ymax: 3208041</span><span>
+#&gt;    from    to name   type                     geometry   weight .tidygraph_edge~
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>  </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>            </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>      </span><span style="color: #555555;">[m]</span><span>            </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havix~ resid~ (4151491 3207923, 4151474~  28.859~                1
+#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Piene~ secon~ (4151398 3207777, 4151390~ 107.714~                2
+#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schul~ resid~ (4151408 3207539, 4151417~  54.367~                3
+#&gt; </span><span style="color: #555555;"># ... with 101 more rows</span><span>
+</span></CODE></PRE>
+<p><code>to_spatial_shortest_paths</code> limits a graph to those nodes and edges that are part of the shortest path between two nodes. If multiple <code>to</code> nodes are given, multiple shortest path graphs are returned.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>net <span class="op">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="st">  </span><span class="kw">convert</span>(to_spatial_shortest_paths, p3, p4)</span></code></pre></div>
+<PRE class="fansi fansi-output"><CODE>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">45</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">44</span><span> </span><span style="color: #555555;">edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
+#&gt; #
+#&gt; # An unrooted tree with spatially explicit edges
+#&gt; #
+#&gt; # Node Data:     45 x 2 (active)</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150901 ymin: 3206483 xmax: 4152196 ymax: 3208337</span><span>
+#&gt;            geometry .tidygraph_node_index
+#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span>                 </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span> (4151398 3207777)                     3
+#&gt; </span><span style="color: #555555;">2</span><span> (4151370 3207673)                     4
+#&gt; </span><span style="color: #555555;">3</span><span> (4151845 3208048)                    28
+#&gt; </span><span style="color: #555555;">4</span><span> (4151929 3208104)                    29
+#&gt; </span><span style="color: #555555;">5</span><span> (4151317 3207574)                    63
+#&gt; </span><span style="color: #555555;">6</span><span> (4151063 3207188)                    67
+#&gt; </span><span style="color: #555555;"># ... with 39 more rows</span><span>
+#&gt; </span><span style="color: #555555;">#
+#&gt; # Edge Data:     44 x 7</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150901 ymin: 3206483 xmax: 4152196 ymax: 3208337</span><span>
+#&gt;    from    to name   type                     geometry   weight .tidygraph_edge~
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>  </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>            </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>      </span><span style="color: #555555;">[m]</span><span>            </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Piene~ secon~ (4151398 3207777, 4151390~ 107.7140                2
+#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Brede~ resid~ (4151845 3208048, 4151929~ 100.6086               16
+#&gt; </span><span style="color: #555555;">3</span><span>     4     8 Brede~ resid~ (4152058 3208166, 4152050~ 143.4495               74
+#&gt; </span><span style="color: #555555;"># ... with 41 more rows</span><span>
+</span></CODE></PRE>
+<p>This morpher can be very useful for plotting shortest paths on top of the original graph.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="kw">plot</span>(net)</span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="kw">plot</span>(</span>
+<span id="cb22-3"><a href="#cb22-3"></a>  net <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">convert</span>(to_spatial_shortest_paths, p3, p4),</span>
+<span id="cb22-4"><a href="#cb22-4"></a>  <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>,</span>
+<span id="cb22-5"><a href="#cb22-5"></a>  <span class="dt">add =</span> <span class="ot">TRUE</span></span>
+<span id="cb22-6"><a href="#cb22-6"></a>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Or, for calculating the lengths of multiple shortest paths.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>net <span class="op">%&gt;%</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="st">  </span><span class="kw">activate</span>(<span class="st">&quot;edges&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="st">  </span><span class="kw">morph</span>(to_spatial_shortest_paths, p1, <span class="kw">c</span>(p3, p4)) <span class="op">%&gt;%</span></span>
+<span id="cb23-4"><a href="#cb23-4"></a><span class="st">  </span><span class="kw">sapply</span>(<span class="cf">function</span>(x) <span class="kw">sum</span>(<span class="kw">st_length</span>(x)))</span>
+<span id="cb23-5"><a href="#cb23-5"></a><span class="co">#&gt; [1] 1042.440 1948.543</span></span></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
