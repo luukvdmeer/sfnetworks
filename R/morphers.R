@@ -299,8 +299,8 @@ to_spatial_simple = function(x, keep = "shortest", remove_parallels = TRUE,
     longest = arrange(activate(x, "edges"), desc(.sfnetwork_edge_length)),
     raise_unknown_input(keep)
   )
-  # Remove multiples if requested.
-  if (remove_multiples) {
+  # Remove parallels if requested.
+  if (remove_parallels) {
     x_new = filter(x_new, !edge_is_multiple())
   }
   # Remove loops if requested.
