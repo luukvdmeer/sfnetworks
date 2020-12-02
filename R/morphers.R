@@ -79,8 +79,8 @@ to_spatial_coordinates = function(x) {
 #'   plot()
 #'
 #' @importFrom igraph is_directed
-#' @importFrom lwgeom st_split
-#' @importFrom sf st_cast st_collection_extract st_equals
+#' @importFrom sf st_crs st_equals st_geometry
+#' @importFrom sfheaders sf_linestring sf_to_df
 #' @export
 to_spatial_subdivision = function(x) {
   require_spatially_explicit_edges(x)
@@ -88,12 +88,32 @@ to_spatial_subdivision = function(x) {
   # Retrieve the edges from the network, without the to and from columns.
   edges = edges_as_sf(x)
   edges[, c("from", "to")] = NULL
-  # Divide the edges at the points they are composed of.
-  division = suppressWarnings(st_split(edges, st_cast(edges, "POINT")))
-  # The result is:
-  # --> For each original edge a geometrycollection of sub-edges.
-  # --> These sub-edges need to be extracted as linestrings.
-  new_edges = st_collection_extract(division, "LINESTRING")
+  # Get coordinate pairs of all edge points.
+  coords = sf_to_df(edges)
+  # Find indices of points that are edge boundaries (i.e. first or last point).
+  first = !duplicated(coords[["sfg_id"]])
+  last = !duplicated(coords[["sfg_id"]], fromLast = TRUE)
+  # Select points where new edges should start from.
+  # --> These are all points except the last one of each original edge.
+  from_coords = coords[!last, ]
+  from_coords$linestring_id = c(1:nrow(from_coords))
+  # Select points where new edges should go to.
+  # --> These are all points except the first one of each original edge. 
+  to_coords = coords[!first, ]
+  to_coords$linestring_id = c(1:nrow(to_coords))
+  # Create new edges.
+  # --> Note that sf_linestring needs the input coordinates ordered.
+  new_coords = rbind(from_coords, to_coords)
+  new_edges = sf_linestring(
+    obj = new_coords[order(new_coords$linestring_id), ],
+    x = "x", 
+    y = "y", 
+    linestring_id = "linestring_id"
+  )
+  st_crs(new_edges) = st_crs(x)
+  # Copy original edge attributes to each part of the divided edge.
+  st_geometry(edges) = NULL
+  new_edges = cbind(new_edges, edges[coords[!first, "linestring_id"], ])  
   # Reconstruct the network with the new edges.
   x_new = as_sfnetwork(new_edges, directed = is_directed(x))
   # Spatial left join between nodes of x_new and original nodes of x.
