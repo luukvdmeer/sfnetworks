@@ -101,15 +101,15 @@ to_spatial_subdivision = function(x) {
   # --> These are all points except the first one of each original edge. 
   to_coords = coords[!first, ]
   to_coords$linestring_id = c(1:nrow(to_coords))
-  # Create new edges.
-  # --> Note that sf_linestring needs the input coordinates ordered.
+  # Bind from and to points.
   new_coords = rbind(from_coords, to_coords)
-  new_edges = sf_linestring(
-    obj = new_coords[order(new_coords$linestring_id), ],
-    x = "x", 
-    y = "y", 
-    linestring_id = "linestring_id"
-  )
+  # Create new edges.
+  # sf_linestring function needs specific input:
+  # --> Only coordinate and ID columns should be present.
+  # --> Rows should be ordered by ID.
+  cols = names(new_coords) %in% c("x", "y", "z", "m", "linestring_id")
+  new_coords = new_coords[order(new_coords$linestring_id), cols]
+  new_edges = sf_linestring(new_coords, linestring_id = "linestring_id")
   st_crs(new_edges) = st_crs(x)
   # Copy original edge attributes to each part of the divided edge.
   st_geometry(edges) = NULL
