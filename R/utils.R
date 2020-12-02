@@ -306,25 +306,23 @@ implicitize_edges = function(x) {
 #'
 #' @details See issue #59 on the GitHub repo for a discussion on this function.
 #'
-#' @importFrom sf st_cast st_coordinates st_crs st_multipoint st_sfc
+#' @importFrom sf st_crs st_geometry
+#' @importFrom sfheaders sfc_point sfc_to_df
 #' @noRd
 linestring_boundary_points = function(x) {
   # Extract coordinates.
-  x_coordinates = unname(st_coordinates(x))
-  # Find index of L1 column.
-  # This column defines to which linestring each coordinate pair belongs.
-  L1_index = ncol(x_coordinates)
+  coords = sfc_to_df(st_geometry(x)) 
   # Find row-indices of the first and last coordinate pair of each linestring.
   # These are the boundary points.
-  first_pair = !duplicated(x_coordinates[, L1_index])
-  last_pair = !duplicated(x_coordinates[, L1_index], fromLast = TRUE)
+  first_pair = !duplicated(coords[["sfg_id"]])
+  last_pair = !duplicated(coords[["sfg_id"]], fromLast = TRUE)
   idxs = first_pair | last_pair
-  # Extract boundary points and rebuild sfc.
-  x_pairs = x_coordinates[idxs, ]
-  st_cast(
-    st_sfc(st_multipoint(x_pairs[, -L1_index]), crs = st_crs(x)),
-   "POINT"
-  )
+  # Extract boundary point coordinates.
+  pairs = coords[idxs, names(coords) %in% c("x", "y", "z", "m")]
+  # Rebuild sf structure.
+  points = sfc_point(pairs) 
+  st_crs(points) = st_crs(x) 
+  points
 }
 
 #' Get the points where linestrings cross
