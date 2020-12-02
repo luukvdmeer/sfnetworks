@@ -328,6 +328,7 @@ to_spatial_simple = function(x, keep = "shortest", ...) {
 #' @importFrom sf st_equals st_geometry st_reverse
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph filter mutate
+#' @importFrom utils setTxtProgressBar txtProgressBar
 #' @export
 to_spatial_smooth = function(x, require_equal_attrs = FALSE) {
   # Check if edges are spatially explicit and if network is directed.
@@ -365,6 +366,12 @@ to_spatial_smooth = function(x, require_equal_attrs = FALSE) {
   # --> Update the original edge indices data accordingly.
   # --> Update the edge geometries accordingly.
   # --> Repeat until all pseudo nodes are processed.
+  my_pb <- txtProgressBar(
+    min = sum(!pseudo),
+    max = length(pseudo),
+    initial = 0,
+    style = 3
+  )
   pseudo_remaining = pseudo
   while (any(pseudo_remaining)) {
     # Get the index j and geometry p of the processed pseudo node.
@@ -439,6 +446,7 @@ to_spatial_smooth = function(x, require_equal_attrs = FALSE) {
     }
     # Mark node as processed.
     pseudo_remaining[j] = FALSE
+    setTxtProgressBar(my_pb, value = sum(!pseudo_remaining))
   }
   # Post-process.
   # --> Convert the updated network back to a sfnetwork.
