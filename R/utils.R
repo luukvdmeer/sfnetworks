@@ -129,13 +129,15 @@ create_nodes_from_edges = function(edges) {
 #' and the first point in y, the second point in x and the second point in y, 
 #' et cetera.
 #'
-#' @importFrom sf st_crs st_sfc
+#' @importFrom sfheaders sfc_linestring sfc_to_df
 #' @noRd
 draw_lines = function(x, y) {
-  st_sfc(
-    lapply(seq_along(x), function(i) points_to_line(x[[i]], y[[i]])),
-    crs = st_crs(x)
-  )
+  df = rbind(sfc_to_df(x), sfc_to_df(y))
+  sfc_linestring(
+    obj = df[order(df$point_id),], 
+    x = "x", 
+    y = "y", 
+    linestring_id = "point_id")
 }
 
 #' Get the geometries of the boundary nodes of edges in an sfnetwork
@@ -357,20 +359,6 @@ linestring_crossings = function(x, y) {
   crossings = point_intersections[!is_boundary]
   # Return crossings.
   crossings
-}
-
-#' Draw a line between two points
-#'
-#' @param x A \code{POINT} geometry.
-#'
-#' @param y A \code{POINT} geometry.
-#'
-#' @return A \code{LINESTRING} geometry.
-#'
-#' @importFrom sf st_linestring
-#' @noRd
-points_to_line = function(x, y) {
-  st_linestring(c(x, y))
 }
 
 #' Split lines by other features
