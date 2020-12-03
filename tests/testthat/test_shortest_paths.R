@@ -1,20 +1,24 @@
 library(sf)
 library(dplyr)
 library(igraph)
+library(tidygraph)
 net = as_sfnetwork(roxel, directed = FALSE) %>%
   st_transform(3035)
 
 # Create random points inside network bbox
 rdm = net %>% st_bbox() %>% st_as_sfc() %>% st_sample(4, type = 'random')
 
+# Create random from nodes from the first component
+# of the network, to guarantee there is a path
+net_comp1 = convert(net, to_components)
+from_indices = sample(1:vcount(net_comp1), 4)
+
 test_that('Only the first from argument
           is used for shortest paths calculations', {
-  from_indices = sample(1:igraph::vcount(net), 3)
-  expect_warning(paths <- st_shortest_paths(
+  expect_warning(paths <- st_all_shortest_paths(
     net,
     from = from_indices,
-    to = rdm,
-    output = 'nodes'), 'only the first element is used')
+    to = rdm), 'only the first element is used')
   resulting_from_nodes = paths %>%
     rowwise() %>%
     mutate(node_from = first(node_paths)) %>%
