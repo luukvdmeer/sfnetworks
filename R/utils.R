@@ -169,15 +169,22 @@ edge_boundary_nodes = function(x) {
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @return A two-column matrix, with the number of rows equal to the number
-#' of edges in the network. The first column contains the indices of the source
-#' nodes of the edges, the seconds column contains the indices of the target
-#' nodes of the edges.
+#' @param matrix Should te result be returned as a two-column matrix? Defaults
+#' to \code{FALSE}.
+#'
+#' @return If matrix is \code{FALSE}, a numeric vector of length equal to twice
+#' the number of edges in x, and ordered as
+#' [start of edge 1, end of edge 1, start of edge 2, end of edge 2, ...]. If
+#' matrix is \code{TRUE}, a two-column matrix, with the number of rows equal to 
+#' the number of edges in the network. The first column contains the indices of 
+#' the start nodes of the edges, the seconds column contains the indices of the 
+#' end nodes of the edges.
 #'
 #' @importFrom igraph E ends
 #' @noRd
-edge_boundary_node_indices = function(x) {
-  ends(x, E(x), names = FALSE)
+edge_boundary_node_indices = function(x, matrix = FALSE) {
+  ends = ends(x, E(x), names = FALSE)
+  if (matrix) ends else as.vector(t(ends))
 }
 
 #' Get the geometries of the boundary points of edges in an sfnetwork
@@ -235,7 +242,7 @@ explicitize_edges = function(x) {
     nodes = node_geom(x)
     # Get the indices of the boundary nodes of each edge.
     # Returns a matrix with source ids in column 1 and target ids in column 2.
-    ids = edge_boundary_node_indices(x)
+    ids = edge_boundary_node_indices(x, matrix = TRUE)
     # Get the boundary node geometries of each edge.
     from = nodes[ids[, 1]]
     to = nodes[ids[, 2]]
