@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
-<meta name="date" content="2020-12-02" />
+<meta name="date" content="2020-12-03" />
 
 <title>Extending the vocabulary</title>
 
@@ -329,7 +329,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <h1 class="title toc-ignore">Extending the vocabulary</h1>
-<h4 class="date">2020-12-02</h4>
+<h4 class="date">2020-12-03</h4>
 
 
 
@@ -538,10 +538,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span id="cb13-22"><a href="#cb13-22"></a></span>
 <span id="cb13-23"><a href="#cb13-23"></a><span class="co"># Note that our net object now has a weight column which will be automatically used.</span></span>
 <span id="cb13-24"><a href="#cb13-24"></a><span class="kw">st_cost</span>(net, ps1, ps2)</span>
-<span id="cb13-25"><a href="#cb13-25"></a><span class="co">#&gt; Warning: Although argument &#39;from&#39; has length &gt; 1, only the first element is used</span></span>
-<span id="cb13-26"><a href="#cb13-26"></a><span class="co">#&gt;          [,1]     [,2]</span></span>
-<span id="cb13-27"><a href="#cb13-27"></a><span class="co">#&gt; [1,] 1040.299 1948.543</span></span>
-<span id="cb13-28"><a href="#cb13-28"></a><span class="co">#&gt; [2,] 1763.122 2792.150</span></span></code></pre></div>
+<span id="cb13-25"><a href="#cb13-25"></a><span class="co">#&gt;          [,1]     [,2]</span></span>
+<span id="cb13-26"><a href="#cb13-26"></a><span class="co">#&gt; [1,] 1040.299 1948.543</span></span>
+<span id="cb13-27"><a href="#cb13-27"></a><span class="co">#&gt; [2,] 1763.122 2792.150</span></span></code></pre></div>
 <p>Finally, there is also <code>st_all_shortest_paths()</code>, which is a wrapper around <code>igraph::all_shortest_paths</code>. It works the same as <code>st_shortest_paths()</code>, but in case there are multiple shortest paths from A to B, it will return all of them, instead of only one.</p>
 <p><em>Note: if you provide points that are not network nodes, the nearest node to those points will be taken. We would like to also give the option to take the nearest point on the nearest edge. See <a href="https://github.com/luukvdmeer/sfnetworks/issues/54">here</a></em></p>
 </div>

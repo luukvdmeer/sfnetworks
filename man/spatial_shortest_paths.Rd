@@ -41,21 +41,21 @@ an attribute column in the edges table containing those weights. If set to
 be used automatically, as long as this column is present. If set to
 \code{NA}, no weights are used (even if the edges have a weight column).}
 
-\item{output}{Character defining how to report the shortest paths. Can be 
+\item{output}{Character defining how to report the shortest paths. Can be
 \code{'nodes'} meaning that only indices of nodes in the paths are
 returned, \code{'edges'} meaning that only indices of edges in the paths
 are returned, or \code{'both'} meaning that both node and edge indices are
 returned. Defaults to \code{'both'}.}
 
 \item{...}{Arguments passed on to the corresponding
-\code{\link[igraph:shortest_paths]{igraph}} function. Arguments 
+\code{\link[igraph:shortest_paths]{igraph}} function. Arguments
 \code{predecessors} and \code{inbound.edges} are ignored.}
 }
 \value{
-An object of class \code{\link[tibble]{tbl_df}} with one row per 
-returned path. Depending on the setting of the 'output' argument, columns 
-can be \code{node_paths} (a list column with for each path the ordered 
-indices of nodes present in that path) and \code{edge_paths} (a list column 
+An object of class \code{\link[tibble]{tbl_df}} with one row per
+returned path. Depending on the setting of the 'output' argument, columns
+can be \code{node_paths} (a list column with for each path the ordered
+indices of nodes present in that path) and \code{edge_paths} (a list column
 with for each path the ordered indices of edges present in that path).
 }
 \description{

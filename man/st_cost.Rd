@@ -9,18 +9,18 @@ st_cost(x, from = igraph::V(x), to = igraph::V(x), weights = NULL, ...)
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
 
-\item{from}{The (set of) geospatial point(s) from which the shortest paths 
+\item{from}{The (set of) geospatial point(s) from which the shortest paths
 will be calculated. Can be an object of  class \code{\link[sf]{sf}} or
 \code{\link[sf]{sfc}}. Empty geometries will be ignored.
-Alternatively, it can be a numeric vector, containing the indices of the 
-nodes from which the shortest paths will be calculated. By default, all 
+Alternatively, it can be a numeric vector, containing the indices of the
+nodes from which the shortest paths will be calculated. By default, all
 nodes in the network are included.}
 
-\item{to}{The (set of) geospatial point(s) to which the shortest paths will 
+\item{to}{The (set of) geospatial point(s) to which the shortest paths will
 be calculated. Can be an object of  class \code{\link[sf]{sf}} or
 \code{\link[sf]{sfc}}. Empty geometries will be ignored.
-Alternatively, it can be a numeric vector, containing the indices of the 
-nodes to which the shortest paths will be calculated. By default, all nodes 
+Alternatively, it can be a numeric vector, containing the indices of the
+nodes to which the shortest paths will be calculated. By default, all nodes
 in the network are included.}
 
 \item{weights}{The edge weights to be used in the shortest path calculation.
@@ -33,14 +33,14 @@ be used automatically, as long as this column is present. If set to
 \item{...}{Arguments passed on to code{\link[igraph]{distances}}.}
 }
 \value{
-An nxm numeric matrix where n is the length of the \code{from} 
+An nxm numeric matrix where n is the length of the \code{from}
 argument, and m is the length of the \code{to} argument.
 }
 \description{
 Wrapper around \code{\link[igraph]{distances}} to calculate costs of
-pairwise shortest paths between points in a spatial network. It allows to 
-provide any set of geospatial point as \code{from} and \code{to} arguments. 
-If such a geospatial point is not equal to a node in the network, it will 
+pairwise shortest paths between points in a spatial network. It allows to
+provide any set of geospatial point as \code{from} and \code{to} arguments.
+If such a geospatial point is not equal to a node in the network, it will
 be snapped to its nearest node before calculating costs.
 }
 \details{
