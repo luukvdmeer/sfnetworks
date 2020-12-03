@@ -93,12 +93,12 @@ create_nodes_from_edges = function(edges) {
   # Give each unique location a unique ID.
   indices = match(nodes, unique(nodes))
   # Define for each endpoint if it is a source or target node.
-  sources = rep(c(TRUE, FALSE), length(nodes) / 2)
+  is_source = rep(c(TRUE, FALSE), length(nodes) / 2)
   # Define for each edges which node is its source and target node.
   if ("from" %in% colnames(edges)) raise_overwrite("from")
-  edges$from = indices[sources]
+  edges$from = indices[is_source]
   if ("to" %in% colnames(edges)) raise_overwrite("to")
-  edges$to = indices[!sources]
+  edges$to = indices[!is_source]
   # Remove duplicated nodes from the nodes table.
   nodes = nodes[!duplicated(indices)]
   # Convert to sf object
