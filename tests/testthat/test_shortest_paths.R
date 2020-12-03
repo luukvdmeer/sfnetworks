@@ -8,13 +8,9 @@ net = as_sfnetwork(roxel, directed = FALSE) %>%
 # Create random points inside network bbox
 rdm = net %>% st_bbox() %>% st_as_sfc() %>% st_sample(4, type = 'random')
 
-# Create random from nodes from the first component
-# of the network, to guarantee there is a path
-net_comp1 = convert(net, to_components)
-from_indices = sample(1:vcount(net_comp1), 4)
-
 test_that('Only the first from argument
           is used for shortest paths calculations', {
+  from_indices = c(98, 23, 12)
   expect_warning(paths <- st_all_shortest_paths(
     net,
     from = from_indices,
