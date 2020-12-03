@@ -1,8 +1,87 @@
 library(sf)
+library(dplyr)
+library(igraph)
 net = as_sfnetwork(roxel, directed = FALSE) %>%
   st_transform(3035)
 
 # Create random points inside network bbox
 rdm = net %>% st_bbox() %>% st_as_sfc() %>% st_sample(4, type = 'random')
 
-st_cost(net, rdm[1:2,], rdm[3:4,])
+test_that('Only the first from argument
+          is used for shortest paths calculations', {
+  from_indices = sample(1:igraph::vcount(net), 3)
+  expect_warning(paths <- st_shortest_paths(
+    net,
+    from = from_indices,
+    to = rdm,
+    output = 'nodes'), 'only the first element is used')
+  resulting_from_nodes = paths %>%
+    rowwise() %>%
+    mutate(node_from = first(node_paths)) %>%
+    pull(node_from)
+  expect_setequal(resulting_from_nodes, first(from_indices))
+})
+
+test_that('Empty geometries for all from and/or to arguments
+          give an error', {
+  expect_error(st_cost(
+      net,
+      from = st_sfc(st_point(), crs = st_crs(net)),
+      to = rdm[1:2]
+  ), 'are all empty')
+  expect_error(st_all_shortest_paths(
+    net,
+    from = rdm[1],
+    to = st_sfc(st_point(), crs = st_crs(net))
+  ), 'are all empty')
+})
+
+test_that('Empty geometries for some from and/or to arguments are
+          ignored with a warning', {
+  expect_warning(st_shortest_paths(
+    net,
+    from = c(st_sfc(st_point(), crs = st_crs(net)), rdm[3]),
+    to = rdm[1:2]
+  ), 'are ignored')
+  expect_warning(st_cost(
+    net,
+    from = rdm[1],
+    to = c(rdm[3:4], st_sfc(st_point()))
+  ), 'are ignored')
+})
+
+test_that('NA indices for all from and/or to arguments give an error', {
+  expect_error(st_all_shortest_paths(
+    net,
+    from = as.numeric(NA),
+    to = c(3,28,98)
+  ), 'are all NA')
+  expect_error(st_shortest_paths(
+    net,
+    from = 2,
+    to = as.numeric(c(NA, NA, NA))
+  ), 'are all NA')
+})
+
+test_that('NA indices for some from and/or to arguments are ignored with
+          a warning', {
+  expect_warning(st_cost(
+    net,
+    from = as.numeric(c(27,NA)),
+    to = c(3,28,98)
+  ), 'are ignored')
+  expect_warning(st_shortest_paths(
+    net,
+    from = 2,
+    to = as.numeric(c(NA, 32, 29, NA))
+  ), 'are ignored')
+})
+
+test_that('Objects in the to and/or from argument that are not numeric, sf,
+          or sfc give an error', {
+    expect_error(st_cost(
+      net,
+      from = 4,
+      to = c(TRUE, FALSE, TRUE)
+    ), 'not accepted')
+})
