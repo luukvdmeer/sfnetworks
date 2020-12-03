@@ -14,7 +14,7 @@ net = as_sfnetwork(st_as_sf(c(e1,e2,e3)))
 # Extract nodes from network as points
 pts = st_as_sf(net, 'nodes')[1:2,]
 
-# Create random points in from network bbox
+# Create random points inside network bbox
 rdm = net %>% st_bbox() %>% st_as_sfc() %>% st_sample(4, type = 'random')
 
 test_that('network breaks when there are multiple node matches given to st_join', {
