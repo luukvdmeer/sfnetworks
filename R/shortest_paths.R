@@ -31,18 +31,18 @@
 #' \code{NA}, no weights are used (even if the edges have a weight column).
 #'
 #' @param ... Arguments passed on to the corresponding
-#' \code{\link[igraph:shortest_paths]{igraph}} function. Arguments 
+#' \code{\link[igraph:shortest_paths]{igraph}} function. Arguments
 #' \code{predecessors} and \code{inbound.edges} are ignored.
 #'
 #' @details See the \code{\link[igraph:shortest_paths]{igraph}} documentation.
 #'
 #' @seealso \code{\link{st_shortest_paths}}
 #'
-#' @return An object of class \code{\link[tibble]{tbl_df}} with one row per 
-#' returned path. Depending on the setting of the 'output' argument, columns 
-#' can be \code{node_paths} (a list column with for each path the ordered 
-#' indices of nodes present in that path) and \code{edge_paths} (a list column 
-#' with for each path the ordered indices of edges present in that path). 
+#' @return An object of class \code{\link[tibble]{tbl_df}} with one row per
+#' returned path. Depending on the setting of the 'output' argument, columns
+#' can be \code{node_paths} (a list column with for each path the ordered
+#' indices of nodes present in that path) and \code{edge_paths} (a list column
+#' with for each path the ordered indices of edges present in that path).
 #'
 #' @name spatial_shortest_paths
 NULL
@@ -50,12 +50,12 @@ NULL
 #' @describeIn spatial_shortest_paths Wrapper around
 #' \code{igraph::shortest_paths}.
 #'
-#' @param output Character defining how to report the shortest paths. Can be 
+#' @param output Character defining how to report the shortest paths. Can be
 #' \code{'nodes'} meaning that only indices of nodes in the paths are
 #' returned, \code{'edges'} meaning that only indices of edges in the paths
 #' are returned, or \code{'both'} meaning that both node and edge indices are
 #' returned. Defaults to \code{'both'}.
-#' 
+#'
 #' @examples
 #' library(sf)
 #' library(tidygraph)
@@ -95,7 +95,7 @@ NULL
 #'
 #' @importFrom igraph V
 #' @export
-st_shortest_paths = function(x, from, to = igraph::V(x), weights = NULL, 
+st_shortest_paths = function(x, from, to = igraph::V(x), weights = NULL,
                              output = "both", ...) {
   UseMethod("st_shortest_paths")
 }
@@ -103,8 +103,15 @@ st_shortest_paths = function(x, from, to = igraph::V(x), weights = NULL,
 #' @importFrom igraph shortest_paths V
 #' @importFrom tibble as_tibble
 #' @export
-st_shortest_paths.sfnetwork = function(x, from, to = igraph::V(x), 
+st_shortest_paths.sfnetwork = function(x, from, to = igraph::V(x),
                                        weights = NULL, output = "both", ...) {
+  if (length(from) > 1) {
+    warning(
+      "Although argument 'from' has length > 1, ",
+      "only the first element is used",
+      call. = FALSE
+    )
+  }
   # Set common shortest paths arguments.
   args = set_paths_args(x, from, to, weights)
   # Set output.
@@ -140,8 +147,15 @@ st_all_shortest_paths = function(x, from, to = igraph::V(x), weights = NULL) {
 
 #' @importFrom igraph all_shortest_paths V
 #' @export
-st_all_shortest_paths.sfnetwork = function(x, from, to = igraph::V(x), 
+st_all_shortest_paths.sfnetwork = function(x, from, to = igraph::V(x),
                                            weights = NULL) {
+  if (length(from) > 1) {
+    warning(
+      "Although argument 'from' has length > 1, ",
+      "only the first element is used",
+      call. = FALSE
+    )
+  }
   args = set_paths_args(x, from, to, weights)
   paths = do.call(all_shortest_paths, args)
   # Extract paths of node indices.
@@ -153,25 +167,25 @@ st_all_shortest_paths.sfnetwork = function(x, from, to = igraph::V(x),
 #' Compute a cost matrix of a spatial network
 #'
 #' Wrapper around \code{\link[igraph]{distances}} to calculate costs of
-#' pairwise shortest paths between points in a spatial network. It allows to 
-#' provide any set of geospatial point as \code{from} and \code{to} arguments. 
-#' If such a geospatial point is not equal to a node in the network, it will 
+#' pairwise shortest paths between points in a spatial network. It allows to
+#' provide any set of geospatial point as \code{from} and \code{to} arguments.
+#' If such a geospatial point is not equal to a node in the network, it will
 #' be snapped to its nearest node before calculating costs.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @param from The (set of) geospatial point(s) from which the shortest paths 
+#' @param from The (set of) geospatial point(s) from which the shortest paths
 #' will be calculated. Can be an object of  class \code{\link[sf]{sf}} or
 #' \code{\link[sf]{sfc}}. Empty geometries will be ignored.
-#' Alternatively, it can be a numeric vector, containing the indices of the 
-#' nodes from which the shortest paths will be calculated. By default, all 
+#' Alternatively, it can be a numeric vector, containing the indices of the
+#' nodes from which the shortest paths will be calculated. By default, all
 #' nodes in the network are included.
 #'
-#' @param to The (set of) geospatial point(s) to which the shortest paths will 
+#' @param to The (set of) geospatial point(s) to which the shortest paths will
 #' be calculated. Can be an object of  class \code{\link[sf]{sf}} or
 #' \code{\link[sf]{sfc}}. Empty geometries will be ignored.
-#' Alternatively, it can be a numeric vector, containing the indices of the 
-#' nodes to which the shortest paths will be calculated. By default, all nodes 
+#' Alternatively, it can be a numeric vector, containing the indices of the
+#' nodes to which the shortest paths will be calculated. By default, all nodes
 #' in the network are included.
 #'
 #' @param weights The edge weights to be used in the shortest path calculation.
@@ -187,7 +201,7 @@ st_all_shortest_paths.sfnetwork = function(x, from, to = igraph::V(x),
 #'
 #' @seealso \code{\link{st_shortest_paths}}
 #'
-#' @return An nxm numeric matrix where n is the length of the \code{from} 
+#' @return An nxm numeric matrix where n is the length of the \code{from}
 #' argument, and m is the length of the \code{to} argument.
 #'
 #' @examples
@@ -207,14 +221,14 @@ st_all_shortest_paths.sfnetwork = function(x, from, to = igraph::V(x),
 #'
 #' @importFrom igraph V
 #' @export
-st_cost = function(x, from = igraph::V(x), to = igraph::V(x), 
+st_cost = function(x, from = igraph::V(x), to = igraph::V(x),
                                weights = NULL, ...) {
   UseMethod("st_cost")
 }
 
 #' @importFrom igraph distances V
 #' @export
-st_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x), 
+st_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
                                          weights = NULL, ...) {
   args = set_paths_args(x, from, to, weights)
   names(args)[2] = "v" # In igraph::distances argument 'from' is called 'v'
@@ -223,13 +237,6 @@ st_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
 
 #' @importFrom igraph ecount edge_attr
 set_paths_args = function(x, from, to, weights) {
-  if (length(from) > 1) {
-    warning(
-      "Although argument 'from' has length > 1, ",
-      "only the first element is used",
-      call. = FALSE
-    )
-  }
   from = set_path_endpoints(x, from, name = "from")
   # Set to.
   to = set_path_endpoints(x, to, name = "to")
@@ -258,7 +265,7 @@ set_path_endpoints = function(x, p, name) {
       }
     }
     return (st_nearest_feature(p[!missing], nodes_as_sf(x)))
-  } 
+  }
   # Case 2: input is numeric node indices.
   if (is.numeric(p)) {
     missing = is.na(p)
@@ -278,8 +285,8 @@ set_path_endpoints = function(x, p, name) {
     return (p[!missing])
   }
   stop(
-    "Objects of class ", 
-    class(p), 
+    "Objects of class ",
+    class(p),
     " not accepted as input to argument '", name, "'",
     call. = FALSE
   )
