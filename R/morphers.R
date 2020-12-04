@@ -163,7 +163,6 @@ subdivide = function(x) {
   # Restore original node attributes.
   # Fill attributes of newly created nodes with NA.
   orig_node_idxs = rep(node_idxs, reps)[is_new_boundary]
-  #orig_node_idxs = c(1, NA, NA, 2, 3, NA, NA, 4, 5, 2, 2, 6)
   new_nodes = nodes[orig_node_idxs, ]
   st_geometry(new_nodes) = new_node_geoms
   # Remove duplicated nodes from the new nodes table.
@@ -411,7 +410,7 @@ to_spatial_smooth = function(x, require_equal_attrs = FALSE) {
   # --> Update the original edge indices data accordingly.
   # --> Update the edge geometries accordingly.
   # --> Repeat until all pseudo nodes are processed.
-  my_pb <- txtProgressBar(
+  my_pb = txtProgressBar(
     min = sum(!pseudo),
     max = length(pseudo),
     initial = 0,
