@@ -37,6 +37,14 @@
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
+#' @note Due to internal rounding of rational numbers, it may occur that the
+#' intersection point between a line and a point is not evaluated as 
+#' actually intersecting that line by the designated algorithm. Instead, the
+#' intersection point lies a tiny-bit away from the edge. Therefore, when any
+#' of \code{blend_nodes} or \code{blend_crossings} is set to \code{TRUE}, a
+#' small tolerance of 1e-5 meters will be used for blending, instead of a 
+#' tolerance of 0.
+#'
 #' @examples
 #' library(sfnetworks)
 #' library(sf)
@@ -107,6 +115,7 @@ st_network_join = function(x, y, blend_nodes = FALSE,
 }
 
 #' @importFrom tidygraph as_tbl_graph graph_join
+#' @importFrom units set_units
 #' @export
 st_network_join.sfnetwork = function(x, y, blend_nodes = FALSE,
                            blend_crossings = FALSE, sort = TRUE, ...) {
@@ -119,18 +128,19 @@ st_network_join.sfnetwork = function(x, y, blend_nodes = FALSE,
   if (any(c(blend_nodes, blend_crossings))) {
     if (will_assume_planar(x)) raise_assume_planar("st_blend")
     raise_assume_constant("st_blend")
+    tol = set_units(1e-5, "m")
     if (blend_nodes) {
       x_nodes = node_geom(x)
       y_nodes = node_geom(y)
-      x = suppressWarnings(blend_(x, y_nodes, tolerance = 0, sort = sort))
-      y = suppressWarnings(blend_(y, x_nodes, tolerance = 0, sort = sort))
+      x = suppressWarnings(blend_(x, y_nodes, tolerance = tol, sort = sort))
+      y = suppressWarnings(blend_(y, x_nodes, tolerance = tol, sort = sort))
     }
     if (blend_crossings) {
       x_edges = edge_geom(x)
       y_edges = edge_geom(y)
       crossings = linestring_crossings(x_edges, y_edges)
-      x = suppressWarnings(blend_(x, crossings, tolerance = 0, sort = sort))
-      y = suppressWarnings(blend_(y, crossings, tolerance = 0, sort = sort))
+      x = suppressWarnings(blend_(x, crossings, tolerance = tol, sort = sort))
+      y = suppressWarnings(blend_(y, crossings, tolerance = tol, sort = sort))
     }
   }
   # Regular graph join based on geometry columns.
