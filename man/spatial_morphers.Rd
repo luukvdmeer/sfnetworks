@@ -25,7 +25,7 @@ to_spatial_implicit_edges(x)
 
 to_spatial_shortest_paths(x, ...)
 
-to_spatial_simple(x, keep = "shortest", ...)
+to_spatial_simple(x, remove_parallels = TRUE, remove_loops = TRUE)
 
 to_spatial_smooth(x, require_equal_attrs = FALSE)
 
@@ -37,9 +37,10 @@ to_spatial_subset(x, ..., subset_by = NULL)
 \item{...}{Arguments to be passed on to other functions. See the description
 of each morpher for details.}
 
-\item{keep}{Which geometry should be preserved when collapsing parallel
-edges. Either \code{"longest"} or \code{"shortest"}. Defaults to
-\code{"shortest"}.}
+\item{remove_parallels}{Should parallel edges be removed. Defaults to
+\code{TRUE}.}
+
+\item{remove_loops}{Should loops be remove. Defaults to \code{TRUE}.}
 
 \item{require_equal_attrs}{Should pseudo nodes only be removed when all
 attributes of their incident edges are equal? Defaults to \code{FALSE}.}
@@ -78,12 +79,15 @@ dropped. Returns a \code{morphed_tbl_graph} containing a single element of
 class \code{\link[tidygraph]{tbl_graph}}.
 
 \item \code{to_spatial_subdivision}: Construct a subdivision of the network by
-subdividing all edges at those points that are included in their linestring
-geometry feature but are not endpoints of it. The network is reconstructed
-afterwards such that edges which did share points in their geometries but
-not endpoints are now connected as well. Returns a \code{morphed_sfnetwork}
-containing a single element of class \code{\link{sfnetwork}}. This morpher
-requires edges to be spatially explicit.
+subdividing edges at each internal point that has an equal geometry to any
+other internal or boundary point in the edges table. Internal points in this
+sense are those points that are included in their linestring geometry 
+feature but are not endpoints of it, while boundary points are the endpoints
+of the linestrings. The network is reconstructed after subdivision such that 
+edges are connected at the points of subdivision. Returns a 
+\code{morphed_sfnetwork} containing a single element of class 
+\code{\link{sfnetwork}}. This morpher requires edges to be spatially 
+explicit.
 
 \item \code{to_spatial_directed}: Make a network directed in the direction given
 by the linestring geometries of the edges. Differs from
@@ -115,11 +119,7 @@ the same manner as \code{\link{st_shortest_paths}}. Returns a
 unmorphing only the first instance of both the node and edge data will be
 used, as the the same node and/or edge can be present in multiple paths.
 
-\item \code{to_spatial_simple}: Remove loops in a graph and collapse parallel
-edges. \code{...} is passed on to \code{\link[tidygraph]{to_simple}}.
-Differs from \code{\link[tidygraph]{to_simple}} by assigning a single
-linestring geometry to combined parallel edges. This is either the geometry
-of the shortest or the longest of the parallel edges. Returns a
+\item \code{to_spatial_simple}: Remove loops and parallel edges. Returns a
 \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}. This morpher requires edges to be spatially
 explicit. If not, use \code{\link[tidygraph]{to_simple}}.
@@ -152,16 +152,21 @@ net = as_sfnetwork(roxel, directed = FALSE) \%>\%
 convert(net, to_spatial_coordinates)
 
 ## to_spatial_subdivision
-par(mar = c(1, 1, 1, 1), mfrow = c(1,2))
-plot(net)
+# Number of edges in original network.
+net \%>\%
+  activate("edges") \%>\%
+  st_as_sf() \%>\%
+  nrow()
+# Number of edges in subdivided network.
 net \%>\%
   convert(to_spatial_subdivision) \%>\%
-  plot()
+  activate("edges")
+  st_as_sf() \%>\%
+  nrow()
 
 ## to_spatial_directed
 net \%>\%
-  activate("edges") \%>\%
-  st_reverse() \%>\%
+  convert(to_undirected) \%>\%
   convert(to_spatial_directed)
 
 ## to_spatial_explicit_edges
