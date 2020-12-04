@@ -403,6 +403,17 @@ to_spatial_smooth = function(x, require_equal_attrs = FALSE) {
     L = st_geometry(edges)
     G = drop_edge_geom(G)
   }
+  # Initialize a progress bar for large networks.
+  # Since the function is still quite slow.
+  print_pb = if (length(pseudo) > 500) TRUE else FALSE
+  if (print_pb) {
+    my_pb = txtProgressBar(
+      min = sum(!pseudo),
+      max = length(pseudo),
+      initial = 0,
+      style = 3
+    )
+  }
   # Iteratively process pseudo nodes:
   # --> Find incident edges to the node.
   # --> Concatenate the incident edges and add this as a new edge.
@@ -410,12 +421,6 @@ to_spatial_smooth = function(x, require_equal_attrs = FALSE) {
   # --> Update the original edge indices data accordingly.
   # --> Update the edge geometries accordingly.
   # --> Repeat until all pseudo nodes are processed.
-  my_pb = txtProgressBar(
-    min = sum(!pseudo),
-    max = length(pseudo),
-    initial = 0,
-    style = 3
-  )
   pseudo_remaining = pseudo
   while (any(pseudo_remaining)) {
     # Get the index j and geometry p of the processed pseudo node.
@@ -490,7 +495,9 @@ to_spatial_smooth = function(x, require_equal_attrs = FALSE) {
     }
     # Mark node as processed.
     pseudo_remaining[j] = FALSE
-    setTxtProgressBar(my_pb, value = sum(!pseudo_remaining))
+    if (print_pb) {
+      setTxtProgressBar(my_pb, value = sum(!pseudo_remaining))
+    }
   }
   # Post-process.
   # --> Convert the updated network back to a sfnetwork.
