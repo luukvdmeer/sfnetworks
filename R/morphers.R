@@ -63,20 +63,29 @@ to_spatial_coordinates = function(x) {
 }
 
 #' @describeIn spatial_morphers Construct a subdivision of the network by
-#' subdividing all edges at those points that are included in their linestring
-#' geometry feature but are not endpoints of it. The network is reconstructed
-#' afterwards such that edges which did share points in their geometries but
-#' not endpoints are now connected as well. Returns a \code{morphed_sfnetwork}
-#' containing a single element of class \code{\link{sfnetwork}}. This morpher
-#' requires edges to be spatially explicit.
+#' subdividing edges at each internal point that has an equal geometry to any
+#' other internal or boundary point in the edges table. Internal points in this
+#' sense are those points that are included in their linestring geometry 
+#' feature but are not endpoints of it, while boundary points are the endpoints
+#' of the linestrings. The network is reconstructed after subdivision such that 
+#' edges are connected at the points of subdivision. Returns a 
+#' \code{morphed_sfnetwork} containing a single element of class 
+#' \code{\link{sfnetwork}}. This morpher requires edges to be spatially 
+#' explicit.
 #'
 #' @examples
 #' ## to_spatial_subdivision
-#' par(mar = c(1, 1, 1, 1), mfrow = c(1,2))
-#' plot(net)
+#' # Number of edges in original network.
+#' net %>%
+#'   activate("edges") %>%
+#'   st_as_sf() %>%
+#'   nrow()
+#' # Number of edges in subdivided network.
 #' net %>%
 #'   convert(to_spatial_subdivision) %>%
-#'   plot()
+#'   activate("edges")
+#'   st_as_sf() %>%
+#'   nrow()
 #'
 #' @export
 to_spatial_subdivision = function(x) {
@@ -87,6 +96,9 @@ to_spatial_subdivision = function(x) {
   )
 }
 
+#' @importFrom igraph is_directed
+#' @importFrom sf st_crs st_geometry
+#' @importFrom sfheaders sf_to_df sfc_linestring sfc_point
 subdivide = function(x) {
   # Retrieve nodes and edges from the network.
   nodes = nodes_as_sf(x)
@@ -172,8 +184,7 @@ subdivide = function(x) {
 #' @examples
 #' ## to_spatial_directed
 #' net %>%
-#'   activate("edges") %>%
-#'   st_reverse() %>%
+#'   convert(to_undirected) %>%
 #'   convert(to_spatial_directed)
 #'
 #' @importFrom igraph is_directed
@@ -313,10 +324,7 @@ to_spatial_shortest_paths = function(x, ...) {
 #'   st_as_sf() %>%
 #'   nrow()
 #'
-#' @importFrom dplyr desc
-#' @importFrom igraph delete_edge_attr edge_attr
-#' @importFrom sf st_length
-#' @importFrom tidygraph arrange filter edge_is_loop edge_is_multiple
+#' @importFrom tidygraph filter edge_is_loop edge_is_multiple
 #' @export
 to_spatial_simple = function(x, remove_parallels = TRUE, remove_loops = TRUE) {
   # Activate edges.
