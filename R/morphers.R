@@ -294,10 +294,6 @@ to_spatial_shortest_paths = function(x, ...) {
 #' \code{\link{sfnetwork}}. This morpher requires edges to be spatially
 #' explicit. If not, use \code{\link[tidygraph]{to_simple}}.
 #'
-#' @param keep Which of parallel edges should be kept. Either \code{"longest"} 
-#' to keep the edge with the longest distance or \code{"shortest"} to keep the
-#' edge with the shortest distance. Defaults to \code{"shortest"}.
-#'
 #' @param remove_parallels Should parallel edges be removed. Defaults to
 #' \code{TRUE}.
 #'
@@ -322,18 +318,9 @@ to_spatial_shortest_paths = function(x, ...) {
 #' @importFrom sf st_length
 #' @importFrom tidygraph arrange filter edge_is_loop edge_is_multiple
 #' @export
-to_spatial_simple = function(x, keep = "shortest", remove_parallels = TRUE, 
-                             remove_loops = TRUE, ...) {
-  require_spatially_explicit_edges(x)
-  # Calculate edge length.
-  edge_attr(x, ".sfnetwork_edge_length") = st_length(edge_geom(x))
-  # Arrange by edge length.
-  x_new = switch(
-    keep,
-    shortest = arrange(activate(x, "edges"), .sfnetwork_edge_length),
-    longest = arrange(activate(x, "edges"), desc(.sfnetwork_edge_length)),
-    raise_unknown_input(keep)
-  )
+to_spatial_simple = function(x, remove_parallels = TRUE, remove_loops = TRUE) {
+  # Activate edges.
+  x_new = activate(x, "edges")
   # Remove parallels if requested.
   if (remove_parallels) {
     x_new = filter(x_new, !edge_is_multiple())
@@ -342,10 +329,6 @@ to_spatial_simple = function(x, keep = "shortest", remove_parallels = TRUE,
   if (remove_loops) {
     x_new = filter(x_new, !edge_is_loop())
   }
-  # Remove length column.
-  x_new = delete_edge_attr(x_new, ".sfnetwork_edge_length")
-  # Arrange in original order.
-  x_new = arrange(x_new, .tidygraph_edge_index)
   # Return in a list.
   list(
     simple = x_new %preserve_active% x
