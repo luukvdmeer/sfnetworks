@@ -41,13 +41,13 @@ We do need to make a note here. In a geospatial network, the nodes *always* have
 ### From a nodes and edges table
 The most basic way to construct a sfnetwork with spatially explicit edges is by providing the `sfnetwork` construction function one sf object containing the nodes, and another sf object containing the edges. This edges table should include a *from* and *to* column refering to the node indices of the edge endpoints. With a node index we mean the position of a node in the nodes table (i.e. its rownumber). A small toy example:
 
-```{r}
-suppressPackageStartupMessages({
-  library(sfnetworks)
-  library(sf)
-  library(tidygraph)
-})
+```{r, message=FALSE}
+library(sfnetworks)
+library(sf)
+library(tidygraph)
+```
 
+```{r}
 p1 = st_point(c(7, 51))
 p2 = st_point(c(7, 52))
 p3 = st_point(c(8, 52))
@@ -81,6 +81,8 @@ Instead of *from* and *to* columns containing integers that refer to node indice
 nodes$name = c("city", "village", "farm")
 edges$from = c("city", "city", "farm")
 edges$to = c("village", "farm", "village")
+
+edges
 
 net = sfnetwork(nodes, edges, node_key = "name")
 net
@@ -173,8 +175,8 @@ plot(net)
 
 If you have `ggplot2` installed, you can also you the `autoplot` method to directly create a simple ggplot of the network.
 
-```{r, fig.width=5, fig.height=5}
-suppressPackageStartupMessages(library(ggplot2))
+```{r, message=FALSE, fig.width=5, fig.height=5}
+library(ggplot2)
 
 autoplot(net) + ggtitle("Road network of Münster Roxel")
 ```
