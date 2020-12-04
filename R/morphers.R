@@ -83,7 +83,7 @@ to_spatial_coordinates = function(x) {
 #' # Number of edges in subdivided network.
 #' net %>%
 #'   convert(to_spatial_subdivision) %>%
-#'   activate("edges")
+#'   activate("edges") %>%
 #'   st_as_sf() %>%
 #'   nrow()
 #'
