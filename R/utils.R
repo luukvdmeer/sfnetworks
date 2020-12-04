@@ -93,12 +93,12 @@ create_nodes_from_edges = function(edges) {
   # Give each unique location a unique ID.
   indices = match(nodes, unique(nodes))
   # Define for each endpoint if it is a source or target node.
-  sources = rep(c(TRUE, FALSE), length(nodes) / 2)
+  is_source = rep(c(TRUE, FALSE), length(nodes) / 2)
   # Define for each edges which node is its source and target node.
   if ("from" %in% colnames(edges)) raise_overwrite("from")
-  edges$from = indices[sources]
+  edges$from = indices[is_source]
   if ("to" %in% colnames(edges)) raise_overwrite("to")
-  edges$to = indices[!sources]
+  edges$to = indices[!is_source]
   # Remove duplicated nodes from the nodes table.
   nodes = nodes[!duplicated(indices)]
   # Convert to sf object
@@ -129,13 +129,15 @@ create_nodes_from_edges = function(edges) {
 #' and the first point in y, the second point in x and the second point in y, 
 #' et cetera.
 #'
-#' @importFrom sf st_crs st_sfc
+#' @importFrom sf st_crs
+#' @importFrom sfheaders sfc_linestring sfc_to_df
 #' @noRd
 draw_lines = function(x, y) {
-  st_sfc(
-    lapply(seq_along(x), function(i) points_to_line(x[[i]], y[[i]])),
-    crs = st_crs(x)
-  )
+  df = rbind(sfc_to_df(x), sfc_to_df(y))
+  df = df[order(df$point_id), ]
+  lines = sfc_linestring(df, x = "x", y = "y", linestring_id = "point_id")
+  st_crs(lines) = st_crs(x)
+  lines
 }
 
 #' Get the geometries of the boundary nodes of edges in an sfnetwork
@@ -167,15 +169,22 @@ edge_boundary_nodes = function(x) {
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @return A two-column matrix, with the number of rows equal to the number
-#' of edges in the network. The first column contains the indices of the source
-#' nodes of the edges, the seconds column contains the indices of the target
-#' nodes of the edges.
+#' @param matrix Should te result be returned as a two-column matrix? Defaults
+#' to \code{FALSE}.
+#'
+#' @return If matrix is \code{FALSE}, a numeric vector of length equal to twice
+#' the number of edges in x, and ordered as
+#' [start of edge 1, end of edge 1, start of edge 2, end of edge 2, ...]. If
+#' matrix is \code{TRUE}, a two-column matrix, with the number of rows equal to 
+#' the number of edges in the network. The first column contains the indices of 
+#' the start nodes of the edges, the seconds column contains the indices of the 
+#' end nodes of the edges.
 #'
 #' @importFrom igraph E ends
 #' @noRd
-edge_boundary_node_indices = function(x) {
-  ends(x, E(x), names = FALSE)
+edge_boundary_node_indices = function(x, matrix = FALSE) {
+  ends = ends(x, E(x), names = FALSE)
+  if (matrix) ends else as.vector(t(ends))
 }
 
 #' Get the geometries of the boundary points of edges in an sfnetwork
@@ -233,7 +242,7 @@ explicitize_edges = function(x) {
     nodes = node_geom(x)
     # Get the indices of the boundary nodes of each edge.
     # Returns a matrix with source ids in column 1 and target ids in column 2.
-    ids = edge_boundary_node_indices(x)
+    ids = edge_boundary_node_indices(x, matrix = TRUE)
     # Get the boundary node geometries of each edge.
     from = nodes[ids[, 1]]
     to = nodes[ids[, 2]]
@@ -306,25 +315,23 @@ implicitize_edges = function(x) {
 #'
 #' @details See issue #59 on the GitHub repo for a discussion on this function.
 #'
-#' @importFrom sf st_cast st_coordinates st_crs st_multipoint st_sfc
+#' @importFrom sf st_crs st_geometry
+#' @importFrom sfheaders sfc_point sfc_to_df
 #' @noRd
 linestring_boundary_points = function(x) {
   # Extract coordinates.
-  x_coordinates = unname(st_coordinates(x))
-  # Find index of L1 column.
-  # This column defines to which linestring each coordinate pair belongs.
-  L1_index = ncol(x_coordinates)
+  coords = sfc_to_df(st_geometry(x)) 
   # Find row-indices of the first and last coordinate pair of each linestring.
   # These are the boundary points.
-  first_pair = !duplicated(x_coordinates[, L1_index])
-  last_pair = !duplicated(x_coordinates[, L1_index], fromLast = TRUE)
+  first_pair = !duplicated(coords[["sfg_id"]])
+  last_pair = !duplicated(coords[["sfg_id"]], fromLast = TRUE)
   idxs = first_pair | last_pair
-  # Extract boundary points and rebuild sfc.
-  x_pairs = x_coordinates[idxs, ]
-  st_cast(
-    st_sfc(st_multipoint(x_pairs[, -L1_index]), crs = st_crs(x)),
-   "POINT"
-  )
+  # Extract boundary point coordinates.
+  pairs = coords[idxs, names(coords) %in% c("x", "y", "z", "m")]
+  # Rebuild sf structure.
+  points = sfc_point(pairs) 
+  st_crs(points) = st_crs(x) 
+  points
 }
 
 #' Get the points where linestrings cross
@@ -359,20 +366,6 @@ linestring_crossings = function(x, y) {
   crossings = point_intersections[!is_boundary]
   # Return crossings.
   crossings
-}
-
-#' Draw a line between two points
-#'
-#' @param x A \code{POINT} geometry.
-#'
-#' @param y A \code{POINT} geometry.
-#'
-#' @return A \code{LINESTRING} geometry.
-#'
-#' @importFrom sf st_linestring
-#' @noRd
-points_to_line = function(x, y) {
-  st_linestring(c(x, y))
 }
 
 #' Split lines by other features

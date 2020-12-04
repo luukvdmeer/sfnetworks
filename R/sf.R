@@ -332,7 +332,7 @@ st_reverse.sfnetwork = function(x, ...) {
         call. = FALSE
       )
     }
-    node_ids = edge_boundary_node_indices(x)
+    node_ids = edge_boundary_node_indices(x, matrix = TRUE)
     from_ids = node_ids[, 1]
     to_ids = node_ids[, 2]
     x_tbg = reroute(as_tbl_graph(x), from = to_ids, to = from_ids)

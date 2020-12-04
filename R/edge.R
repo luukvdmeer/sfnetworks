@@ -92,7 +92,7 @@ straight_line_distance = function(x) {
   nodes = nodes_as_sf(x)
   # Get the indices of the boundary nodes of each edge.
   # Returns a matrix with source ids in column 1 and target ids in column 2.
-  ids = edge_boundary_node_indices(x)
+  ids = edge_boundary_node_indices(x, matrix = TRUE)
   # Get the boundary node geometries of each edge.
   from = nodes[ids[, 1], ]
   to = nodes[ids[, 2], ]

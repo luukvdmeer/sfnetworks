@@ -63,46 +63,113 @@ to_spatial_coordinates = function(x) {
 }
 
 #' @describeIn spatial_morphers Construct a subdivision of the network by
-#' subdividing all edges at those points that are included in their linestring
-#' geometry feature but are not endpoints of it. The network is reconstructed
-#' afterwards such that edges which did share points in their geometries but
-#' not endpoints are now connected as well. Returns a \code{morphed_sfnetwork}
-#' containing a single element of class \code{\link{sfnetwork}}. This morpher
-#' requires edges to be spatially explicit.
+#' subdividing edges at each internal point that has an equal geometry to any
+#' other internal or boundary point in the edges table. Internal points in this
+#' sense are those points that are included in their linestring geometry 
+#' feature but are not endpoints of it, while boundary points are the endpoints
+#' of the linestrings. The network is reconstructed after subdivision such that 
+#' edges are connected at the points of subdivision. Returns a 
+#' \code{morphed_sfnetwork} containing a single element of class 
+#' \code{\link{sfnetwork}}. This morpher requires edges to be spatially 
+#' explicit.
 #'
 #' @examples
 #' ## to_spatial_subdivision
-#' par(mar = c(1, 1, 1, 1), mfrow = c(1,2))
-#' plot(net)
+#' # Number of edges in original network.
+#' net %>%
+#'   activate("edges") %>%
+#'   st_as_sf() %>%
+#'   nrow()
+#' # Number of edges in subdivided network.
 #' net %>%
 #'   convert(to_spatial_subdivision) %>%
-#'   plot()
+#'   activate("edges") %>%
+#'   st_as_sf() %>%
+#'   nrow()
 #'
-#' @importFrom igraph is_directed
-#' @importFrom lwgeom st_split
-#' @importFrom sf st_cast st_collection_extract st_equals
 #' @export
 to_spatial_subdivision = function(x) {
   require_spatially_explicit_edges(x)
   raise_assume_constant("to_spatial_subdivision")
-  # Retrieve the edges from the network, without the to and from columns.
-  edges = edges_as_sf(x)
-  edges[, c("from", "to")] = NULL
-  # Divide the edges at the points they are composed of.
-  division = suppressWarnings(st_split(edges, st_cast(edges, "POINT")))
-  # The result is:
-  # --> For each original edge a geometrycollection of sub-edges.
-  # --> These sub-edges need to be extracted as linestrings.
-  new_edges = st_collection_extract(division, "LINESTRING")
-  # Reconstruct the network with the new edges.
-  x_new = as_sfnetwork(new_edges, directed = is_directed(x))
-  # Spatial left join between nodes of x_new and original nodes of x.
-  # This is needed since node attributes got lost when constructing x_new.
-  x_new = join_nodes(x_new, nodes_as_sf(x), join = st_equals)
-  # Return in a list.
   list(
-    subdivision = x_new %preserve_active% x
+    subdivision = subdivide(x) %preserve_active% x
   )
+}
+
+#' @importFrom igraph is_directed
+#' @importFrom sf st_crs st_geometry
+#' @importFrom sfheaders sf_to_df sfc_linestring sfc_point
+subdivide = function(x) {
+  # Retrieve nodes and edges from the network.
+  nodes = nodes_as_sf(x)
+  edges = edges_as_sf(x)
+  # Extract all points from the linestring geometries of the edges.
+  edge_pts = sf_to_df(edges)
+  edge_coords = edge_pts[names(edge_pts) %in% c("x", "y", "z", "m")]
+  # Create an index set describing:
+  # --> Which edge point belongs to which edge.
+  edge_idxs = edge_pts$linestring_id
+  # Find which of the edge points are edge boundaries.
+  is_startpoint = !duplicated(edge_idxs)
+  is_endpoint = !duplicated(edge_idxs, fromLast = TRUE)
+  is_boundary = is_startpoint | is_endpoint
+  # Create an index set describing:
+  # --> Which edge point equals which node.
+  node_idxs = rep(NA, nrow(edge_pts))
+  node_idxs[is_boundary] = edge_boundary_node_indices(x)
+  # Find which of the edge points occur more than once.
+  is_duplicate_desc = duplicated(edge_coords)
+  is_duplicate_asc = duplicated(edge_coords, fromLast = TRUE)
+  has_duplicate = is_duplicate_desc | is_duplicate_asc
+  # Split points are those edge points satisfying both of the following rules:
+  # --> 1) They have at least one duplicate among the other edge points.
+  # --> 2) They are not edge boundary points themselves.
+  is_split = has_duplicate & !is_boundary
+  # Create the repetition vector:
+  # --> This defines for each edge point if it should be duplicated.
+  # --> A value of '1' means 'store once', i.e. don't duplicate.
+  # --> A value of '2' means 'store twice', i.e. duplicate.
+  # --> Split points will be part of two new edges and should be duplicated.
+  reps = rep(1L, nrow(edge_coords))
+  reps[is_split] = 2L
+  # Create the new coordinate data frame by duplicating split points.
+  new_edge_coords = data.frame(lapply(edge_coords, function(i) rep(i, reps)))
+  # Update edge indices:
+  # --> First duplicate original indices at each split point.
+  # --> Then increment those accordingly at each split point.
+  dup_edge_idxs = rep(edge_idxs, reps)
+  incs = integer(nrow(new_edge_coords)) # By default don't increment.
+  incs[which(is_split) + 1:sum(is_split)] = 1L # Add 1 after each split.
+  new_edge_idxs = dup_edge_idxs + cumsum(incs)
+  # Build new edge geometries.
+  new_edge_coords$edge_id = new_edge_idxs
+  new_edge_geoms = sfc_linestring(new_edge_coords, linestring_id = "edge_id")
+  st_crs(new_edge_geoms) = st_crs(edges)
+  new_edge_coords$edge_id = NULL
+  # Restore orignal edge attributes.
+  # Duplicate attributes within splitted edges.
+  orig_edge_idxs = dup_edge_idxs[!duplicated(new_edge_idxs)]
+  new_edges = edges[orig_edge_idxs, ]
+  st_geometry(new_edges) = new_edge_geoms
+  # Build new node geometries.
+  is_new_boundary = rep(is_split | is_boundary, reps)
+  new_node_geoms = sfc_point(new_edge_coords[is_new_boundary, ])
+  st_crs(new_node_geoms) = st_crs(nodes)
+  # Set from and to columns of new edges.
+  new_node_idxs = match(new_node_geoms, unique(new_node_geoms))
+  is_source = rep(c(TRUE, FALSE), length(new_node_geoms) / 2)
+  new_edges$from = new_node_idxs[is_source]
+  new_edges$to = new_node_idxs[!is_source]
+  # Restore original node attributes.
+  # Fill attributes of newly created nodes with NA.
+  orig_node_idxs = rep(node_idxs, reps)[is_new_boundary]
+  #orig_node_idxs = c(1, NA, NA, 2, 3, NA, NA, 4, 5, 2, 2, 6)
+  new_nodes = nodes[orig_node_idxs, ]
+  st_geometry(new_nodes) = new_node_geoms
+  # Remove duplicated nodes from the new nodes table.
+  new_nodes = new_nodes[!duplicated(new_node_idxs), ]
+  # Create new network.
+  sfnetwork_(new_nodes, new_edges, directed = is_directed(x))
 }
 
 #' @describeIn spatial_morphers Make a network directed in the direction given
@@ -117,8 +184,7 @@ to_spatial_subdivision = function(x) {
 #' @examples
 #' ## to_spatial_directed
 #' net %>%
-#'   activate("edges") %>%
-#'   st_reverse() %>%
+#'   convert(to_undirected) %>%
 #'   convert(to_spatial_directed)
 #'
 #' @importFrom igraph is_directed
@@ -234,18 +300,15 @@ to_spatial_shortest_paths = function(x, ...) {
   lapply(seq_len(nrow(paths)), get_single_path)
 }
 
-#' @describeIn spatial_morphers Remove loops in a graph and collapse parallel
-#' edges. \code{...} is passed on to \code{\link[tidygraph]{to_simple}}.
-#' Differs from \code{\link[tidygraph]{to_simple}} by assigning a single
-#' linestring geometry to combined parallel edges. This is either the geometry
-#' of the shortest or the longest of the parallel edges. Returns a
+#' @describeIn spatial_morphers Remove loops and parallel edges. Returns a
 #' \code{morphed_sfnetwork} containing a single element of class
 #' \code{\link{sfnetwork}}. This morpher requires edges to be spatially
 #' explicit. If not, use \code{\link[tidygraph]{to_simple}}.
 #'
-#' @param keep Which geometry should be preserved when collapsing parallel
-#' edges. Either \code{"longest"} or \code{"shortest"}. Defaults to
-#' \code{"shortest"}.
+#' @param remove_parallels Should parallel edges be removed. Defaults to
+#' \code{TRUE}.
+#'
+#' @param remove_loops Should loops be remove. Defaults to \code{TRUE}.
 #'
 #' @examples
 #' ## to_spatial_simple
@@ -261,37 +324,19 @@ to_spatial_shortest_paths = function(x, ...) {
 #'   st_as_sf() %>%
 #'   nrow()
 #'
-#' @importFrom igraph is_directed
-#' @importFrom sf st_as_sf st_length
-#' @importFrom tibble as_tibble
-#' @importFrom tidygraph as_tbl_graph convert to_simple
+#' @importFrom tidygraph filter edge_is_loop edge_is_multiple
 #' @export
-to_spatial_simple = function(x, keep = "shortest", ...) {
-  require_spatially_explicit_edges(x)
-  # Retrieve the column name of geometry list column of the edges.
-  geom_colname = edge_geom_colname(x)
-  # Run tidygraphs to_simple morpher.
-  # Extract edges from the result.
-  x_tmp = convert(x, to_simple, ...)
-  edges = as_tibble(as_tbl_graph(x_tmp), "edges")
-  # For each of the edges that are a result of a merge of original edges:
-  # --> Select the geometry of either the longest or shortest edge.
-  select_edge = function(e) {
-    if (length(e) == 1) return (e)
-    L = st_length(e)
-    switch(
-      keep,
-      longest = e[which(L == max(L))][1],
-      shortest = e[which(L == min(L))][1],
-      raise_unknown_input(keep)
-    )
+to_spatial_simple = function(x, remove_parallels = TRUE, remove_loops = TRUE) {
+  # Activate edges.
+  x_new = activate(x, "edges")
+  # Remove parallels if requested.
+  if (remove_parallels) {
+    x_new = filter(x_new, !edge_is_multiple())
   }
-  edges[[geom_colname]] = do.call(c, lapply(edges[[geom_colname]], select_edge))
-  x_new = sfnetwork_(
-    nodes = nodes_as_sf(x_tmp),
-    edges = st_as_sf(edges),
-    directed = is_directed(x)
-  )
+  # Remove loops if requested.
+  if (remove_loops) {
+    x_new = filter(x_new, !edge_is_loop())
+  }
   # Return in a list.
   list(
     simple = x_new %preserve_active% x
