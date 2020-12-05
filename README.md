@@ -1,4 +1,4 @@
-# Tidy Geospatial Networks in R
+# Tidy Geospatial Networks in R <img src="man/figures/logo.png" align="right" width="120" />
 
 <!-- badges: start -->
 
