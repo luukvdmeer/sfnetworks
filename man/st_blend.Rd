@@ -35,6 +35,14 @@ finally adding the snapped point as node to the network. If the location
 of the snapped point is already a node in the network, the attributes of the
 point (if any) will be joined to that node.
 }
+\note{
+Due to internal rounding of rational numbers, it may occur that the
+intersection point between a line and a point is not evaluated as 
+actually intersecting that line by the designated algorithm. Instead, the
+intersection point lies a tiny-bit away from the edge. Therefore, it is
+recommended to set the tolerance to a very small number (say 1e-5) even if
+you only want to blend points that intersect the line.
+}
 \examples{
 library(sf)
 
