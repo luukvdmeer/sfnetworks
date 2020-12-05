@@ -67,7 +67,7 @@ head(circuities)
 Providing node indices:
 
 ```{r}
-st_shortest_paths(net, 1, 9) %>% pull(node_paths) %>% unlist()
+st_network_paths(net, 1, 9) %>% pull(node_paths) %>% unlist()
 ```
 
 Providing the same nodes as spatial points instead:
@@ -87,7 +87,7 @@ p2 = net %>%
 
 p2
 
-st_shortest_paths(net, p1, p2) %>% pull(node_paths) %>% unlist()
+st_network_paths(net, p1, p2) %>% pull(node_paths) %>% unlist()
 ```
 
 In the case above, the locations of these spatial points are exactly equal to the locations of nodes in the network. However, they don't have to be. Points that don't lie on the network will be replaced by their nearest node.
@@ -112,10 +112,10 @@ lengths(st_intersects(p3, net)) > 0
 
 lengths(st_intersects(p4, net)) > 0
 
-st_shortest_paths(net, p3, p4) %>% pull(node_paths) %>% unlist()
+st_network_paths(net, p3, p4) %>% pull(node_paths) %>% unlist()
 ```
 
-All paths above are calculated without taking into account weights of edges. Just as in `igraph::shortest_paths`, you can provide such weights through the weights argument. However, in `st_shortest_path` you also have the option to just provide a column name to the weights argument, which should match an existing column in the networks edges table, whose values will then be used as weights.
+All paths above are calculated without taking into account weights of edges. Just as in `igraph::shortest_paths`, you can provide such weights through the weights argument. However, in `st_network_paths` you also have the option to just provide a column name to the weights argument, which should match an existing column in the networks edges table, whose values will then be used as weights.
 
 ```{r}
 net  = net %>%
@@ -124,7 +124,7 @@ net  = net %>%
 
 net
 
-st_shortest_paths(net, p1, p2, weights = "length") %>% pull(node_paths) %>% unlist()
+st_network_paths(net, p1, p2, weights = "length") %>% pull(node_paths) %>% unlist()
 ```
 
 Alternatively, you can name your weights column weight. That is the same as having a weight attribute in an `igraph` object. The weight values will then be automatically detected and do not have to be provided explicitly.
@@ -135,12 +135,12 @@ net  = net %>%
   rename(weight = length) %>%
   activate("nodes")
 
-st_shortest_paths(net, p1, p2) %>% pull(node_paths) %>% unlist()
+st_network_paths(net, p1, p2) %>% pull(node_paths) %>% unlist()
 ```
 
 We now showed 1-to-1 shortest paths. You can also calculate 1-to-many shortest paths, by giving a multiple feature `sf` or `sfc` object as `to` argument. Having multiple features as `from` argument is not possible in this case (since `igraph` does not support it).
 
-Having multiple features as `from` argument ìs possible in `st_cost()`, which is a wrapper around `igraph::distances`. This returns a cost matrix.
+Having multiple features as `from` argument ìs possible in `st_network_cost()`, which is a wrapper around `igraph::distances`. This returns a cost matrix.
 
 ```{r}
 ps1 = c(st_geometry(p1), st_sfc(p3))
@@ -152,10 +152,10 @@ ps2 = c(st_geometry(p2), st_sfc(p4))
 ps2
 
 # Note that our net object now has a weight column which will be automatically used.
-st_cost(net, ps1, ps2)
+st_network_cost(net, ps1, ps2)
 ```
 
-Finally, there is also `st_all_shortest_paths()`, which is a wrapper around `igraph::all_shortest_paths`. It works the same as `st_shortest_paths()`, but in case there are multiple shortest paths from A to B, it will return all of them, instead of only one.
+Finally, `st_network_paths()` also wraps around `igraph::all_shortest_paths` by setting the argument `all = TRUE`. It works the same as `st_network_paths()` with `all = FALSE`, but in case there are multiple shortest paths from A to B, it will return all of them, instead of only one.
 
 *Note: if you provide points that are not network nodes, the nearest node to those points will be taken. We would like to also give the option to take the nearest point on the nearest edge. See [here](https://github.com/luukvdmeer/sfnetworks/issues/54)*
 

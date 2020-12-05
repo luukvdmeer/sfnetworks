@@ -2,20 +2,18 @@
 % Please edit documentation in R/shortest_paths.R
 \name{spatial_shortest_paths}
 \alias{spatial_shortest_paths}
-\alias{st_shortest_paths}
-\alias{st_all_shortest_paths}
+\alias{st_network_paths}
 \title{Shortest paths between points in geographical space}
 \usage{
-st_shortest_paths(
+st_network_paths(
   x,
   from,
   to = igraph::V(x),
   weights = NULL,
   output = "both",
+  all = FALSE,
   ...
 )
-
-st_all_shortest_paths(x, from, to = igraph::V(x), weights = NULL)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
@@ -45,10 +43,14 @@ be used automatically, as long as this column is present. If set to
 \code{'nodes'} meaning that only indices of nodes in the paths are
 returned, \code{'edges'} meaning that only indices of edges in the paths
 are returned, or \code{'both'} meaning that both node and edge indices are
-returned. Defaults to \code{'both'}.}
+returned. Defaults to \code{'both'}. Ignored when \code{all = TRUE}.}
+
+\item{all}{Whether to calculate all shortest paths or a single shortest path
+between two nodes. Defaults to \code{FALSE}.}
 
 \item{...}{Arguments passed on to the corresponding
-\code{\link[igraph:shortest_paths]{igraph}} function. Arguments
+\code{\link[igraph:shortest_paths]{igraph}} and
+\code{\link[igraph:all_shortest_paths]{igraph}} functions. Arguments
 \code{predecessors} and \code{inbound.edges} are ignored.}
 }
 \value{
@@ -60,7 +62,8 @@ with for each path the ordered indices of edges present in that path).
 }
 \description{
 Wrappers around the shortest path calculation functionalities in
-\code{\link[igraph:shortest_paths]{igraph}}, allowing to
+\code{\link[igraph:shortest_paths]{igraph}} and
+\code{\link[igraph:all_shortest_paths]{igraph}}, allowing to
 provide any geospatial point as `from` argument and any set of geospatial
 points as `to` argument. If such a geospatial point is not equal to a node
 in the network, it will be snapped to its nearest node before calculating
@@ -71,11 +74,8 @@ See the \code{\link[igraph:shortest_paths]{igraph}} documentation.
 }
 \section{Functions}{
 \itemize{
-\item \code{st_shortest_paths}: Wrapper around
-\code{igraph::shortest_paths}.
-
-\item \code{st_all_shortest_paths}: Wrapper around
-\code{igraph::all_shortest_paths}.
+\item \code{st_network_paths}: Wrapper around
+\code{igraph::shortest_paths} and \code{igraph::all_shortest_paths}.
 }}
 
 \examples{
@@ -87,39 +87,39 @@ net = as_sfnetwork(roxel, directed = FALSE) \%>\%
 
 # 1. Providing node indices
 
-st_shortest_paths(net, 1, 9)
+st_network_paths(net, 1, 9)
 
 # 2. Providing nodes as spatial points
 
 p1 = st_geometry(net, "nodes")[1]
 p2 = st_geometry(net, "nodes")[9]
-st_shortest_paths(net, p1, p2)
+st_network_paths(net, p1, p2)
 
 # 3. Providing spatial points outside of the network
 
 p3 = st_sfc(p1[[1]] + st_point(c(500, 500)), crs = st_crs(p1))
 p4 = st_sfc(p2[[1]] + st_point(c(-500, -500)), crs = st_crs(p2))
-st_shortest_paths(net, p3, p4)
+st_network_paths(net, p3, p4)
 
 # 4. Providing weights from column name
 
 net \%>\%
   activate("edges") \%>\%
   mutate(length = edge_length()) \%>\%
-  st_shortest_paths(p1, p2, weights = "length")
+  st_network_paths(p1, p2, weights = "length")
 
 # 5. Providing weights from column named 'weight'
 
 net \%>\%
   activate("edges") \%>\%
   mutate(weight = edge_length()) \%>\%
-  st_shortest_paths(p1, p2)
+  st_network_paths(p1, p2)
 
-# 7. Calculate all shortest paths between two points
+# 6. Calculate all shortest paths between two points
 
-st_all_shortest_paths(net, 5, 1)
+st_network_paths(net, 5, 1, all = TRUE)
 
 }
 \seealso{
-\code{\link{st_shortest_paths}}
+\code{\link{st_network_paths}}
 }
