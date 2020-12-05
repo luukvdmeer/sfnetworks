@@ -1,0 +1,205 @@
+---
+title: "2. Network pre-processing and cleaning"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Network pre-processing and cleaning}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+knitr::opts_knit$set(global.par = TRUE)
+```
+
+```{r plot, echo=FALSE, results='asis'}
+# plot margins
+par(mar = c(1, 1, 1, 1))
+# crayon needs to be explicitly activated in Rmd
+options(crayon.enabled = TRUE)
+# Hooks needs to be set to deal with outputs
+# thanks to fansi logic
+old_hooks = fansi::set_knit_hooks(knitr::knit_hooks, which = c("output", "message", "error"))
+```
+
+Unfortunately real-world datasets are not always as friendly as those used in tutorials. Pre-processing of the data will often be needed, as well as cleaning the network after construction. This vignette presents some examples that may be of use when going through this phase.
+
+## Common pre-processing tasks
+
+### Rounding coordinates
+You might have a set of lines in which some endpoints are *almost* shared between two lines. However, the coordinates are stored with so much precision that there is a minor difference between the two points. When constructing a sfnetwork these lines will *not* be connected because the points are not *exactly* equal.
+
+We can pre-process the lines by reducing the precision of the coordinates such that the points become *exactly* equal. A tiny example:
+
+```{r, message=FALSE}
+library(sfnetworks)
+library(sf)
+library(tidygraph)
+library(igraph)
+```
+
+```{r}
+p1 = st_point(c(7, 51))
+p2 = st_point(c(8, 52))
+p3 = st_point(c(8.000001, 52.000001))
+p4 = st_point(c(7, 52))
+
+l1 = st_sfc(st_linestring(c(p1, p2)))
+l2 = st_sfc(st_linestring(c(p3, p4)))
+
+edges = st_as_sf(c(l1, l2), crs = 4326)
+
+# The edges are not connected.
+as_sfnetwork(edges)
+```
+
+```{r}
+# Round coordinates to 0 digits.
+st_geometry(edges) = st_geometry(edges) %>%
+  lapply(function(x) round(x, 0)) %>%
+  st_sfc(crs = st_crs(edges))
+
+# The edges are connected.
+as_sfnetwork(edges)
+```
+
+### Dealing with one-way edges
+In `sfnetworks` you can create directed and undirected networks. In directed ones, an edge can only be traveled from its start node to its end node. In undirected ones, an edge can be traveled both ways. However, in the real world there are networks where *some* edges can be traveled both ways and *some* edges only one way. For example, a road network in a city where there are one-way streets. 
+
+Unfortunately, neither `igraph` nor `tidygraph` provides an interface for such networks. Therefore, the only way to deal with this is to create a directed network but first *duplicate* and *reverse* all edge linestrings that can be travelled both ways.
+
+See the small example below, where we have three lines with one-way information stored in a `oneway` column. One of the lines is a one-way street, the other two are not. By duplicating and reversing the two linestrings that are not one-way streets, we create a directed network that correctly models our situation.
+
+```{r}
+p1 = st_point(c(7, 51))
+p2 = st_point(c(7, 52))
+p3 = st_point(c(8, 52))
+
+l1 = st_sfc(st_linestring(c(p1, p2)))
+l2 = st_sfc(st_linestring(c(p1, p3)))
+l3 = st_sfc(st_linestring(c(p3, p2)))
+
+edges = st_as_sf(c(l1, l2, l3), crs = 4326)
+edges$oneway = c(TRUE, FALSE, FALSE)
+edges
+```
+```{r}
+duplicates = edges[!edges$oneway, ]
+reversed_duplicates = st_reverse(duplicates)
+
+edges = rbind(edges, reversed_duplicates)
+net = as_sfnetwork(edges)
+activate(net, "edges")
+```
+
+## Network cleaning functions
+
+The `sfnetworks` package contains a set of spatial network specific cleaning functions. They are currently modelled as *spatial morphers*. To learn more about spatial morphers and what they are, see the [dedicated vignette]() for that. For now, it is sufficient to know that you can use any spatial morpher function inside the `convert` verb from `tidygraph` to convert your network into a different state.
+
+Before presenting the cleaning functions that are currently implement, lets create a network to be cleaned.
+
+```{r, fig.height=5, fig.width=5}
+p1 = st_point(c(0, 1))
+p2 = st_point(c(1, 1))
+p3 = st_point(c(2, 1))
+p4 = st_point(c(3, 1))
+p5 = st_point(c(4, 1))
+p6 = st_point(c(3, 2))
+p7 = st_point(c(3, 0))
+p8 = st_point(c(4, 3))
+p9 = st_point(c(4, 2))
+p10 = st_point(c(4, 0))
+p11 = st_point(c(5, 2))
+p12 = st_point(c(5, 0))
+p13 = st_point(c(5, -1))
+
+l1 = st_sfc(st_linestring(c(p1, p2, p3)))
+l2 = st_sfc(st_linestring(c(p3, p4, p5)))
+l3 = st_sfc(st_linestring(c(p6, p4, p7)))
+l4 = st_sfc(st_linestring(c(p8, p11, p9)))
+l5 = st_sfc(st_linestring(c(p9, p5, p10)))
+l6 = st_sfc(st_linestring(c(p8, p9)))
+l7 = st_sfc(st_linestring(c(p10, p12, p13, p10)))
+
+points = st_sfc(st_multipoint(c(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13)))
+lines = c(l1, l2, l3, l4, l5, l6, l7)
+
+net = as_sfnetwork(lines)
+plot(st_geometry(net, "edges"), col = rainbow(ecount(net)))
+plot(st_geometry(net, "nodes"), pch = 20, cex = 1.5, add = TRUE)
+```
+
+### Subdivide edges
+When constructing a sfnetwork from a set of sf linestrings, the *endpoints* of those linestrings become nodes in the network. If endpoints are shared between multiple lines, they become a single node, and the edges are connected. However, a linestring geometry can also contain *internal points* that define the shape of the line, but are not its endpoints. It can happen that such an internal point in one edge is *exactly* equal to either an internal point or endpoint of another edge. In the network structure, however, these two edges are not connected, because they don't share endpoints. That may be unwanted.
+
+The function `to_spatial_subdivision` fixes such situations by splitting edges at internal points whenever these internal points are equal to one or more internal points or endpoints of other edges.
+
+In graph theory terms this process is called the subdivision of an edge: the subdivision of an edge $o = \{a, b\}$ (i.e. an edge from node $a$ to node $b$) is the addition of a new node $c$ and the replacement of $o$ by two new edges $p = \{a, c\}$ and $q = \{c, b\}$. In our case, the new node $c$ is the internal point of $o$ that is equal to one or more internal points or endpoints of other edges.
+
+```{r, fig.show='hold'}
+subdivision = convert(net, to_spatial_subdivision)
+
+plot(st_geometry(net, "edges"), col = rainbow(ecount(net)))
+plot(points, pch = 4, cex = 0.5, add = TRUE)
+plot(st_geometry(net, "nodes"), pch = 20, cex = 1.5, add = TRUE)
+plot(st_geometry(subdivision, "edges"), col = rainbow(ecount(subdivision)))
+plot(points, pch = 4, cex = 0.5, add = TRUE)
+plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 1.5, add = TRUE)
+```
+
+### Smooth pseudo nodes
+A network may contain nodes that have only one incoming and one outgoing edge. For tasks like calculating shortest paths, such nodes are redundant, because they don't represent a point where different directions can possibly be taken. Sometimes, these type of nodes are referred to as *pseudo nodes*. Note that their equivalent in undirected networks is any node with only two incident edges, since *incoming* and *outgoing* does not have a meaning there.
+
+The function `to_spatial_smooth` iteratively removes these pseudo nodes, and after each removal concatenates the two affected edges together into a single edge.
+
+In graph theory terms this process is the opposite of subdivision and also called smoothing of a node: smoothing a node $b$ with incident edges $o = \{a, b\}$ and $p = \{b, c\}$ removes $b$, $o$ and $p$ and creates the new edge $q = \{a, c\}$.
+
+*NOTE: This function is still very experimental and has bad performance on large networks*
+
+```{r, message=FALSE, fig.show='hold'}
+smoothed = convert(subdivision, to_spatial_smooth)
+
+plot(st_geometry(subdivision, "edges"), col = rainbow(ecount(subdivision)))
+plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 1.5, add = TRUE)
+plot(st_geometry(smoothed, "edges"), col = rainbow(ecount(smoothed)))
+plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
+```
+
+### Simplify network
+A network may contain an edge that connect two nodes that were already connected by another edge in the network. Such an edge can be called a *parallel edge*. Also, it may contain an edge that starts and ends at the same node. Such am edge can be called a *loop edge*. In graph theory, a *simple graph* is a graph that does *not* contain parallel and loop edges.
+
+The function `to_spatial_simple` simplifies a network by removing parallel and loop edges.
+
+```{r, fig.show='hold'}
+simple = convert(smoothed, to_spatial_simple)
+
+plot(st_geometry(smoothed, "edges"), col = rainbow(ecount(smoothed)))
+plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
+plot(st_geometry(simple, "edges"), col = rainbow(ecount(simple)))
+plot(st_geometry(simple, "nodes"), pch = 20, cex = 1.5, add = TRUE)
+```
+
+When there are multiple edges connecting the same pair of nodes, which edge is marked as the 'original' and which as parallel edges depends on the order of the edges in the edges table. That is, by re-arranging the edges table before calling `to_spatial_simple` you can influence which edge is kept whenever parallel edges are detected. For example, you might want to always keep the edge with the shortest distance.
+
+```{r, fig.show='hold'}
+simple = smoothed %>%
+  activate("edges") %>%
+  arrange(st_length(.)) %>%
+  convert(to_spatial_simple)
+
+plot(st_geometry(smoothed, "edges"), col = rainbow(ecount(smoothed)))
+plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
+plot(st_geometry(simple, "edges"), col = rainbow(ecount(simple)))
+plot(st_geometry(simple, "nodes"), pch = 20, cex = 1.5, add = TRUE)
+```
+
+
+
+
+
+
+

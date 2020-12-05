@@ -26,6 +26,13 @@
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
+#' @note Due to internal rounding of rational numbers, it may occur that the
+#' intersection point between a line and a point is not evaluated as 
+#' actually intersecting that line by the designated algorithm. Instead, the
+#' intersection point lies a tiny-bit away from the edge. Therefore, it is
+#' recommended to set the tolerance to a very small number (say 1e-5) even if
+#' you only want to blend points that intersect the line.
+#'
 #' @examples
 #' library(sf)
 #'
@@ -103,10 +110,6 @@ blend_ = function(x, y, tolerance, sort) {
     # =============
     # SET TOLERANCE
     # =============
-    # Change a tolerance of 0 to a tolerance of a very small positive number.
-    # --> This is needed to solve precision errors with intersections.
-    # --> See https://github.com/r-spatial/sf/issues/790
-    if (as.numeric(tolerance) == 0) tolerance = set_units(1e-5, "m")
     # If tolerance is not a units object:
     # --> Convert into units object assuming a units of meters.
     # --> Unless tolerance is infinite.
@@ -131,7 +134,9 @@ blend_ = function(x, y, tolerance, sort) {
     # We define a feature yi being 'close' to an edge xj when:
     # --> yi is located within a given tolerance distance from xj.
     # --> yi is not located on xj.
-    if (all(on)) {
+    if (as.numeric(tolerance) == 0 | all(on)) {
+      # If tolerance is 0.
+      # --> By definition no feature is 'close'.
       # If all features are already on an edge.
       # --> By definition no feature is 'close'.
       close = rep(FALSE, length(on))
