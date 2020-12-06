@@ -18,7 +18,6 @@
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
 #' @examples
-#' library(sfnetworks)
 #' library(sf)
 #'
 #' node1 = st_point(c(0, 0))
