@@ -3,7 +3,7 @@ title: "2. Network pre-processing and cleaning"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Network pre-processing and cleaning}
+  %\VignetteIndexEntry{2. Network pre-processing and cleaning}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -70,7 +70,7 @@ as_sfnetwork(edges)
 ### Dealing with one-way edges
 In `sfnetworks` you can create directed and undirected networks. In directed ones, an edge can only be traveled from its start node to its end node. In undirected ones, an edge can be traveled both ways. However, in the real world there are networks where *some* edges can be traveled both ways and *some* edges only one way. For example, a road network in a city where there are one-way streets. 
 
-Unfortunately, neither `igraph` nor `tidygraph` provides an interface for such networks. Therefore, the only way to deal with this is to create a directed network but first *duplicate* and *reverse* all edge linestrings that can be travelled both ways.
+Unfortunately, neither `igraph` nor `tidygraph` provides an interface for such networks. Therefore, the only way to deal with this is to create a directed network but first *duplicate* and *reverse* all edge linestrings that can be traveled both ways.
 
 See the small example below, where we have three lines with one-way information stored in a `oneway` column. One of the lines is a one-way street, the other two are not. By duplicating and reversing the two linestrings that are not one-way streets, we create a directed network that correctly models our situation.
 
@@ -98,9 +98,9 @@ activate(net, "edges")
 
 ## Network cleaning functions
 
-The `sfnetworks` package contains a set of spatial network specific cleaning functions. They are currently modelled as *spatial morphers*. To learn more about spatial morphers and what they are, see the [dedicated vignette]() for that. For now, it is sufficient to know that you can use any spatial morpher function inside the `convert` verb from `tidygraph` to convert your network into a different state.
+The `sfnetworks` package contains a set of spatial network specific cleaning functions. They are currently modeled as *spatial morphers*. To learn more about spatial morphers and what they are, see the [dedicated vignette]() for that. For now, it is sufficient to know that you can use any spatial morpher function inside the `convert` verb from `tidygraph` to convert your network into a different state.
 
-Before presenting the cleaning functions that are currently implement, lets create a network to be cleaned.
+Before presenting the cleaning functions that are currently implemented, lets create a network to be cleaned.
 
 ```{r, fig.height=5, fig.width=5}
 p1 = st_point(c(0, 1))
@@ -129,7 +129,7 @@ points = st_sfc(st_multipoint(c(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p1
 lines = c(l1, l2, l3, l4, l5, l6, l7)
 
 net = as_sfnetwork(lines)
-plot(st_geometry(net, "edges"), col = rainbow(ecount(net)))
+plot(st_geometry(net, "edges"), col = sf.colors(ecount(net), categorical = TRUE), lwd = 2)
 plot(st_geometry(net, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
@@ -157,10 +157,10 @@ For our example network, this means:
 ```{r, fig.show='hold'}
 subdivision = convert(net, to_spatial_subdivision)
 
-plot(st_geometry(net, "edges"), col = rainbow(ecount(net)))
+plot(st_geometry(net, "edges"), col = sf.colors(ecount(net), categorical = TRUE), lwd = 2)
 plot(points, pch = 4, cex = 0.5, add = TRUE)
 plot(st_geometry(net, "nodes"), pch = 20, cex = 1.5, add = TRUE)
-plot(st_geometry(subdivision, "edges"), col = rainbow(ecount(subdivision)))
+plot(st_geometry(subdivision, "edges"), col = sf.colors(ecount(subdivision), categorical = TRUE), lwd = 2)
 plot(points, pch = 4, cex = 0.5, add = TRUE)
 plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
@@ -170,30 +170,30 @@ A network may contain nodes that have only one incoming and one outgoing edge. F
 
 In graph theory terms this process is the opposite of subdivision and also called *smoothing*: smoothing a node $b$ with incident edges $o = \{a, b\}$ and $p = \{b, c\}$ removes $b$, $o$ and $p$ and creates the new edge $q = \{a, c\}$.
 
-The function `to_spatial_smooth` iteratively smoothes pseudo nodes, and after each removal concatenates the linestring geometries of the two affected edges together into a new, single linestring geometry.
+The function `to_spatial_smooth` iteratively smooths pseudo nodes, and after each removal concatenates the linestring geometries of the two affected edges together into a new, single linestring geometry.
 
 *NOTE: This function is still experimental and may have bad performance on large networks*
 
 ```{r, message=FALSE, fig.show='hold'}
 smoothed = convert(subdivision, to_spatial_smooth)
 
-plot(st_geometry(subdivision, "edges"), col = rainbow(ecount(subdivision)))
+plot(st_geometry(subdivision, "edges"), col = sf.colors(ecount(subdivision), categorical = TRUE), lwd = 2)
 plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 1.5, add = TRUE)
-plot(st_geometry(smoothed, "edges"), col = rainbow(ecount(smoothed)))
+plot(st_geometry(smoothed, "edges"), col = sf.colors(ecount(smoothed), categorical = TRUE), lwd = 2)
 plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
 ### Simplify network
-A network may contain an edge that connect two nodes that were already connected by another edge in the network. Such an edge can be called a *parallel edge*. Also, it may contain an edge that starts and ends at the same node. Such am edge can be called a *loop edge*. In graph theory, a *simple graph* is a graph that does *not* contain parallel and loop edges.
+A network may contain an edge that connects two nodes that were already connected by another edge in the network. Such an edge can be called a *parallel edge*. Also, it may contain an edge that starts and ends at the same node. Such an edge can be called a *loop edge*. In graph theory, a *simple graph* is a graph that does *not* contain parallel and loop edges.
 
 The function `to_spatial_simple` simplifies a network by removing parallel and loop edges.
 
 ```{r, fig.show='hold'}
 simple = convert(smoothed, to_spatial_simple)
 
-plot(st_geometry(smoothed, "edges"), col = rainbow(ecount(smoothed)))
+plot(st_geometry(smoothed, "edges"), col = sf.colors(ecount(smoothed), categorical = TRUE), lwd = 2)
 plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
-plot(st_geometry(simple, "edges"), col = rainbow(ecount(simple)))
+plot(st_geometry(simple, "edges"), col = sf.colors(ecount(simple), categorical = TRUE), lwd = 2)
 plot(st_geometry(simple, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
@@ -205,8 +205,8 @@ simple = smoothed %>%
   arrange(st_length(.)) %>%
   convert(to_spatial_simple)
 
-plot(st_geometry(smoothed, "edges"), col = rainbow(ecount(smoothed)))
+plot(st_geometry(smoothed, "edges"), col = sf.colors(ecount(smoothed), categorical = TRUE), lwd = 2)
 plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
-plot(st_geometry(simple, "edges"), col = rainbow(ecount(simple)))
+plot(st_geometry(simple, "edges"), col = sf.colors(ecount(simple), categorical = TRUE), lwd = 2)
 plot(st_geometry(simple, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
