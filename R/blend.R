@@ -69,14 +69,16 @@
 #' b2 = st_network_blend(net, pts, tolerance = tol)
 #' b2
 #'
-#' # Plot results.
+#' ## Plot results.
 #' # Initial network and points.
 #' par(mar = c(1,1,1,1), mfrow = c(1,3))
 #' plot(net, cex = 2, main = "Network + set of points")
 #' plot(pts, cex = 2, col = "red", pch = 20, add = TRUE)
+#'
 #' # Blend with no tolerance
 #' plot(b1, cex = 2, main = "Blend with tolerance = Inf")
 #' plot(pts, cex = 2, col = "red", pch = 20, add = TRUE)
+#'
 #' # Blend with tolerance.
 #' within = st_is_within_distance(pts, st_geometry(net, "edges"), tol)
 #' pts_within = pts[lengths(within) > 0]
