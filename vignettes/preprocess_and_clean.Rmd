@@ -134,11 +134,25 @@ plot(st_geometry(net, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
 ### Subdivide edges
-When constructing a sfnetwork from a set of sf linestrings, the *endpoints* of those linestrings become nodes in the network. If endpoints are shared between multiple lines, they become a single node, and the edges are connected. However, a linestring geometry can also contain *internal points* that define the shape of the line, but are not its endpoints. It can happen that such an internal point in one edge is *exactly* equal to either an internal point or endpoint of another edge. In the network structure, however, these two edges are not connected, because they don't share endpoints. That may be unwanted.
+When constructing a sfnetwork from a set of sf linestrings, the *endpoints* of those linestrings become nodes in the network. If endpoints are shared between multiple lines, they become a single node, and the edges are connected. However, a linestring geometry can also contain *interior points* that define the shape of the line, but are not its endpoints. It can happen that such an interior point in one edge is *exactly* equal to either an interior point or endpoint of another edge. In the network structure, however, these two edges are not connected, because they don't share *endpoints*. If this is unwanted, we need to split these two edges at their shared point and connect them accordingly.
 
-The function `to_spatial_subdivision` fixes such situations by splitting edges at internal points whenever these internal points are equal to one or more internal points or endpoints of other edges.
+In graph theory terms the process of splitting and edge is called *subdivision*: the subdivision of an edge $o = \{a, b\}$ (i.e. an edge from node $a$ to node $b$) is the addition of a new node $c$ and the replacement of $o$ by two new edges $p = \{a, c\}$ and $q = \{c, b\}$.
 
-In graph theory terms this process is called the subdivision of an edge: the subdivision of an edge $o = \{a, b\}$ (i.e. an edge from node $a$ to node $b$) is the addition of a new node $c$ and the replacement of $o$ by two new edges $p = \{a, c\}$ and $q = \{c, b\}$. In our case, the new node $c$ is the internal point of $o$ that is equal to one or more internal points or endpoints of other edges.
+The function `to_spatial_subdivision` subdivides edges at interior points whenever these interior points are equal to one or more interior points or endpoints of other edges, and recalculates network connectivity afterwards. 
+
+To illustrate the workflow, lets consider a situation where an interior point $p_{x}$ in edge $x$ is shared with point $p_{y}$ in edge $y$. That gives two possible situations:
+
+- $p_{y}$ is an interior point of $y$. Since $p_{x}$ and $p_{y}$ are both interior points, neither of them is already a node in the network. Then:
+  - $x$ is subdivided at $p_{x}$ into two new edges $x_{1}$ and $x_{2}$ and new node $p_{x}$.
+  - $y$ is subdivided at $p_{y}$ into two new edges $y_{1}$ and $y_{2}$ and new node $p_{y}$.
+  - The new nodes $p_{x}$ and $p_{y}$ are merged into a single node $p$ with the edge set $\{x_{1}, x_{2}, y_{1}, y_{2}\}$ as incidents.
+- $p_{y}$ is and endpoint of $y$. Since $p_{y}$ is an edge endpoint, it is already a node in the network. Then:
+  - $x$ is subdivided at $p_{x}$ into two new edges $x_{1}$ and $x_{2}$ and new node $p_{x}$.
+  - The new node $p_{x}$ is merged with node $p_{y}$ into a single node $p$ with the edge set $\{y, x_{1}, x_{2}\}$ as incidents.
+
+Note that an edge is *not* subdivided when it crosses another edge at a location that is not an interior point or endpoint in the linestring geometry of any of the two edges.
+
+For our example network, this means:
 
 ```{r, fig.show='hold'}
 subdivision = convert(net, to_spatial_subdivision)
@@ -152,13 +166,13 @@ plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
 ### Smooth pseudo nodes
-A network may contain nodes that have only one incoming and one outgoing edge. For tasks like calculating shortest paths, such nodes are redundant, because they don't represent a point where different directions can possibly be taken. Sometimes, these type of nodes are referred to as *pseudo nodes*. Note that their equivalent in undirected networks is any node with only two incident edges, since *incoming* and *outgoing* does not have a meaning there.
+A network may contain nodes that have only one incoming and one outgoing edge. For tasks like calculating shortest paths, such nodes are redundant, because they don't represent a point where different directions can possibly be taken. Sometimes, these type of nodes are referred to as *pseudo nodes*. Note that their equivalent in undirected networks is any node with only two incident edges, since *incoming* and *outgoing* does not have a meaning there. Therefore, we might want to get rid of these pseudo nodes.
 
-The function `to_spatial_smooth` iteratively removes these pseudo nodes, and after each removal concatenates the two affected edges together into a single edge.
+In graph theory terms this process is the opposite of subdivision and also called *smoothing*: smoothing a node $b$ with incident edges $o = \{a, b\}$ and $p = \{b, c\}$ removes $b$, $o$ and $p$ and creates the new edge $q = \{a, c\}$.
 
-In graph theory terms this process is the opposite of subdivision and also called smoothing of a node: smoothing a node $b$ with incident edges $o = \{a, b\}$ and $p = \{b, c\}$ removes $b$, $o$ and $p$ and creates the new edge $q = \{a, c\}$.
+The function `to_spatial_smooth` iteratively smoothes pseudo nodes, and after each removal concatenates the linestring geometries of the two affected edges together into a new, single linestring geometry.
 
-*NOTE: This function is still very experimental and has bad performance on large networks*
+*NOTE: This function is still experimental and may have bad performance on large networks*
 
 ```{r, message=FALSE, fig.show='hold'}
 smoothed = convert(subdivision, to_spatial_smooth)
@@ -196,10 +210,3 @@ plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(simple, "edges"), col = rainbow(ecount(simple)))
 plot(st_geometry(simple, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
-
-
-
-
-
-
-
