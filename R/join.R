@@ -33,6 +33,7 @@
 #' other_net = as_sfnetwork(c(edge2, edge3))
 #'
 #' joined = st_network_join(net, other_net)
+#' joined
 #'
 #' ## Plot results.
 #' par(mfrow = c(2,2))

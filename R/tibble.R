@@ -26,6 +26,7 @@
 #'
 #' @examples
 #' library(tidygraph)
+#' 
 #' net = as_sfnetwork(roxel)
 #'
 #' # Convert network to "spatial tibble", takes active element
