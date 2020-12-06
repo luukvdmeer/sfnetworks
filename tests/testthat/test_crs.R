@@ -1,6 +1,8 @@
+library(sf)
+
 test_that("st_set_crs sets the crs for edges and nodes", {
   net = as_sfnetwork(roxel) %>%
-    sf::st_set_crs(NA)
+    st_set_crs(NA)
   expect_equal(st_crs(activate(net,'nodes')), st_crs(activate(net,'edges')))
 })
 
