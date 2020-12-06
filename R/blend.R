@@ -49,7 +49,7 @@
 #' n32 = st_point(c(-1,1))
 #' e3 = st_sfc(st_linestring(c(n31, n32)), crs = 4326)
 #'
-#' net = as_sfnetwork(st_as_sf(c(e1,e2,e3)))
+#' net = as_sfnetwork(c(e1,e2,e3))
 #'
 #' pts = net %>%
 #'   st_bbox() %>%
@@ -61,12 +61,12 @@
 #' # Blend points into the network.
 #' # --> By default tolerance is set to Inf
 #' # --> Meaning that all points get blended
-#' b1 = st_blend(net, pts)
+#' b1 = st_network_blend(net, pts)
 #' b1
 #'
 #' # Blend points with a tolerance.
 #' tol = units::set_units(40, "km")
-#' b2 = st_blend(net, pts, tolerance = tol)
+#' b2 = st_network_blend(net, pts, tolerance = tol)
 #' b2
 #'
 #' # Plot results.
@@ -85,17 +85,17 @@
 #' plot(pts_within, cex = 2, col = "red", pch = 20, add = TRUE)
 #'
 #' @export
-st_blend = function(x, y, tolerance = Inf, sort = FALSE) {
-  UseMethod("st_blend")
+st_network_blend = function(x, y, tolerance = Inf, sort = FALSE) {
+  UseMethod("st_network_blend")
 }
 
 #' @export
-st_blend.sfnetwork = function(x, y, tolerance = Inf, sort = FALSE) {
+st_network_blend.sfnetwork = function(x, y, tolerance = Inf, sort = FALSE) {
   require_spatially_explicit_edges(x)
   stopifnot(has_single_geom_type(y, "POINT"))
   stopifnot(have_equal_crs(x, y))
   stopifnot(as.numeric(tolerance) >= 0)
-  if (will_assume_planar(x)) raise_assume_planar("st_blend")
+  if (will_assume_planar(x)) raise_assume_planar("st_network_blend")
   blend_(x, y, tolerance, sort)
 }
 
@@ -166,7 +166,7 @@ blend_ = function(x, y, tolerance, sort) {
       )
       return (x)
     } else {
-      raise_assume_constant("st_blend")
+      raise_assume_constant("st_network_blend")
     }
     # For each feature p in y that is on an edge in x:
     # --> Split the edges in x by p.

@@ -126,8 +126,8 @@ st_network_join.sfnetwork = function(x, y, blend_nodes = FALSE,
   y_geom_colname = node_geom_colname(y)
   # Blend if requested.
   if (any(c(blend_nodes, blend_crossings))) {
-    if (will_assume_planar(x)) raise_assume_planar("st_blend")
-    raise_assume_constant("st_blend")
+    if (will_assume_planar(x)) raise_assume_planar("st_network_blend")
+    raise_assume_constant("st_network_blend")
     tol = set_units(1e-5, "m")
     if (blend_nodes) {
       x_nodes = node_geom(x)
