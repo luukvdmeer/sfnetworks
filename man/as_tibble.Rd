@@ -33,6 +33,7 @@ as a user, you can disable this behaviour by setting \code{spatial = FALSE}.
 }
 \examples{
 library(tidygraph)
+
 net = as_sfnetwork(roxel)
 
 # Convert network to "spatial tibble", takes active element

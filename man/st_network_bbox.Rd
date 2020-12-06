@@ -21,3 +21,31 @@ bounding box of the nodes and edges in the network.
 \details{
 See \code{\link[sf]{st_bbox}} for details.
 }
+\examples{
+library(sf)
+
+node1 = st_point(c(8, 51))
+node2 = st_point(c(7, 51.5))
+node3 = st_point(c(8, 52))
+node4 = st_point(c(9, 51))
+edge1 = st_sfc(st_linestring(c(node1, node2, node3)))
+
+nodes = st_as_sf(c(st_sfc(node1), st_sfc(node3), st_sfc(node4)))
+edges = st_as_sf(edge1)
+edges$from = 1
+edges$to = 2
+
+net = sfnetwork(nodes, edges)
+
+node_bbox = st_bbox(activate(net, "nodes"))
+edge_bbox = st_bbox(activate(net, "edges"))
+net_bbox = st_network_bbox(net)
+
+## Plot results.
+plot(net)
+plot(st_as_sfc(node_bbox), border = "red", lty = 2, add = TRUE)
+plot(st_as_sfc(edge_bbox), border = "blue", lty = 2, add = TRUE)
+plot(net)
+plot(st_as_sfc(net_bbox), border = "red", lty = 2, add = TRUE)
+
+}

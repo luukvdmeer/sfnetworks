@@ -79,8 +79,8 @@ dropped. Returns a \code{morphed_tbl_graph} containing a single element of
 class \code{\link[tidygraph]{tbl_graph}}.
 
 \item \code{to_spatial_subdivision}: Construct a subdivision of the network by
-subdividing edges at each internal point that has an equal geometry to any
-other internal or boundary point in the edges table. Internal points in this
+subdividing edges at each interior point that is equal to any
+other interior or boundary point in the edges table. Interior points in this
 sense are those points that are included in their linestring geometry 
 feature but are not endpoints of it, while boundary points are the endpoints
 of the linestrings. The network is reconstructed after subdivision such that 
