@@ -4,7 +4,7 @@
 #'
 #' @param value A character.
 #'
-#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently 
+#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently
 #' active element of x will be used.
 #'
 #' @return For the getter, a character. The setter only modifies x.
@@ -76,7 +76,7 @@ edge_geom_colname = function(x) {
 #'
 #' @param y An object of class \code{\link[sf]{sfc}}, or character.
 #'
-#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently 
+#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently
 #' active element of x will be used.
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
@@ -123,6 +123,7 @@ mutate_edge_geom = function(x, y) {
     stopifnot(is.sfc(edge_attr(x, y)))
     edge_geom_colname(x) = y
   } else {
+    stopifnot(is.sfc(y))
     # Replace the geometries in the current geometry column with y.
     geom_col = edge_geom_colname(x)
     # What if there is currently no column marked as geometry column?
@@ -147,7 +148,7 @@ mutate_edge_geom = function(x, y) {
 #'
 #' @param x An object of class \code{\link{sfnetwork}}
 #'
-#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently 
+#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently
 #' active element of x will be used.
 #'
 #' @return An object of class \code{\link{sfnetwork}} when active = 'edges', an
