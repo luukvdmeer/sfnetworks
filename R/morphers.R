@@ -63,8 +63,8 @@ to_spatial_coordinates = function(x) {
 }
 
 #' @describeIn spatial_morphers Construct a subdivision of the network by
-#' subdividing edges at each internal point that has an equal geometry to any
-#' other internal or boundary point in the edges table. Internal points in this
+#' subdividing edges at each interior point that is equal to any
+#' other interior or boundary point in the edges table. Interior points in this
 #' sense are those points that are included in their linestring geometry 
 #' feature but are not endpoints of it, while boundary points are the endpoints
 #' of the linestrings. The network is reconstructed after subdivision such that 
