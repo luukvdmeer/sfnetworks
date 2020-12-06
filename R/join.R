@@ -41,14 +41,14 @@
 #' plot(joined, cex = 1.5)
 #'
 #' @export
-st_network_join = function(x, y, sort = TRUE, ...) {
+st_network_join = function(x, y, ...) {
   UseMethod("st_network_join")
 }
 
 #' @importFrom tidygraph as_tbl_graph graph_join
 #' @importFrom units set_units
 #' @export
-st_network_join.sfnetwork = function(x, y, sort = TRUE, ...) {
+st_network_join.sfnetwork = function(x, y, ...) {
   if (! is.sfnetwork(y)) y = as_sfnetwork(y)
   stopifnot(have_equal_crs(x, y))
   stopifnot(have_equal_edge_type(x, y))

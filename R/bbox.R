@@ -18,9 +18,14 @@
 #' node2 = st_point(c(7, 51.5))
 #' node3 = st_point(c(8, 52))
 #' node4 = st_point(c(9, 51))
-#' edges = st_sfc(st_linestring(c(p1, p2, p3)))
+#' edge1 = st_sfc(st_linestring(c(node1, node2, node3)))
 #'
-#' net = as_sfnetwork(edges)
+#' nodes = st_as_sf(c(st_sfc(node1), st_sfc(node3), st_sfc(node4)))
+#' edges = st_as_sf(edge1)
+#' edges$from = 1
+#' edges$to = 2
+#'
+#' net = sfnetwork(nodes, edges)
 #'
 #' node_bbox = st_bbox(activate(net, "nodes"))
 #' edge_bbox = st_bbox(activate(net, "edges"))
