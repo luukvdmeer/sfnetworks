@@ -224,9 +224,10 @@ to_spatial_directed = function(x) {
 #'  convert(to_spatial_explicit_edges) %>%
 #'  plot()
 #'
+#' @importFrom rlang !! :=
 #' @importFrom sf st_as_sf st_geometry
 #' @importFrom tibble as_tibble
-#' @importFrom tidygraph as_tbl_graph
+#' @importFrom tidygraph as_tbl_graph mutate
 #' @export
 to_spatial_explicit_edges = function(x, ...) {
   args = list(...)
@@ -234,8 +235,13 @@ to_spatial_explicit_edges = function(x, ...) {
     # Convert edges to sf by forwarding ... to st_as_sf.
     e = as_tibble(as_tbl_graph(x), "edges")
     e_sf = st_as_sf(e, ...)
+    geom_colname = attr(e_sf, "sf_column")
+    # Add geometries of created sf object to the edges table of the network.
+    x_new = mutate(activate(x, "edges"), !!geom_colname := st_geometry(e_sf))
+    st_geometry(x_new) = geom_colname
+    # Return in a list.
     list(
-      explicit = mutate_edge_geom(x, st_geometry(e_sf))
+      explicit = x_new %preserve_active% x
     )
   } else {
     list(
