@@ -1,8 +1,7 @@
 #' Shortest paths between points in geographical space
 #'
 #' Wrappers around the shortest path calculation functionalities in
-#' \code{\link[igraph:shortest_paths]{igraph}} and
-#' \code{\link[igraph:all_shortest_paths]{igraph}}, allowing to
+#' \code{\link[igraph:shortest_paths]{igraph}}, allowing to
 #' provide any geospatial point as `from` argument and any set of geospatial
 #' points as `to` argument. If such a geospatial point is not equal to a node
 #' in the network, it will be snapped to its nearest node before calculating
@@ -31,35 +30,30 @@
 #' be used automatically, as long as this column is present. If set to
 #' \code{NA}, no weights are used (even if the edges have a weight column).
 #'
+#' @param output Character defining how to report the shortest paths. Can be
+#' \code{'nodes'} meaning that only indices of nodes in the paths are
+#' returned, \code{'edges'} meaning that only indices of edges in the paths
+#' are returned, or \code{'both'} meaning that both node and edge indices are
+#' returned. Defaults to \code{'both'}. Ignored when \code{all = TRUE}.
+#' 
 #' @param all Whether to calculate all shortest paths or a single shortest path
-#' between two nodes. Defaults to \code{FALSE}.
+#' between two nodes. If \code{TRUE}, the igraph function 
+#' \code{all_shortest_paths} is called internally, if \code{FALSE} the igraph
+#' function \code{shortest_paths} is called internally. Defaults to \code{FALSE}.
 #'
 #' @param ... Arguments passed on to the corresponding
-#' \code{\link[igraph:shortest_paths]{igraph}} and
-#' \code{\link[igraph:all_shortest_paths]{igraph}} functions. Arguments
+#' \code{\link[igraph:shortest_paths]{igraph}} function. Arguments
 #' \code{predecessors} and \code{inbound.edges} are ignored.
 #'
 #' @details See the \code{\link[igraph:shortest_paths]{igraph}} documentation.
 #'
-#' @seealso \code{\link{st_network_paths}}
+#' @seealso \code{\link{st_network_cost}}
 #'
 #' @return An object of class \code{\link[tibble]{tbl_df}} with one row per
 #' returned path. Depending on the setting of the 'output' argument, columns
 #' can be \code{node_paths} (a list column with for each path the ordered
 #' indices of nodes present in that path) and \code{edge_paths} (a list column
 #' with for each path the ordered indices of edges present in that path).
-#'
-#' @name spatial_shortest_paths
-NULL
-
-#' @describeIn spatial_shortest_paths Wrapper around
-#' \code{igraph::shortest_paths} and \code{igraph::all_shortest_paths}.
-#'
-#' @param output Character defining how to report the shortest paths. Can be
-#' \code{'nodes'} meaning that only indices of nodes in the paths are
-#' returned, \code{'edges'} meaning that only indices of edges in the paths
-#' are returned, or \code{'both'} meaning that both node and edge indices are
-#' returned. Defaults to \code{'both'}. Ignored when \code{all = TRUE}.
 #'
 #' @examples
 #' library(sf)
