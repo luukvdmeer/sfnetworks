@@ -83,10 +83,10 @@ subdividing edges at each interior point that is equal to any
 other interior or boundary point in the edges table. Interior points in this
 sense are those points that are included in their linestring geometry 
 feature but are not endpoints of it, while boundary points are the endpoints
-of the linestrings. The network is reconstructed after subdivision such that 
-edges are connected at the points of subdivision. Returns a 
-\code{morphed_sfnetwork} containing a single element of class 
-\code{\link{sfnetwork}}. This morpher requires edges to be spatially 
+of the linestrings. The network is reconstructed after subdivision such that
+edges are connected at the points of subdivision. Returns a
+\code{morphed_sfnetwork} containing a single element of class
+\code{\link{sfnetwork}}. This morpher requires edges to be spatially
 explicit.
 
 \item \code{to_spatial_directed}: Make a network directed in the direction given
@@ -113,7 +113,7 @@ element of class \code{\link{sfnetwork}}.
 
 \item \code{to_spatial_shortest_paths}: Limit a network to those nodes and edges that
 are part of the shortest path between two nodes. \code{...} is evaluated in
-the same manner as \code{\link{st_shortest_paths}}. Returns a
+the same manner as \code{\link{st_network_paths}}. Returns a
 \code{morphed_sfnetwork} that may contain multiple elements of class
 \code{\link{sfnetwork}}, depending on the number of requested paths. When
 unmorphing only the first instance of both the node and edge data will be

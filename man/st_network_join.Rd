@@ -26,6 +26,15 @@ missing in either of the networks. The \code{from} and \code{to} columns in
 the edge data are updated such that they match the new node indices of the
 resulting network.
 }
+\note{
+Due to internal rounding of rational numbers, it may occur that the
+intersection point between a line and a point is not evaluated as 
+actually intersecting that line by the designated algorithm. Instead, the
+intersection point lies a tiny-bit away from the edge. Therefore, when any
+of \code{blend_nodes} or \code{blend_crossings} is set to \code{TRUE}, a
+small tolerance of 1e-5 meters will be used for blending, instead of a 
+tolerance of 0.
+}
 \examples{
 library(sf)
 
