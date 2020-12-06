@@ -44,6 +44,7 @@ Suggests:
   fansi,
   ggplot2 (>= 3.0.0),
   knitr,
+  rmarkdown,
   spatstat,
   testthat  
 RoxygenNote: 7.1.1
