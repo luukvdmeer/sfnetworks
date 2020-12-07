@@ -1,0 +1,209 @@
+---
+title: "4. Routing"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{4. Routing}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+knitr::opts_knit$set(global.par = TRUE)
+```
+
+```{r plot, echo=FALSE, results='asis'}
+# plot margins
+par(mar = c(1, 1, 1, 1))
+# crayon needs to be explicitly activated in Rmd
+options(crayon.enabled = TRUE)
+# Hooks needs to be set to deal with outputs
+# thanks to fansi logic
+old_hooks = fansi::set_knit_hooks(knitr::knit_hooks, which = c("output", "message", "error"))
+```
+
+Calculating shortest paths between pairs of nodes is a core task in network analysis. The `sfnetworks` package offers wrappers around shortest paths calculation function from `igraph` that makes it easier to use them when working with spatial data and tidyverse packages. This vignette will present their functionality.
+
+In this regard it is important to remember that `sfnetworks` is a general-purpose package for spatial network analysis, not specifically optimized for a single task. If your *only* purpose is many-to-many routing in large networks, there might be other packages out there that are faster and fit better to your needs. For example, [dodgr](https://github.com/ATFutures/dodgr) is a package that is designed for many-to-many routing on large dual-weighted graphs, with its main focus on OpenStreetMap road network data. For these data, it is also possible to use the R-bridges to external OpenStreetMap routing engines such as [graphhopper](https://github.com/crazycapivara/graphhopper-r), [osrm](https://github.com/rCarto/osrm) and [opentripplanner](https://github.com/ropensci/opentripplanner). The [stplanr](https://github.com/ropensci/stplanr) package for sustainable transport planning lets you connect to such engines from within a single interface. Finally, there is [cppRouting](https://github.com/vlarmet/cppRouting) that contains functions to calculate shortest paths and isochrones/isodistances on weighted graphs. Of course, all these packages can be happily used *alongside* `sfnetworks`.
+
+## Setting edge weights
+
+The route of the shortest path between two nodes in a network is influenced by the *weights* or *impedance* of the edges. If you don't provide these weights explicitly, shortest paths calculation functions in `igraph` (as well as their spatial wrappers in `sfnetworks`) proceed as follows:
+
+- If there is a column in the edges table named *weight*, the values in these column are automatically used as edge weights. These values should be numeric, otherwise an error will be thrown.
+- If there is no *weight* column, shortest paths are calculated without edge weights. In pratice that means that the weight of all edges is equal to 1. That is, the shortest path between node A and node B is the path with the fewest *number* of edges.
+
+Every function that is about the calculation of shortest paths also accepts a `weights` argument which allows you to provide edge weights explicitly. In `sfnetworks`, this argument can be a numeric vector of the same length as the number of edges in the network, but also the name of a column in the edges table. The `weights` argument will always overrule the default behaviour of using the *weight* column for edge weights. If you have a *weight* column but want to calculates paths *without* using weights, set the `weights` argument to `NA`.
+
+The `edge_length()` function can be used to calculate the geographic length of each edge, such that you can use those as weights in shortest paths calculations. The function is meant to be used inside a `mutate()` verb, as follows:
+
+```{r, message=FALSE}
+library(sfnetworks)
+library(sf)
+library(tidygraph)
+library(tidyverse)
+```
+
+```{r}
+net = as_sfnetwork(roxel, directed = FALSE) %>%
+  st_transform(3035) %>%
+  activate("edges") %>%
+  mutate(weight = edge_length())
+
+net
+```
+
+## Calculating shortest paths
+
+The function `st_network_paths()` is a wrapper around the igraph function `shortest_paths()`. There are two main differences:
+
+- Besides node indices and node names, `st_network_paths()` gives the additional option to provide any (set of) geospatial point(s) as *from* and *to* location(s) of the shortest paths, either as sf or sfc object. Provided points that do not equal any node in the network will be snapped to their nearest node before calculating the paths.
+- To allow smooth integration with the tidyverse, the output of `st_network_paths()` is a tibble, with one row per returned path. The column *node_paths* contains the ordered list of node indices in the path, and the column *edge_paths* contains the ordered list of edge indices in the path.
+
+Just as `shortest_paths()`, the `st_network_paths()` function is meant for one-to-one and one-to-many routing. Hence, it is only possible to provide a single *from* location, while the *to* locations can be more than one.
+
+Lets start with the most basic example of providing node indices as *from* and *to* locations. Remember that a node index in a sfnetwork refers to the position of the node in the nodes table of the network (i.e. its rownumber). There is also the possibility to use character encoded node names instead of numeric node indices. This requires the nodes table to have a column *name* with a unique name for each node. 
+
+Since we have created a *weight* column in the previous section, these weights (i.e. the length of the edge geometries) will be used automatically in the shortest paths calculation.
+
+```{r, fig.height=5, fig.width=5}
+paths = st_network_paths(net, from = 495, to = c(458, 121))
+paths
+paths %>%
+  slice(1) %>%
+  pull(node_paths) %>%
+  unlist()
+
+paths %>%
+  slice(1) %>%
+  pull(edge_paths) %>%
+  unlist()
+
+plot_path = function(node_path) {
+  net %>%
+    activate("nodes") %>%
+    slice(node_path) %>%
+    plot(cex = 1.5, lwd = 1.5, add = TRUE)
+}
+
+colors = sf.colors(3, categorical = TRUE)
+
+plot(net, col = "darkgrey")
+paths %>%
+  pull(node_paths) %>%
+  walk(plot_path)
+net %>%
+  activate("nodes") %>%
+  st_as_sf() %>%
+  slice(c(495, 121, 458)) %>%
+  plot(col = colors, pch = 8, cex = 2, lwd = 2, add = TRUE)
+```
+
+Now we'll create some geospatial points that do not intersect with any node in the network. Providing them to `st_network_paths` will first find the nearest node to each of them, and then calculate the shortest paths accordingly.
+
+```{r, fig.height=5, fig.width=5}
+p1 = st_geometry(net, "nodes")[495] + st_sfc(st_point(c(50, -50)))
+st_crs(p1) = st_crs(net)
+p2 = st_geometry(net, "nodes")[458]
+p3 = st_geometry(net, "nodes")[121] + st_sfc(st_point(c(-10, 100)))
+st_crs(p3) = st_crs(net)
+
+paths = st_network_paths(net, from = p1, to = c(p2, p3))
+
+plot(net, col = "darkgrey")
+paths %>%
+  pull(node_paths) %>%
+  walk(plot_path)
+plot(c(p1, p2, p3), col = colors, pch = 8, cex = 2, lwd = 2, add = TRUE)
+```
+
+When your network consists of multiple components that are not connected to each other, it is possible that the nearest node to a provided point is located in a tiny component and only a few other nodes can be reached from it. In such cases it might be good to first reduce the network to its largest (or *n* largests) component(s) before calculating shortest paths. The tidygraph function `group_components()` can help with this. It assigns an integer to each node identifying the component it is in, with `1` being the largest component in the network, `2` the second largests, and so on.
+
+```{r, fig.height=5, fig.width=5}
+# Our network consists of several unconnected components.
+with_graph(net, graph_component_count())
+
+connected_net = net %>%
+  activate("nodes") %>%
+  filter(group_components() == 1)
+
+plot(net, col = colors[2])
+plot(connected_net, cex = 1.1, lwd = 1.1, add = TRUE)
+```
+
+## Retrieving a cost matrix
+
+The shortest paths calculation as described above is only supported for one-to-one and one-to-many routing. The alternative for many-to-many routing is the calculation of a cost matrix. Instead of providing the individual paths, it returns a matrix in which entry $i,j$ is the total cost (i.e. sum of weights) of the shortest path from node $i$ to node $j$. The igraph function for this purpose is `distances()`, which in `sfnetworks` is wrapped by `st_network_cost()`, allowing again to provide sets of geospatial points as *from* and *to* locations. Note that the calculated costs refer to the paths between the *nearest nodes* of the input points.
+
+```{r}
+st_network_cost(net, from = c(p1, p2, p3), to = c(p1, p2, p3))
+```
+
+If we don't provide any from and to points, `st_network_cost()` will by default calculate the cost matrix for the entire network.
+
+```{r}
+# Our network has 701 nodes.
+with_graph(net, graph_order())
+
+cost_matrix = st_network_cost(net)
+dim(cost_matrix)
+```
+
+## Creating isochrones
+
+With respect to a given point $p$ and a given travel time $t$, an isochrone is the line for which it holds that the travel time from any point on the line to or from $p$ is equal to $t$. When using distances instead of time, it is called an isodistance.
+
+In `sfnetworks` there are no dedicated, optimized functions for calculating isochrones or isodistances. However, we can roughly approximate them by using a combination of sf and tidygraph functions. Lets first calculate imaginary travel times for each edge, using randomly generated average walking speeds for each type of edge.
+
+```{r, warning=FALSE}
+# How many edge types are there?
+types = net %>%
+  activate("edges") %>%
+  pull(type) %>%
+  unique()
+
+types
+
+# Randomly define a walking speed in m/s for each type.
+set.seed(1)
+speeds = runif(length(types), 3*1000/60/60, 7*1000/60/60)
+
+# Assign a speed to each edge based on its type.
+# Calculate travel time for each edge based on that.
+net = net %>%
+  activate("edges") %>%
+  group_by(type) %>%
+  mutate(speed = units::set_units(speeds[cur_group_id()], "m/s")) %>%
+  mutate(time = weight / speed) %>%
+  ungroup()
+
+net
+```
+
+Now, we can calculate the total total travel time for each shortest path between the (nearest node of the) origin point and all other nodes in the network, using the node measure function `node_distance_from()` with the values in the *time* column as weights. Then, we filter the nodes reachable within a given travel time from the origin. By drawing a convex hull around these selected nodes we roughly approximate the isochrone. If we wanted isochrones for travel times *towards* the central point, we could have used the node measure function `node_distance_to()` instead.
+
+```{r, fig.height=5, fig.width=5}
+net = activate(net, "nodes")
+
+p = net %>%
+  st_geometry() %>%
+  st_union() %>%
+  st_centroid()
+
+iso = net %>%
+  filter(node_distance_from(st_nearest_feature(p, net), weights = time) <= 600)
+
+iso_poly = iso %>%
+  st_geometry() %>%
+  st_union() %>%
+  st_convex_hull()
+
+plot(net, col = "darkgrey")
+plot(iso_poly, border = "black", lwd = 3, add = TRUE)
+plot(iso, col = colors[2], add = TRUE)
+plot(p, col = colors[1], pch = 8, cex = 2, lwd = 2, add = TRUE)
+```
