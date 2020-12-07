@@ -29,7 +29,9 @@
 #'
 #' @note Note that \code{node_is_within_distance} is a wrapper around the
 #' \code{st_is_within_distance} predicate from sf. Hence, it is based on
-#' 'as-the-crow-flies' distance, and not on distances over the network.
+#' 'as-the-crow-flies' distance, and not on distances over the network. For
+#' distances over the network, use \code{\link[tidygraph]{node_distance_to}}
+#' with edge lengths as weights argument.
 #'
 #' @examples
 #' library(sf)
