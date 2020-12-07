@@ -34,9 +34,9 @@ Both spatial filters and spatial joins use spatial predicate functions to examin
 
 ### Using st_filter
 
-Information can be filtered from a network by using spatial predicate functions inside the sf function `st_filter`, which works as follows: the function is applied to a set of geometries A with respect to another set of geometries B, and removes features from A based on their spatial relation with the features in B. A practical example: when using the predicate *intersects*, all geometries in A that do not intersect with any geometry in B are removed.
+Information can be filtered from a network by using spatial predicate functions inside the sf function `sf::st_filter()`, which works as follows: the function is applied to a set of geometries A with respect to another set of geometries B, and removes features from A based on their spatial relation with the features in B. A practical example: when using the predicate *intersects*, all geometries in A that do not intersect with any geometry in B are removed.
 
-When applying `st_filter()` to a sfnetwork, it is internally applied to the active element of that network. For example: filtering information from a network A with activated nodes, using a set of polygons B and the predicate *intersects*, will remove those nodes that do not intersect with any of the polygons in B from the network. When edges are active, it will remove the edges that do not intersect with any of the polygons in B from the network.
+When applying `sf::st_filter()` to a sfnetwork, it is internally applied to the active element of that network. For example: filtering information from a network A with activated nodes, using a set of polygons B and the predicate *intersects*, will remove those nodes that do not intersect with any of the polygons in B from the network. When edges are active, it will remove the edges that do not intersect with any of the polygons in B from the network.
 
 Although the filter is applied only to the active element of the network, it may also affect the other element. When nodes are removed, their incident edges are removed as well. However, when edges are removed, the nodes at their endpoints remain, even if they don't have any other incident edges. This behavior is inherited from `tidygraph` and understandable from a graph theory point of view: by definition nodes can exist peacefully in isolation, while edges can never exist without nodes at their endpoints.
 
@@ -79,7 +79,7 @@ plot(poly, border = "red", lty = 4, lwd = 4, add = T)
 plot(filtered)
 ```
 
-The isolated nodes that remain after filtering the edges can be easily removed using a combination of a regular `filter()` verb from `dplyr` and the `node_is_isolated` query function from `tidygraph`.
+The isolated nodes that remain after filtering the edges can be easily removed using a combination of a regular `dplyr::filter()` verb  and the `tidygraph::node_is_isolated()` query function.
 
 ```{r, fig.show='hold'}
 filtered = net %>%
@@ -95,7 +95,7 @@ plot(filtered)
 
 ### Using spatial node and edge query functions
 
-In `tidygraph`, filtering information from networks is done by using specific node or edge query functions inside the `filter()` verb from `dplyr`. An example was already shown above, where isolated nodes were removed from the network.
+In `tidygraph`, filtering information from networks is done by using specific node or edge query functions inside the `dplyr::filter()` verb. An example was already shown above, where isolated nodes were removed from the network.
 
 In `sfnetworks`, several spatial predicates are implemented as node and edge query functions such that you can also do spatial filtering in tidygraph style. See ?spatial_node_predicates for a list of all implemented spatial node query functions, and ?spatial_edge_predicates for the spatial edge query functions.
 
@@ -111,7 +111,7 @@ plot(poly, border = "red", lty = 4, lwd = 4, add = T)
 plot(filtered)
 ```
 
-If you just want to store the information about the investigated spatial relation, without filtering the network, you can also use the spatial node and edge query functions inside a `mutate()` verb.
+If you just want to store the information about the investigated spatial relation, without filtering the network, you can also use the spatial node and edge query functions inside a `dplyr::mutate()` verb.
 
 ```{r}
 net %>%
@@ -122,9 +122,9 @@ net %>%
 
 ### Using st_join
 
-Information can be spatially joined into a network by using spatial predicate functions inside the sf function `st_join()`, which works as follows: the function is applied to a set of geometries A with respect to another set of geometries B, and attaches feature attributes from features in B to features in A based on their spatial relation. A practical example: when using the predicate *intersects*, feature attributes from feature y in B are attached to feature x in A whenever x intersects with y.
+Information can be spatially joined into a network by using spatial predicate functions inside the sf function `sf::st_join()`, which works as follows: the function is applied to a set of geometries A with respect to another set of geometries B, and attaches feature attributes from features in B to features in A based on their spatial relation. A practical example: when using the predicate *intersects*, feature attributes from feature y in B are attached to feature x in A whenever x intersects with y.
 
-When applying `st_join()` to a sfnetwork, it is internally applied to the active element of that network. For example: joining information into network A with activated nodes, from a set of polygons B and using the predicate *intersects*, will attach attributes from a polygon in B to those nodes that intersect with that specific polygon. When edges are active, it will attach the same information but to the intersecting edges instead.
+When applying `sf::st_join()` to a sfnetwork, it is internally applied to the active element of that network. For example: joining information into network A with activated nodes, from a set of polygons B and using the predicate *intersects*, will attach attributes from a polygon in B to those nodes that intersect with that specific polygon. When edges are active, it will attach the same information but to the intersecting edges instead.
 
 Lets show this with an example in which we first create imaginary postal code areas for the Roxel dataset.
 
@@ -162,7 +162,7 @@ net %>%
 
 ### Snapping points to their nearest node before joining
 
-Another network specific use-case of spatial joins would be to join information from external points of interest (POIs) into the nodes of the network. However, to do so, such points need to have *exactly* equal coordinates to one of the nodes. Often this will not be the case. To solve such situations, you will first need to update the coordinates of the POIs to match those of their *nearest node*. This process is also called *snapping*. To find the nearest node in the network for each POI, you can use the sf function `st_nearest_feature()`.
+Another network specific use-case of spatial joins would be to join information from external points of interest (POIs) into the nodes of the network. However, to do so, such points need to have *exactly* equal coordinates to one of the nodes. Often this will not be the case. To solve such situations, you will first need to update the coordinates of the POIs to match those of their *nearest node*. This process is also called *snapping*. To find the nearest node in the network for each POI, you can use the sf function `sf::st_nearest_feature()`.
 
 ```{r, fig.show='hold'}
 node1 = st_point(c(0, 0))
@@ -189,7 +189,7 @@ plot(net, cex = 1.5)
 plot(snapped_pois, pch = 8, cex = 1.5, add = TRUE)
 ```
 
-After snapping the POIs, we can use `st_join()` as expected.
+After snapping the POIs, we can use `sf::st_join()` as expected.
 
 ```{r}
 st_join(net, snapped_pois)
@@ -215,7 +215,7 @@ plot(blended, cex = 1.5)
 
 ### Joining two networks
 
-In the examples above it was all about joining information from external features into a network. But how about joining two networks? This is what the `st_network_join()` function is for. It takes two sfnetworks as input and makes a spatial full join on the geometries of the nodes data, based on the *equals* spatial predicate. That means, all nodes from network x *and* all nodes from network y are present in the joined network, but if there were nodes in x with equal geometries to nodes in y, these nodes become a *single node* in the joined network. Edge data are combined using a `bind_rows()` semantic, meaning that data are matched by column name and values are filled with `NA` if missing in either of the networks. The *from* and *to* columns in the edge data are updated automatically such that they correctly match the new node indices of the joined network. There is no spatial join performed on the edges. Hence, if there is an edge in x with an equal geometry to an edge in y, they remain separate edges in the joined network.
+In the examples above it was all about joining information from external features into a network. But how about joining two networks? This is what the `st_network_join()` function is for. It takes two sfnetworks as input and makes a spatial full join on the geometries of the nodes data, based on the *equals* spatial predicate. That means, all nodes from network x *and* all nodes from network y are present in the joined network, but if there were nodes in x with equal geometries to nodes in y, these nodes become a *single node* in the joined network. Edge data are combined using a `dplyr::bind_rows()` semantic, meaning that data are matched by column name and values are filled with `NA` if missing in either of the networks. The *from* and *to* columns in the edge data are updated automatically such that they correctly match the new node indices of the joined network. There is no spatial join performed on the edges. Hence, if there is an edge in x with an equal geometry to an edge in y, they remain separate edges in the joined network.
 
 ```{r, fig.show='hold'}
 node3 = st_point(c(1,1))

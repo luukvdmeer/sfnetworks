@@ -99,7 +99,7 @@ activate(net, "edges")
 
 ## Network cleaning functions
 
-The `sfnetworks` package contains a set of spatial network specific cleaning functions. They are currently modeled as *spatial morphers*. To learn more about spatial morphers and what they are, see the [dedicated vignette]() for that. For now, it is sufficient to know that you can use any spatial morpher function inside the `convert` verb from `tidygraph` to convert your network into a different state.
+The `sfnetworks` package contains a set of spatial network specific cleaning functions. They are currently modeled as *spatial morphers*. To learn more about spatial morphers and what they are, see the [dedicated vignette]() for that. For now, it is sufficient to know that you can use any spatial morpher function inside the `tidygraph::convert()` verb to convert your network into a different state.
 
 Before presenting the cleaning functions that are currently implemented, lets create a network to be cleaned.
 
@@ -139,7 +139,7 @@ When constructing a sfnetwork from a set of sf linestrings, the *endpoints* of t
 
 In graph theory terms the process of splitting and edge is called *subdivision*: the subdivision of an edge $o = \{a, b\}$ (i.e. an edge from node $a$ to node $b$) is the addition of a new node $c$ and the replacement of $o$ by two new edges $p = \{a, c\}$ and $q = \{c, b\}$.
 
-The function `to_spatial_subdivision` subdivides edges at interior points whenever these interior points are equal to one or more interior points or endpoints of other edges, and recalculates network connectivity afterwards. 
+The function `to_spatial_subdivision()` subdivides edges at interior points whenever these interior points are equal to one or more interior points or endpoints of other edges, and recalculates network connectivity afterwards. 
 
 To illustrate the workflow, lets consider a situation where an interior point $p_{x}$ in edge $x$ is shared with point $p_{y}$ in edge $y$. That gives two possible situations:
 
@@ -171,7 +171,7 @@ A network may contain nodes that have only one incoming and one outgoing edge. F
 
 In graph theory terms this process is the opposite of subdivision and also called *smoothing*: smoothing a node $b$ with incident edges $o = \{a, b\}$ and $p = \{b, c\}$ removes $b$, $o$ and $p$ and creates the new edge $q = \{a, c\}$.
 
-The function `to_spatial_smooth` iteratively smooths pseudo nodes, and after each removal concatenates the linestring geometries of the two affected edges together into a new, single linestring geometry.
+The function `to_spatial_smooth()` iteratively smooths pseudo nodes, and after each removal concatenates the linestring geometries of the two affected edges together into a new, single linestring geometry.
 
 *NOTE: This function is still experimental and may have bad performance on large networks*
 
@@ -187,7 +187,7 @@ plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ### Simplify network
 A network may contain an edge that connects two nodes that were already connected by another edge in the network. Such an edge can be called a *parallel edge*. Also, it may contain an edge that starts and ends at the same node. Such an edge can be called a *loop edge*. In graph theory, a *simple graph* is a graph that does *not* contain parallel and loop edges.
 
-The function `to_spatial_simple` simplifies a network by removing parallel and loop edges.
+The function `to_spatial_simple()` simplifies a network by removing parallel and loop edges.
 
 ```{r, fig.show='hold'}
 simple = convert(smoothed, to_spatial_simple)
@@ -198,7 +198,7 @@ plot(st_geometry(simple, "edges"), col = sf.colors(ecount(simple), categorical =
 plot(st_geometry(simple, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
-When there are multiple edges connecting the same pair of nodes, which edge is marked as the 'original' and which as parallel edges depends on the order of the edges in the edges table. That is, by re-arranging the edges table before calling `to_spatial_simple` you can influence which edge is kept whenever parallel edges are detected. For example, you might want to always keep the edge with the shortest distance.
+When there are multiple edges connecting the same pair of nodes, which edge is marked as the 'original' and which as parallel edges depends on the order of the edges in the edges table. That is, by re-arranging the edges table before calling `to_spatial_simple()` you can influence which edge is kept whenever parallel edges are detected. For example, you might want to always keep the edge with the shortest distance.
 
 ```{r, fig.show='hold'}
 simple = smoothed %>%
