@@ -48,6 +48,7 @@ The most basic way to construct a sfnetwork with spatially explicit edges is by 
 library(sfnetworks)
 library(sf)
 library(tidygraph)
+library(tidyverse)
 ```
 
 ```{r}
@@ -214,8 +215,6 @@ plot(net)
 If you have `ggplot2` installed, you can also use the `autoplot` method to directly create a simple ggplot of the network.
 
 ```{r, message=FALSE, fig.width=5, fig.height=5}
-library(ggplot2)
-
 autoplot(net) + ggtitle("Road network of Münster Roxel")
 ```
 

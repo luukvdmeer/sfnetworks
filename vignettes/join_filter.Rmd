@@ -44,8 +44,8 @@ Although the filter is applied only to the active element of the network, it may
 library(sfnetworks)
 library(sf)
 library(tidygraph)
+library(tidyverse)
 library(igraph)
-library(dplyr)
 ```
 
 ```{r, fig.show='hold'}

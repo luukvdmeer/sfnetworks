@@ -39,6 +39,7 @@ We can pre-process the lines by reducing the precision of the coordinates such t
 library(sfnetworks)
 library(sf)
 library(tidygraph)
+library(tidyverse)
 library(igraph)
 ```
 
