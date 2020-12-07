@@ -21,15 +21,18 @@ st_network_paths(
 calculated. Can be an object an object of class \code{\link[sf]{sf}} or
 \code{\link[sf]{sfc}}, containing a single feature. When multiple features
 are given, only the first one is taken. Empty geometries are ignored.
-Alternatively, it can be a numeric constant, referring to the index of the
-node from which the shortest paths will be calculated.}
+Alternatively, it can be an integer, referring to the index of the
+node from which the shortest paths will be calculated, or a character,
+referring to the name of the node from which the shortest paths will be
+calculated.}
 
 \item{to}{The (set of) geospatial point(s) to which the shortest paths will be
 calculated. Can be an object of  class \code{\link[sf]{sf}} or
 \code{\link[sf]{sfc}}. Empty geometries will be ignored.
 Alternatively, it can be a numeric vector, containing the indices of the nodes
-to which the shortest paths will be calculated. By default, all nodes in the
-network are included.}
+to which the shortest paths will be calculated, or a character vector,
+containing the names of the nodes to which the shortest paths will be
+calculated. By default, all nodes in the network are included.}
 
 \item{weights}{The edge weights to be used in the shortest path calculation.
 Can be a numeric vector giving edge weights, or a column name referring to
@@ -47,7 +50,9 @@ returned. Defaults to \code{'both'}. Ignored when \code{all = TRUE}.}
 \item{all}{Whether to calculate all shortest paths or a single shortest path
 between two nodes. If \code{TRUE}, the igraph function
 \code{all_shortest_paths} is called internally, if \code{FALSE} the igraph
-function \code{shortest_paths} is called internally. Defaults to \code{FALSE}.}
+function \code{shortest_paths} is called internally. If \code{TRUE}, the
+returned tibble will only have a \code{node_paths} column, no matter what
+the setting of \code{output} is. Defaults to \code{FALSE}.}
 
 \item{...}{Arguments passed on to the corresponding
 \code{\link[igraph:shortest_paths]{igraph}} function. Arguments
@@ -61,7 +66,7 @@ indices of nodes present in that path) and \code{edge_paths} (a list column
 with for each path the ordered indices of edges present in that path).
 }
 \description{
-Wrappers around the shortest path calculation functionalities in
+Wrapper around the shortest path calculation functionalities in
 \code{\link[igraph:shortest_paths]{igraph}}, allowing to
 provide any geospatial point as `from` argument and any set of geospatial
 points as `to` argument. If such a geospatial point is not equal to a node

@@ -30,7 +30,7 @@ an attribute column in the edges table containing those weights. If set to
 be used automatically, as long as this column is present. If set to
 \code{NA}, no weights are used (even if the edges have a weight column).}
 
-\item{...}{Arguments passed on to code{\link[igraph]{distances}}.}
+\item{...}{Arguments passed on to \code{\link[igraph]{distances}}.}
 }
 \value{
 An nxm numeric matrix where n is the length of the \code{from}
