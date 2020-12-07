@@ -87,3 +87,25 @@ test_that('Objects in the to and/or from argument that are not numeric, sf,
       to = c(TRUE, FALSE, TRUE)
     ), 'not accepted')
 })
+
+test_that('Duplicated to nodes are removed from st_network_cost calculations
+          with a warning', {
+    expect_warning(
+      costmat <- st_network_cost(net, 1, c(3, 2, 3)),
+      'node indices were removed'
+    )
+    expect_equal(ncol(costmat), 2)
+    # Test with duplicated sf to points that have same nearest node
+    p1 = st_geometry(net, "nodes")[1]
+    p2 = st_geometry(net, "nodes")[9]
+    p3 = st_sfc(p1[[1]] + st_point(c(500, 500)), crs = st_crs(p1))
+    p4 = st_sfc(p1[[1]] + st_point(c(500.2, 500.2)), crs = st_crs(p1))
+    p5 = st_sfc(p2[[1]] + st_point(c(-500, -500)), crs = st_crs(p2))
+    pts1 = c(p1, p5)
+    pts2 = c(p2, p3, p4)
+    expect_warning(
+      costmatsf <- st_network_cost(net, pts1, pts2),
+      'node indices were removed'
+    )
+    expect_equal(ncol(costmatsf), 2)
+})
