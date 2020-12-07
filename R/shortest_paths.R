@@ -1,6 +1,6 @@
 #' Shortest paths between points in geographical space
 #'
-#' Wrappers around the shortest path calculation functionalities in
+#' Wrapper around the shortest path calculation functionalities in
 #' \code{\link[igraph:shortest_paths]{igraph}}, allowing to
 #' provide any geospatial point as `from` argument and any set of geospatial
 #' points as `to` argument. If such a geospatial point is not equal to a node
@@ -13,15 +13,18 @@
 #' calculated. Can be an object an object of class \code{\link[sf]{sf}} or
 #' \code{\link[sf]{sfc}}, containing a single feature. When multiple features
 #' are given, only the first one is taken. Empty geometries are ignored.
-#' Alternatively, it can be a numeric constant, referring to the index of the
-#' node from which the shortest paths will be calculated.
+#' Alternatively, it can be an integer, referring to the index of the
+#' node from which the shortest paths will be calculated, or a character,
+#' referring to the name of the node from which the shortest paths will be
+#' calculated.
 #'
 #' @param to The (set of) geospatial point(s) to which the shortest paths will be
 #' calculated. Can be an object of  class \code{\link[sf]{sf}} or
 #' \code{\link[sf]{sfc}}. Empty geometries will be ignored.
 #' Alternatively, it can be a numeric vector, containing the indices of the nodes
-#' to which the shortest paths will be calculated. By default, all nodes in the
-#' network are included.
+#' to which the shortest paths will be calculated, or a character vector,
+#' containing the names of the nodes to which the shortest paths will be
+#' calculated. By default, all nodes in the network are included.
 #'
 #' @param weights The edge weights to be used in the shortest path calculation.
 #' Can be a numeric vector giving edge weights, or a column name referring to
@@ -39,7 +42,9 @@
 #' @param all Whether to calculate all shortest paths or a single shortest path
 #' between two nodes. If \code{TRUE}, the igraph function
 #' \code{all_shortest_paths} is called internally, if \code{FALSE} the igraph
-#' function \code{shortest_paths} is called internally. Defaults to \code{FALSE}.
+#' function \code{shortest_paths} is called internally. If \code{TRUE}, the
+#' returned tibble will only have a \code{node_paths} column, no matter what
+#' the setting of \code{output} is. Defaults to \code{FALSE}.
 #'
 #' @param ... Arguments passed on to the corresponding
 #' \code{\link[igraph:shortest_paths]{igraph}} function. Arguments
@@ -174,7 +179,7 @@ st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
 #' be used automatically, as long as this column is present. If set to
 #' \code{NA}, no weights are used (even if the edges have a weight column).
 #'
-#' @param ... Arguments passed on to code{\link[igraph]{distances}}.
+#' @param ... Arguments passed on to \code{\link[igraph]{distances}}.
 #'
 #' @details See the \code{\link[igraph:distances]{igraph}} documentation.
 #'
@@ -253,17 +258,17 @@ set_path_endpoints = function(x, p, name) {
     return (st_nearest_feature(p[!missing], nodes_as_sf(x)))
   }
   # Case 2: input is numeric node indices.
-  if (is.numeric(p)) {
+  if (is.numeric(p) | is.character(p)) {
     missing = is.na(p)
     if (any(missing)) {
       if (all(missing)) {
         stop(
-          "Indices in argument '", name, "' are all NA",
+          "Indices or names in argument '", name, "' are all NA",
           call. = FALSE
         )
       } else {
         warning(
-          "NA indices in argument '", name, "' are ignored",
+          "NA indices or names in argument '", name, "' are ignored",
           call. = FALSE
         )
       }
