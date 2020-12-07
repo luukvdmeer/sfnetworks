@@ -45,7 +45,7 @@ are returned, or \code{'both'} meaning that both node and edge indices are
 returned. Defaults to \code{'both'}. Ignored when \code{all = TRUE}.}
 
 \item{all}{Whether to calculate all shortest paths or a single shortest path
-between two nodes. If \code{TRUE}, the igraph function 
+between two nodes. If \code{TRUE}, the igraph function
 \code{all_shortest_paths} is called internally, if \code{FALSE} the igraph
 function \code{shortest_paths} is called internally. Defaults to \code{FALSE}.}
 

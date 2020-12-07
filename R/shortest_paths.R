@@ -35,9 +35,9 @@
 #' returned, \code{'edges'} meaning that only indices of edges in the paths
 #' are returned, or \code{'both'} meaning that both node and edge indices are
 #' returned. Defaults to \code{'both'}. Ignored when \code{all = TRUE}.
-#' 
+#'
 #' @param all Whether to calculate all shortest paths or a single shortest path
-#' between two nodes. If \code{TRUE}, the igraph function 
+#' between two nodes. If \code{TRUE}, the igraph function
 #' \code{all_shortest_paths} is called internally, if \code{FALSE} the igraph
 #' function \code{shortest_paths} is called internally. Defaults to \code{FALSE}.
 #'
@@ -211,6 +211,13 @@ st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
                                          weights = NULL, ...) {
   args = set_paths_args(x, from, to, weights)
   names(args)[2] = "v" # In igraph::distances argument 'from' is called 'v'
+  # In igraph::distances argument 'to' cannot have duplicated indices
+  # This can happen without the user knowing when POINT geometries
+  # are given to the 'to' argument that happen to snap to a same node
+  if(any(duplicated(args$to))) {
+    warning("Duplicated 'to' node indices were removed.")
+    args$to = unique(args$to)
+  }
   do.call(distances, c(args, ...))
 }
 
