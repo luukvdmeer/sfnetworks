@@ -46,7 +46,8 @@ Suggests:
   knitr,
   rmarkdown,
   spatstat,
-  testthat  
+  testthat,
+  tidyverse 
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 URL: https://luukvdmeer.github.io/sfnetworks/, https://github.com/luukvdmeer/sfnetworks
