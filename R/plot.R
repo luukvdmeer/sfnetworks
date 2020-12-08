@@ -94,9 +94,17 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
 #' @name autoplot
 #' @importFrom sf st_as_sf
 autoplot.sfnetwork = function(object, ...) {
-  ggplot2::ggplot() +
-    ggplot2::geom_sf(data = st_as_sf(object, 'nodes')) +
-    ggplot2::geom_sf(data = st_as_sf(object, 'edges'))
+  g = ggplot2::ggplot() +
+    ggplot2::geom_sf(data = st_as_sf(object, 'nodes'))
+  if (has_spatially_explicit_edges(object)) {
+    g +
+      ggplot2::geom_sf(data = st_as_sf(object, 'edges'))
+  } else {
+    message('Spatially implicit edges are drawn as lines.')
+    object = explicitize_edges(object)
+    g +
+      ggplot2::geom_sf(data = st_as_sf(object, 'edges'))
+  }
 }
 
 # nocov start
