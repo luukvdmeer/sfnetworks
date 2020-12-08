@@ -87,7 +87,7 @@ unmorph.morphed_sfnetwork = function(.data, ...) {
 #'
 #' @importFrom igraph is_simple is_directed is_bipartite is_connected is_dag gorder
 #' @noRd
-describe_graph = function(x) {
+describe_graph = function(x) { # nocov start
   if (gorder(x) == 0) return('An empty graph')
   prop = list(
     simple = is_simple(x),
@@ -121,16 +121,16 @@ describe_graph = function(x) {
     )
   }
   paste(desc, collapse = ' ')
-}
+} # nocov end
 #' @importFrom igraph is_connected is_simple gorder gsize is_directed
-is_tree = function(x) {
+is_tree = function(x) { # nocov start
   is_connected(x) &&
     is_simple(x) &&
     (gorder(x) - gsize(x) == 1)
-}
+} # nocov end
 #' @importFrom igraph is_connected is_simple gorder gsize count_components is_directed
-is_forest = function(x) {
+is_forest = function(x) { # nocov start
   !is_connected(x) &&
     is_simple(x) &&
     (gorder(x) - gsize(x) - count_components(x) == 0)
-}
+} # nocov end
