@@ -220,7 +220,10 @@ st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
   # This can happen without the user knowing when POINT geometries
   # are given to the 'to' argument that happen to snap to a same node
   if(any(duplicated(args$to))) {
-    warning("Duplicated 'to' node indices were removed.")
+    warning(
+      "Duplicated 'to' node indices were removed.",
+      call. = FALSE
+    )
     args$to = unique(args$to)
   }
   do.call(distances, c(args, ...))
