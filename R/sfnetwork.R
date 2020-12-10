@@ -67,12 +67,12 @@
 #' p3 = st_point(c(8, 52))
 #' nodes = st_as_sf(st_sfc(p1, p2, p3, crs = 4326))
 #'
-#' e1 = st_cast(st_union(p1,p2), "LINESTRING")
-#' e2 = st_cast(st_union(p1,p3), "LINESTRING")
-#' e3 = st_cast(st_union(p2,p3), "LINESTRING")
+#' e1 = st_cast(st_union(p1, p2), "LINESTRING")
+#' e2 = st_cast(st_union(p1, p3), "LINESTRING")
+#' e3 = st_cast(st_union(p3, p2), "LINESTRING")
 #' edges = st_as_sf(st_sfc(e1, e2, e3, crs = 4326))
-#' edges$from = c(1, 1, 2)
-#' edges$to = c(2, 3, 3)
+#' edges$from = c(1, 1, 3)
+#' edges$to = c(2, 3, 2)
 #'
 #' # Default.
 #' sfnetwork(nodes, edges)

@@ -385,8 +385,9 @@ geom_unary_ops = function(op, x, ...) {
 #' poly = st_multipoint(c(p1, p2, p3, p4)) %>% 
 #'   st_cast('POLYGON') %>% 
 #'   st_sfc(crs = 3035) %>%
-#'   st_as_sf() %>%
-#'   mutate(foo = letters[1:4])
+#'   st_as_sf()
+#' 
+#' poly$foo = "bar"
 #'
 #' st_join(net, poly, join = st_intersects)
 #'
@@ -480,7 +481,7 @@ st_crop.morphed_sfnetwork = function(x, y, ...) {
 #'
 #' par(mar = c(1,1,1,1), mfrow = c(1,3))
 #' plot(net)
-#' plot(poly, border = "red", lty = 4, lwd = 4, add = T)
+#' plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 #' plot(filtered)
 #' @importFrom sf st_filter
 #' @export

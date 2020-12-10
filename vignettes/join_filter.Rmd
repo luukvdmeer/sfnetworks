@@ -64,7 +64,7 @@ net = as_sfnetwork(roxel) %>%
 filtered = st_filter(net, poly, .pred = st_intersects)
 
 plot(net)
-plot(poly, border = "red", lty = 4, lwd = 4, add = T)
+plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 plot(filtered)
 ```
 
@@ -74,7 +74,7 @@ filtered = net %>%
   st_filter(poly, .pred = st_intersects)
 
 plot(net)
-plot(poly, border = "red", lty = 4, lwd = 4, add = T)
+plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 plot(filtered)
 ```
 
@@ -88,7 +88,7 @@ filtered = net %>%
   filter(!node_is_isolated())
 
 plot(net)
-plot(poly, border = "red", lty = 4, lwd = 4, add = T)
+plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 plot(filtered)
 ```
 
@@ -106,7 +106,7 @@ filtered = net %>%
   filter(!node_is_isolated())
 
 plot(net)
-plot(poly, border = "red", lty = 4, lwd = 4, add = T)
+plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 plot(filtered)
 ```
 
@@ -138,7 +138,7 @@ codes = net %>%
 joined = st_join(net, codes, join = st_intersects)
 joined
 plot(net, col = "grey")
-plot(codes, col = NA, border = "red", lty = 4, lwd = 4, add = T)
+plot(codes, col = NA, border = "red", lty = 4, lwd = 4, add = TRUE)
 text(st_coordinates(st_centroid(st_geometry(codes))), as.character(codes$post_code))
 plot(st_geometry(joined, "edges"))
 plot(st_as_sf(joined, "nodes"), pch = 20, add = TRUE)

@@ -92,11 +92,6 @@
 #'   mutate(weight = edge_length()) %>%
 #'   st_network_paths(p1, p2)
 #'
-#' # Providing weights directly as a numeric vector.
-#' net %>%
-#'   activate("edges") %>%
-#'   st_network_paths(p1, p2, weights = edge_length())
-#'
 #' # Calculate all shortest paths between two points.
 #' st_network_paths(net, 5, 1, all = TRUE)
 #'
