@@ -49,15 +49,14 @@ library(igraph)
 ```
 
 ```{r, fig.show='hold'}
-p1 = st_point(c(7.53173, 51.95662))
-p2 = st_point(c(7.53173, 51.95190))
-p3 = st_point(c(7.53778, 51.95190))
-p4 = st_point(c(7.53778, 51.95662))
+p1 = st_point(c(4151358, 3208045))
+p2 = st_point(c(4151340, 3207520))
+p3 = st_point(c(4151756, 3207506))
+p4 = st_point(c(4151774, 3208031))
 
 poly = st_multipoint(c(p1, p2, p3, p4)) %>% 
   st_cast('POLYGON') %>% 
-  st_sfc(crs = 4326) %>%
-  st_transform(3035)
+  st_sfc(crs = 3035)
 
 net = as_sfnetwork(roxel) %>%
   st_transform(3035)
@@ -118,6 +117,8 @@ net %>%
   mutate(in_poly = node_intersects(poly))
 ```
 
+For non-spatial filters applied to attribute columns, simply use `dplyr::filter()` instead of `sf::st_filter()`.
+
 ## Spatial joins
 
 ### Using st_join
@@ -159,6 +160,8 @@ net %>%
   activate("edges") %>%
   st_join(two_equal_polys, join = st_intersects)
 ```
+
+For non-spatial joins based on attribute columns, simply use a join function from `dplyr` (e.g. `dplyr::left_join()` or `dplyr::inner_join()`) instead of `sf::st_join()`.
 
 ### Snapping points to their nearest node before joining
 

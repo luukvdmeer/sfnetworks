@@ -64,7 +64,7 @@ The function `st_network_paths()` is a wrapper around the igraph function `igrap
 - Besides node indices and node names, `st_network_paths()` gives the additional option to provide any (set of) geospatial point(s) as *from* and *to* location(s) of the shortest paths, either as sf or sfc object. Provided points that do not equal any node in the network will be snapped to their nearest node before calculating the paths.
 - To allow smooth integration with the tidyverse, the output of `st_network_paths()` is a tibble, with one row per returned path. The column *node_paths* contains the ordered list of node indices in the path, and the column *edge_paths* contains the ordered list of edge indices in the path.
 
-Just as `shortest_paths()`, the `st_network_paths()` function is meant for one-to-one and one-to-many routing. Hence, it is only possible to provide a single *from* location, while the *to* locations can be more than one.
+Just as `igraph::shortest_paths()`, the `st_network_paths()` function is meant for one-to-one and one-to-many routing. Hence, it is only possible to provide a single *from* location, while the *to* locations can be more than one.
 
 Lets start with the most basic example of providing node indices as *from* and *to* locations. Remember that a node index in a sfnetwork refers to the position of the node in the nodes table of the network (i.e. its rownumber). There is also the possibility to use character encoded node names instead of numeric node indices. This requires the nodes table to have a column *name* with a unique name for each node. 
 
@@ -135,6 +135,8 @@ plot(net, col = colors[2])
 plot(connected_net, cex = 1.1, lwd = 1.1, add = TRUE)
 ```
 
+Another way to calculate shortest paths, which fits smoothly in the tidygraph style of working, is by using the `to_spatial_shortest_paths` morpher function. This will subset the original network to only contain those nodes and edges that appear in a shortest path between two nodes. See the [Spatial morphers]() vignette for details.
+
 ## Retrieving a cost matrix
 
 The shortest paths calculation as described above is only supported for one-to-one and one-to-many routing. The alternative for many-to-many routing is the calculation of a cost matrix. Instead of providing the individual paths, it returns a matrix in which entry $i,j$ is the total cost (i.e. sum of weights) of the shortest path from node $i$ to node $j$. The igraph function for this purpose is `igraph::distances()`, which in `sfnetworks` is wrapped by `st_network_cost()`, allowing again to provide sets of geospatial points as *from* and *to* locations. Note that the calculated costs refer to the paths between the *nearest nodes* of the input points.
@@ -184,7 +186,7 @@ net = net %>%
 net
 ```
 
-Now, we can calculate the total travel time for each shortest path between the (nearest node of the) origin point and all other nodes in the network, using the node measure function `node_distance_from()` with the values in the *time* column as weights. Then, we filter the nodes reachable within a given travel time from the origin. By drawing a convex hull around these selected nodes we roughly approximate the isochrone. If we wanted isochrones for travel times *towards* the central point, we could have used the node measure function `node_distance_to()` instead.
+Now, we can calculate the total travel time for each shortest path between the (nearest node of the) origin point and all other nodes in the network, using the node measure function `tidygraph::node_distance_from()` with the values in the *time* column as weights. Then, we filter the nodes reachable within a given travel time from the origin. By drawing a convex hull around these selected nodes we roughly approximate the isochrone. If we wanted isochrones for travel times *towards* the central point, we could have used the node measure function `tidygraph::node_distance_to()` instead.
 
 ```{r, fig.height=5, fig.width=5}
 net = activate(net, "nodes")
