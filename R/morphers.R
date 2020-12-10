@@ -375,18 +375,6 @@ to_spatial_smooth = function(x) {
       pseudo_remaining[j] = FALSE
       next
     }
-    # If equal attributes of incident edges are required:
-    # --> Check for each edge attr if it has the same value for both incidents.
-    # --> If not all attr values are equal the node is not a real pseudo node.
-    # --> In that case, mark node as non-pseudo and move on to next iteration.
-    if (require_equal_attrs) {
-      eq = sapply(edge_attr(G), function(x) x[incidents[1]] == x[incidents[2]])
-      if (! all(eq, na.rm = TRUE)) {
-        pseudo[j] = FALSE
-        pseudo_remaining[j] = FALSE
-        next
-      }
-    }
     # Process the pseudo node by:
     # --> Removing its incident edges.
     # --> Adding a new edge between its neighbors.

@@ -254,6 +254,7 @@ as_sfnetwork.psp = function(x, ...) {
 #' @name as_sfnetwork
 #' @examples
 #' # From an sf object with POINT geometries.
+#' library(sf)
 #' p1 = st_point(c(7, 51))
 #' p2 = st_point(c(7, 52))
 #' p3 = st_point(c(8, 52))
@@ -261,6 +262,7 @@ as_sfnetwork.psp = function(x, ...) {
 #' as_sfnetwork(points)
 #'
 #' # From an sf object with LINESTRING geometries.
+#' library(sf)
 #' e1 = st_cast(st_union(p1,p2), "LINESTRING")
 #' e2 = st_cast(st_union(p1,p3), "LINESTRING")
 #' e3 = st_cast(st_union(p2,p3), "LINESTRING")

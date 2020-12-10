@@ -173,6 +173,7 @@ st_is.sfnetwork = function(x, ...) {
 # =============================================================================
 
 #' @name sf
+#' @examples
 #' # Get CRS of the network.
 #' st_crs(net)
 #'
