@@ -122,12 +122,14 @@ describe_graph = function(x) {
   }
   paste(desc, collapse = ' ')
 }
+
 #' @importFrom igraph is_connected is_simple gorder gsize is_directed
 is_tree = function(x) {
   is_connected(x) &&
     is_simple(x) &&
     (gorder(x) - gsize(x) == 1)
 }
+
 #' @importFrom igraph is_connected is_simple gorder gsize count_components is_directed
 is_forest = function(x) {
   !is_connected(x) &&

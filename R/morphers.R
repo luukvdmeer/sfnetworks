@@ -25,6 +25,27 @@
 #' @details It also possible to create your own morphers. See the documentation
 #' of \code{\link[tidygraph]{morph}} for the requirements for custom morphers.
 #'
+#' @examples
+#' library(sf)
+#' library(tidygraph)
+#'
+#' net = as_sfnetwork(roxel, directed = FALSE) %>%
+#'   st_transform(3035)
+#'
+#' # Temporary changes with morph and unmorph.
+#' net %>%
+#'  activate("edges") %>%
+#'  mutate(weight = edge_length()) %>%
+#'  morph(to_spatial_shortest_paths, from = 1, to = 10) %>%
+#'  mutate(in_paths = TRUE) %>%
+#'  unmorph()
+#'
+#' # Lasting changes with convert.
+#' net %>%
+#'  activate("edges") %>%
+#'  mutate(weight = edge_length()) %>%
+#'  convert(to_spatial_shortest_paths, from = 1, to = 10)
+#'
 #' @name spatial_morphers
 NULL
 
@@ -33,17 +54,6 @@ NULL
 #' list column. If edges are spatially explicit, the edge geometries are
 #' dropped. Returns a \code{morphed_tbl_graph} containing a single element of
 #' class \code{\link[tidygraph]{tbl_graph}}.
-#'
-#' @examples
-#' library(sf)
-#' library(tidygraph)
-#'
-#' net = as_sfnetwork(roxel, directed = FALSE) %>%
-#'   st_transform(3035)
-#'
-#' ## to_spatial_coordinates
-#' convert(net, to_spatial_coordinates)
-#'
 #' @importFrom rlang !!!
 #' @importFrom sf st_coordinates
 #' @importFrom tidygraph mutate
@@ -72,21 +82,6 @@ to_spatial_coordinates = function(x) {
 #' \code{morphed_sfnetwork} containing a single element of class
 #' \code{\link{sfnetwork}}. This morpher requires edges to be spatially
 #' explicit.
-#'
-#' @examples
-#' ## to_spatial_subdivision
-#' # Number of edges in original network.
-#' net %>%
-#'   activate("edges") %>%
-#'   st_as_sf() %>%
-#'   nrow()
-#' # Number of edges in subdivided network.
-#' net %>%
-#'   convert(to_spatial_subdivision) %>%
-#'   activate("edges") %>%
-#'   st_as_sf() %>%
-#'   nrow()
-#'
 #' @export
 to_spatial_subdivision = function(x) {
   require_spatially_explicit_edges(x)
@@ -180,12 +175,6 @@ subdivide = function(x) {
 #' single element of class \code{\link{sfnetwork}}. This morpher requires edges
 #' to be spatially explicit. If not, use \code{\link[tidygraph]{to_directed}}.
 #'
-#' @examples
-#' ## to_spatial_directed
-#' net %>%
-#'   convert(to_undirected) %>%
-#'   convert(to_spatial_directed)
-#'
 #' @importFrom igraph is_directed
 #' @importFrom sf st_equals
 #' @export
@@ -214,16 +203,6 @@ to_spatial_directed = function(x) {
 #' will be drawn between source and target nodes of edges. Returns a
 #' \code{morphed_sfnetwork} containing a single element of class
 #' \code{\link{sfnetwork}}.
-#'
-#' @examples
-#' ## to_spatial_explicit_edges
-#' par(mar = c(1, 1, 1, 1), mfrow = c(1,2))
-#' plot(net)
-#' net %>%
-#'  convert(to_spatial_implicit_edges) %>%
-#'  convert(to_spatial_explicit_edges) %>%
-#'  plot()
-#'
 #' @importFrom rlang !! :=
 #' @importFrom sf st_as_sf st_geometry
 #' @importFrom tibble as_tibble
@@ -253,12 +232,6 @@ to_spatial_explicit_edges = function(x, ...) {
 #' @describeIn spatial_morphers Remove linestring geometries of spatially
 #' explicit edges. Returns a \code{morphed_sfnetwork} containing a single
 #' element of class \code{\link{sfnetwork}}.
-#'
-#' @examples
-#' ## to_spatial_implicit_edges
-#' net %>%
-#'  convert(to_spatial_implicit_edges)
-#'
 #' @export
 to_spatial_implicit_edges = function(x) {
   list(
@@ -273,21 +246,6 @@ to_spatial_implicit_edges = function(x) {
 #' \code{\link{sfnetwork}}, depending on the number of requested paths. When
 #' unmorphing only the first instance of both the node and edge data will be
 #' used, as the the same node and/or edge can be present in multiple paths.
-#'
-#' @examples
-#' ## to_spatial_shortest_paths
-#' # Plot shortest path.
-#' par(mar = c(1, 1, 1, 1), mfrow = c(1,1))
-#' plot(net)
-#' net %>%
-#'   convert(to_spatial_shortest_paths, 171, 190) %>%
-#'   plot(col = "red", add = TRUE)
-#' # Calculate lengths of multiple shortest paths.
-#' net %>%
-#'  activate("edges") %>%
-#'  morph(to_spatial_shortest_paths, 1, c(171, 190)) %>%
-#'  sapply(function(x) sum(st_length(x)))
-#'
 #' @importFrom tidygraph slice
 #' @export
 to_spatial_shortest_paths = function(x, ...) {
@@ -314,20 +272,6 @@ to_spatial_shortest_paths = function(x, ...) {
 #' \code{TRUE}.
 #'
 #' @param remove_loops Should loops be remove. Defaults to \code{TRUE}.
-#'
-#' @examples
-#' ## to_spatial_simple
-#' # Number of edges in original network.
-#' net %>%
-#'   activate("edges") %>%
-#'   st_as_sf() %>%
-#'   nrow()
-#' # Number of edges in simplified network.
-#' net %>%
-#'   activate("edges") %>%
-#'   convert(to_spatial_simple) %>%
-#'   st_as_sf() %>%
-#'   nrow()
 #'
 #' @importFrom tidygraph filter edge_is_loop edge_is_multiple
 #' @export
@@ -356,20 +300,6 @@ to_spatial_simple = function(x, remove_parallels = TRUE, remove_loops = TRUE) {
 #' network is preserved by concatenating the incident edges of each removed
 #' pseudo node. Returns a \code{morphed_sfnetwork} containing a single element
 #' of class \code{\link{sfnetwork}}.
-#'
-#' @param require_equal_attrs Should pseudo nodes only be removed when all
-#' attributes of their incident edges are equal? Defaults to \code{FALSE}.
-#'
-#' @examples
-#' ## to_spatial_smoothed
-#' G = as_sfnetwork(roxel[c(4, 5, 8), ], directed = FALSE)
-#' # Remove pseudo nodes.
-#' smoothed = convert(G, to_spatial_smooth)
-#' # Compare results.
-#' par(mar = c(1, 1, 1, 1), mfrow = c(1,3))
-#' plot(G, cex = 3, main = "Original network")
-#' plot(smoothed_1, cex = 3, main = "Smoothed network")
-#'
 #' @importFrom igraph add_edges degree delete_edges delete_edge_attr edge_attr
 #' edge_attr_names incident is_directed neighbors
 #' @importFrom sf st_equals st_geometry st_reverse
@@ -377,7 +307,7 @@ to_spatial_simple = function(x, remove_parallels = TRUE, remove_loops = TRUE) {
 #' @importFrom tidygraph as_tbl_graph filter mutate
 #' @importFrom utils setTxtProgressBar txtProgressBar
 #' @export
-to_spatial_smooth = function(x, require_equal_attrs = FALSE) {
+to_spatial_smooth = function(x) {
   # Check if edges are spatially explicit and if network is directed.
   spatial = has_spatially_explicit_edges(x)
   directed = is_directed(x)
@@ -529,19 +459,6 @@ to_spatial_smooth = function(x, require_equal_attrs = FALSE) {
 #' \code{\link[tidygraph]{to_subgraph}}.
 #'
 #' @param subset_by Whether to create subgraphs based on nodes or edges.
-#'
-#' @examples
-#' ## to_spatial_subset
-#' p1 = st_point(c(7.53173, 51.95662))
-#' p2 = st_point(c(7.53173, 51.95190))
-#' p3 = st_point(c(7.53778, 51.95190))
-#' p4 = st_point(c(7.53778, 51.95662))
-#' rect = st_multipoint(c(p1, p2, p3, p4)) %>%
-#'   st_cast('POLYGON') %>%
-#'   st_sfc(crs = 4326) %>%
-#'   st_transform(3035)
-#' net %>%
-#'   convert(to_spatial_subset, rect, .predicate = st_intersects)
 #'
 #' @importFrom sf st_filter
 #' @export

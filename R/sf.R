@@ -36,22 +36,14 @@ is.sfg = function(x) {
 #'
 #' @examples
 #' library(sf)
+#'
 #' net = as_sfnetwork(roxel)
 #'
-#' # Convert and sfnetwork object to an sf object
-#' # This takes the current active object
-#' active(net)
-#' net %>%
-#'   st_as_sf()
+#' # Extract the active network element.
+#' st_as_sf(net)
 #'
-#' # Convert the edges
-#' net %>%
-#'   activate('edges') %>%
-#'   st_as_sf()
-#'
-#' # Activate the network element inside st_as_sf()
-#' net %>%
-#'   st_as_sf(active = 'nodes')
+#' # Extract any network element.
+#' st_as_sf(net, "edges")
 #'
 #' @importFrom sf st_as_sf
 #' @export
@@ -96,8 +88,11 @@ edges_as_sf = function(x, ...) {
 
 #' @name sf
 #' @examples
-#' # Get geometry of network element
-#' net %>% st_geometry(active = 'nodes')
+#' # Get geometry of the active network element.
+#' st_geometry(net)
+#'
+#' # Get geometry of any network element.
+#' st_geometry(net, "edges")
 #'
 #' @importFrom sf st_geometry
 #' @export
@@ -146,6 +141,10 @@ edge_geom = function(x) {
 }
 
 #' @name sf
+#' @examples
+#' # Get bbox of the active network element.
+#' st_bbox(net)
+#'
 #' @importFrom sf st_bbox st_geometry
 #' @export
 st_bbox.sfnetwork = function(x, ...) {
@@ -174,6 +173,9 @@ st_is.sfnetwork = function(x, ...) {
 # =============================================================================
 
 #' @name sf
+#' # Get CRS of the network.
+#' st_crs(net)
+#'
 #' @importFrom sf st_crs
 #' @export
 st_crs.sfnetwork = function(x, ...) {
@@ -259,8 +261,12 @@ change_coords = function(x, op, ...) {
 
 #' @name sf
 #' @examples
-#' # Get agr of network element
-#' net %>% st_agr(active = 'edges')
+#' # Get agr factor of the active network element.
+#' st_agr(net)
+#'
+#' # Get agr factor of any network element.
+#' st_agr(net, "edges")
+#'
 #' @importFrom sf st_agr
 #' @export
 st_agr.sfnetwork = function(x, active = NULL, ...) {
@@ -366,6 +372,23 @@ geom_unary_ops = function(op, x, ...) {
 # =============================================================================
 
 #' @name sf
+#' @examples
+#' # Spatial join applied to the active network element.
+#' net = st_transform(net, 3035)
+#'
+#' p1 = st_point(c(4151358, 3208045))
+#' p2 = st_point(c(4151340, 3207520))
+#' p3 = st_point(c(4151756, 3207506))
+#' p4 = st_point(c(4151774, 3208031))
+#'
+#' poly = st_multipoint(c(p1, p2, p3, p4)) %>% 
+#'   st_cast('POLYGON') %>% 
+#'   st_sfc(crs = 3035) %>%
+#'   st_as_sf() %>%
+#'   mutate(foo = letters[1:4])
+#'
+#' st_join(net, poly, join = st_intersects)
+#'
 #' @importFrom sf st_join
 #' @export
 st_join.sfnetwork = function(x, y, ...) {
@@ -450,6 +473,14 @@ st_crop.morphed_sfnetwork = function(x, y, ...) {
 }
 
 #' @name sf
+#' @examples
+#' # Spatial filter applied to the active network element.
+#' filtered = st_filter(net, poly, .pred = st_intersects)
+#'
+#' par(mar = c(1,1,1,1), mfrow = c(1,3))
+#' plot(net)
+#' plot(poly, border = "red", lty = 4, lwd = 4, add = T)
+#' plot(filtered)
 #' @importFrom sf st_filter
 #' @export
 st_filter.sfnetwork = function(x, y, ...) {
