@@ -378,6 +378,14 @@ st_join.sfnetwork = function(x, y, ...) {
   )
 }
 
+#' @name sf
+#' @importFrom sf st_join
+#' @export
+st_join.morphed_sfnetwork = function(x, y, ...) {
+  x[] = lapply(x, st_join, y = y, ...)
+  x
+}
+
 #' @importFrom igraph is_directed
 #' @importFrom sf st_as_sf st_join
 join_nodes = function(x, y,  ...) {
@@ -434,11 +442,27 @@ st_crop.sfnetwork = function(x, y, ...) {
 }
 
 #' @name sf
+#' @importFrom sf st_crop
+#' @export
+st_crop.morphed_sfnetwork = function(x, y, ...) {
+  x[] = lapply(x, st_crop, y = y, ...)
+  x
+}
+
+#' @name sf
 #' @importFrom sf st_filter
 #' @export
 st_filter.sfnetwork = function(x, y, ...) {
   if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
   filter_network(st_filter, x, y, ...)
+}
+
+#' @name sf
+#' @importFrom sf st_filter
+#' @export
+st_filter.morphed_sfnetwork = function(x, y, ...) {
+  x[] = lapply(x, st_filter, y = y, ...)
+  x
 }
 
 #' @importFrom sf st_as_sf
