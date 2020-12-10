@@ -364,14 +364,11 @@ to_spatial_simple = function(x, remove_parallels = TRUE, remove_loops = TRUE) {
 #' ## to_spatial_smoothed
 #' G = as_sfnetwork(roxel[c(4, 5, 8), ], directed = FALSE)
 #' # Remove pseudo nodes.
-#' smoothed_1 = convert(G, to_spatial_smooth)
-#' # Only remove pseudo nodes when attributes of incident edges are equal.
-#' smoothed_2 = convert(G, to_spatial_smooth, require_equal_attrs = TRUE)
+#' smoothed = convert(G, to_spatial_smooth)
 #' # Compare results.
 #' par(mar = c(1, 1, 1, 1), mfrow = c(1,3))
 #' plot(G, cex = 3, main = "Original network")
-#' plot(smoothed_1, cex = 3, main = "Smoothed network 1")
-#' plot(smoothed_2, cex = 3, main = "Smoothed network 2")
+#' plot(smoothed_1, cex = 3, main = "Smoothed network")
 #'
 #' @importFrom igraph add_edges degree delete_edges delete_edge_attr edge_attr
 #' edge_attr_names incident is_directed neighbors
