@@ -36,13 +36,13 @@ library(tidygraph)
 
 net = as_sfnetwork(roxel)
 
-# Convert network to "spatial tibble", takes active element
+# Extract the active network element as a spatial tibble.
 as_tibble(net)
 
-# Convert network edges to a "spatial tibble"
-as_tibble(net, active = 'edges')
+# Extract any network element as a spatial tibble.
+as_tibble(net, "edges")
 
-# Convert network edges to a tibble object
-as_tibble(net, active = 'edges', spatial = FALSE)
+# Extract the active network element as a regular tibble.
+as_tibble(net, spatial = FALSE)
 
 }

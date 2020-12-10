@@ -46,7 +46,7 @@ you only want to blend points that intersect the line.
 \examples{
 library(sf)
 
-# First, create a network and a set of points to blend.
+# Create a network and a set of points to blend.
 n11 = st_point(c(0,0))
 n12 = st_point(c(1,1))
 e1 = st_sfc(st_linestring(c(n11, n12)), crs = 4326)

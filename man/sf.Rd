@@ -22,8 +22,11 @@
 \alias{st_reverse.sfnetwork}
 \alias{st_simplify.sfnetwork}
 \alias{st_join.sfnetwork}
+\alias{st_join.morphed_sfnetwork}
 \alias{st_crop.sfnetwork}
+\alias{st_crop.morphed_sfnetwork}
 \alias{st_filter.sfnetwork}
+\alias{st_filter.morphed_sfnetwork}
 \title{sf methods for sfnetworks}
 \usage{
 \method{st_as_sf}{sfnetwork}(x, active = NULL, ...)
@@ -66,9 +69,15 @@
 
 \method{st_join}{sfnetwork}(x, y, ...)
 
+\method{st_join}{morphed_sfnetwork}(x, y, ...)
+
 \method{st_crop}{sfnetwork}(x, y, ...)
 
+\method{st_crop}{morphed_sfnetwork}(x, y, ...)
+
 \method{st_filter}{sfnetwork}(x, y, ...)
+
+\method{st_filter}{morphed_sfnetwork}(x, y, ...)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
@@ -95,26 +104,55 @@ See the \code{\link[sf]{sf}} documentation.
 }
 \examples{
 library(sf)
+
 net = as_sfnetwork(roxel)
 
-# Convert and sfnetwork object to an sf object
-# This takes the current active object
-active(net)
-net \%>\%
+# Extract the active network element.
+st_as_sf(net)
+
+# Extract any network element.
+st_as_sf(net, "edges")
+
+# Get geometry of the active network element.
+st_geometry(net)
+
+# Get geometry of any network element.
+st_geometry(net, "edges")
+
+# Get bbox of the active network element.
+st_bbox(net)
+
+# Get CRS of the network.
+st_crs(net)
+
+# Get agr factor of the active network element.
+st_agr(net)
+
+# Get agr factor of any network element.
+st_agr(net, "edges")
+
+# Spatial join applied to the active network element.
+net = st_transform(net, 3035)
+
+p1 = st_point(c(4151358, 3208045))
+p2 = st_point(c(4151340, 3207520))
+p3 = st_point(c(4151756, 3207506))
+p4 = st_point(c(4151774, 3208031))
+
+poly = st_multipoint(c(p1, p2, p3, p4)) \%>\% 
+  st_cast('POLYGON') \%>\% 
+  st_sfc(crs = 3035) \%>\%
   st_as_sf()
 
-# Convert the edges
-net \%>\%
-  activate('edges') \%>\%
-  st_as_sf()
+poly$foo = "bar"
 
-# Activate the network element inside st_as_sf()
-net \%>\%
-  st_as_sf(active = 'nodes')
+st_join(net, poly, join = st_intersects)
 
-# Get geometry of network element
-net \%>\% st_geometry(active = 'nodes')
+# Spatial filter applied to the active network element.
+filtered = st_filter(net, poly, .pred = st_intersects)
 
-# Get agr of network element
-net \%>\% st_agr(active = 'edges')
+par(mar = c(1,1,1,1), mfrow = c(1,3))
+plot(net)
+plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
+plot(filtered)
 }

@@ -30,14 +30,12 @@ par(mar = c(1, 1, 1, 1), mfrow = c(1,1))
 net = as_sfnetwork(roxel)
 plot(net)
 
-# When lines are spatially implicit
+# When lines are spatially implicit.
 net = as_sfnetwork(roxel, edges_as_lines = FALSE)
 plot(net)
+plot(net, draw_lines = FALSE)
 
-# Changing plot parameters like `col` will affect
-# both edges and nodes, while e.g. `lwd` only affects
-# the edges and `pch` and `cex` the nodes.
-
+# Changing default settings.
 plot(net, col = 'blue', pch = 18, lwd = 1, cex = 2)
 
 }
