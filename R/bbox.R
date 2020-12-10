@@ -14,6 +14,7 @@
 #' @examples
 #' library(sf)
 #'
+#' # Create a network.
 #' node1 = st_point(c(8, 51))
 #' node2 = st_point(c(7, 51.5))
 #' node3 = st_point(c(8, 52))
@@ -27,11 +28,12 @@
 #'
 #' net = sfnetwork(nodes, edges)
 #'
+#' # Create bounding boxes for nodes, edges and the whole network.
 #' node_bbox = st_bbox(activate(net, "nodes"))
 #' edge_bbox = st_bbox(activate(net, "edges"))
 #' net_bbox = st_network_bbox(net)
 #'
-#' ## Plot results.
+#' # Plot.
 #' plot(net)
 #' plot(st_as_sfc(node_bbox), border = "red", lty = 2, add = TRUE)
 #' plot(st_as_sfc(edge_bbox), border = "blue", lty = 2, add = TRUE)

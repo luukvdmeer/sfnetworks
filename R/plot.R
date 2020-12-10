@@ -21,14 +21,12 @@
 #' net = as_sfnetwork(roxel)
 #' plot(net)
 #'
-#' # When lines are spatially implicit
+#' # When lines are spatially implicit.
 #' net = as_sfnetwork(roxel, edges_as_lines = FALSE)
 #' plot(net)
+#' plot(net, draw_lines = FALSE)
 #'
-#' # Changing plot parameters like `col` will affect
-#' # both edges and nodes, while e.g. `lwd` only affects
-#' # the edges and `pch` and `cex` the nodes.
-#'
+#' # Changing default settings.
 #' plot(net, col = 'blue', pch = 18, lwd = 1, cex = 2)
 #'
 #' @importFrom graphics plot
@@ -70,12 +68,13 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
 #' @examples
 #' library(ggplot2)
 #' library(sf)
+#'
 #' net = as_sfnetwork(roxel)
 #'
-#' # Quick overview of the network in `ggplot2` style
+#' # Quick overview of the network in ggplot style.
 #' autoplot(net)
 #'
-#' # Other `ggplot2` elements can be added
+#' # Other ggplot elements can be added.
 #' points = net %>%
 #'   st_bbox() %>%
 #'   st_as_sfc() %>%
@@ -84,12 +83,12 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
 #'   st_cast('POINT')
 #'
 #' autoplot(net) +
-#'    # The theme can be customized
-#'    theme_minimal() +
-#'    # Labels can be added
-#'    labs(title = 'Nice ggplot') +
-#'    # And extra `geom_sf` layers can be included
-#'    geom_sf(data = points, color = 'red', size = 2)
+#'   # The theme can be customized
+#'   theme_minimal() +
+#'   # Labels can be added
+#'   labs(title = 'Nice ggplot') +
+#'   # And extra sf layers can be included
+#'   geom_sf(data = points, color = 'red', size = 2)
 #'
 #' @name autoplot
 #' @importFrom sf st_as_sf

@@ -28,6 +28,6 @@ and \code{agr} (the attribute-geometry-relationships).
 \examples{
 net = as_sfnetwork(roxel)
 sf_attr(net, "agr", active = "edges")
-sf_attr(net, "sf_column", active = "edges")
+sf_attr(net, "sf_column", active = "nodes")
 
 }

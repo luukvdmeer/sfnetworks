@@ -46,31 +46,30 @@ nodes can be read by \code{\link[sf]{st_as_sf}}, it is automatically
 supported.
 }
 \examples{
-# Examples for linnet method
+# From a linnet object.
+if (require(spatstat)) as_sfnetwork(simplenet)
+
+# From a psp object.
 if (require(spatstat)) {
-plot(simplenet, main = "spatstat input")
-simplenet_as_sfnetwork = as_sfnetwork(simplenet)
-plot(simplenet_as_sfnetwork, main = "sfnetworks output")
+  set.seed(42)
+  test_psp = psp(runif(10), runif(10), runif(10), runif(10), window=owin())
+  as_sfnetwork(test_psp)
 }
-# Examples for psp method
-if (require(spatstat)) {
-set.seed(42)
-test_psp = psp(runif(10), runif(10), runif(10), runif(10), window=owin())
-plot(test_psp, main = "spatstat input")
-test_psp_as_sfnetwork = as_sfnetwork(test_psp)
-plot(test_psp_as_sfnetwork, main = "sfnetworks output")
-}
-# Examples for sf method
-## from POINT geometries
-p1 = sf::st_point(c(7, 51))
-p2 = sf::st_point(c(7, 52))
-p3 = sf::st_point(c(8, 52))
-points = sf::st_as_sf(sf::st_sfc(p1, p2, p3, crs = 4326))
+
+# From an sf object with POINT geometries.
+library(sf)
+p1 = st_point(c(7, 51))
+p2 = st_point(c(7, 52))
+p3 = st_point(c(8, 52))
+points = st_as_sf(st_sfc(p1, p2, p3, crs = 4326))
 as_sfnetwork(points)
-## from LINESTRING geometries
-e1 = sf::st_cast(sf::st_union(p1,p2), "LINESTRING")
-e2 = sf::st_cast(sf::st_union(p1,p3), "LINESTRING")
-e3 = sf::st_cast(sf::st_union(p2,p3), "LINESTRING")
-lines = sf::st_as_sf(sf::st_sfc(e1, e2, e3, crs = 4326))
+
+# From an sf object with LINESTRING geometries.
+library(sf)
+e1 = st_cast(st_union(p1,p2), "LINESTRING")
+e2 = st_cast(st_union(p1,p3), "LINESTRING")
+e3 = st_cast(st_union(p2,p3), "LINESTRING")
+lines = st_as_sf(st_sfc(e1, e2, e3, crs = 4326))
 as_sfnetwork(lines)
+
 }

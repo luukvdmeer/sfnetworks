@@ -49,15 +49,14 @@ library(igraph)
 ```
 
 ```{r, fig.show='hold'}
-p1 = st_point(c(7.53173, 51.95662))
-p2 = st_point(c(7.53173, 51.95190))
-p3 = st_point(c(7.53778, 51.95190))
-p4 = st_point(c(7.53778, 51.95662))
+p1 = st_point(c(4151358, 3208045))
+p2 = st_point(c(4151340, 3207520))
+p3 = st_point(c(4151756, 3207506))
+p4 = st_point(c(4151774, 3208031))
 
 poly = st_multipoint(c(p1, p2, p3, p4)) %>% 
   st_cast('POLYGON') %>% 
-  st_sfc(crs = 4326) %>%
-  st_transform(3035)
+  st_sfc(crs = 3035)
 
 net = as_sfnetwork(roxel) %>%
   st_transform(3035)
@@ -65,7 +64,7 @@ net = as_sfnetwork(roxel) %>%
 filtered = st_filter(net, poly, .pred = st_intersects)
 
 plot(net)
-plot(poly, border = "red", lty = 4, lwd = 4, add = T)
+plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 plot(filtered)
 ```
 
@@ -75,7 +74,7 @@ filtered = net %>%
   st_filter(poly, .pred = st_intersects)
 
 plot(net)
-plot(poly, border = "red", lty = 4, lwd = 4, add = T)
+plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 plot(filtered)
 ```
 
@@ -89,7 +88,7 @@ filtered = net %>%
   filter(!node_is_isolated())
 
 plot(net)
-plot(poly, border = "red", lty = 4, lwd = 4, add = T)
+plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 plot(filtered)
 ```
 
@@ -107,7 +106,7 @@ filtered = net %>%
   filter(!node_is_isolated())
 
 plot(net)
-plot(poly, border = "red", lty = 4, lwd = 4, add = T)
+plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 plot(filtered)
 ```
 
@@ -117,6 +116,8 @@ If you just want to store the information about the investigated spatial relatio
 net %>%
   mutate(in_poly = node_intersects(poly))
 ```
+
+For non-spatial filters applied to attribute columns, simply use `dplyr::filter()` instead of `sf::st_filter()`.
 
 ## Spatial joins
 
@@ -137,7 +138,7 @@ codes = net %>%
 joined = st_join(net, codes, join = st_intersects)
 joined
 plot(net, col = "grey")
-plot(codes, col = NA, border = "red", lty = 4, lwd = 4, add = T)
+plot(codes, col = NA, border = "red", lty = 4, lwd = 4, add = TRUE)
 text(st_coordinates(st_centroid(st_geometry(codes))), as.character(codes$post_code))
 plot(st_geometry(joined, "edges"))
 plot(st_as_sf(joined, "nodes"), pch = 20, add = TRUE)
@@ -159,6 +160,8 @@ net %>%
   activate("edges") %>%
   st_join(two_equal_polys, join = st_intersects)
 ```
+
+For non-spatial joins based on attribute columns, simply use a join function from `dplyr` (e.g. `dplyr::left_join()` or `dplyr::inner_join()`) instead of `sf::st_join()`.
 
 ### Snapping points to their nearest node before joining
 

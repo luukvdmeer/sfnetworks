@@ -59,27 +59,38 @@
 #' @return An object of class \code{sfnetwork}.
 #'
 #' @examples
-#' # Create sfnetwork from sf objects
-#' p1 = sf::st_point(c(7, 51))
-#' p2 = sf::st_point(c(7, 52))
-#' p3 = sf::st_point(c(8, 52))
-#' nodes = sf::st_as_sf(sf::st_sfc(p1, p2, p3, crs = 4326))
+#' library(sf)
 #'
-#' e1 = sf::st_cast(sf::st_union(p1,p2), "LINESTRING")
-#' e2 = sf::st_cast(sf::st_union(p1,p3), "LINESTRING")
-#' e3 = sf::st_cast(sf::st_union(p2,p3), "LINESTRING")
-#' edges = sf::st_as_sf(sf::st_sfc(e1, e2, e3, crs = 4326))
-#' edges$from = c(1, 1, 2)
-#' edges$to = c(2, 3, 3)
+#' ## Create sfnetwork from sf objects
+#' p1 = st_point(c(7, 51))
+#' p2 = st_point(c(7, 52))
+#' p3 = st_point(c(8, 52))
+#' nodes = st_as_sf(st_sfc(p1, p2, p3, crs = 4326))
 #'
-#' ## directed network
-#' sfnetwork(nodes, edges, directed = TRUE)
+#' e1 = st_cast(st_union(p1, p2), "LINESTRING")
+#' e2 = st_cast(st_union(p1, p3), "LINESTRING")
+#' e3 = st_cast(st_union(p3, p2), "LINESTRING")
+#' edges = st_as_sf(st_sfc(e1, e2, e3, crs = 4326))
+#' edges$from = c(1, 1, 3)
+#' edges$to = c(2, 3, 2)
 #'
-#' ## undirected network
+#' # Default.
+#' sfnetwork(nodes, edges)
+#'
+#' # Undirected network.
 #' sfnetwork(nodes, edges, directed = FALSE)
 #'
-#' ## spatially implicit edges
-#' sfnetwork(nodes, edges, directed = FALSE, edges_as_lines = FALSE)
+#' # Using character encoded from and to columns.
+#' nodes$name = c("city", "village", "farm")
+#' edges$from = c("city", "city", "farm")
+#' edges$to = c("village", "farm", "village")
+#' sfnetwork(nodes, edges, node_key = "name")
+#'
+#' # Spatially implicit edges.
+#' sfnetwork(nodes, edges, edges_as_lines = FALSE)
+#'
+#' # Store edge lenghts in a weight column.
+#' sfnetwork(nodes, edges, length_as_weight = TRUE)
 #'
 #' @importFrom sf st_as_sf
 #' @importFrom tidygraph mutate tbl_graph
@@ -202,12 +213,9 @@ as_sfnetwork.default = function(x, ...) {
 
 #' @name as_sfnetwork
 #' @examples
-#' # Examples for linnet method
-#' if (require(spatstat)) {
-#' plot(simplenet, main = "spatstat input")
-#' simplenet_as_sfnetwork = as_sfnetwork(simplenet)
-#' plot(simplenet_as_sfnetwork, main = "sfnetworks output")
-#' }
+#' # From a linnet object.
+#' if (require(spatstat)) as_sfnetwork(simplenet)
+#'
 #' @export
 as_sfnetwork.linnet = function(x, ...) {
   # The easiest approach is the same as for psp objects, i.e. converting the
@@ -221,14 +229,13 @@ as_sfnetwork.linnet = function(x, ...) {
 
 #' @name as_sfnetwork
 #' @examples
-#' # Examples for psp method
+#' # From a psp object.
 #' if (require(spatstat)) {
-#' set.seed(42)
-#' test_psp = psp(runif(10), runif(10), runif(10), runif(10), window=owin())
-#' plot(test_psp, main = "spatstat input")
-#' test_psp_as_sfnetwork = as_sfnetwork(test_psp)
-#' plot(test_psp_as_sfnetwork, main = "sfnetworks output")
+#'   set.seed(42)
+#'   test_psp = psp(runif(10), runif(10), runif(10), runif(10), window=owin())
+#'   as_sfnetwork(test_psp)
 #' }
+#'
 #' @importFrom sf st_as_sf st_collection_extract
 #' @export
 as_sfnetwork.psp = function(x, ...) {
@@ -246,19 +253,22 @@ as_sfnetwork.psp = function(x, ...) {
 
 #' @name as_sfnetwork
 #' @examples
-#' # Examples for sf method
-#' ## from POINT geometries
-#' p1 = sf::st_point(c(7, 51))
-#' p2 = sf::st_point(c(7, 52))
-#' p3 = sf::st_point(c(8, 52))
-#' points = sf::st_as_sf(sf::st_sfc(p1, p2, p3, crs = 4326))
+#' # From an sf object with POINT geometries.
+#' library(sf)
+#' p1 = st_point(c(7, 51))
+#' p2 = st_point(c(7, 52))
+#' p3 = st_point(c(8, 52))
+#' points = st_as_sf(st_sfc(p1, p2, p3, crs = 4326))
 #' as_sfnetwork(points)
-#' ## from LINESTRING geometries
-#' e1 = sf::st_cast(sf::st_union(p1,p2), "LINESTRING")
-#' e2 = sf::st_cast(sf::st_union(p1,p3), "LINESTRING")
-#' e3 = sf::st_cast(sf::st_union(p2,p3), "LINESTRING")
-#' lines = sf::st_as_sf(sf::st_sfc(e1, e2, e3, crs = 4326))
+#'
+#' # From an sf object with LINESTRING geometries.
+#' library(sf)
+#' e1 = st_cast(st_union(p1,p2), "LINESTRING")
+#' e2 = st_cast(st_union(p1,p3), "LINESTRING")
+#' e3 = st_cast(st_union(p2,p3), "LINESTRING")
+#' lines = st_as_sf(st_sfc(e1, e2, e3, crs = 4326))
 #' as_sfnetwork(lines)
+#'
 #' @export
 as_sfnetwork.sf = function(x, ...) {
   if (has_single_geom_type(x, "LINESTRING")) {

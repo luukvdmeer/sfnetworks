@@ -67,38 +67,32 @@
 #' net = as_sfnetwork(roxel, directed = FALSE) %>%
 #'   st_transform(3035)
 #'
-#' # 1. Providing node indices
-#'
+#' # Providing node indices.
 #' st_network_paths(net, 1, 9)
 #'
-#' # 2. Providing nodes as spatial points
-#'
+#' # Providing nodes as spatial points.
 #' p1 = st_geometry(net, "nodes")[1]
 #' p2 = st_geometry(net, "nodes")[9]
 #' st_network_paths(net, p1, p2)
 #'
-#' # 3. Providing spatial points outside of the network
-#'
+#' # Providing spatial points outside of the network.
 #' p3 = st_sfc(p1[[1]] + st_point(c(500, 500)), crs = st_crs(p1))
 #' p4 = st_sfc(p2[[1]] + st_point(c(-500, -500)), crs = st_crs(p2))
 #' st_network_paths(net, p3, p4)
 #'
-#' # 4. Providing weights from column name
-#'
+#' # Providing weights from column name.
 #' net %>%
 #'   activate("edges") %>%
 #'   mutate(length = edge_length()) %>%
 #'   st_network_paths(p1, p2, weights = "length")
 #'
-#' # 5. Providing weights from column named 'weight'
-#'
+#' # Providing weights from column named 'weight'.
 #' net %>%
 #'   activate("edges") %>%
 #'   mutate(weight = edge_length()) %>%
 #'   st_network_paths(p1, p2)
 #'
-#' # 6. Calculate all shortest paths between two points
-#'
+#' # Calculate all shortest paths between two points.
 #' st_network_paths(net, 5, 1, all = TRUE)
 #'
 #' @importFrom igraph V

@@ -27,7 +27,7 @@ to_spatial_shortest_paths(x, ...)
 
 to_spatial_simple(x, remove_parallels = TRUE, remove_loops = TRUE)
 
-to_spatial_smooth(x, require_equal_attrs = FALSE)
+to_spatial_smooth(x)
 
 to_spatial_subset(x, ..., subset_by = NULL)
 }
@@ -41,9 +41,6 @@ of each morpher for details.}
 \code{TRUE}.}
 
 \item{remove_loops}{Should loops be remove. Defaults to \code{TRUE}.}
-
-\item{require_equal_attrs}{Should pseudo nodes only be removed when all
-attributes of their incident edges are equal? Defaults to \code{FALSE}.}
 
 \item{subset_by}{Whether to create subgraphs based on nodes or edges.}
 }
@@ -148,87 +145,18 @@ library(tidygraph)
 net = as_sfnetwork(roxel, directed = FALSE) \%>\%
   st_transform(3035)
 
-## to_spatial_coordinates
-convert(net, to_spatial_coordinates)
-
-## to_spatial_subdivision
-# Number of edges in original network.
-net \%>\%
-  activate("edges") \%>\%
-  st_as_sf() \%>\%
-  nrow()
-# Number of edges in subdivided network.
-net \%>\%
-  convert(to_spatial_subdivision) \%>\%
-  activate("edges") \%>\%
-  st_as_sf() \%>\%
-  nrow()
-
-## to_spatial_directed
-net \%>\%
-  convert(to_undirected) \%>\%
-  convert(to_spatial_directed)
-
-## to_spatial_explicit_edges
-par(mar = c(1, 1, 1, 1), mfrow = c(1,2))
-plot(net)
-net \%>\%
- convert(to_spatial_implicit_edges) \%>\%
- convert(to_spatial_explicit_edges) \%>\%
- plot()
-
-## to_spatial_implicit_edges
-net \%>\%
- convert(to_spatial_implicit_edges)
-
-## to_spatial_shortest_paths
-# Plot shortest path.
-par(mar = c(1, 1, 1, 1), mfrow = c(1,1))
-plot(net)
-net \%>\%
-  convert(to_spatial_shortest_paths, 171, 190) \%>\%
-  plot(col = "red", add = TRUE)
-# Calculate lengths of multiple shortest paths.
+# Temporary changes with morph and unmorph.
 net \%>\%
  activate("edges") \%>\%
- morph(to_spatial_shortest_paths, 1, c(171, 190)) \%>\%
- sapply(function(x) sum(st_length(x)))
+ mutate(weight = edge_length()) \%>\%
+ morph(to_spatial_shortest_paths, from = 1, to = 10) \%>\%
+ mutate(in_paths = TRUE) \%>\%
+ unmorph()
 
-## to_spatial_simple
-# Number of edges in original network.
+# Lasting changes with convert.
 net \%>\%
-  activate("edges") \%>\%
-  st_as_sf() \%>\%
-  nrow()
-# Number of edges in simplified network.
-net \%>\%
-  activate("edges") \%>\%
-  convert(to_spatial_simple) \%>\%
-  st_as_sf() \%>\%
-  nrow()
-
-## to_spatial_smoothed
-G = as_sfnetwork(roxel[c(4, 5, 8), ], directed = FALSE)
-# Remove pseudo nodes.
-smoothed_1 = convert(G, to_spatial_smooth)
-# Only remove pseudo nodes when attributes of incident edges are equal.
-smoothed_2 = convert(G, to_spatial_smooth, require_equal_attrs = TRUE)
-# Compare results.
-par(mar = c(1, 1, 1, 1), mfrow = c(1,3))
-plot(G, cex = 3, main = "Original network")
-plot(smoothed_1, cex = 3, main = "Smoothed network 1")
-plot(smoothed_2, cex = 3, main = "Smoothed network 2")
-
-## to_spatial_subset
-p1 = st_point(c(7.53173, 51.95662))
-p2 = st_point(c(7.53173, 51.95190))
-p3 = st_point(c(7.53778, 51.95190))
-p4 = st_point(c(7.53778, 51.95662))
-rect = st_multipoint(c(p1, p2, p3, p4)) \%>\%
-  st_cast('POLYGON') \%>\%
-  st_sfc(crs = 4326) \%>\%
-  st_transform(3035)
-net \%>\%
-  convert(to_spatial_subset, rect, .predicate = st_intersects)
+ activate("edges") \%>\%
+ mutate(weight = edge_length()) \%>\%
+ convert(to_spatial_shortest_paths, from = 1, to = 10)
 
 }

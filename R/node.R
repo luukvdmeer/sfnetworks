@@ -37,35 +37,37 @@
 #' library(sf)
 #' library(tidygraph)
 #'
-#' net = as_sfnetwork(roxel)
-#' p1 = st_point(c(7.53173, 51.95662))
-#' p2 = st_point(c(7.53173, 51.95190))
-#' p3 = st_point(c(7.53778, 51.95190))
-#' p4 = st_point(c(7.53778, 51.95662))
-#' rect = st_multipoint(c(p1, p2, p3, p4)) %>%
-#'   st_cast('POLYGON') %>%
-#'   st_sfc(crs = 4326)
+#' # Create a network.
+#' net = as_sfnetwork(roxel) %>%
+#'   st_transform(3035)
 #'
-#' # Use predicate queries in a mutate call.
-#' net %>%
-#'   mutate(predicate = node_is_within(rect)) %>%
-#'   select(predicate)
+#' # Create a geometry to test against.
+#' p1 = st_point(c(4151358, 3208045))
+#' p2 = st_point(c(4151340, 3207520))
+#' p3 = st_point(c(4151756, 3207506))
+#' p4 = st_point(c(4151774, 3208031))
 #'
-#' # Use predicate queries in a filter call.
+#' poly = st_multipoint(c(p1, p2, p3, p4)) %>% 
+#'   st_cast('POLYGON') %>% 
+#'   st_sfc(crs = 3035)
+#'
+#' # Use predicate query function in a filter call.
+#' within = net %>%
+#'   filter(node_is_within(poly))
+#'
+#' disjoint = net %>%
+#'   filter(node_is_disjoint(poly))
 #' par(mar = c(1,1,1,1))
 #' plot(net)
-#' plot(
-#'   net %>% filter(node_is_within(rect)),
-#'   col = 'red',
-#'   pch = 20,
-#'   add = TRUE
-#' )
-#' plot(
-#'   net %>% filter(node_is_disjoint(rect)),
-#'   col = 'blue',
-#'   pch = 20,
-#'   add = TRUE
-#' )
+#' plot(within, col = "red", add = TRUE)
+#' plot(disjoint, col = "blue", add = TRUE)
+#'
+#' # Use predicate query function in a mutate call.
+#' net %>%
+#'   activate(nodes) %>%
+#'   mutate(within = node_is_within(poly)) %>%
+#'   select(within)
+#'
 #' @name spatial_node_predicates
 NULL
 

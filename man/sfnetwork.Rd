@@ -77,26 +77,37 @@ edges embedded in geographical space, and offers smooth integration with
 \code{\link[sf]{sf}} for spatial data analysis.
 }
 \examples{
-# Create sfnetwork from sf objects
-p1 = sf::st_point(c(7, 51))
-p2 = sf::st_point(c(7, 52))
-p3 = sf::st_point(c(8, 52))
-nodes = sf::st_as_sf(sf::st_sfc(p1, p2, p3, crs = 4326))
+library(sf)
 
-e1 = sf::st_cast(sf::st_union(p1,p2), "LINESTRING")
-e2 = sf::st_cast(sf::st_union(p1,p3), "LINESTRING")
-e3 = sf::st_cast(sf::st_union(p2,p3), "LINESTRING")
-edges = sf::st_as_sf(sf::st_sfc(e1, e2, e3, crs = 4326))
-edges$from = c(1, 1, 2)
-edges$to = c(2, 3, 3)
+## Create sfnetwork from sf objects
+p1 = st_point(c(7, 51))
+p2 = st_point(c(7, 52))
+p3 = st_point(c(8, 52))
+nodes = st_as_sf(st_sfc(p1, p2, p3, crs = 4326))
 
-## directed network
-sfnetwork(nodes, edges, directed = TRUE)
+e1 = st_cast(st_union(p1, p2), "LINESTRING")
+e2 = st_cast(st_union(p1, p3), "LINESTRING")
+e3 = st_cast(st_union(p3, p2), "LINESTRING")
+edges = st_as_sf(st_sfc(e1, e2, e3, crs = 4326))
+edges$from = c(1, 1, 3)
+edges$to = c(2, 3, 2)
 
-## undirected network
+# Default.
+sfnetwork(nodes, edges)
+
+# Undirected network.
 sfnetwork(nodes, edges, directed = FALSE)
 
-## spatially implicit edges
-sfnetwork(nodes, edges, directed = FALSE, edges_as_lines = FALSE)
+# Using character encoded from and to columns.
+nodes$name = c("city", "village", "farm")
+edges$from = c("city", "city", "farm")
+edges$to = c("village", "farm", "village")
+sfnetwork(nodes, edges, node_key = "name")
+
+# Spatially implicit edges.
+sfnetwork(nodes, edges, edges_as_lines = FALSE)
+
+# Store edge lenghts in a weight column.
+sfnetwork(nodes, edges, length_as_weight = TRUE)
 
 }
