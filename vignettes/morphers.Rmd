@@ -29,9 +29,9 @@ old_hooks = fansi::set_knit_hooks(knitr::knit_hooks, which = c("output", "messag
 In some of the previous vignettes they were already mentioned here and there: spatial morpher functions. This vignette describes in more detail what they are and how to use them.
 
 ## Morphing and unmorphing
-*Morphing* networks is a functionality that has its roots in `tidygraph`. It allows you to *temporarily* change the topology of the orginal network with the `tidygraph::morph()` verb, perform some actions on this "morphed state" of the network using `dplyr` verbs, and finally merge the changes back into the original network with the `tidygraph::unmorph()` verb. How the topology is changed during morphing depends on the used *morpher function*, which you provide to `tidygraph::morph()`.
+*Morphing* networks is a functionality that has its roots in `tidygraph`. It allows you to *temporarily* change the topology of the original network with the `tidygraph::morph()` verb, perform some actions on this "morphed state" of the network using `dplyr` verbs, and finally merge the changes back into the original network with the `tidygraph::unmorph()` verb. How the topology is changed during morphing depends on the used *morpher function*, which you provide to `tidygraph::morph()`.
 
-You can choose between a wide range of available *morpher functions* in `tidygraph`. The names of these functions all start with `to_`. The `sfnetworks` package adds a set of dedicated *spatial morphers*, having names starting with `to_spatial_`. They will be presented later in this vignettte. Lets first show a practical example to get a better idea of how morphing can be useful.
+You can choose between a wide range of available *morpher functions* in `tidygraph`. The names of these functions all start with `to_`. The `sfnetworks` package adds a set of dedicated *spatial morphers*, having names starting with `to_spatial_`. They will be presented later in this vignette. Lets first show a practical example to get a better idea of how morphing can be useful.
 
 In network analysis, community detection algorithms allow you to discover cohesive groups in networks, based on specific network properties. There is a large offer of (wrappers around) such algorithms in `tidygraph`, see [here](https://tidygraph.data-imaginist.com/reference/group_graph.html). Most of them are intended for and can only be applied to the nodes. For example, the often used [Louvain algorithm](https://en.wikipedia.org/wiki/Louvain_method), that seeks to optimize [modularity](https://en.wikipedia.org/wiki/Modularity_(networks)) of the partition.
 
@@ -70,8 +70,7 @@ plot(st_geometry(net, "edges"), col = "grey", lwd = 0.5)
 grouped_net %>%
   activate("edges") %>%
   st_as_sf() %>%
-  select(group) %>%
-  mutate(group = as.factor(group)) %>%
+  transmute(group = as.factor(group)) %>%
   filter(group %in% c(1:11)) %>%
   plot(lwd = 4, add = TRUE)
 ```
@@ -198,7 +197,7 @@ network is preserved by concatenating the incident edges of each removed pseudo 
 
 ### to_spatial_subset
 
-The `to_spatial_subset()` morpher takes a subset of the network by applying a spatial filter. A spatial filter is a filter on a geometry list column based on a spatial predicate. The morphed state contains a single sfnetwork. We can use this for example to spatially join information *only* to a spatial subset of the nodes in thet network. A tiny example just to get an idea of how this would work:
+The `to_spatial_subset()` morpher takes a subset of the network by applying a spatial filter. A spatial filter is a filter on a geometry list column based on a spatial predicate. The morphed state contains a single sfnetwork. We can use this for example to spatially join information *only* to a spatial subset of the nodes in the network. A tiny example just to get an idea of how this would work:
 
 ```{r}
 codes = net %>%
