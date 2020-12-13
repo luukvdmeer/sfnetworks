@@ -1,9 +1,10 @@
 Package: sfnetworks
-Version: 0.3.1
+Version: 0.4.0
 Title: Tidy Spatial Networks in R
 Description: The sfnetworks package provides a tidy approach to spatial network
-    analysis, in the form of classes and functions that enable a seamless interaction 
-    between the network analysis package 'tidygraph' and the spatial analysis package 'sf'.
+    analysis, in the form of classes and functions that enable a seamless 
+    interaction between the network analysis package 'tidygraph' and the spatial 
+    analysis package 'sf'.
 Authors@R: 
     c(person(given = "Lucas",
              family = "van der Meer",
@@ -21,7 +22,6 @@ Authors@R:
              family = "Lovelace",
              role = "aut",
              email = "r.lovelace@leeds.ac.uk"))
-Date: 2020-04-15
 Depends: R (>= 3.6)
 License: file LICENSE
 Encoding: UTF-8
