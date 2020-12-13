@@ -5,7 +5,7 @@
   - The output format of this `st_network_paths()` function is different from its predecessors. It returns a tibble instead of a list, to fit better in tidyverse workflows. See [#77](https://github.com/luukvdmeer/sfnetworks/issues/77)
   - The `snap` argument is removed from all shortest paths related functions, which will now always snap geospatial points provides as from or to locations to their nearest node on the network before calculating paths.
   - The `keep` argument is removed from the `to_spatial_simple` morpher. It is now recommended to first sort data with `dplyr::arrange()` before calling the morpher.
-  - Functions `st_network_distance()`, `edge_straight_length()` and the spatial morpher `to_spatial_dense_graph()` are renamed to respectively `st_cost()`, `edge_displacement()` and `to_spatial_subdivision()`, which reflects their purpose better and does not interfere with existing graph theory terminology.
+  - Functions `st_network_distance()`, `edge_straight_length()` and the spatial morpher `to_spatial_dense_graph()` are renamed to respectively `st_network_cost()`, `edge_displacement()` and `to_spatial_subdivision()`, which reflects their purpose better and does not interfere with existing graph theory terminology.
   - Function arguments that were named `graph` are renamed to `x`, to have more consistency accross the package.
 * Backward compatible changes to existing functions:
   - The construction function `sfnetwork()` now has an argument `length_as_weight` that, if set to TRUE, will add the lengths of edges as a weight attribute to the edges data. Refs [#65](https://github.com/luukvdmeer/sfnetworks/issues/65)
