@@ -105,7 +105,7 @@ As can be seen, the *.tidygraph_node_index* and *.tidygraph_edge_index* columns 
 
 ## Spatial morphers
 
-A lot of morpher functions are offered by `tidygraph`. See the overview of them [here](https://tidygraph.data-imaginist.com/reference/morphers.html). Most of them should work without problems on sfnetworks, and can be useful for spatial network analysis. On top of that offer, `sfnetworks` adds some additional *spatial morphers* that fit use-cases for which `tidygraph` does not have an implemented morpher function. See the overview of them [here](https://luukvdmeer.github.io/sfnetworks/reference/spatial_morphers.html). Below they will be shortly introduced.
+A lot of morpher functions are offered by `tidygraph`. See the overview of them [here](https://tidygraph.data-imaginist.com/reference/morphers.html). Most of them should work without problems on sfnetworks, and can be useful for spatial network analysis. On top of that offer, `sfnetworks` adds some additional *spatial morphers* that fit use-cases for which `tidygraph` does not have an implemented morpher function. See the overview of them [here](https://luukvdmeer.github.io/sfnetworks/reference/spatial_morphers.html). Some of the spatial morphers change the original networks topology, while others simply change the way the spatial coordinates are stored. Below they will all be shortly introduced.
 
 ### to_spatial_coordinates
 
@@ -117,7 +117,7 @@ convert(net, to_spatial_coordinates, .clean = TRUE)
 
 ### to_spatial_subdivision
 
-The `to_spatial_subdivision()` morpher creates a subdivision of the original network by subdividing edges at each interior point that is equal to any other interior or boundary point of other edges. Interior points in this sense are those points that are included in a linestring geometry feature but are not endpoints of it, while boundary points are the endpoints of the linestrings. The network is reconstructed after subdivision such that connections are created at the points of subdivision. The morphed state contains a single sfnetwork. See the [Network pre-processing and cleaning]() vignette for more details.
+The `to_spatial_subdivision()` morpher creates a subdivision of the original network by subdividing edges at each interior point that is equal to any other interior or boundary point of other edges. Interior points in this sense are those points that are included in a linestring geometry feature but are not endpoints of it, while boundary points are the endpoints of the linestrings. The network is reconstructed after subdivision such that connections are created at the points of subdivision. The morphed state contains a single sfnetwork. See the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html) vignette for more details.
 
 ### to_spatial_directed
 
@@ -159,7 +159,7 @@ plot(implicit_net, draw_lines = FALSE)
 
 ### to_spatial_shortest_paths
 
-The `to_spatial_shortest_paths` morpher limits the original network to those nodes and edges that are part of the shortest path between two nodes. Just as with the other shortest path calculation functionalities presented in the [Routing]() vignette, besides node indices or names, any geospatial point (as sf or sfc object) can be provided as *from* and *to* node. Internally, such points will be snapped to their nearest node before calculating the shortest path.
+The `to_spatial_shortest_paths` morpher limits the original network to those nodes and edges that are part of the shortest path between two nodes. Just as with the other shortest path calculation functionalities presented in the [Routing](https://luukvdmeer.github.io/sfnetworks/articles/routing.html) vignette, besides node indices or names, any geospatial point (as sf or sfc object) can be provided as *from* and *to* node. Internally, such points will be snapped to their nearest node before calculating the shortest path.
 
 The morpher only accepts a single *from* node. If also a single *to* node is provided, the morphed state of the network contains a single sfnetwork. However, it is also possible to provide multiple *to* nodes. Then, the morphed state of the network contains multiple sfnetworks, one for each from-to combination.
 
@@ -188,12 +188,14 @@ new_net %>%
 
 ### to_spatial_simple
 
-The `to_spatial_simple()` morpher removes loop edges and parallel edges from the original network. The morphed state contains a single sfnetwork. See the [Network pre-processing and cleaning]() vignette for more details.
+The `to_spatial_simple()` morpher removes loop edges and parallel edges from the original network. The morphed state contains a single sfnetwork. See the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html) vignette for more details.
 
 ### to_spatial_smooth
 
 The `to_spatial_smooth()` morpher creates a smoothed version of the original network by iteratively removing pseudo nodes. In the case of directed networks, pseudo nodes are those nodes that have only one incoming and one outgoing edge. In undirected networks, pseudo nodes are those nodes that have two incident edges. Connectivity of the
-network is preserved by concatenating the incident edges of each removed pseudo node. The morphed state contains a single sfnetwork. See the [Network pre-processing and cleaning]() vignette for more details.
+network is preserved by concatenating the incident edges of each removed pseudo node. The morphed state contains a single sfnetwork. See the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html) vignette for more details.
+
+*NOTE: This function is still experimental. It needs more testing and may be slow on large networks*
 
 ### to_spatial_subset
 

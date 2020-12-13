@@ -99,7 +99,7 @@ activate(net, "edges")
 
 ## Network cleaning functions
 
-The `sfnetworks` package contains a set of spatial network specific cleaning functions. They are currently modeled as *spatial morphers*. To learn more about spatial morphers and what they are, see the [dedicated vignette]() for that. For now, it is sufficient to know that you can use any spatial morpher function inside the `tidygraph::convert()` verb to convert your network into a different state.
+The `sfnetworks` package contains a set of spatial network specific cleaning functions. They are currently modeled as *spatial morphers*. To learn more about spatial morphers and what they are, see the [dedicated vignette](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html) for that. For now, it is sufficient to know that you can use any spatial morpher function inside the `tidygraph::convert()` verb to convert your network into a different state.
 
 Before presenting the cleaning functions that are currently implemented, lets create a network to be cleaned.
 
@@ -173,7 +173,7 @@ In graph theory terms this process is the opposite of subdivision and also calle
 
 The function `to_spatial_smooth()` iteratively smooths pseudo nodes, and after each removal concatenates the linestring geometries of the two affected edges together into a new, single linestring geometry.
 
-*NOTE: This function is still experimental and may have bad performance on large networks*
+*NOTE: This function is still experimental. It needs more testing and may be slow on large networks*
 
 ```{r, message=FALSE, fig.show='hold'}
 smoothed = convert(subdivision, to_spatial_smooth)

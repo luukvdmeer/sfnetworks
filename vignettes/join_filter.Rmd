@@ -204,7 +204,7 @@ In the example above, it makes sense to include the information from the first P
 
 The function `st_network_blend()` does exactly that. For each POI, it finds the nearest location $p$ on the nearest edge $e$. If $p$ is an already existing node (i.e. $p$ is an endpoint of $e$), it joins the information from the POI into that node. If $p$ is *not* an already existing node, it subdivides $e$ at $p$, adds $p$ as a *new node* to the network, and joins the information from the POI into that new node. For this process, it does *not* matter if $p$ is an interior point in the linestring geometry of $e$.
 
-*NOTE: This function is still experimental and may have bad performance on large networks*
+*NOTE: This function is still experimental. It needs more testing and may be slow on large networks*
 
 ```{r, fig.show='hold'}
 blended = st_network_blend(net, pois)
