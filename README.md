@@ -2,11 +2,11 @@
 
 <!-- badges: start -->
 
-<!-- ![R-CMD-check](https://github.com/luukvdmeer/sfnetworks/workflows/R-CMD-check/badge.svg) -->
+![R-CMD-check](https://github.com/luukvdmeer/sfnetworks/workflows/R-CMD-check/badge.svg)
 
 <!-- Plan: add badge showing documents build on pkgdown (RL) -->
 
-![R-CMD-check-develop](https://github.com/luukvdmeer/sfnetworks/workflows/R-CMD-check/badge.svg?branch=develop)
+<!-- ![R-CMD-check-develop](https://github.com/luukvdmeer/sfnetworks/workflows/R-CMD-check/badge.svg?branch=develop) -->
 
 <!-- badges: end -->
 
@@ -18,7 +18,7 @@ Given the strength of R in spatial *and* network analysis, one would expect it t
 
 Although several R packages exist that address geospatial networks, they often focus on a specific application within the broader domain of geospatial network analysis, or complicate tidyverse compatibility. At present, no general purpose, tidyverse compatible classes exist for geospatial network data, representing a gap in R's spatial and network analysis ecosystems (see the [gRaphical Models](https://cran.r-project.org/web/views/gR.html) and [Spatial](https://cran.r-project.org/web/views/Spatial.html) task views). `sfnetworks` is created to fill this gap, and form a connecting edge between the two worlds.
 
-The core of the package is a data structure that can be provided as input to both graph analytical functions of `tidygraph` and to spatial analytical functions of `sf`, without the need for conversion. On top of that, it contains a set of spatial network specific functions that can be used alongside the offer of the two "parent packages".
+The core of the package is a data structure that can be provided as input to both graph analytical functions of `tidygraph` and to spatial analytical functions of `sf`, without the need for conversion. On top of that, it contains a set of spatial network specific functions that can be used alongside the offer of the two 'parent packages'.
 
 ## Installation
 
@@ -50,7 +50,23 @@ Originally, `sfnetworks` was created as a homework assignment for an R course. S
 remotes::install_github("luukvdmeer/sfnetworks@v0.1")
 ```
 
+## Usage
+
+The main goal of `sfnetworks` is to connect the `tidygraph` package for network analysis and the `sf` package for spatial data science. To make the most out of it, it is recommended to make yourself familiar with these two 'parent packages' if you don't know them yet. For example:
+
+- [sf documentation](https://r-spatial.github.io/sf/)
+- [tidygraph documentation](https://tidygraph.data-imaginist.com/)
+
+There are currently five vignettes that guide you through the functionalities of `sfnetworks`:
+
+- [The sfnetwork data structure](https://luukvdmeer.github.io/sfnetworks/articles/structure.html)
+- [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html)
+- [Spatial joins and filters](https://luukvdmeer.github.io/sfnetworks/articles/join_filter.html)
+- [Routing](https://luukvdmeer.github.io/sfnetworks/articles/routing.html)
+- [Spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html)
+
 ## Contribution
+
 We look very much forward to contributions to the package. Please refer to the [contributing](CONTRIBUTING.md) guide for further details. 
 
 This project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.  
