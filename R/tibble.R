@@ -1,4 +1,4 @@
-#' as_tibble method for sfnetworks
+#' Extract the active element of a sfnetwork as spatial tibble
 #'
 #' The sfnetwork method for \code{\link[tibble]{as_tibble}} is conceptually
 #' different. Whenever a geometry list column is present, it will by default
