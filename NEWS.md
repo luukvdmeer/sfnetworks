@@ -1,32 +1,38 @@
-# development
+# sfnetworks v0.4.0 "Hiltrup"
 
 * Backward incompatible changes to existing functions:
-  - The output format of `st_shortest_paths` and `st_all_shortest_paths` changed to fit better in tidyverse workflows. See [#77](https://github.com/luukvdmeer/sfnetworks/issues/77)
-  - The 'snap' argument is removed from the shortest paths related functions, which will now always snap points to the nearest node on the network.
-  - Functions `st_network_distance`, `edge_straight_length` and the spatial morpher `to_spatial_dense_graph` are renamed to respectively `st_cost`, `edge_displacement` and `to_spatial_subdivision`, which reflects their purpose better and does not interfere with existing graph theory terminology.
-  - Function arguments that were named 'graph' are renamed to 'x', to have more consistency accross the package.
+  - Function `st_shortest_paths()` and `st_all_shortest_paths()` are now merged into a single function `st_network_paths()`. By default it call `igraph::shortest_paths()` internally. Setting `all = TRUE` will make it call `igraph::all_shortest_paths()` instead.
+  - The output format of this `st_network_paths()` function is different from its predecessors. It returns a tibble instead of a list, to fit better in tidyverse workflows. See [#77](https://github.com/luukvdmeer/sfnetworks/issues/77)
+  - The `snap` argument is removed from all shortest paths related functions, which will now always snap geospatial points provides as from or to locations to their nearest node on the network before calculating paths.
+  - The `keep` argument is removed from the `to_spatial_simple` morpher. It is now recommended to first sort data with `dplyr::arrange()` before calling the morpher.
+  - Functions `st_network_distance()`, `edge_straight_length()` and the spatial morpher `to_spatial_dense_graph()` are renamed to respectively `st_cost()`, `edge_displacement()` and `to_spatial_subdivision()`, which reflects their purpose better and does not interfere with existing graph theory terminology.
+  - Function arguments that were named `graph` are renamed to `x`, to have more consistency accross the package.
 * Backward compatible changes to existing functions:
-  - The construction function `sfnetwork` now has an argument 'length_as_weight' that, if set to TRUE, will add the lengths of edges as a weight attribute to the edges data. Refs [#65](https://github.com/luukvdmeer/sfnetworks/issues/65)
-  - There is now an `as_sfnetwork` method for `sfc` objects. Refs [#41](https://github.com/luukvdmeer/sfnetworks/issues/41)
-  - All existing 'st_' functions in sfnetwork are now generic, such that they can easily be modified by extensions of sfnetwork objects. Refs [#80](https://github.com/luukvdmeer/sfnetworks/issues/80)
-  - The `to_spatial_explicit_edges` morpher now accepts arguments that are forwarded directly to `st_as_sf`. Refs [#83](https://github.com/luukvdmeer/sfnetworks/issues/83)
+  - The construction function `sfnetwork()` now has an argument `length_as_weight` that, if set to TRUE, will add the lengths of edges as a weight attribute to the edges data. Refs [#65](https://github.com/luukvdmeer/sfnetworks/issues/65)
+  - There is now an `as_sfnetwork()` method for sfc objects. Refs [#41](https://github.com/luukvdmeer/sfnetworks/issues/41)
+  - All existing `st_network_*` functions in sfnetwork are now generic, such that they can easily be modified by extensions of sfnetwork objects. Refs [#80](https://github.com/luukvdmeer/sfnetworks/issues/80)
+  - The `to_spatial_explicit_edges()` morpher now accepts arguments that are forwarded directly to `sf::st_as_sf()`. Refs [#83](https://github.com/luukvdmeer/sfnetworks/issues/83)
   - Functions that split edges now give a warning that attributes are assumed to be constant. Refs [#84](https://github.com/luukvdmeer/sfnetworks/issues/84)
-  - The `edge_length` function can now also be applied to spatially implicit edges.
-  - The sfnetwork methods for `st_as_sf`, `st_geometry` and `st_agr` now have an argument 'active' to directly retrieve information from a network element without activating it. Use as `st_as_sf(x, active = "nodes")`, et cetera.
+  - The `edge_length()` function can now also be applied to spatially implicit edges.
+  - The sfnetwork methods for `sf::st_as_sf()`, `sf::st_geometry()` and `sf::st_agr()` now have an argument `active` to directly retrieve information from a network element without activating it. Use as `st_as_sf(x, active = "nodes")`, et cetera.
+  - Character encoded node names can now be provided as from and to locations to the shortest path functions.
 * New functions:
-    - The new function `st_blend` implements a process that we called 'blending points into a network'. The functions accepts a network and a set of points. For each point p in the set of given points, it finds the projection p\* of p on the network, splits the edges of the network at the location of p\*, and finally adds p\* along with the attributes of p as a node to the network. Refs [#27](https://github.com/luukvdmeer/sfnetworks/issues/27) and [#54](https://github.com/luukvdmeer/sfnetworks/issues/27)
-    - The new function `st_network_join` does a network specific join of two sfnetworks. It combines a spatial full join on the nodes data with a bind_rows operation on the edges data, and updates the from and to indices of the edges accordingly. Refs [#22](https://github.com/luukvdmeer/sfnetworks/issues/22)
-    - The new spatial morpher `to_spatial_smooth` iteratively removes pseudo-nodes from the network. Refs [#70](https://github.com/luukvdmeer/sfnetworks/issues/70)
-    - Several spatial predicates are implemented as node and edge query functions, to interpretate spatial relations between network elements and other geospatial features directly inside tidy filter and mutate calls. Refs [#60](https://github.com/luukvdmeer/sfnetworks/issues/60)
-    - There is now an `autoplot` method for sfnetworks, allowing to easily plot a sfnetwork as a `ggplot2` object. Refs [#86](https://github.com/luukvdmeer/sfnetworks/issues/86)
-    - There is now a `print` method for morphed sfnetworks. Refs [#88](https://github.com/luukvdmeer/sfnetworks/issues/88)
+  - The new function `st_network_blend()` implements a process that we called 'blending points into a network'. The functions accepts a network and a set of points. For each point p in the set of given points, it finds the projection p\* of p on the network, splits the edges of the network at the location of p\*, and finally adds p\* along with the attributes of p as a node to the network. Refs [#27](https://github.com/luukvdmeer/sfnetworks/issues/27) and [#54](https://github.com/luukvdmeer/sfnetworks/issues/27)
+  - The new function `st_network_join()` does a network specific join of two sfnetworks. It combines a spatial full join on the nodes data with a bind_rows operation on the edges data, and updates the from and to indices of the edges accordingly. Refs [#22](https://github.com/luukvdmeer/sfnetworks/issues/22)
+  - The new function `st_network_bbox()` calculates the bounding box of the whole network by combining the bounding boxes of nodes and edges.
+  - The new spatial morpher `to_spatial_smooth()` iteratively removes pseudo-nodes from the network. Refs [#70](https://github.com/luukvdmeer/sfnetworks/issues/70)
+  - Several spatial predicate functions are implemented as node and edge query functions, to interpretate spatial relations between network elements and other geospatial features directly inside tidy filter and mutate calls. Refs [#60](https://github.com/luukvdmeer/sfnetworks/issues/60)
+  - There is now an `ggplot2::autoplot()` method for sfnetworks, allowing to easily plot a sfnetwork as a ggplot2 object. Refs [#86](https://github.com/luukvdmeer/sfnetworks/issues/86)
+  - There is now a `print` method for morphed sfnetworks. Refs [#88](https://github.com/luukvdmeer/sfnetworks/issues/88)
+  - There are now morphed sfnetworks method for `sf::st_join()`, `sf::st_filter()` and `sf::st_crop()`. Refs [#85](https://github.com/luukvdmeer/sfnetworks/issues/85)
 * Bug fixes:
-  - Networks can now be constructed by only providing nodes, and no edges. Refs [#81](https://github.com/luukvdmeer/sfnetworks/issues/81)
+  - Networks can now be constructed by only providing nodes, and no edges. Fixes [#81](https://github.com/luukvdmeer/sfnetworks/issues/81)
   - The print method for sfnetwork objects now correctly handles networks without edges as well as completely empty networks. Fixes [#69](https://github.com/luukvdmeer/sfnetworks/issues/69) and [#89](https://github.com/luukvdmeer/sfnetworks/issues/89)
-  - The `to_spatial_simple` morpher now correctly handles parallel edges of the same length. Fixes [#75](https://github.com/luukvdmeer/sfnetworks/issues/75)
-  - The shortest path functions now correctly handle empty geometries. Refs [#87](https://github.com/luukvdmeer/sfnetworks/issues/87)
+  - The shortest path functions now correctly handle empty geometries. Fixes [#87](https://github.com/luukvdmeer/sfnetworks/issues/87)
 * Documentation improvements:
   - Examples are added to the function documentations. Refs [#45](https://github.com/luukvdmeer/sfnetworks/issues/45)
+  - The existing vignettes are reorganized, and combined with a lot of new information into five new vignettes. Refs [#92](https://github.com/luukvdmeer/sfnetworks/issues/92)
+* Together with the documentation improvements, several new units tests brought the test coverage to +/- 80%.
 * The internal code base is completely restructured, such that it is more performant and easier to read, debug and extend.
 
 # sfnetworks v0.3.1 
