@@ -1,10 +1,3 @@
-# This is not true anymore as long as the replacement geometry is equal to the original
-# test_that('st_set_geometry gives an error when replacing nodes geometry', {
-#   net = roxel %>% as_sfnetwork()
-#   new_geom = net %>% st_geometry()
-#   expect_error(net %>% sf::st_set_geometry(new_geom))
-# })
-
 test_that('st_set_geometry(NULL) for activated nodes changes the class to tbl_graph', {
   net = roxel %>% as_sfnetwork()
   expect_s3_class(net %>% sf::st_set_geometry(NULL), 'tbl_graph')
