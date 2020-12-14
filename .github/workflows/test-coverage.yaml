@@ -62,5 +62,5 @@ jobs:
         shell: Rscript {0}
 
       - name: Test coverage
-        run: covr::codecov()
+        run: covr::codecov(type = c("tests", "vignettes", "examples"))
         shell: Rscript {0}
