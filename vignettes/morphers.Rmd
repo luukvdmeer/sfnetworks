@@ -138,7 +138,7 @@ net %>%
 
 If your original network is *spatially implicit* (i.e. edges do not have a geometry list column), the `to_spatial_explicit_edges()` morpher explicitizes the edges by creating a geometry list column for them. If the edges table can be directly converted to an sf object using `sf::st_as_sf()`, extra arguments can be provided as `...`, which will be forwarded to `sf::st_as_sf()` internally. Otherwise, straight lines will be drawn between the end nodes of each edge. The morphed state contains a single sfnetwork.
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', out.width = '50%'}
 implicit_net = st_set_geometry(activate(net, "edges"), NULL)
 explicit_net = convert(implicit_net, to_spatial_explicit_edges)
 
@@ -150,7 +150,7 @@ plot(explicit_net)
 
 If your original network is *spatially explicit* (i.e. edges have a geometry list column), the `to_spatial_implicit_edges()` morpher implicitizes the edges by removing the geometry list column from them. The morphed state contains a single sfnetwork.
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', out.width = '50%'}
 implicit_net = convert(net, to_spatial_implicit_edges)
 
 plot(net)

@@ -104,7 +104,7 @@ net
 
 If your edges table does not have linestring geometries, but only references to node indices or keys, you can tell the construction function to create the linestring geometries during construction. This will draw a straight line between the endpoints of each edge.
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', out.width='50%'}
 st_geometry(edges) = NULL
 
 other_net = sfnetwork(nodes, edges, edges_as_lines = TRUE)
@@ -255,7 +255,7 @@ Geometries can be replaced using either `sf::st_geometry(x) = value` or the pipe
 
 Replacing a geometry with `NULL` will remove the geometries. Removing edge geometries will result in a sfnetwork with spatially implicit edges. Removing node geometries will result in a tbl_graph, losing the spatial structure.
 
-```{r, fig.show = 'hold', out.width = "40%"}
+```{r, fig.show = 'hold', out.width = "50%"}
 net %>%
   activate("edges") %>%
   st_set_geometry(NULL) %>%
@@ -301,7 +301,7 @@ net %>%
 
 The bounding boxes of the nodes and edges are not necessarily the same. Therefore, sfnetworks adds the `st_network_bbox()` function to retrieve the combined bounding box of the nodes and edges. In this combined bounding box, the most extreme coordinates of the two individual element bounding boxes are preserved. Hence, the `xmin` value of the network bounding box is the smallest `xmin` value of the node and edge bounding boxes, et cetera.
 
-```{r, fig.show='hold', out.width = "40%"}
+```{r, fig.show='hold', out.width = "50%"}
 node1 = st_point(c(8, 51))
 node2 = st_point(c(7, 51.5))
 node3 = st_point(c(8, 52))

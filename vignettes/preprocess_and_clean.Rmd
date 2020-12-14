@@ -155,7 +155,7 @@ Note that an edge is *not* subdivided when it crosses another edge at a location
 
 For our example network, this means:
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', out.width = '50%'}
 subdivision = convert(net, to_spatial_subdivision)
 
 plot(st_geometry(net, "edges"), col = sf.colors(ecount(net), categorical = TRUE), lwd = 2)
@@ -175,7 +175,7 @@ The function `to_spatial_smooth()` iteratively smooths pseudo nodes, and after e
 
 *NOTE: This function is still experimental. It needs more testing and may be slow on large networks*
 
-```{r, message=FALSE, fig.show='hold'}
+```{r, message=FALSE, fig.show='hold', out.width = '50%'}
 smoothed = convert(subdivision, to_spatial_smooth)
 
 plot(st_geometry(subdivision, "edges"), col = sf.colors(ecount(subdivision), categorical = TRUE), lwd = 2)
@@ -189,7 +189,7 @@ A network may contain an edge that connects two nodes that were already connecte
 
 The function `to_spatial_simple()` simplifies a network by removing parallel and loop edges.
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', out.width = '50%'}
 simple = convert(smoothed, to_spatial_simple)
 
 plot(st_geometry(smoothed, "edges"), col = sf.colors(ecount(smoothed), categorical = TRUE), lwd = 2)
@@ -200,7 +200,7 @@ plot(st_geometry(simple, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 
 When there are multiple edges connecting the same pair of nodes, which edge is marked as the 'original' and which as parallel edges depends on the order of the edges in the edges table. That is, by re-arranging the edges table before calling `to_spatial_simple()` you can influence which edge is kept whenever parallel edges are detected. For example, you might want to always keep the edge with the shortest distance.
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', out.width = '50%'}
 simple = smoothed %>%
   activate("edges") %>%
   arrange(st_length(.)) %>%

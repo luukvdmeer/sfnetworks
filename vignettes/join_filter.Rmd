@@ -48,7 +48,7 @@ library(tidyverse)
 library(igraph)
 ```
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', out.width = '50%'}
 p1 = st_point(c(4151358, 3208045))
 p2 = st_point(c(4151340, 3207520))
 p3 = st_point(c(4151756, 3207506))
@@ -68,7 +68,7 @@ plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 plot(filtered)
 ```
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', out.width = '50%'}
 filtered = net %>%
   activate("edges") %>%
   st_filter(poly, .pred = st_intersects)
@@ -80,7 +80,7 @@ plot(filtered)
 
 The isolated nodes that remain after filtering the edges can be easily removed using a combination of a regular `dplyr::filter()` verb  and the `tidygraph::node_is_isolated()` query function.
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', out.width = '50%'}
 filtered = net %>%
   activate("edges") %>%
   st_filter(poly, .pred = st_intersects) %>%
@@ -98,7 +98,7 @@ In `tidygraph`, filtering information from networks is done by using specific no
 
 In `sfnetworks`, several spatial predicates are implemented as node and edge query functions such that you can also do spatial filtering in tidygraph style. See ?spatial_node_predicates for a list of all implemented spatial node query functions, and ?spatial_edge_predicates for the spatial edge query functions.
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', out.width = '50%'}
 filtered = net %>%
   activate("edges") %>%
   filter(edge_intersects(poly)) %>%
@@ -129,7 +129,7 @@ When applying `sf::st_join()` to a sfnetwork, it is internally applied to the ac
 
 Lets show this with an example in which we first create imaginary postal code areas for the Roxel dataset.
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', out.width = '50%'}
 codes = net %>%
   st_make_grid(n = c(2, 2)) %>%
   st_as_sf() %>%
@@ -167,7 +167,7 @@ For non-spatial joins based on attribute columns, simply use a join function fro
 
 Another network specific use-case of spatial joins would be to join information from external points of interest (POIs) into the nodes of the network. However, to do so, such points need to have *exactly* equal coordinates to one of the nodes. Often this will not be the case. To solve such situations, you will first need to update the coordinates of the POIs to match those of their *nearest node*. This process is also called *snapping*. To find the nearest node in the network for each POI, you can use the sf function `sf::st_nearest_feature()`.
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', out.width = '50%'}
 node1 = st_point(c(0, 0))
 node2 = st_point(c(1, 0))
 edge = st_sfc(st_linestring(c(node1, node2)))
@@ -206,7 +206,7 @@ The function `st_network_blend()` does exactly that. For each POI, it finds the 
 
 *NOTE: This function is still experimental. It needs more testing and may be slow on large networks*
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', out.width = '50%'}
 blended = st_network_blend(net, pois)
 blended
 plot(net)
@@ -220,7 +220,7 @@ plot(blended, cex = 1.5)
 
 In the examples above it was all about joining information from external features into a network. But how about joining two networks? This is what the `st_network_join()` function is for. It takes two sfnetworks as input and makes a spatial full join on the geometries of the nodes data, based on the *equals* spatial predicate. That means, all nodes from network x *and* all nodes from network y are present in the joined network, but if there were nodes in x with equal geometries to nodes in y, these nodes become a *single node* in the joined network. Edge data are combined using a `dplyr::bind_rows()` semantic, meaning that data are matched by column name and values are filled with `NA` if missing in either of the networks. The *from* and *to* columns in the edge data are updated automatically such that they correctly match the new node indices of the joined network. There is no spatial join performed on the edges. Hence, if there is an edge in x with an equal geometry to an edge in y, they remain separate edges in the joined network.
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', out.width = '50%'}
 node3 = st_point(c(1,1))
 node4 = st_point(c(0,1))
 edge2 = st_sfc(st_linestring(c(node2, node3)))
