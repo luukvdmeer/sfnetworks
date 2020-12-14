@@ -6,27 +6,38 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>sf methods for sfnetwork objects — sf • sfnetworks</title>
+<title>sf methods for sfnetworks — sf • sfnetworks</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -35,10 +46,9 @@
 
 
 
-<meta property="og:title" content="sf methods for sfnetwork objects — sf" />
-<meta property="og:description" content="sf methods for sfnetwork objects. Use these 
-methods without the .sfnetwork suffix and after loading the sf package." />
-<meta name="twitter:card" content="summary" />
+<meta property="og:title" content="sf methods for sfnetworks — sf" />
+<meta property="og:description" content="sf methods for sfnetwork objects." />
+<meta property="og:image" content="/logo.png" />
 
 
 
@@ -56,7 +66,7 @@ methods without the .sfnetwork suffix and after loading the sf package." />
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -70,7 +80,7 @@ methods without the .sfnetwork suffix and after loading the sf package." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
       </span>
     </div>
 
@@ -93,10 +103,19 @@ methods without the .sfnetwork suffix and after loading the sf package." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/extensions.html">Extending the vocabulary</a>
+      <a href="../articles/structure.html">1. The sfnetwork data structure</a>
     </li>
     <li>
-      <a href="../articles/intro.html">Tidy Geospatial Networks in R</a>
+      <a href="../articles/preprocess_and_clean.html">2. Network pre-processing and cleaning</a>
+    </li>
+    <li>
+      <a href="../articles/join_filter.html">3. Spatial joins and filters</a>
+    </li>
+    <li>
+      <a href="../articles/routing.html">4. Routing</a>
+    </li>
+    <li>
+      <a href="../articles/morphers.html">5. Spatial morphers</a>
     </li>
   </ul>
 </li>
@@ -106,7 +125,7 @@ methods without the .sfnetwork suffix and after loading the sf package." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/luukvdmeer/sfnetworks">
+  <a href="https://github.com/luukvdmeer/sfnetworks/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -124,81 +143,89 @@ methods without the .sfnetwork suffix and after loading the sf package." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>sf methods for sfnetwork objects</h1>
+    <h1>sf methods for sfnetworks</h1>
     <small class="dont-index">Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/R/sf.R'><code>R/sf.R</code></a></small>
     <div class="hidden name"><code>sf.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><code><a href='https://rdrr.io/pkg/sf/man/sf.html'>sf</a></code> methods for <code><a href='sfnetwork.html'>sfnetwork</a></code> objects. Use these 
-methods without the .sfnetwork suffix and after loading the sf package.</p>
+    <p><code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a></code> methods for <code><a href='sfnetwork.html'>sfnetwork</a></code> objects.</p>
     </div>
 
     <pre class="usage"><span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_as_sf</span>(<span class='no'>x</span>, <span class='kw'>active</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='va'>x</span>, active <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_geometry</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>x</span>, active <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_geometry</span>(<span class='no'>x</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>value</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_bbox</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_bbox.html'>st_bbox</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_coordinates</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_coordinates.html'>st_coordinates</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_is</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_is.html'>st_is</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_crs</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_crs.html'>st_crs</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_crs</span>(<span class='no'>x</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_crs.html'>st_crs</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>value</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_shift_longitude</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_shift_longitude.html'>st_shift_longitude</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_transform</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_transform.html'>st_transform</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_wrap_dateline</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_transform.html'>st_wrap_dateline</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_zm</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_zm.html'>st_zm</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_m_range</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_m_range.html'>st_m_range</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_z_range</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_z_range.html'>st_z_range</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_agr</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_agr.html'>st_agr</a></span><span class='op'>(</span><span class='va'>x</span>, active <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_agr</span>(<span class='no'>x</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_agr.html'>st_agr</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>value</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_intersects</span>(<span class='no'>x</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/geos_binary_pred.html'>st_intersects</a></span><span class='op'>(</span><span class='va'>x</span>, y <span class='op'>=</span> <span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_reverse</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/geos_unary.html'>st_reverse</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_simplify</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/geos_unary.html'>st_simplify</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_join</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>join</span> <span class='kw'>=</span> <span class='no'>st_intersects</span>, <span class='no'>...</span>, <span class='kw'>left</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_join.html'>st_join</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>...</span><span class='op'>)</span>
+
+<span class='co'># S3 method for morphed_sfnetwork</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_join.html'>st_join</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_crop</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>...</span>)
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_crop.html'>st_crop</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>...</span><span class='op'>)</span>
+
+<span class='co'># S3 method for morphed_sfnetwork</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_crop.html'>st_crop</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>st_filter</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>...</span>, <span class='kw'>.predicate</span> <span class='kw'>=</span> <span class='no'>st_intersects</span>)</pre>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_join.html'>st_filter</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>...</span><span class='op'>)</span>
+
+<span class='co'># S3 method for morphed_sfnetwork</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_join.html'>st_filter</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -219,41 +246,180 @@ the given network. Defaults to <code>NULL</code>.</p></td>
     </tr>
     <tr>
       <th>value</th>
-      <td><p>See <code><a href='https://rdrr.io/pkg/sf/man/st_crs.html'>st_crs</a></code> or <code><a href='https://rdrr.io/pkg/sf/man/st_geometry.html'>st_geometry</a></code>.</p></td>
+      <td><p>See <code><a href='https://r-spatial.github.io/sf/reference/st_crs.html'>st_crs</a></code>, <code><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></code> or
+<code><a href='https://r-spatial.github.io/sf/reference/st_agr.html'>st_agr</a></code>.</p></td>
     </tr>
     <tr>
       <th>y</th>
-      <td><p>An object of class <a href='sfnetwork.html'>sfnetwork</a> or class <code><a href='https://rdrr.io/pkg/sf/man/sf.html'>sf</a></code>.
-In some cases, it can also be an object of <code><a href='https://rdrr.io/pkg/sf/man/sfc.html'>sfc</a></code>,
-<code><a href='https://rdrr.io/pkg/sf/man/st.html'>sfg</a></code> or <code><a href='https://rdrr.io/pkg/sf/man/st_bbox.html'>bbox</a></code>. Always look at
-the documentation of the corresponding <code>sf</code> function for details.</p></td>
-    </tr>
-    <tr>
-      <th>join</th>
-      <td><p>See <code><a href='https://rdrr.io/pkg/sf/man/st_join.html'>st_join</a></code>.</p></td>
-    </tr>
-    <tr>
-      <th>left</th>
-      <td><p>See <code><a href='https://rdrr.io/pkg/sf/man/st_join.html'>st_join</a></code>.</p></td>
-    </tr>
-    <tr>
-      <th>.predicate</th>
-      <td><p>See <code><a href='https://rdrr.io/pkg/sf/man/st_join.html'>st_filter</a></code>.</p></td>
+      <td><p>An object of class <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a></code>, or directly convertible to
+it using <code><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></code>. In some cases, it can also be an object
+of <code><a href='https://r-spatial.github.io/sf/reference/st.html'>sfg</a></code> or <code><a href='https://r-spatial.github.io/sf/reference/st_bbox.html'>bbox</a></code>. Always look
+at the documentation of the corresponding <code>sf</code> function for details.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>See the <code><a href='https://rdrr.io/pkg/sf/man/sf.html'>sf</a></code> documentation.</p>
+    <p>See the <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a></code> documentation.</p>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span><span class='op'>)</span>
+
+<span class='va'>net</span> <span class='op'>=</span> <span class='fu'><a href='as_sfnetwork.html'>as_sfnetwork</a></span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span>
+
+<span class='co'># Extract the active network element.</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Simple feature collection with 701 features and 0 fields
+#&gt; geometry type:  POINT
+#&gt; dimension:      XY
+#&gt; bbox:           xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
+#&gt; geographic CRS: WGS 84
+#&gt; <span style='color: #555555;'># A tibble: 701 x 1</span><span>
+#&gt;               geometry
+#&gt;            </span><span style='color: #555555;font-style: italic;'>&lt;POINT [°]&gt;</span><span>
+#&gt; </span><span style='color: #555555;'> 1</span><span> (7.533722 51.95556)
+#&gt; </span><span style='color: #555555;'> 2</span><span> (7.533461 51.95576)
+#&gt; </span><span style='color: #555555;'> 3</span><span> (7.532442 51.95422)
+#&gt; </span><span style='color: #555555;'> 4</span><span>  (7.53209 51.95328)
+#&gt; </span><span style='color: #555555;'> 5</span><span> (7.532709 51.95209)
+#&gt; </span><span style='color: #555555;'> 6</span><span> (7.532869 51.95257)
+#&gt; </span><span style='color: #555555;'> 7</span><span> (7.540063 51.94468)
+#&gt; </span><span style='color: #555555;'> 8</span><span>  (7.53822 51.94546)
+#&gt; </span><span style='color: #555555;'> 9</span><span>  (7.537673 51.9475)
+#&gt; </span><span style='color: #555555;'>10</span><span> (7.537614 51.94562)
+#&gt; </span><span style='color: #555555;'># … with 691 more rows</span><span></div><div class='input'>
+<span class='co'># Extract any network element.</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"edges"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Simple feature collection with 851 features and 4 fields
+#&gt; geometry type:  LINESTRING
+#&gt; dimension:      XY
+#&gt; bbox:           xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
+#&gt; geographic CRS: WGS 84
+#&gt; </span><span style='color: #555555;'># A tibble: 851 x 5</span><span>
+#&gt;     from    to name         type                                        geometry
+#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>        </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>                               </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [°]&gt;</span><span>
+#&gt; </span><span style='color: #555555;'> 1</span><span>     1     2 Havixbecker… reside…       (7.533722 51.95556, 7.533461 51.95576)
+#&gt; </span><span style='color: #555555;'> 2</span><span>     3     4 Pienersallee second… (7.532442 51.95422, 7.53236 51.95377, 7.532…
+#&gt; </span><span style='color: #555555;'> 3</span><span>     5     6 Schulte-Ber… reside… (7.532709 51.95209, 7.532823 51.95239, 7.53…
+#&gt; </span><span style='color: #555555;'> 4</span><span>     7     8 </span><span style='color: #BB0000;'>NA</span><span>           path    (7.540063 51.94468, 7.539696 51.94479, 7.53…
+#&gt; </span><span style='color: #555555;'> 5</span><span>     9    10 Welsingheide reside…        (7.537673 51.9475, 7.537614 51.94562)
+#&gt; </span><span style='color: #555555;'> 6</span><span>    11    12 </span><span style='color: #BB0000;'>NA</span><span>           footway (7.543791 51.94733, 7.54369 51.94686, 7.543…
+#&gt; </span><span style='color: #555555;'> 7</span><span>    13    14 </span><span style='color: #BB0000;'>NA</span><span>           footway        (7.54012 51.94478, 7.539931 51.94514)
+#&gt; </span><span style='color: #555555;'> 8</span><span>     8    10 </span><span style='color: #BB0000;'>NA</span><span>           path    (7.53822 51.94546, 7.538131 51.94549, 7.538…
+#&gt; </span><span style='color: #555555;'> 9</span><span>     7    15 </span><span style='color: #BB0000;'>NA</span><span>           track   (7.540063 51.94468, 7.540338 51.94468, 7.54…
+#&gt; </span><span style='color: #555555;'>10</span><span>    16    17 </span><span style='color: #BB0000;'>NA</span><span>           track   (7.5424 51.94599, 7.54205 51.94629, 7.54196…
+#&gt; </span><span style='color: #555555;'># … with 841 more rows</span><span></div><div class='input'>
+<span class='co'># Get geometry of the active network element.</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Geometry set for 701 features 
+#&gt; geometry type:  POINT
+#&gt; dimension:      XY
+#&gt; bbox:           xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
+#&gt; geographic CRS: WGS 84
+#&gt; First 5 geometries:</div><div class='output co'>#&gt; <span class='message'>POINT (7.533722 51.95556)</span></div><div class='output co'>#&gt; <span class='message'>POINT (7.533461 51.95576)</span></div><div class='output co'>#&gt; <span class='message'>POINT (7.532442 51.95422)</span></div><div class='output co'>#&gt; <span class='message'>POINT (7.53209 51.95328)</span></div><div class='output co'>#&gt; <span class='message'>POINT (7.532709 51.95209)</span></div><div class='input'>
+<span class='co'># Get geometry of any network element.</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"edges"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Geometry set for 851 features 
+#&gt; geometry type:  LINESTRING
+#&gt; dimension:      XY
+#&gt; bbox:           xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
+#&gt; geographic CRS: WGS 84
+#&gt; First 5 geometries:</div><div class='output co'>#&gt; <span class='message'>LINESTRING (7.533722 51.95556, 7.533461 51.95576)</span></div><div class='output co'>#&gt; <span class='message'>LINESTRING (7.532442 51.95422, 7.53236 51.95377...</span></div><div class='output co'>#&gt; <span class='message'>LINESTRING (7.532709 51.95209, 7.532823 51.9523...</span></div><div class='output co'>#&gt; <span class='message'>LINESTRING (7.540063 51.94468, 7.539696 51.9447...</span></div><div class='output co'>#&gt; <span class='message'>LINESTRING (7.537673 51.9475, 7.537614 51.94562)</span></div><div class='input'>
+<span class='co'># Get bbox of the active network element.</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_bbox.html'>st_bbox</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;      xmin      ymin      xmax      ymax 
+#&gt;  7.522622 51.941512  7.546705 51.961203 </div><div class='input'>
+<span class='co'># Get CRS of the network.</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_crs.html'>st_crs</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Coordinate Reference System:
+#&gt;   User input: EPSG:4326 
+#&gt;   wkt:
+#&gt; GEOGCRS["WGS 84",
+#&gt;     DATUM["World Geodetic System 1984",
+#&gt;         ELLIPSOID["WGS 84",6378137,298.257223563,
+#&gt;             LENGTHUNIT["metre",1]]],
+#&gt;     PRIMEM["Greenwich",0,
+#&gt;         ANGLEUNIT["degree",0.0174532925199433]],
+#&gt;     CS[ellipsoidal,2],
+#&gt;         AXIS["geodetic latitude (Lat)",north,
+#&gt;             ORDER[1],
+#&gt;             ANGLEUNIT["degree",0.0174532925199433]],
+#&gt;         AXIS["geodetic longitude (Lon)",east,
+#&gt;             ORDER[2],
+#&gt;             ANGLEUNIT["degree",0.0174532925199433]],
+#&gt;     USAGE[
+#&gt;         SCOPE["unknown"],
+#&gt;         AREA["World"],
+#&gt;         BBOX[-90,-180,90,180]],
+#&gt;     ID["EPSG",4326]]</div><div class='input'>
+<span class='co'># Get agr factor of the active network element.</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_agr.html'>st_agr</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; factor(0)
+#&gt; Levels: constant aggregate identity</div><div class='input'>
+<span class='co'># Get agr factor of any network element.</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_agr.html'>st_agr</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"edges"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; from   to name type 
+#&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; 
+#&gt; Levels: constant aggregate identity</div><div class='input'>
+<span class='co'># Spatial join applied to the active network element.</span>
+<span class='va'>net</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_transform.html'>st_transform</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='fl'>3035</span><span class='op'>)</span>
+
+<span class='va'>p1</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151358</span>, <span class='fl'>3208045</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>p2</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151340</span>, <span class='fl'>3207520</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>p3</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151756</span>, <span class='fl'>3207506</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>p4</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151774</span>, <span class='fl'>3208031</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='va'>poly</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_multipoint</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>p1</span>, <span class='va'>p2</span>, <span class='va'>p3</span>, <span class='va'>p4</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_cast.html'>st_cast</a></span><span class='op'>(</span><span class='st'>'POLYGON'</span><span class='op'>)</span> <span class='op'>%&gt;%</span> 
+  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/sfc.html'>st_sfc</a></span><span class='op'>(</span>crs <span class='op'>=</span> <span class='fl'>3035</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='va'>poly</span><span class='op'>$</span><span class='va'>foo</span> <span class='op'>=</span> <span class='st'>"bar"</span>
+
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_join.html'>st_join</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='va'>poly</span>, join <span class='op'>=</span> <span class='va'>st_intersects</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>701</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>851</span><span> </span><span style='color: #555555;'>edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style='color: #555555;'>EPSG:3035</span><span> </span><span style='color: #555555;'>
+#&gt; #
+#&gt; # A directed multigraph with 14 components with spatially explicit edges
+#&gt; #
+#&gt; # Node Data:     701 x 2 (active)</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: POINT</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;            geometry foo  
+#&gt;         </span><span style='color: #555555;font-style: italic;'>&lt;POINT [m]&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span> (4151491 3207923) bar  
+#&gt; </span><span style='color: #555555;'>2</span><span> (4151474 3207946) bar  
+#&gt; </span><span style='color: #555555;'>3</span><span> (4151398 3207777) bar  
+#&gt; </span><span style='color: #555555;'>4</span><span> (4151370 3207673) bar  
+#&gt; </span><span style='color: #555555;'>5</span><span> (4151408 3207539) bar  
+#&gt; </span><span style='color: #555555;'>6</span><span> (4151421 3207592) bar  
+#&gt; </span><span style='color: #555555;'># … with 695 more rows</span><span>
+#&gt; </span><span style='color: #555555;'>#
+#&gt; # Edge Data:     851 x 5</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;    from    to name            type                                      geometry
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>           </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>                             </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [m]&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>     1     2 Havixbecker St… resident…       (4151491 3207923, 4151474 3207946)
+#&gt; </span><span style='color: #555555;'>2</span><span>     3     4 Pienersallee    secondary (4151398 3207777, 4151390 3207727, 4151…
+#&gt; </span><span style='color: #555555;'>3</span><span>     5     6 Schulte-Bernd-… resident… (4151408 3207539, 4151417 3207573, 4151…
+#&gt; </span><span style='color: #555555;'># … with 848 more rows</span><span></div><div class='input'>
+<span class='co'># Spatial filter applied to the active network element.</span>
+<span class='va'>filtered</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_join.html'>st_filter</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='va'>poly</span>, .pred <span class='op'>=</span> <span class='va'>st_intersects</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, mfrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>poly</span>, border <span class='op'>=</span> <span class='st'>"red"</span>, lty <span class='op'>=</span> <span class='fl'>4</span>, lwd <span class='op'>=</span> <span class='fl'>4</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>filtered</span><span class='op'>)</span>
+</div><div class='img'><img src='sf-1.png' alt='' width='700' height='433' /></div></span></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#details">Details</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -264,7 +430,7 @@ the documentation of the corresponding <code>sf</code> function for details.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

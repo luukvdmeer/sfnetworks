@@ -6,27 +6,38 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Querying spatial edge measures — spatial_edge_measures • sfnetworks</title>
+<title>Query spatial edge measures — spatial_edge_measures • sfnetworks</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -35,11 +46,11 @@
 
 
 
-<meta property="og:title" content="Querying spatial edge measures — spatial_edge_measures" />
+<meta property="og:title" content="Query spatial edge measures — spatial_edge_measures" />
 <meta property="og:description" content="These functions are a collection of specific spatial edge measures, that
-form a spatial extension to edge measures in 
+form a spatial extension to edge measures in
 tidygraph." />
-<meta name="twitter:card" content="summary" />
+<meta property="og:image" content="/logo.png" />
 
 
 
@@ -57,7 +68,7 @@ tidygraph." />
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -71,7 +82,7 @@ tidygraph." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
       </span>
     </div>
 
@@ -94,10 +105,19 @@ tidygraph." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/extensions.html">Extending the vocabulary</a>
+      <a href="../articles/structure.html">1. The sfnetwork data structure</a>
     </li>
     <li>
-      <a href="../articles/intro.html">Tidy Geospatial Networks in R</a>
+      <a href="../articles/preprocess_and_clean.html">2. Network pre-processing and cleaning</a>
+    </li>
+    <li>
+      <a href="../articles/join_filter.html">3. Spatial joins and filters</a>
+    </li>
+    <li>
+      <a href="../articles/routing.html">4. Routing</a>
+    </li>
+    <li>
+      <a href="../articles/morphers.html">5. Spatial morphers</a>
     </li>
   </ul>
 </li>
@@ -107,7 +127,7 @@ tidygraph." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/luukvdmeer/sfnetworks">
+  <a href="https://github.com/luukvdmeer/sfnetworks/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -125,22 +145,22 @@ tidygraph." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Querying spatial edge measures</h1>
-    <small class="dont-index">Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/R/edge_measures.R'><code>R/edge_measures.R</code></a></small>
+    <h1>Query spatial edge measures</h1>
+    <small class="dont-index">Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/R/edge.R'><code>R/edge.R</code></a></small>
     <div class="hidden name"><code>spatial_edge_measures.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p>These functions are a collection of specific spatial edge measures, that
-form a spatial extension to edge measures in 
+form a spatial extension to edge measures in
 <code><a href='https://tidygraph.data-imaginist.com/reference/tidygraph-package.html'>tidygraph</a></code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>edge_circuity</span>()
+    <pre class="usage"><span class='fu'>edge_circuity</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>edge_length</span>()
+<span class='fu'>edge_length</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>edge_straight_length</span>()</pre>
+<span class='fu'>edge_displacement</span><span class='op'>(</span><span class='op'>)</span></pre>
 
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -149,12 +169,13 @@ form a spatial extension to edge measures in
 graph.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Just as with all tidygraph algorithms, spatial edge measures are 
-meant to be called inside tidygraph verbs such as <code>mutate()</code>, where 
-the graph that is currently being worked on is known and thus not needed 
+    <p>Just as with all query functions in tidygraph, spatial edge
+measures are meant to be called inside tidygraph verbs such as
+<code><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></code> or <code><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></code>, where
+the network that is currently being worked on is known and thus not needed
 as an argument to the function. If you want to use an algorithm outside of
-the tidygraph framework you can use <code><a href='https://tidygraph.data-imaginist.com/reference/with_graph.html'>with_graph</a></code> to 
-set the graph context temporarily while the algorithm is being evaluated.</p>
+the tidygraph framework you can use <code><a href='https://tidygraph.data-imaginist.com/reference/with_graph.html'>with_graph</a></code> to
+set the context temporarily while the algorithm is being evaluated.</p>
     <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
 
     
@@ -165,20 +186,128 @@ nodes, as described in
 <a href='https://journals.sagepub.com/doi/10.1068/b130131p'>Giacomin &amp; Levinson,
 2015</a>.</p></li>
 <li><p><code>edge_length</code>: The length of an edge linestring geometry
-as calculated by <code><a href='https://rdrr.io/pkg/sf/man/geos_measures.html'>st_length</a></code>.</p></li>
-<li><p><code>edge_straight_length</code>: The straight-line distance between the two
-boundary nodes of an edge, as calculated by <code><a href='https://rdrr.io/pkg/sf/man/geos_measures.html'>st_distance</a></code>.</p></li>
+as calculated by <code><a href='https://r-spatial.github.io/sf/reference/geos_measures.html'>st_length</a></code>.</p></li>
+<li><p><code>edge_displacement</code>: The straight-line distance between the two
+boundary nodes of an edge, as calculated by <code><a href='https://r-spatial.github.io/sf/reference/geos_measures.html'>st_distance</a></code>.</p></li>
 </ul>
+    <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
+    <p>Note that <code>edge_is_within_distance</code> is a wrapper around the
+<code>st_is_within_distance</code> predicate from sf. Hence, it is based on
+'as-the-crow-flies' distance, and not on distances over the network.</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidygraph.data-imaginist.com'>tidygraph</a></span><span class='op'>)</span>
+
+<span class='va'>net</span> <span class='op'>=</span> <span class='fu'><a href='as_sfnetwork.html'>as_sfnetwork</a></span><span class='op'>(</span><span class='va'>roxel</span>, directed <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_transform.html'>st_transform</a></span><span class='op'>(</span><span class='fl'>3035</span><span class='op'>)</span>
+
+<span class='va'>net</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://tidygraph.data-imaginist.com/reference/activate.html'>activate</a></span><span class='op'>(</span><span class='st'>"edges"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>circuity <span class='op'>=</span> <span class='fu'>edge_circuity</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>701</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>851</span><span> </span><span style='color: #555555;'>edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style='color: #555555;'>EPSG:3035</span><span> </span><span style='color: #555555;'>
+#&gt; #
+#&gt; # An undirected multigraph with 14 components with spatially explicit edges
+#&gt; #
+#&gt; # Edge Data:     851 x 6 (active)</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;    from    to name       type                                  geometry circuity
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>                         </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [m]&gt;</span><span>      </span><span style='color: #555555;'>[1]</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>     1     2 Havixbeck… resid…      (4151491 3207923, 4151474 3207946) 1.000000
+#&gt; </span><span style='color: #555555;'>2</span><span>     3     4 Pienersal… secon… (4151398 3207777, 4151390 3207727, 415… 1.005894
+#&gt; </span><span style='color: #555555;'>3</span><span>     5     6 Schulte-B… resid… (4151408 3207539, 4151417 3207573, 415… 1.000471
+#&gt; </span><span style='color: #555555;'>4</span><span>     7     8 </span><span style='color: #BB0000;'>NA</span><span>         path   (4151885 3206698, 4151861 3206711, 415… 1.008540
+#&gt; </span><span style='color: #555555;'>5</span><span>     9    10 Welsinghe… resid…      (4151732 3207017, 4151721 3206809) 1.000000
+#&gt; </span><span style='color: #555555;'>6</span><span>    11    12 </span><span style='color: #BB0000;'>NA</span><span>         footw… (4152152 3206984, 4152143 3206932, 415… 1.021397
+#&gt; </span><span style='color: #555555;'># … with 845 more rows</span><span>
+#&gt; </span><span style='color: #555555;'>#
+#&gt; # Node Data:     701 x 1</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: POINT</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;            geometry
+#&gt;         </span><span style='color: #555555;font-style: italic;'>&lt;POINT [m]&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span> (4151491 3207923)
+#&gt; </span><span style='color: #555555;'>2</span><span> (4151474 3207946)
+#&gt; </span><span style='color: #555555;'>3</span><span> (4151398 3207777)
+#&gt; </span><span style='color: #555555;'># … with 698 more rows</span><span></div><div class='input'>
+<span class='va'>net</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://tidygraph.data-imaginist.com/reference/activate.html'>activate</a></span><span class='op'>(</span><span class='st'>"edges"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>length <span class='op'>=</span> <span class='fu'>edge_length</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>701</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>851</span><span> </span><span style='color: #555555;'>edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style='color: #555555;'>EPSG:3035</span><span> </span><span style='color: #555555;'>
+#&gt; #
+#&gt; # An undirected multigraph with 14 components with spatially explicit edges
+#&gt; #
+#&gt; # Edge Data:     851 x 6 (active)</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;    from    to name       type                                  geometry   length
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>                         </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [m]&gt;</span><span>      </span><span style='color: #555555;'>[m]</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>     1     2 Havixbeck… reside…     (4151491 3207923, 4151474 3207946)  28.859…
+#&gt; </span><span style='color: #555555;'>2</span><span>     3     4 Pienersal… second… (4151398 3207777, 4151390 3207727, 41… 107.714…
+#&gt; </span><span style='color: #555555;'>3</span><span>     5     6 Schulte-B… reside… (4151408 3207539, 4151417 3207573, 41…  54.367…
+#&gt; </span><span style='color: #555555;'>4</span><span>     7     8 </span><span style='color: #BB0000;'>NA</span><span>         path    (4151885 3206698, 4151861 3206711, 41… 155.223…
+#&gt; </span><span style='color: #555555;'>5</span><span>     9    10 Welsinghe… reside…     (4151732 3207017, 4151721 3206809) 208.682…
+#&gt; </span><span style='color: #555555;'>6</span><span>    11    12 </span><span style='color: #BB0000;'>NA</span><span>         footway (4152152 3206984, 4152143 3206932, 41…  63.028…
+#&gt; </span><span style='color: #555555;'># … with 845 more rows</span><span>
+#&gt; </span><span style='color: #555555;'>#
+#&gt; # Node Data:     701 x 1</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: POINT</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;            geometry
+#&gt;         </span><span style='color: #555555;font-style: italic;'>&lt;POINT [m]&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span> (4151491 3207923)
+#&gt; </span><span style='color: #555555;'>2</span><span> (4151474 3207946)
+#&gt; </span><span style='color: #555555;'>3</span><span> (4151398 3207777)
+#&gt; </span><span style='color: #555555;'># … with 698 more rows</span><span></div><div class='input'>
+<span class='va'>net</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://tidygraph.data-imaginist.com/reference/activate.html'>activate</a></span><span class='op'>(</span><span class='st'>"edges"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>displacement <span class='op'>=</span> <span class='fu'>edge_displacement</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>701</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>851</span><span> </span><span style='color: #555555;'>edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style='color: #555555;'>EPSG:3035</span><span> </span><span style='color: #555555;'>
+#&gt; #
+#&gt; # An undirected multigraph with 14 components with spatially explicit edges
+#&gt; #
+#&gt; # Edge Data:     851 x 6 (active)</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;    from    to name      type                               geometry displacement
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>                      </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [m]&gt;</span><span>          </span><span style='color: #555555;'>[m]</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>     1     2 Havixbec… resid…   (4151491 3207923, 4151474 3207946)     28.85977
+#&gt; </span><span style='color: #555555;'>2</span><span>     3     4 Pienersa… secon… (4151398 3207777, 4151390 3207727, …    107.08291
+#&gt; </span><span style='color: #555555;'>3</span><span>     5     6 Schulte-… resid… (4151408 3207539, 4151417 3207573, …     54.34168
+#&gt; </span><span style='color: #555555;'>4</span><span>     7     8 </span><span style='color: #BB0000;'>NA</span><span>        path   (4151885 3206698, 4151861 3206711, …    153.90859
+#&gt; </span><span style='color: #555555;'>5</span><span>     9    10 Welsingh… resid…   (4151732 3207017, 4151721 3206809)    208.68255
+#&gt; </span><span style='color: #555555;'>6</span><span>    11    12 </span><span style='color: #BB0000;'>NA</span><span>        footw… (4152152 3206984, 4152143 3206932, …     61.70817
+#&gt; </span><span style='color: #555555;'># … with 845 more rows</span><span>
+#&gt; </span><span style='color: #555555;'>#
+#&gt; # Node Data:     701 x 1</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: POINT</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;            geometry
+#&gt;         </span><span style='color: #555555;font-style: italic;'>&lt;POINT [m]&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span> (4151491 3207923)
+#&gt; </span><span style='color: #555555;'>2</span><span> (4151474 3207946)
+#&gt; </span><span style='color: #555555;'>3</span><span> (4151398 3207777)
+#&gt; </span><span style='color: #555555;'># … with 698 more rows</span><span></div><div class='input'>
+</div></span></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#value">Value</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#functions">Functions</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -189,7 +318,7 @@ boundary nodes of an edge, as calculated by <code><a href='https://rdrr.io/pkg/s
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

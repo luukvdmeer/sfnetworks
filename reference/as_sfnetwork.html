@@ -6,27 +6,38 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Convert a foreign object to an sfnetwork object — as_sfnetwork • sfnetworks</title>
+<title>Convert a foreign object to a sfnetwork — as_sfnetwork • sfnetworks</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -35,12 +46,12 @@
 
 
 
-<meta property="og:title" content="Convert a foreign object to an sfnetwork object — as_sfnetwork" />
+<meta property="og:title" content="Convert a foreign object to a sfnetwork — as_sfnetwork" />
 <meta property="og:description" content="Convert a given object into an object of class sfnetwork.
 If an object can be read by as_tbl_graph and the
 nodes can be read by st_as_sf, it is automatically
-supported by sfnetworks." />
-<meta name="twitter:card" content="summary" />
+supported." />
+<meta property="og:image" content="/logo.png" />
 
 
 
@@ -58,7 +69,7 @@ supported by sfnetworks." />
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -72,7 +83,7 @@ supported by sfnetworks." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
       </span>
     </div>
 
@@ -95,10 +106,19 @@ supported by sfnetworks." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/extensions.html">Extending the vocabulary</a>
+      <a href="../articles/structure.html">1. The sfnetwork data structure</a>
     </li>
     <li>
-      <a href="../articles/intro.html">Tidy Geospatial Networks in R</a>
+      <a href="../articles/preprocess_and_clean.html">2. Network pre-processing and cleaning</a>
+    </li>
+    <li>
+      <a href="../articles/join_filter.html">3. Spatial joins and filters</a>
+    </li>
+    <li>
+      <a href="../articles/routing.html">4. Routing</a>
+    </li>
+    <li>
+      <a href="../articles/morphers.html">5. Spatial morphers</a>
     </li>
   </ul>
 </li>
@@ -108,7 +128,7 @@ supported by sfnetworks." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/luukvdmeer/sfnetworks">
+  <a href="https://github.com/luukvdmeer/sfnetworks/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -126,7 +146,7 @@ supported by sfnetworks." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Convert a foreign object to an sfnetwork object</h1>
+    <h1>Convert a foreign object to a sfnetwork</h1>
     <small class="dont-index">Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/R/sfnetwork.R'><code>R/sfnetwork.R</code></a></small>
     <div class="hidden name"><code>as_sfnetwork.Rd</code></div>
     </div>
@@ -134,43 +154,46 @@ supported by sfnetworks." />
     <div class="ref-description">
     <p>Convert a given object into an object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.
 If an object can be read by <code><a href='https://tidygraph.data-imaginist.com/reference/tbl_graph.html'>as_tbl_graph</a></code> and the
-nodes can be read by <code><a href='https://rdrr.io/pkg/sf/man/st_as_sf.html'>st_as_sf</a></code>, it is automatically
-supported by sfnetworks.</p>
+nodes can be read by <code><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></code>, it is automatically
+supported.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>as_sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for default</span>
-<span class='fu'>as_sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for linnet</span>
-<span class='fu'>as_sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for psp</span>
-<span class='fu'>as_sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sf</span>
-<span class='fu'>as_sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
+
+<span class='co'># S3 method for sfc</span>
+<span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfNetwork</span>
-<span class='fu'>as_sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfnetwork</span>
-<span class='fu'>as_sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+<span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for tbl_graph</span>
-<span class='fu'>as_sfnetwork</span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>object to be converted into an <code><a href='sfnetwork.html'>sfnetwork</a></code> object.</p></td>
+      <td><p>Object to be converted into an <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>arguments passed on to the <code><a href='sfnetwork.html'>sfnetwork</a></code> construction
+      <td><p>Arguments passed on to the <code><a href='sfnetwork.html'>sfnetwork</a></code> construction
 function.</p></td>
     </tr>
     </table>
@@ -180,32 +203,152 @@ function.</p></td>
     <p>An object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Examples for linnet method</span>
-<span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='no'>spatstat</span>)) {
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>simplenet</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"spatstat input"</span>)
-<span class='no'>simplenet_as_sfnetwork</span> <span class='kw'>=</span> <span class='fu'>as_sfnetwork</span>(<span class='no'>simplenet</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>simplenet_as_sfnetwork</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"sfnetworks output"</span>)
-}</div><div class='output co'>#&gt; <span class='message'>Loading required package: spatstat</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: spatstat.data</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: nlme</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: rpart</span></div><div class='output co'>#&gt; <span class='message'>Registered S3 method overwritten by 'spatstat':</span>
-#&gt; <span class='message'>  method     from</span>
-#&gt; <span class='message'>  print.boxx cli </span></div><div class='output co'>#&gt; <span class='message'></span>
+    <pre class="examples"><div class='input'><span class='co'># From a linnet object.</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='http://www.spatstat.org'>spatstat</a></span><span class='op'>)</span><span class='op'>)</span> <span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>simplenet</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Loading required package: spatstat</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: spatstat.data</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: nlme</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: rpart</span></div><div class='output co'>#&gt; <span class='message'></span>
 #&gt; <span class='message'>spatstat 1.64-1       (nickname: ‘Help you I can, yes!’) </span>
-#&gt; <span class='message'>For an introduction to spatstat, type ‘beginner’ </span></div><div class='img'><img src='as_sfnetwork-1.png' alt='' width='700' height='433' /></div><div class='img'><img src='as_sfnetwork-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># Examples for psp method</span>
-<span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='no'>spatstat</span>)) {
-<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>42</span>)
-<span class='no'>test_psp</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/spatstat/man/psp.html'>psp</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='fl'>10</span>), <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='fl'>10</span>), <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='fl'>10</span>), <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='fl'>10</span>), <span class='kw'>window</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/pkg/spatstat/man/owin.html'>owin</a></span>())
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>test_psp</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"spatstat input"</span>)
-<span class='no'>test_psp_as_sfnetwork</span> <span class='kw'>=</span> <span class='fu'>as_sfnetwork</span>(<span class='no'>test_psp</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>test_psp_as_sfnetwork</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"sfnetworks output"</span>)
-}</div><div class='img'><img src='as_sfnetwork-3.png' alt='' width='700' height='433' /></div><div class='img'><img src='as_sfnetwork-4.png' alt='' width='700' height='433' /></div></pre>
+#&gt; <span class='message'>For an introduction to spatstat, type ‘beginner’ </span></div><div class='output co'>#&gt; <span class='message'></span>
+#&gt; <span class='message'>Note: spatstat version 1.64-1 is out of date by more than 7 months; we recommend upgrading to the latest version.</span></div><div class='output co'>#&gt; <span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>10</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>10</span><span> </span><span style='color: #555555;'>edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style='color: #555555;'>NA</span><span> </span><span style='color: #555555;'>
+#&gt; #
+#&gt; # A directed acyclic simple graph with 1 component with spatially explicit edges
+#&gt; #
+#&gt; </span><span></div><div class='output co'>#&gt; <span class='message'>Registered S3 method overwritten by 'cli':</span>
+#&gt; <span class='message'>  method     from    </span>
+#&gt; <span class='message'>  print.boxx spatstat</span></div><div class='output co'>#&gt; </span><span style='color: #555555;'># Node Data:     10 x 1 (active)</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: POINT</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 0.1497036 ymin: 0.1608339 xmax: 0.8418658 ymax:
+#&gt; #   0.9415173</span><span>
+#&gt;                    geom
+#&gt;                 </span><span style='color: #555555;font-style: italic;'>&lt;POINT&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>  (0.181276 0.8345078)
+#&gt; </span><span style='color: #555555;'>2</span><span> (0.3254689 0.4607012)
+#&gt; </span><span style='color: #555555;'>3</span><span> (0.1497036 0.2119066)
+#&gt; </span><span style='color: #555555;'>4</span><span> (0.5358572 0.8028913)
+#&gt; </span><span style='color: #555555;'>5</span><span> (0.4411403 0.1608339)
+#&gt; </span><span style='color: #555555;'>6</span><span> (0.3795058 0.3206155)
+#&gt; </span><span style='color: #555555;'># … with 4 more rows</span><span>
+#&gt; </span><span style='color: #555555;'>#
+#&gt; # Edge Data:     10 x 4</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 0.1497036 ymin: 0.1608339 xmax: 0.8418658 ymax:
+#&gt; #   0.9415173</span><span>
+#&gt;    from    to label                                         geom
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                                 </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>     1     2 segment  (0.181276 0.8345078, 0.3254689 0.4607012)
+#&gt; </span><span style='color: #555555;'>2</span><span>     3     2 segment (0.1497036 0.2119066, 0.3254689 0.4607012)
+#&gt; </span><span style='color: #555555;'>3</span><span>     2     4 segment (0.3254689 0.4607012, 0.5358572 0.8028913)
+#&gt; </span><span style='color: #555555;'># … with 7 more rows</span><span></div><div class='input'>
+<span class='co'># From a psp object.</span>
+<span class='kw'>if</span> <span class='op'>(</span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='http://www.spatstat.org'>spatstat</a></span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>42</span><span class='op'>)</span>
+  <span class='va'>test_psp</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/spatstat/man/psp.html'>psp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>10</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>10</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>10</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>10</span><span class='op'>)</span>, window<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/pkg/spatstat/man/owin.html'>owin</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>test_psp</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>20</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>10</span><span> </span><span style='color: #555555;'>edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style='color: #555555;'>NA</span><span> </span><span style='color: #555555;'>
+#&gt; #
+#&gt; # A rooted forest with 10 trees with spatially explicit edges
+#&gt; #
+#&gt; # Node Data:     20 x 1 (active)</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: POINT</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 0.08243756 ymin: 0.003948339 xmax: 0.9888917 ymax:
+#&gt; #   0.9782264</span><span>
+#&gt;                    geom
+#&gt;                 </span><span style='color: #555555;font-style: italic;'>&lt;POINT&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>  (0.914806 0.4577418)
+#&gt; </span><span style='color: #555555;'>2</span><span> (0.9040314 0.7375956)
+#&gt; </span><span style='color: #555555;'>3</span><span> (0.9370754 0.7191123)
+#&gt; </span><span style='color: #555555;'>4</span><span> (0.1387102 0.8110551)
+#&gt; </span><span style='color: #555555;'>5</span><span> (0.2861395 0.9346722)
+#&gt; </span><span style='color: #555555;'>6</span><span> (0.9888917 0.3881083)
+#&gt; </span><span style='color: #555555;'># … with 14 more rows</span><span>
+#&gt; </span><span style='color: #555555;'>#
+#&gt; # Edge Data:     10 x 4</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 0.08243756 ymin: 0.003948339 xmax: 0.9888917 ymax:
+#&gt; #   0.9782264</span><span>
+#&gt;    from    to label                                         geom
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                                 </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>     1     2 segment  (0.914806 0.4577418, 0.9040314 0.7375956)
+#&gt; </span><span style='color: #555555;'>2</span><span>     3     4 segment (0.9370754 0.7191123, 0.1387102 0.8110551)
+#&gt; </span><span style='color: #555555;'>3</span><span>     5     6 segment (0.2861395 0.9346722, 0.9888917 0.3881083)
+#&gt; </span><span style='color: #555555;'># … with 7 more rows</span><span></div><div class='input'>
+<span class='co'># From an sf object with POINT geometries.</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Linking to GEOS 3.8.0, GDAL 3.0.4, PROJ 7.0.0</span></div><div class='input'><span class='va'>p1</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>7</span>, <span class='fl'>51</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>p2</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>7</span>, <span class='fl'>52</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>p3</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>8</span>, <span class='fl'>52</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>points</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/sfc.html'>st_sfc</a></span><span class='op'>(</span><span class='va'>p1</span>, <span class='va'>p2</span>, <span class='va'>p3</span>, crs <span class='op'>=</span> <span class='fl'>4326</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>points</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>3</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>2</span><span> </span><span style='color: #555555;'>edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style='color: #555555;'>EPSG:4326</span><span> </span><span style='color: #555555;'>
+#&gt; #
+#&gt; # A rooted tree with spatially explicit edges
+#&gt; #
+#&gt; # Node Data:     3 x 1 (active)</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: POINT</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span><span>
+#&gt;             x
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;POINT [°]&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>      (7 51)
+#&gt; </span><span style='color: #555555;'>2</span><span>      (7 52)
+#&gt; </span><span style='color: #555555;'>3</span><span>      (8 52)
+#&gt; </span><span style='color: #555555;'>#
+#&gt; # Edge Data:     2 x 3</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span><span>
+#&gt;    from    to                x
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [°]&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>     1     2     (7 51, 7 52)
+#&gt; </span><span style='color: #555555;'>2</span><span>     2     3     (7 52, 8 52)</div><div class='input'>
+<span class='co'># From an sf object with LINESTRING geometries.</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span><span class='op'>)</span>
+<span class='va'>e1</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_cast.html'>st_cast</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/geos_combine.html'>st_union</a></span><span class='op'>(</span><span class='va'>p1</span>,<span class='va'>p2</span><span class='op'>)</span>, <span class='st'>"LINESTRING"</span><span class='op'>)</span>
+<span class='va'>e2</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_cast.html'>st_cast</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/geos_combine.html'>st_union</a></span><span class='op'>(</span><span class='va'>p1</span>,<span class='va'>p3</span><span class='op'>)</span>, <span class='st'>"LINESTRING"</span><span class='op'>)</span>
+<span class='va'>e3</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_cast.html'>st_cast</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/geos_combine.html'>st_union</a></span><span class='op'>(</span><span class='va'>p2</span>,<span class='va'>p3</span><span class='op'>)</span>, <span class='st'>"LINESTRING"</span><span class='op'>)</span>
+<span class='va'>lines</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/sfc.html'>st_sfc</a></span><span class='op'>(</span><span class='va'>e1</span>, <span class='va'>e2</span>, <span class='va'>e3</span>, crs <span class='op'>=</span> <span class='fl'>4326</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>lines</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>3</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>3</span><span> </span><span style='color: #555555;'>edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style='color: #555555;'>EPSG:4326</span><span> </span><span style='color: #555555;'>
+#&gt; #
+#&gt; # A directed acyclic simple graph with 1 component with spatially explicit edges
+#&gt; #
+#&gt; # Node Data:     3 x 1 (active)</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: POINT</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span><span>
+#&gt;             x
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;POINT [°]&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>      (7 51)
+#&gt; </span><span style='color: #555555;'>2</span><span>      (7 52)
+#&gt; </span><span style='color: #555555;'>3</span><span>      (8 52)
+#&gt; </span><span style='color: #555555;'>#
+#&gt; # Edge Data:     3 x 3</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span><span>
+#&gt;    from    to                x
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [°]&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>     1     2     (7 51, 7 52)
+#&gt; </span><span style='color: #555555;'>2</span><span>     1     3     (7 51, 8 52)
+#&gt; </span><span style='color: #555555;'>3</span><span>     2     3     (7 52, 8 52)</div><div class='input'>
+</div></span></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -216,7 +359,7 @@ function.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

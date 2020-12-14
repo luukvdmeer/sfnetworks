@@ -8,25 +8,36 @@
 
 <title>Function reference • sfnetworks</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -36,6 +47,7 @@
 
 
 <meta property="og:title" content="Function reference" />
+<meta property="og:image" content="/logo.png" />
 
 
 
@@ -53,7 +65,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-index">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -67,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
       </span>
     </div>
 
@@ -90,10 +102,19 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/extensions.html">Extending the vocabulary</a>
+      <a href="../articles/structure.html">1. The sfnetwork data structure</a>
     </li>
     <li>
-      <a href="../articles/intro.html">Tidy Geospatial Networks in R</a>
+      <a href="../articles/preprocess_and_clean.html">2. Network pre-processing and cleaning</a>
+    </li>
+    <li>
+      <a href="../articles/join_filter.html">3. Spatial joins and filters</a>
+    </li>
+    <li>
+      <a href="../articles/routing.html">4. Routing</a>
+    </li>
+    <li>
+      <a href="../articles/morphers.html">5. Spatial morphers</a>
     </li>
   </ul>
 </li>
@@ -103,7 +124,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/luukvdmeer/sfnetworks">
+  <a href="https://github.com/luukvdmeer/sfnetworks/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -136,21 +157,26 @@
       <tr>
         <th colspan="2">
           <h2 id="section-construction" class="hasAnchor"><a href="#section-construction" class="anchor"></a>Construction</h2>
-          <p class="section-desc"><p>The core of the package is an sfnetwork data structure that can be provided directly to both graph analytical functions of tidygraph and spatial analytical functions of sf.</p></p>
+          <p class="section-desc"><p>The core of the package is a data structure that can be provided as input to both graph analytical functions of <code>tidygraph</code> and to spatial analytical functions of <code>sf</code>, without the need for conversion.</p></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
           <p><code><a href="sfnetwork.html">sfnetwork()</a></code> </p>
         </td>
-        <td><p>Create an sfnetwork object</p></td>
+        <td><p>Create a sfnetwork</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="as_sfnetwork.html">as_sfnetwork()</a></code> </p>
         </td>
-        <td><p>Convert a foreign object to an sfnetwork object</p></td>
+        <td><p>Convert a foreign object to a sfnetwork</p></td>
       </tr><tr>
         
         <td>
@@ -162,83 +188,131 @@
       <tr>
         <th colspan="2">
           <h2 id="section-extensions" class="hasAnchor"><a href="#section-extensions" class="anchor"></a>Extensions</h2>
-          <p class="section-desc"><p>Some problems are so specific to spatial networks, that they can neither be solved by tidygraph nor sf. Therefore, sfnetworks contains several extensions to the current offer of the two “parent packages”.</p></p>
+          <p class="section-desc"><p>The package extends the existing functionalities of <code>tidygraph</code> and <code>sf</code> with a set of functions specific for spatial network analysis.</p></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
-          <p><code><a href="spatial_shortest_paths.html">st_shortest_paths()</a></code> <code><a href="spatial_shortest_paths.html">st_all_shortest_paths()</a></code> <code><a href="spatial_shortest_paths.html">st_network_distance()</a></code> </p>
+          <p><code><a href="st_network_paths.html">st_network_paths()</a></code> </p>
         </td>
         <td><p>Shortest paths between points in geographical space</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="spatial_edge_measures.html">edge_circuity()</a></code> <code><a href="spatial_edge_measures.html">edge_length()</a></code> <code><a href="spatial_edge_measures.html">edge_straight_length()</a></code> </p>
+          <p><code><a href="st_network_cost.html">st_network_cost()</a></code> </p>
         </td>
-        <td><p>Querying spatial edge measures</p></td>
+        <td><p>Compute a cost matrix of a spatial network</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="spatial_morphers.html">to_spatial_coordinates()</a></code> <code><a href="spatial_morphers.html">to_spatial_dense_graph()</a></code> <code><a href="spatial_morphers.html">to_spatial_directed()</a></code> <code><a href="spatial_morphers.html">to_spatial_explicit_edges()</a></code> <code><a href="spatial_morphers.html">to_spatial_implicit_edges()</a></code> <code><a href="spatial_morphers.html">to_spatial_shortest_paths()</a></code> <code><a href="spatial_morphers.html">to_spatial_subgraph()</a></code> </p>
+          <p><code><a href="st_network_join.html">st_network_join()</a></code> </p>
         </td>
-        <td><p>Spatial morphers for sfnetwork objects</p></td>
+        <td><p>Join two spatial networks based on equality of node geometries</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="st_network_blend.html">st_network_blend()</a></code> </p>
+        </td>
+        <td><p>Blend geospatial points into a spatial network</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="st_network_bbox.html">st_network_bbox()</a></code> </p>
+        </td>
+        <td><p>Get the bounding box of a sfnetwork</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="spatial_node_predicates.html">node_intersects()</a></code> <code><a href="spatial_node_predicates.html">node_is_disjoint()</a></code> <code><a href="spatial_node_predicates.html">node_touches()</a></code> <code><a href="spatial_node_predicates.html">node_is_within()</a></code> <code><a href="spatial_node_predicates.html">node_equals()</a></code> <code><a href="spatial_node_predicates.html">node_is_covered_by()</a></code> <code><a href="spatial_node_predicates.html">node_is_within_distance()</a></code> </p>
+        </td>
+        <td><p>Query nodes with spatial predicates</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="spatial_edge_predicates.html">edge_intersects()</a></code> <code><a href="spatial_edge_predicates.html">edge_is_disjoint()</a></code> <code><a href="spatial_edge_predicates.html">edge_touches()</a></code> <code><a href="spatial_edge_predicates.html">edge_crosses()</a></code> <code><a href="spatial_edge_predicates.html">edge_is_within()</a></code> <code><a href="spatial_edge_predicates.html">edge_contains()</a></code> <code><a href="spatial_edge_predicates.html">edge_contains_properly()</a></code> <code><a href="spatial_edge_predicates.html">edge_overlaps()</a></code> <code><a href="spatial_edge_predicates.html">edge_equals()</a></code> <code><a href="spatial_edge_predicates.html">edge_covers()</a></code> <code><a href="spatial_edge_predicates.html">edge_is_covered_by()</a></code> <code><a href="spatial_edge_predicates.html">edge_is_within_distance()</a></code> </p>
+        </td>
+        <td><p>Query edges with spatial predicates</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="spatial_edge_measures.html">edge_circuity()</a></code> <code><a href="spatial_edge_measures.html">edge_length()</a></code> <code><a href="spatial_edge_measures.html">edge_displacement()</a></code> </p>
+        </td>
+        <td><p>Query spatial edge measures</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="spatial_morphers.html">to_spatial_coordinates()</a></code> <code><a href="spatial_morphers.html">to_spatial_subdivision()</a></code> <code><a href="spatial_morphers.html">to_spatial_directed()</a></code> <code><a href="spatial_morphers.html">to_spatial_explicit_edges()</a></code> <code><a href="spatial_morphers.html">to_spatial_implicit_edges()</a></code> <code><a href="spatial_morphers.html">to_spatial_shortest_paths()</a></code> <code><a href="spatial_morphers.html">to_spatial_simple()</a></code> <code><a href="spatial_morphers.html">to_spatial_smooth()</a></code> <code><a href="spatial_morphers.html">to_spatial_subset()</a></code> </p>
+        </td>
+        <td><p>Spatial morphers for sfnetworks</p></td>
       </tr>
     </tbody><tbody>
       <tr>
         <th colspan="2">
           <h2 id="section-integration-with-sf" class="hasAnchor"><a href="#section-integration-with-sf" class="anchor"></a>Integration with sf</h2>
-          <p class="section-desc"><p>The sfnetworks package supports a wide range of sf functions to be directly applied to the network.</p></p>
+          <p class="section-desc"><p>The package enables smooth integration with <code>sf</code> by implementing several sfnetwork methods for sf functions.</p></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
-          <p><code><a href="sf.html">st_as_sf(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_geometry(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">`st_geometry<-`(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_bbox(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_coordinates(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_is(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_crs(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">`st_crs<-`(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_shift_longitude(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_transform(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_wrap_dateline(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_zm(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_m_range(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_z_range(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_agr(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">`st_agr<-`(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_intersects(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_reverse(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_simplify(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_join(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_crop(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_filter(<i>&lt;sfnetwork&gt;</i>)</a></code> </p>
+          <p><code><a href="sf.html">st_as_sf(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_geometry(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">`st_geometry&lt;-`(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_bbox(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_coordinates(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_is(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_crs(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">`st_crs&lt;-`(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_shift_longitude(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_transform(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_wrap_dateline(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_zm(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_m_range(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_z_range(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_agr(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">`st_agr&lt;-`(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_intersects(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_reverse(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_simplify(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_join(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_join(<i>&lt;morphed_sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_crop(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_crop(<i>&lt;morphed_sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_filter(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="sf.html">st_filter(<i>&lt;morphed_sfnetwork&gt;</i>)</a></code> </p>
         </td>
-        <td><p>sf methods for sfnetwork objects</p></td>
+        <td><p>sf methods for sfnetworks</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="sf_attr.html">sf_attr()</a></code> <code><a href="sf_attr.html">`sf_attr<-`()</a></code> </p>
+          <p><code><a href="sf_attr.html">sf_attr()</a></code> </p>
         </td>
-        <td><p>Query sf attributes from the active element of an sfnetwork object</p></td>
-      </tr>
-    </tbody><tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-integration-with-tidygraph" class="hasAnchor"><a href="#section-integration-with-tidygraph" class="anchor"></a>Integration with tidygraph</h2>
-          <p class="section-desc"><p>Since sfnetwork objects subclass tbl_graph objects, most tidygraph functions work automatically. However, some of them need a special method, mostly as a result of the presence of the sticky geometry list column in sfnetwork objects.</p></p>
-        </th>
-      </tr>
-      <tr>
+        <td><p>Query sf attributes from the active element of a sfnetwork</p></td>
+      </tr><tr>
         
         <td>
-          <p><code><a href="tidygraph.html">as_tbl_graph(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="tidygraph.html">as_tibble(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="tidygraph.html">morph(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="tidygraph.html">mutate(<i>&lt;sfnetwork&gt;</i>)</a></code> <code><a href="tidygraph.html">select(<i>&lt;sfnetwork&gt;</i>)</a></code> </p>
+          <p><code><a href="as_tibble.html">as_tibble(<i>&lt;sfnetwork&gt;</i>)</a></code> </p>
         </td>
-        <td><p>tidygraph methods for sfnetwork objects</p></td>
+        <td><p>Extract the active element of a sfnetwork as spatial tibble</p></td>
       </tr>
     </tbody><tbody>
       <tr>
         <th colspan="2">
           <h2 id="section-visualization" class="hasAnchor"><a href="#section-visualization" class="anchor"></a>Visualization</h2>
-          <p class="section-desc"><p>The sfnetworks package does not (yet?) include advanced visualization options. However, a simple plot method is provided, which gives a quick view of how the network looks like.</p></p>
+          <p class="section-desc"><p>The package offers basic plot methods. For more advanced plotting, the use of specific plotting and mapping libraries is recommended.</p></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
           <p><code><a href="plot.sfnetwork.html">plot(<i>&lt;sfnetwork&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Plot sfnetwork object</p></td>
+        <td><p>Plot sfnetwork geometries</p></td>
       </tr>
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-test-data" class="hasAnchor"><a href="#section-test-data" class="anchor"></a>Test data</h2>
+          <h2 id="section-demo-data" class="hasAnchor"><a href="#section-demo-data" class="anchor"></a>Demo data</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
+      
+      
+    </tbody><tbody>
+      
+      
       <tr>
         
         <td>
@@ -250,16 +324,10 @@
     </table>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-construction">Construction</a></li>
-      <li><a href="#section-extensions">Extensions</a></li>
-      <li><a href="#section-integration-with-sf">Integration with sf</a></li>
-      <li><a href="#section-integration-with-tidygraph">Integration with tidygraph</a></li>
-      <li><a href="#section-visualization">Visualization</a></li>
-      <li><a href="#section-test-data">Test data</a></li>
-    </ul>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -270,7 +338,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

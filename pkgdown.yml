@@ -1,7 +1,11 @@
 pandoc: 2.7.3
-pkgdown: 1.4.1.9000
-pkgdown_sha: 732fb5b9ccc0ef87a73dfd0772ae661a4039b2a8
+pkgdown: 1.6.1
+pkgdown_sha: ~
 articles:
-  extensions: extensions.html
-  intro: intro.html
+  join_filter: join_filter.html
+  morphers: morphers.html
+  preprocess_and_clean: preprocess_and_clean.html
+  routing: routing.html
+  structure: structure.html
+last_built: 2020-12-14T14:51Z
 

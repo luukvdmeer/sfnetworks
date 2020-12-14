@@ -6,27 +6,38 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Query sf attributes from the active element of an sfnetwork object — sf_attr • sfnetworks</title>
+<title>Query sf attributes from the active element of a sfnetwork — sf_attr • sfnetworks</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -35,9 +46,9 @@
 
 
 
-<meta property="og:title" content="Query sf attributes from the active element of an sfnetwork object — sf_attr" />
-<meta property="og:description" content="Query sf attributes from the active element of an sfnetwork object" />
-<meta name="twitter:card" content="summary" />
+<meta property="og:title" content="Query sf attributes from the active element of a sfnetwork — sf_attr" />
+<meta property="og:description" content="Query sf attributes from the active element of a sfnetwork" />
+<meta property="og:image" content="/logo.png" />
 
 
 
@@ -55,7 +66,7 @@
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -69,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
       </span>
     </div>
 
@@ -92,10 +103,19 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/extensions.html">Extending the vocabulary</a>
+      <a href="../articles/structure.html">1. The sfnetwork data structure</a>
     </li>
     <li>
-      <a href="../articles/intro.html">Tidy Geospatial Networks in R</a>
+      <a href="../articles/preprocess_and_clean.html">2. Network pre-processing and cleaning</a>
+    </li>
+    <li>
+      <a href="../articles/join_filter.html">3. Spatial joins and filters</a>
+    </li>
+    <li>
+      <a href="../articles/routing.html">4. Routing</a>
+    </li>
+    <li>
+      <a href="../articles/morphers.html">5. Spatial morphers</a>
     </li>
   </ul>
 </li>
@@ -105,7 +125,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/luukvdmeer/sfnetworks">
+  <a href="https://github.com/luukvdmeer/sfnetworks/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -123,18 +143,16 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Query sf attributes from the active element of an sfnetwork object</h1>
+    <h1>Query sf attributes from the active element of a sfnetwork</h1>
     <small class="dont-index">Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/R/attrs.R'><code>R/attrs.R</code></a></small>
     <div class="hidden name"><code>sf_attr.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Query sf attributes from the active element of an sfnetwork object</p>
+    <p>Query sf attributes from the active element of a sfnetwork</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sf_attr</span>(<span class='no'>x</span>, <span class='kw'>name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>active</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
-
-<span class='fu'>sf_attr</span>(<span class='no'>x</span>, <span class='no'>name</span>, <span class='kw'>active</span> <span class='kw'>=</span> <span class='kw'>NULL</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span></pre>
+    <pre class="usage"><span class='fu'>sf_attr</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>name</span>, active <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -145,41 +163,37 @@
     </tr>
     <tr>
       <th>name</th>
-      <td><p>Name of the attribute to query. If <code>NULL</code>, then all sf 
-attributes are returned in a list. Defaults to <code>NULL</code>.</p></td>
+      <td><p>Name of the attribute to query. Either 'sf_column' or 'agr'.</p></td>
     </tr>
     <tr>
       <th>active</th>
-      <td><p>Which network element (i.e. nodes or edges) to activate before
-extracting. If <code>NULL</code>, it will be set to the current active element of
-the given network. Defaults to <code>NULL</code>.</p></td>
-    </tr>
-    <tr>
-      <th>value</th>
-      <td><p>The new value of the attribute, or <code>NULL</code> to remove the 
-attribute.</p></td>
+      <td><p>Either 'nodes' or 'edges'. If <code>NULL</code>, the currently
+active element of x will be used.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>For the extractor: a list of attributes if <code>name</code> is <code>NULL</code>,
-otherwise the value of the attribute matched, or NULL if no exact match is 
-found and no or more than one partial match is found.</p>
+    <p>The value of the attribute matched, or NULL if no exact match is
+found.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>sf attributes include <code>sf_column</code> (the name of the sf column)
 and <code>agr</code> (the attribute-geometry-relationships).</p>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='va'>net</span> <span class='op'>=</span> <span class='fu'><a href='as_sfnetwork.html'>as_sfnetwork</a></span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span>
+<span class='fu'>sf_attr</span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"agr"</span>, active <span class='op'>=</span> <span class='st'>"edges"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; from   to name type 
+#&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; 
+#&gt; Levels: constant aggregate identity</div><div class='input'><span class='fu'>sf_attr</span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"sf_column"</span>, active <span class='op'>=</span> <span class='st'>"nodes"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "geometry"</div><div class='input'>
+</div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#details">Details</a></li>
-    </ul>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -190,7 +204,7 @@ and <code>agr</code> (the attribute-geometry-relationships).</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
