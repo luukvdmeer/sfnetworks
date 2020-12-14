@@ -27,7 +27,7 @@ node_geom_colname = function(x) {
   col = attr(vertex_attr(x), "sf_column")
   if (is.null(col)) {
     # Take the name of the first sfc column.
-    sfc_idx = which(sapply(vertex_attr(x), is.sfc))[1]
+    sfc_idx = which(vapply(vertex_attr(x), is.sfc, FUN.VALUE = logical(1)))[1]
     col = vertex_attr_names(x)[sfc_idx]
   }
   col
@@ -38,7 +38,7 @@ edge_geom_colname = function(x) {
   col = attr(edge_attr(x), "sf_column")
   if (has_spatially_explicit_edges(x) && is.null(col)) {
     # Take the name of the first sfc column.
-    sfc_idx = which(sapply(edge_attr(x), is.sfc))[1]
+    sfc_idx = which(vapply(edge_attr(x), is.sfc, FUN.VALUE = logical(1)))[1]
     col = edge_attr_names(x)[sfc_idx]
   }
   col

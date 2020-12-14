@@ -19,7 +19,7 @@ has_duplicates = function(x) {
 #'
 #' @noRd
 has_sfc = function(x) {
-  any(sapply(x, is.sfc), na.rm = TRUE)
+  any(vapply(x, is.sfc, FUN.VALUE = logical(1)), na.rm = TRUE)
 }
 
 #' Check if geometries are all of a specific type
@@ -46,7 +46,7 @@ has_single_geom_type = function(x, type) {
 #'
 #' @noRd
 has_spatial_nodes = function(x) {
-  any(sapply(vertex_attr(x), is.sfc), na.rm = TRUE)
+  any(vapply(vertex_attr(x), is.sfc, FUN.VALUE = logical(1)), na.rm = TRUE)
 }
 
 #' Check if a sfnetwork has spatially explicit edges
@@ -59,7 +59,7 @@ has_spatial_nodes = function(x) {
 #' @importFrom igraph edge_attr
 #' @noRd
 has_spatially_explicit_edges = function(x) {
-  any(sapply(edge_attr(x), is.sfc), na.rm = TRUE)
+  any(vapply(edge_attr(x), is.sfc, FUN.VALUE = logical(1)), na.rm = TRUE)
 }
 
 #' Check for empty geometries
@@ -160,7 +160,8 @@ nodes_in_edge_boundaries = function(x) {
   # Test for each edge :
   # Does one of the boundary points equals at least one of the boundary nodes.
   M = st_equals(boundary_points, boundary_nodes, sparse = FALSE)
-  sapply(seq(1, nrow(M), by = 2), function(x) sum(M[x:(x + 1), x:(x + 1)]) > 1)
+  f = function(x) sum(M[x:(x + 1), x:(x + 1)]) > 1
+  vapply(seq(1, nrow(M), by = 2), f, FUN.VALUE = logical(1))
 }
 
 #' Check if edge boundary points are equal to their corresponding nodes
