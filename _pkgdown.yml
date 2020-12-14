@@ -3,8 +3,8 @@ destination: docs
 reference:
   - title: Construction
     desc: >
-      The core of the package is a data structure that can be provided as 
-      input to both graph analytical functions of `tidygraph` and to spatial 
+      The core of the package is a data structure that can be provided as
+      input to both graph analytical functions of `tidygraph` and to spatial
       analytical functions of `sf`, without the need for conversion.
     contents:
       - sfnetwork
@@ -12,7 +12,7 @@ reference:
       - is.sfnetwork
   - title: Extensions
     desc: >
-      The package extends the existing functionalities of `tidygraph` and `sf` 
+      The package extends the existing functionalities of `tidygraph` and `sf`
       with a set of functions specific for spatial network analysis.
     contents:
       - st_network_paths
@@ -26,7 +26,7 @@ reference:
       - spatial_morphers
   - title: Integration with sf
     desc: >
-      The package enables smooth integration with `sf` by implementing several 
+      The package enables smooth integration with `sf` by implementing several
       sfnetwork methods for sf functions.
     contents:
       - sf
@@ -34,10 +34,11 @@ reference:
       - as_tibble.sfnetwork
   - title: Visualization
     desc: >
-      The package offers basic plot methods. For more advanced plotting, the 
+      The package offers basic plot methods. For more advanced plotting, the
       use of specific plotting and mapping libraries is recommended.
     contents:
       - plot.sfnetwork
+      - autoplot.sfnetwork
   - title: Demo data
     contents:
       - roxel
