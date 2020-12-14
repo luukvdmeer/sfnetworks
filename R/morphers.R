@@ -428,7 +428,7 @@ to_spatial_smooth = function(x) {
   # --> Add original indices of concatenated edges.
   # --> Add original data of concatenated edges.
   edge_attr(x_new, ".tidygraph_edge_index") = I
-  edge_attr(x_new, ".orig_data") = lapply(I, function(i) edges[i, , drop = F])
+  edge_attr(x_new, ".orig_data") = lapply(I, function(i) edges[i, , drop = FALSE])
   # --> Add updated edge geometries.
   if (spatial) x_new = mutate(activate(x_new, "edges"), !!edge_geom_colname := L)
   # --> Remove pseudo nodes all at once.
