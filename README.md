@@ -52,7 +52,7 @@ remotes::install_github("luukvdmeer/sfnetworks@v0.1")
 
 ## Usage
 
-The main goal of `sfnetworks` is to connect the `tidygraph` package for network analysis and the `sf` package for spatial data science. To make the most out of it, it is recommended to make yourself familiar with these two 'parent packages' if you don't know them yet. For example:
+The main goal of `sfnetworks` is to connect the `tidygraph` package for network analysis and the `sf` package for spatial data science. To make the most out of it, it is recommended to make yourself familiar with these two 'parent packages' if you don't know them yet.
 
 - [sf documentation](https://r-spatial.github.io/sf/)
 - [tidygraph documentation](https://tidygraph.data-imaginist.com/)
@@ -67,7 +67,7 @@ There are currently five vignettes that guide you through the functionalities of
 
 ## Contribution
 
-We look very much forward to contributions to the package. Please refer to the [contributing](CONTRIBUTING.md) guide for further details. 
+We look very much forward to contributions to the package. See the [contributing guide](CONTRIBUTING.md) for further details. 
 
 This project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.  
 
