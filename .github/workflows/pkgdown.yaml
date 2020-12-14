@@ -43,6 +43,9 @@ jobs:
           sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
           sudo -s eval "$sysreqs"
 
+          # Pkgdown dependencies
+          sudo apt-get install libcurl4-openssl-dev libharfbuzz-dev libfribidi-dev
+
           # Spatial system dependencies
           sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
           sudo apt update
