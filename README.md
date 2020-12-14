@@ -3,6 +3,7 @@
 <!-- badges: start -->
 
 ![R-CMD-check](https://github.com/luukvdmeer/sfnetworks/workflows/R-CMD-check/badge.svg)
+[![Codecov test coverage](https://codecov.io/gh/luukvdmeer/sfnetworks/branch/master/graph/badge.svg)](https://codecov.io/gh/luukvdmeer/sfnetworks/)
 
 <!-- Plan: add badge showing documents build on pkgdown (RL) -->
 
