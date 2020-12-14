@@ -92,7 +92,7 @@ net = sfnetwork(nodes, edges, node_key = "name")
 net
 ```
 
-In a tbl_graph structure, the weights of edges are normally stored in a column named *weight*. You can set edge weights yourself after construction (see the example in the [activation section](#Activation)). For convenience, you can also tell the construction function to calculate the geographical lengths of the edges and set those as weight during construction.
+In a tbl_graph structure, the weights of edges are normally stored in a column named *weight*. You can set edge weights yourself after construction (see the example in the [activation section](#activation-1)). For convenience, you can also tell the construction function to calculate the geographical lengths of the edges and set those as weight during construction.
 
 ```{r}
 edges$from = c(1, 1, 3)
