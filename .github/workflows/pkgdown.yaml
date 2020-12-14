@@ -1,67 +1,61 @@
 on:
   push:
-    branches: master
+    branches:
+      - main
+      - master
 
 name: pkgdown
 
 jobs:
   pkgdown:
-    runs-on: macOS-latest
-    strategy:
-      fail-fast: false
+    runs-on: ubuntu-latest
+
     env:
-      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - uses: r-lib/actions/setup-r@master
-        with:
-          r-version: devel
 
       - uses: r-lib/actions/setup-pandoc@master
 
-      - name: Brew and macOS config
-        run: |
-          brew install pkg-config
-          brew install udunits
-          brew install gdal
-          cat <<EOT >> .Renviron
-          PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
-          PROJ_LIB=/usr/local/opt/proj/share/proj/
-          # for installing XML package from source
-          XML_CONFIG=/usr/local/opt/libxml2/bin/xml2-config
-          EOT
-          cat <<EOT >> .Rprofile
-          r <- getOption("repos")
-          r["CRAN"] <- "https://cran.rstudio.com"
-          r["rccp_drat"] <- "https://RcppCore.github.io/drat"
-          config_args <- c("sf" = "--with-proj-lib=/usr/local/lib/", "rgdal" = "--with-proj-lib=/usr/local/lib/ --with-proj-include=/usr/local/include/")
-          options(configure.args = config_args,
-                  install.packages.compile.from.source = "yes",
-                  repos = r)
-          EOT
-
       - name: Query dependencies
         run: |
-          install.packages('remotes')
+          install.packages("remotes")
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
         shell: Rscript {0}
 
       - name: Cache R packages
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: macOS-r-devel-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: macOS-r-devel-
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+
+      - name: Install system dependencies
+        env:
+          RHUB_PLATFORM: linux-x86_64-ubuntu-gcc
+        run: |
+          # Regular system dependencies
+          Rscript -e "remotes::install_github('r-hub/sysreqs')"
+          sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
+          sudo -s eval "$sysreqs"
+
+          # Spatial system dependencies
+          sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+          sudo apt update
+          sudo apt install \
+            libudunits2-dev \
+            libgdal-dev \
+            libgeos-dev \
+            libproj-dev
 
       - name: Install dependencies
         run: |
-          library(remotes)
-          remotes::install_github("r-lib/xml2")
-          deps <- readRDS(".github/depends.Rds")
-          deps[["installed"]] <- vapply(deps[["package"]], remotes:::local_sha, character(1))
-          update(deps)
-          remotes::install_github("jimhester/pkgdown@github-actions-deploy")
+          remotes::install_deps(dependencies = TRUE)
+          install.packages("pkgdown", type = "binary")
         shell: Rscript {0}
 
       - name: Install package
@@ -69,5 +63,80 @@ jobs:
 
       - name: Deploy package
         run: |
-          { url <- 'https://x-access-token:${{secrets.DEPLOY_PAT}}@github.com/${{github.repository}}.git'; pkgdown:::deploy_local(new_process = FALSE, remote_url = url) }
-        shell: Rscript {0}
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          Rscript -e 'pkgdown::deploy_to_branch(new_process = FALSE)'
+
+# on:
+#   push:
+#     branches: master
+
+# name: pkgdown
+
+# jobs:
+#   pkgdown:
+#     runs-on: macOS-latest
+#     strategy:
+#       fail-fast: false
+#     env:
+#       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+#     steps:
+#       - uses: actions/checkout@v1
+
+#       - uses: r-lib/actions/setup-r@master
+#         with:
+#           r-version: devel
+
+#       - uses: r-lib/actions/setup-pandoc@master
+
+#       - name: Brew and macOS config
+#         run: |
+#           brew install pkg-config
+#           brew install udunits
+#           brew install gdal
+#           cat <<EOT >> .Renviron
+#           PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
+#           PROJ_LIB=/usr/local/opt/proj/share/proj/
+#           # for installing XML package from source
+#           XML_CONFIG=/usr/local/opt/libxml2/bin/xml2-config
+#           EOT
+#           cat <<EOT >> .Rprofile
+#           r <- getOption("repos")
+#           r["CRAN"] <- "https://cran.rstudio.com"
+#           r["rccp_drat"] <- "https://RcppCore.github.io/drat"
+#           config_args <- c("sf" = "--with-proj-lib=/usr/local/lib/", "rgdal" = "--with-proj-lib=/usr/local/lib/ --with-proj-include=/usr/local/include/")
+#           options(configure.args = config_args,
+#                   install.packages.compile.from.source = "yes",
+#                   repos = r)
+#           EOT
+
+#       - name: Query dependencies
+#         run: |
+#           install.packages('remotes')
+#           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+#         shell: Rscript {0}
+
+#       - name: Cache R packages
+#         uses: actions/cache@v1
+#         with:
+#           path: ${{ env.R_LIBS_USER }}
+#           key: macOS-r-devel-${{ hashFiles('.github/depends.Rds') }}
+#           restore-keys: macOS-r-devel-
+
+#       - name: Install dependencies
+#         run: |
+#           library(remotes)
+#           remotes::install_github("r-lib/xml2")
+#           deps <- readRDS(".github/depends.Rds")
+#           deps[["installed"]] <- vapply(deps[["package"]], remotes:::local_sha, character(1))
+#           update(deps)
+#           remotes::install_github("jimhester/pkgdown@github-actions-deploy")
+#         shell: Rscript {0}
+
+#       - name: Install package
+#         run: R CMD INSTALL .
+
+#       - name: Deploy package
+#         run: |
+#           { url <- 'https://x-access-token:${{secrets.DEPLOY_PAT}}@github.com/${{github.repository}}.git'; pkgdown:::deploy_local(new_process = FALSE, remote_url = url) }
+#         shell: Rscript {0}
