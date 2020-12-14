@@ -336,7 +336,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; geographic CRS: WGS 84
 #&gt; <span style="color: #555555;"># A tibble: 851 x 3</span><span>
 #&gt;    name           type                                                  geometry
-#&gt;    </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>          </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                                         </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>
+#&gt;  </span><span style="color: #555555;">*</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>          </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                                         </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>
 #&gt; </span><span style="color: #555555;"> 1</span><span> Havixbecker S… residen…                (7.533722 51.95556, 7.533461 51.95576)
 #&gt; </span><span style="color: #555555;"> 2</span><span> Pienersallee   seconda… (7.532442 51.95422, 7.53236 51.95377, 7.53209 51.953…
 #&gt; </span><span style="color: #555555;"> 3</span><span> Schulte-Bernd… residen… (7.532709 51.95209, 7.532823 51.95239, 7.532869 51.9…
@@ -495,7 +495,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
 #&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
 #&gt;    from    to name       type                                  geometry   weight
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>      </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                         </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>      </span><span style="color: #555555;">[m]</span><span>
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>      </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                         </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>      </span><span style="color: #555555;">[m]</span><span>
 #&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbeck… reside… (7.533722 51.95556, 7.533461 51.95576)  28.859…
 #&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersal… second… (7.532442 51.95422, 7.53236 51.95377,… 107.704…
 #&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-B… reside… (7.532709 51.95209, 7.532823 51.95239…  54.362…
@@ -556,7 +556,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; geographic CRS: WGS 84
 #&gt; <span style="color: #555555;"># A tibble: 851 x 5</span><span>
 #&gt;     from    to name         type                                        geometry
-#&gt;    </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>        </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                               </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>
+#&gt;    </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>        </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                               </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>
 #&gt; </span><span style="color: #555555;"> 1</span><span>     1     2 Havixbecker… reside…       (7.533722 51.95556, 7.533461 51.95576)
 #&gt; </span><span style="color: #555555;"> 2</span><span>     3     4 Pienersallee second… (7.532442 51.95422, 7.53236 51.95377, 7.532…
 #&gt; </span><span style="color: #555555;"> 3</span><span>     5     6 Schulte-Ber… reside… (7.532709 51.95209, 7.532823 51.95239, 7.53…
@@ -630,7 +630,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="co">#&gt; LINESTRING (7.532709 51.95209, 7.532823 51.9523...</span>
 <span class="co">#&gt; LINESTRING (7.540063 51.94468, 7.539696 51.9447...</span>
 <span class="co">#&gt; LINESTRING (7.537673 51.9475, 7.537614 51.94562)</span></code></pre></div>
-<p>Geometries can be replaced using either <code>st_geometry(x) = value</code> or the pipe-friendly <code><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_set_geometry(x, value)</a></code>. However, a replacement that breaks the valid spatial network structure will throw an error.</p>
+<p>Geometries can be replaced using either <code>sf::st_geometry(x) = value</code> or the pipe-friendly <code><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">sf::st_set_geometry(x, value)</a></code>. However, a replacement that breaks the valid spatial network structure will throw an error.</p>
 <p>Replacing a geometry with <code>NULL</code> will remove the geometries. Removing edge geometries will result in a sfnetwork with spatially implicit edges. Removing node geometries will result in a tbl_graph, losing the spatial structure.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">net</span> <span class="op">%&gt;%</span>
@@ -642,7 +642,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_set_geometry</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="structure_files/figure-html/unnamed-chunk-20-1.png" width="700"><img src="structure_files/figure-html/unnamed-chunk-20-2.png" width="700"></p>
+<p><img src="structure_files/figure-html/unnamed-chunk-20-1.png" width="40%"><img src="structure_files/figure-html/unnamed-chunk-20-2.png" width="40%"></p>
 <p>Geometries can be replaced also by using <a href="https://r-spatial.github.io/sf/reference/geos_unary.html">geometry unary operations</a>, as long as they don’t break the valid spatial network structure. In practice this means that only <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">sf::st_reverse()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">sf::st_simplify()</a></code> are supported. When calling <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">sf::st_reverse()</a></code> on the edges of a directed network, not only the geometries will be reversed, but the <em>from</em> and <em>to</em> columns of the edges will be swapped as well. In the case of undirected networks the edge geometries remain unchanged, since they don’t have a direction.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">roxel</span>, directed <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -660,7 +660,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
 #&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
 #&gt;    from    to name         type                                         geometry
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>        </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                                </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>        </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                                </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>
 #&gt; </span><span style="color: #555555;">1</span><span>     2     1 Havixbecker… reside…        (7.533461 51.95576, 7.533722 51.95556)
 #&gt; </span><span style="color: #555555;">2</span><span>     4     3 Pienersallee second… (7.53209 51.95328, 7.53236 51.95377, 7.53244…
 #&gt; </span><span style="color: #555555;">3</span><span>     6     5 Schulte-Ber… reside… (7.532869 51.95257, 7.532823 51.95239, 7.532…
@@ -736,7 +736,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
 #&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
 #&gt;    from    to name            type                                      geometry
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>           </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                             </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>           </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                             </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>
 #&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbecker St… resident…       (4151491 3207923, 4151474 3207946)
 #&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersallee    secondary (4151398 3207777, 4151390 3207727, 4151…
 #&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-Bernd-… resident… (4151408 3207539, 4151417 3207573, 4151…
@@ -775,7 +775,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sfc.html">st_as_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html">st_bbox</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="va">small_net</span>, <span class="st">"edges"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, border <span class="op">=</span> <span class="st">"blue"</span>, lty <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">small_net</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sfc.html">st_as_sfc</a></span><span class="op">(</span><span class="fu"><a href="../reference/st_network_bbox.html">st_network_bbox</a></span><span class="op">(</span><span class="va">small_net</span><span class="op">)</span><span class="op">)</span>, border <span class="op">=</span> <span class="st">"red"</span>, lty <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="structure_files/figure-html/unnamed-chunk-25-1.png" width="700"><img src="structure_files/figure-html/unnamed-chunk-25-2.png" width="700"></p>
+<p><img src="structure_files/figure-html/unnamed-chunk-25-1.png" width="40%"><img src="structure_files/figure-html/unnamed-chunk-25-2.png" width="40%"></p>
 </div>
 <div id="attribute-geometry-relationships" class="section level3">
 <h3 class="hasAnchor">
