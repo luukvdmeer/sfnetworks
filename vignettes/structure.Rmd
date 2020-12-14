@@ -255,7 +255,7 @@ Geometries can be replaced using either `sf::st_geometry(x) = value` or the pipe
 
 Replacing a geometry with `NULL` will remove the geometries. Removing edge geometries will result in a sfnetwork with spatially implicit edges. Removing node geometries will result in a tbl_graph, losing the spatial structure.
 
-```{r, fig.show = 'hold', fig.width = "40%"}
+```{r, fig.show = 'hold', out.width = "40%"}
 net %>%
   activate("edges") %>%
   st_set_geometry(NULL) %>%
