@@ -21,10 +21,11 @@ without the .sfnetwork suffix and after loading the ggplot2 package.
 See \code{\link[ggplot2]{autoplot}}.
 }
 \examples{
-library(ggplot2)
-library(sf)
+library(ggplot2, quietly = TRUE)
+library(sf, quietly = TRUE)
 
-net = as_sfnetwork(roxel)
+net = as_sfnetwork(roxel) \%>\%
+  st_transform(3035)
 
 # Quick overview of the network in ggplot style.
 autoplot(net)
@@ -34,7 +35,7 @@ points = net \%>\%
   st_bbox() \%>\%
   st_as_sfc() \%>\%
   st_sample(10, type = 'random') \%>\%
-  st_set_crs(4326) \%>\%
+  st_set_crs(3035) \%>\%
   st_cast('POINT')
 
 autoplot(net) +

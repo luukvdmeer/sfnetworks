@@ -25,7 +25,7 @@
 #' @name as_tibble
 #'
 #' @examples
-#' library(tidygraph)
+#' library(tibble, quietly = TRUE)
 #' 
 #' net = as_sfnetwork(roxel)
 #'

@@ -44,20 +44,20 @@ recommended to set the tolerance to a very small number (say 1e-5) even if
 you only want to blend points that intersect the line.
 }
 \examples{
-library(sf)
+library(sf, quietly = TRUE)
 
 # Create a network and a set of points to blend.
 n11 = st_point(c(0,0))
 n12 = st_point(c(1,1))
-e1 = st_sfc(st_linestring(c(n11, n12)), crs = 4326)
+e1 = st_sfc(st_linestring(c(n11, n12)), crs = 3857)
 
 n21 = n12
 n22 = st_point(c(0,2))
-e2 = st_sfc(st_linestring(c(n21, n22)), crs = 4326)
+e2 = st_sfc(st_linestring(c(n21, n22)), crs = 3857)
 
 n31 = n22
 n32 = st_point(c(-1,1))
-e3 = st_sfc(st_linestring(c(n31, n32)), crs = 4326)
+e3 = st_sfc(st_linestring(c(n31, n32)), crs = 3857)
 
 net = as_sfnetwork(c(e1,e2,e3))
 
@@ -65,7 +65,7 @@ pts = net \%>\%
   st_bbox() \%>\%
   st_as_sfc() \%>\%
   st_sample(10, type = "random") \%>\%
-  st_set_crs(4326) \%>\%
+  st_set_crs(3857) \%>\%
   st_cast('POINT')
 
 # Blend points into the network.

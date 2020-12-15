@@ -29,8 +29,8 @@ NULL
 #' 2015}.
 #'
 #' @examples
-#' library(sf)
-#' library(tidygraph)
+#' library(sf, quietly = TRUE)
+#' library(tidygraph, quietly = TRUE)
 #'
 #' net = as_sfnetwork(roxel, directed = FALSE) %>%
 #'   st_transform(3035)
@@ -130,8 +130,8 @@ straight_line_distance = function(x) {
 #' set the context temporarily while the algorithm is being evaluated.
 #'
 #' @examples
-#' library(sf)
-#' library(tidygraph)
+#' library(sf, quietly = TRUE)
+#' library(tidygraph, quietly = TRUE)
 #'
 #' # Create a network.
 #' net = as_sfnetwork(roxel) %>%
@@ -152,8 +152,8 @@ straight_line_distance = function(x) {
 #'   activate(edges) %>%
 #'   filter(edge_intersects(poly))
 #'
-#' plot(net)
-#' plot(intersects, col = "red", lwd = 2, add = TRUE)
+#' plot(st_geometry(net, "edges"))
+#' plot(st_geometry(intersects, "edges"), col = "red", lwd = 2, add = TRUE)
 #'
 #' # Use predicate query function in a mutate call.
 #' net %>%

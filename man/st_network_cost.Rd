@@ -47,19 +47,38 @@ be snapped to its nearest node before calculating costs.
 See the \code{\link[igraph:distances]{igraph}} documentation.
 }
 \examples{
-library(sf)
+library(sf, quietly = TRUE)
+library(tidygraph, quietly = TRUE)
 
+# Create a network with edge lenghts as weights.
+# These weights will be used automatically in shortest paths calculation.
 net = as_sfnetwork(roxel, directed = FALSE) \%>\%
-  st_transform(3035)
+  st_transform(3035) \%>\%
+  activate("edges") \%>\%
+  mutate(weight = edge_length())
 
-p1 = st_geometry(net, "nodes")[1]
-p2 = st_geometry(net, "nodes")[9]
-p3 = st_sfc(p1[[1]] + st_point(c(500, 500)), crs = st_crs(p1))
-p4 = st_sfc(p2[[1]] + st_point(c(-500, -500)), crs = st_crs(p2))
-pts1 = c(p1, p3)
-pts2 = c(p2, p4)
+# Providing node indices.
+st_network_cost(net, from = c(495, 121), to = c(495, 121))
 
-st_network_cost(net, pts1, pts2)
+# Providing nodes as spatial points.
+# Points that don't equal a node will be snapped to their nearest node.
+p1 = st_geometry(net, "nodes")[495] + st_sfc(st_point(c(50, -50)))
+st_crs(p1) = st_crs(net)
+p2 = st_geometry(net, "nodes")[121] + st_sfc(st_point(c(-10, 100)))
+st_crs(p2) = st_crs(net)
+
+st_network_cost(net, from = c(p1, p2), to = c(p1, p2))
+
+# Using another column for weights.
+net \%>\%
+  activate("edges") \%>\%
+  mutate(foo = runif(n(), min = 0, max = 1)) \%>\%
+  st_network_cost(c(p1, p2), c(p1, p2), weights = "foo")
+
+# Not providing any from or to points includes all nodes by default.
+with_graph(net, graph_order()) # Our network has 701 nodes.
+cost_matrix = st_network_cost(net)
+dim(cost_matrix)
 
 }
 \seealso{

@@ -34,8 +34,8 @@
 #' with edge lengths as weights argument.
 #'
 #' @examples
-#' library(sf)
-#' library(tidygraph)
+#' library(sf, quietly = TRUE)
+#' library(tidygraph, quietly = TRUE)
 #'
 #' # Create a network.
 #' net = as_sfnetwork(roxel) %>%

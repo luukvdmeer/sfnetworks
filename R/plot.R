@@ -17,16 +17,18 @@
 #' and others.
 #'
 #' @examples
-#' par(mar = c(1, 1, 1, 1), mfrow = c(1,1))
+#' par(mar = c(1,1,1,1), mfrow = c(1,1))
 #' net = as_sfnetwork(roxel)
 #' plot(net)
 #'
 #' # When lines are spatially implicit.
+#' par(mar = c(1,1,1,1), mfrow = c(1,2))
 #' net = as_sfnetwork(roxel, edges_as_lines = FALSE)
 #' plot(net)
 #' plot(net, draw_lines = FALSE)
 #'
 #' # Changing default settings.
+#' par(mar = c(1,1,1,1), mfrow = c(1,1))
 #' plot(net, col = 'blue', pch = 18, lwd = 1, cex = 2)
 #'
 #' @importFrom graphics plot
@@ -66,10 +68,11 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
 #' @details See \code{\link[ggplot2]{autoplot}}.
 #'
 #' @examples
-#' library(ggplot2)
-#' library(sf)
+#' library(ggplot2, quietly = TRUE)
+#' library(sf, quietly = TRUE)
 #'
-#' net = as_sfnetwork(roxel)
+#' net = as_sfnetwork(roxel) %>%
+#'   st_transform(3035)
 #'
 #' # Quick overview of the network in ggplot style.
 #' autoplot(net)
@@ -79,7 +82,7 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
 #'   st_bbox() %>%
 #'   st_as_sfc() %>%
 #'   st_sample(10, type = 'random') %>%
-#'   st_set_crs(4326) %>%
+#'   st_set_crs(3035) %>%
 #'   st_cast('POINT')
 #'
 #' autoplot(net) +

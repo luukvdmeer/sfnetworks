@@ -40,14 +40,18 @@ net = sfnetwork(nodes, edges)
 
 # Create bounding boxes for nodes, edges and the whole network.
 node_bbox = st_bbox(activate(net, "nodes"))
+node_bbox
 edge_bbox = st_bbox(activate(net, "edges"))
+edge_bbox
 net_bbox = st_network_bbox(net)
+net_bbox
 
 # Plot.
-plot(net)
+par(mar = c(1,1,1,1), mfrow = c(1,2))
+plot(net, main = "Element bounding boxes")
 plot(st_as_sfc(node_bbox), border = "red", lty = 2, add = TRUE)
 plot(st_as_sfc(edge_bbox), border = "blue", lty = 2, add = TRUE)
-plot(net)
+plot(net, main = "Network bounding box")
 plot(st_as_sfc(net_bbox), border = "red", lty = 2, add = TRUE)
 
 }

@@ -77,7 +77,7 @@ edges embedded in geographical space, and offers smooth integration with
 \code{\link[sf]{sf}} for spatial data analysis.
 }
 \examples{
-library(sf)
+library(sf, quietly = TRUE)
 
 ## Create sfnetwork from sf objects
 p1 = st_point(c(7, 51))

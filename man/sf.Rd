@@ -103,7 +103,7 @@ at the documentation of the corresponding \code{sf} function for details.}
 See the \code{\link[sf]{sf}} documentation.
 }
 \examples{
-library(sf)
+library(sf, quietly = TRUE)
 
 net = as_sfnetwork(roxel)
 
@@ -133,7 +133,19 @@ st_agr(net, "edges")
 
 # Spatial join applied to the active network element.
 net = st_transform(net, 3035)
+codes = st_as_sf(st_make_grid(net, n = c(2, 2)))
+codes$post_code = as.character(seq(1000, 1000 + nrow(codes) * 10 - 10, 10))
 
+joined = st_join(net, codes, join = st_intersects)
+joined
+
+par(mar = c(1,1,1,1), mfrow = c(1,2))
+plot(net, col = "grey")
+plot(codes, col = NA, border = "red", lty = 4, lwd = 4, add = TRUE)
+text(st_coordinates(st_centroid(st_geometry(codes))), codes$post_code)
+plot(st_geometry(joined, "edges"))
+plot(st_as_sf(joined, "nodes"), pch = 20, add = TRUE)
+# Spatial filter applied to the active network element.
 p1 = st_point(c(4151358, 3208045))
 p2 = st_point(c(4151340, 3207520))
 p3 = st_point(c(4151756, 3207506))
@@ -144,15 +156,10 @@ poly = st_multipoint(c(p1, p2, p3, p4)) \%>\%
   st_sfc(crs = 3035) \%>\%
   st_as_sf()
 
-poly$foo = "bar"
-
-st_join(net, poly, join = st_intersects)
-
-# Spatial filter applied to the active network element.
 filtered = st_filter(net, poly, .pred = st_intersects)
 
-par(mar = c(1,1,1,1), mfrow = c(1,3))
-plot(net)
+par(mar = c(1,1,1,1), mfrow = c(1,2))
+plot(net, col = "grey")
 plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 plot(filtered)
 }

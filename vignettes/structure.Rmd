@@ -319,10 +319,10 @@ node_bbox = st_as_sfc(st_bbox(activate(small_net, "nodes")))
 edge_bbox = st_as_sfc(st_bbox(activate(small_net, "edges")))
 net_bbox = st_as_sfc(st_network_bbox(small_net))
 
-plot(small_net, lwd = 2, cex = 2, main = "Element bounding boxes")
+plot(small_net, lwd = 2, cex = 4, main = "Element bounding boxes")
 plot(node_bbox, border = "red", lty = 2, lwd = 4, add = TRUE)
 plot(edge_bbox, border = "blue", lty = 2, lwd = 4, add = TRUE)
-plot(small_net, lwd = 2, cex = 2, main = "Network bounding box")
+plot(small_net, lwd = 2, cex = 4, main = "Network bounding box")
 plot(net_bbox, border = "red", lty = 2, lwd = 4, add = TRUE)
 ```
 

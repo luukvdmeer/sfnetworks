@@ -26,16 +26,18 @@ as can be found in \code{sf}, \code{tmap}, \code{ggplot2}, \code{ggspatial},
 and others.
 }
 \examples{
-par(mar = c(1, 1, 1, 1), mfrow = c(1,1))
+par(mar = c(1,1,1,1), mfrow = c(1,1))
 net = as_sfnetwork(roxel)
 plot(net)
 
 # When lines are spatially implicit.
+par(mar = c(1,1,1,1), mfrow = c(1,2))
 net = as_sfnetwork(roxel, edges_as_lines = FALSE)
 plot(net)
 plot(net, draw_lines = FALSE)
 
 # Changing default settings.
+par(mar = c(1,1,1,1), mfrow = c(1,1))
 plot(net, col = 'blue', pch = 18, lwd = 1, cex = 2)
 
 }

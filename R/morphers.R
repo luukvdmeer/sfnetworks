@@ -24,10 +24,14 @@
 #'
 #' @details It also possible to create your own morphers. See the documentation
 #' of \code{\link[tidygraph]{morph}} for the requirements for custom morphers.
+#''
+#' @seealso The vignette on 
+#' \href{https://luukvdmeer.github.io/sfnetworks/articles/morphers.html}{spatial 
+#' morphers}.
 #'
 #' @examples
-#' library(sf)
-#' library(tidygraph)
+#' library(sf, quietly = TRUE)
+#' library(tidygraph, quietly = TRUE)
 #'
 #' net = as_sfnetwork(roxel, directed = FALSE) %>%
 #'   st_transform(3035)

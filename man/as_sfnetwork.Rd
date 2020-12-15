@@ -47,29 +47,36 @@ supported.
 }
 \examples{
 # From a linnet object.
-if (require(spatstat)) as_sfnetwork(simplenet)
+if (require(spatstat, quietly = TRUE)) {
+  as_sfnetwork(simplenet)
+} 
 
 # From a psp object.
-if (require(spatstat)) {
+if (require(spatstat, quietly = TRUE)) {
   set.seed(42)
   test_psp = psp(runif(10), runif(10), runif(10), runif(10), window=owin())
   as_sfnetwork(test_psp)
 }
 
-# From an sf object with POINT geometries.
-library(sf)
+# From an sf object.
+library(sf, quietly = TRUE)
+
+# With POINT geometries.
 p1 = st_point(c(7, 51))
 p2 = st_point(c(7, 52))
 p3 = st_point(c(8, 52))
-points = st_as_sf(st_sfc(p1, p2, p3, crs = 4326))
+points = st_as_sf(st_sfc(p1, p2, p3))
 as_sfnetwork(points)
 
-# From an sf object with LINESTRING geometries.
-library(sf)
-e1 = st_cast(st_union(p1,p2), "LINESTRING")
-e2 = st_cast(st_union(p1,p3), "LINESTRING")
-e3 = st_cast(st_union(p2,p3), "LINESTRING")
-lines = st_as_sf(st_sfc(e1, e2, e3, crs = 4326))
-as_sfnetwork(lines)
+par(mar = c(1,1,1,1), mfrow = c(1,2))
+plot(points)
+plot(as_sfnetwork(points))
+
+# With LINESTRING geometries.
+as_sfnetwork(roxel)
+
+par(mar = c(1,1,1,1), mfrow = c(1,2))
+plot(st_geometry(roxel))
+plot(as_sfnetwork(roxel))
 
 }

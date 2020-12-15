@@ -66,6 +66,7 @@ inside a \code{\link[tibble]{tibble}} by passing the morpher to
 \details{
 It also possible to create your own morphers. See the documentation
 of \code{\link[tidygraph]{morph}} for the requirements for custom morphers.
+'
 }
 \section{Functions}{
 \itemize{
@@ -139,8 +140,8 @@ Returns a \code{morphed_sfnetwork} containing a single element of class
 }}
 
 \examples{
-library(sf)
-library(tidygraph)
+library(sf, quietly = TRUE)
+library(tidygraph, quietly = TRUE)
 
 net = as_sfnetwork(roxel, directed = FALSE) \%>\%
   st_transform(3035)
@@ -159,4 +160,9 @@ net \%>\%
  mutate(weight = edge_length()) \%>\%
  convert(to_spatial_shortest_paths, from = 1, to = 10)
 
+}
+\seealso{
+The vignette on 
+\href{https://luukvdmeer.github.io/sfnetworks/articles/morphers.html}{spatial 
+morphers}.
 }

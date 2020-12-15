@@ -72,8 +72,8 @@ the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to
 set the context temporarily while the algorithm is being evaluated.
 }
 \examples{
-library(sf)
-library(tidygraph)
+library(sf, quietly = TRUE)
+library(tidygraph, quietly = TRUE)
 
 # Create a network.
 net = as_sfnetwork(roxel) \%>\%
@@ -94,8 +94,8 @@ intersects = net \%>\%
   activate(edges) \%>\%
   filter(edge_intersects(poly))
 
-plot(net)
-plot(intersects, col = "red", lwd = 2, add = TRUE)
+plot(st_geometry(net, "edges"))
+plot(st_geometry(intersects, "edges"), col = "red", lwd = 2, add = TRUE)
 
 # Use predicate query function in a mutate call.
 net \%>\%

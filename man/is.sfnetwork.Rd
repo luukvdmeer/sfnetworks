@@ -12,3 +12,11 @@ is.sfnetwork(x)
 \description{
 Check if an object is an sfnetwork
 }
+\examples{
+library(tidygraph, quietly = TRUE)
+
+net = as_sfnetwork(roxel)
+is.sfnetwork(net)
+is.sfnetwork(as_tbl_graph(net))
+
+}

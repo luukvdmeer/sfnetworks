@@ -18,7 +18,7 @@
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
 #' @examples
-#' library(sf)
+#' library(sf, quietly = TRUE)
 #'
 #' node1 = st_point(c(0, 0))
 #' node2 = st_point(c(1, 0))
@@ -35,10 +35,10 @@
 #' joined
 #'
 #' ## Plot results.
-#' par(mfrow = c(2,2))
-#' plot(net, pch = 15, cex = 2, lwd = 1.5)
-#' plot(other_net, col = "red", pch = 18, cex = 1.5, lty = 3, add = TRUE)
-#' plot(joined, cex = 1.5)
+#' par(mar = c(1,1,1,1), mfrow = c(1,2))
+#' plot(net, pch = 15, cex = 2, lwd = 4)
+#' plot(other_net, col = "red", pch = 18, cex = 2, lty = 3, lwd = 4, add = TRUE)
+#' plot(joined, cex = 2, lwd = 4)
 #'
 #' @export
 st_network_join = function(x, y, ...) {

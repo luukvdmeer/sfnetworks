@@ -32,7 +32,7 @@ using the corresponding \code{\link[sf]{sf}} method if present. When using
 as a user, you can disable this behaviour by setting \code{spatial = FALSE}.
 }
 \examples{
-library(tidygraph)
+library(tibble, quietly = TRUE)
 
 net = as_sfnetwork(roxel)
 

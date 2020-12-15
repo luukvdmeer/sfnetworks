@@ -52,8 +52,8 @@ Note that \code{edge_is_within_distance} is a wrapper around the
 'as-the-crow-flies' distance, and not on distances over the network.
 }
 \examples{
-library(sf)
-library(tidygraph)
+library(sf, quietly = TRUE)
+library(tidygraph, quietly = TRUE)
 
 net = as_sfnetwork(roxel, directed = FALSE) \%>\%
   st_transform(3035)
