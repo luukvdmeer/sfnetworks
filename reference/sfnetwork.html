@@ -49,7 +49,7 @@
 <meta property="og:title" content="Create a sfnetwork — sfnetwork" />
 <meta property="og:description" content="sfnetwork is a tidy data structure for geospatial networks. It
 extends the tbl_graph data structure for
-relational data into the domain of geospatial networks, whith nodes and
+relational data into the domain of geospatial networks, with nodes and
 edges embedded in geographical space, and offers smooth integration with
 sf for spatial data analysis." />
 <meta property="og:image" content="/logo.png" />
@@ -155,7 +155,7 @@ sf for spatial data analysis." />
     <div class="ref-description">
     <p><code>sfnetwork</code> is a tidy data structure for geospatial networks. It
 extends the <code><a href='https://tidygraph.data-imaginist.com/reference/tbl_graph.html'>tbl_graph</a></code> data structure for
-relational data into the domain of geospatial networks, whith nodes and
+relational data into the domain of geospatial networks, with nodes and
 edges embedded in geographical space, and offers smooth integration with
 <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a></code> for spatial data analysis.</p>
     </div>
@@ -186,10 +186,10 @@ of type <code>POINT</code>.</p></td>
       <td><p>The edges of the network. May be an object of class
 <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a></code>, with all features having an associated geometry of
 type <code>LINESTRING</code>. It may also be a regular <code><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></code> or
-<code><a href='https://tibble.tidyverse.org/reference/tbl_df-class.html'>tbl_df</a></code> object. In any case, the nodes at the ends of 
-each edge must either be encoded in a <code>to</code> and <code>from</code> column, as 
-integers or characters. Integers should refer to the position of a node in 
-the nodes table, while characters should refer to the name of a node encoded 
+<code><a href='https://tibble.tidyverse.org/reference/tbl_df-class.html'>tbl_df</a></code> object. In any case, the nodes at the ends of
+each edge must either be encoded in a <code>to</code> and <code>from</code> column, as
+integers or characters. Integers should refer to the position of a node in
+the nodes table, while characters should refer to the name of a node encoded
 in the column referred to in the <code>node_key</code> argument. Setting edges to
 <code>NULL</code> will create a network without edges.</p></td>
     </tr>
@@ -202,7 +202,7 @@ in the column referred to in the <code>node_key</code> argument. Setting edges t
       <th>node_key</th>
       <td><p>The name of the column in the nodes table that character
 represented <code>to</code> and <code>from</code> columns should be matched against. If
-<code>NA</code>, the first column is always chosen. This setting has no effect if 
+<code>NA</code>, the first column is always chosen. This setting has no effect if
 <code>to</code> and <code>from</code> are given as integers. Defaults to <code>'name'</code>.</p></td>
     </tr>
     <tr>
@@ -232,7 +232,7 @@ geometries. In the case of spatially explicit edges, it is also checked that
 all edges have <code>LINESTRING</code> geometries, nodes and edges have the same
 CRS and boundary points of edges match their corresponding node coordinates.
 These checks are important, but also time consuming. If you are already sure
-your input data meet the requirements, the checks are unneccesary and can be
+your input data meet the requirements, the checks are unnecessary and can be
 turned off to improve performance.</p></td>
     </tr>
     <tr>

@@ -159,7 +159,7 @@
 <li>The <code>keep</code> argument is removed from the <code><a href="../reference/spatial_morphers.html">to_spatial_simple()</a></code> morpher. It is now recommended to first sort data with <code><a href="https://dplyr.tidyverse.org/reference/arrange.html">dplyr::arrange()</a></code> before calling the morpher.</li>
 <li>The spatial morpher <code>to_spatial_dense_graph()</code> is deprecated. A new morpher <code><a href="../reference/spatial_morphers.html">to_spatial_subdivision()</a></code>, with slightly different functionality, is added instead.</li>
 <li>Functions <code>st_network_distance()</code> and <code>edge_straight_length()</code> are renamed to respectively <code><a href="../reference/st_network_cost.html">st_network_cost()</a></code> and <code><a href="../reference/spatial_edge_measures.html">edge_displacement()</a></code>, which reflects their purpose better.</li>
-<li>Function arguments that were named <code>graph</code> are renamed to <code>x</code>, to have more consistency accross the package.</li>
+<li>Function arguments that were named <code>graph</code> are renamed to <code>x</code>, to have more consistency across the package.</li>
 </ul>
 </li>
 <li>Backward compatible changes to existing functions:
@@ -190,7 +190,7 @@
 </li>
 <li>The new spatial morpher <code><a href="../reference/spatial_morphers.html">to_spatial_smooth()</a></code> iteratively removes pseudo-nodes from the network. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/70"><a href='https://github.com/luukvdmeer/sfnetworks/issues/70'>#70</a></a>
 </li>
-<li>Several spatial predicate functions are implemented as node and edge query functions, to interpretate spatial relations between network elements and other geospatial features directly inside tidy filter and mutate calls. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/60"><a href='https://github.com/luukvdmeer/sfnetworks/issues/60'>#60</a></a>
+<li>Several spatial predicate functions are implemented as node and edge query functions, to interpret spatial relations between network elements and other geospatial features directly inside tidy filter and mutate calls. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/60"><a href='https://github.com/luukvdmeer/sfnetworks/issues/60'>#60</a></a>
 </li>
 <li>There is now an <code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html">ggplot2::autoplot()</a></code> method for sfnetworks, allowing to easily plot a sfnetwork as a ggplot2 object. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/86"><a href='https://github.com/luukvdmeer/sfnetworks/issues/86'>#86</a></a>
 </li>

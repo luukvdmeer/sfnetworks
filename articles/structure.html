@@ -354,9 +354,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p><img src="structure_files/figure-html/unnamed-chunk-8-1.png" width="480"></p>
 <p>Other methods to convert ‘foreign’ objects into a sfnetwork exists as well, e.g. for SpatialLinesNetwork objects from <code>stplanr</code> and linnet objects from <code>spatstat</code>. See <a href="https://luukvdmeer.github.io/sfnetworks/reference/as_sfnetwork.html">here</a> for an overview.</p>
 </div>
-<div id="from-a-network-specific-filetype" class="section level3">
+<div id="from-a-network-specific-file-type" class="section level3">
 <h3 class="hasAnchor">
-<a href="#from-a-network-specific-filetype" class="anchor"></a>From a network specific filetype</h3>
+<a href="#from-a-network-specific-file-type" class="anchor"></a>From a network specific file type</h3>
 <p>To create networks from spatial data file types, you can use the sf function <code><a href="https://r-spatial.github.io/sf/reference/st_read.html">sf::st_read()</a></code> to read them into R and then construct a sfnetwork from the sf object(s) using either <code><a href="../reference/sfnetwork.html">sfnetwork()</a></code> or <code><a href="../reference/as_sfnetwork.html">as_sfnetwork()</a></code> as described above. To create networks from graph specific file types, you can use the igraph function <code><a href="https://rdrr.io/pkg/igraph/man/read_graph.html">igraph::read_graph()</a></code> to read them into R, and then convert them to a sfnetwork using <code><a href="../reference/as_sfnetwork.html">as_sfnetwork()</a></code> if possible. Lets look at an example with a GraphML file. First, we will convert it to a tbl_graph after loading such that we can explore the data.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">url</span> <span class="op">=</span> <span class="st">'https://raw.githubusercontent.com/ComplexNetTSP/Power_grids/v1.0.0/Countries/Netherlands/graphml/Netherlands_highvoltage.graphml'</span>
