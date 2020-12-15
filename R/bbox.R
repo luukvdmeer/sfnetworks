@@ -1,4 +1,4 @@
-#' Get the bounding box of a sfnetwork
+#' Get the bounding box of a spatial networks
 #'
 #' A spatial network specific bounding box extractor, returning the combined
 #' bounding box of the nodes and edges in the network.
@@ -7,7 +7,7 @@
 #'
 #' @param ... Arguments passed on to \code{\link[sf]{st_bbox}}.
 #'
-#' @return An object of class \code{bbox}.
+#' @return An object of class \code{\link[sf:st_bbox]{bbox}}.
 #'
 #' @details See \code{\link[sf]{st_bbox}} for details.
 #'
@@ -38,11 +38,11 @@
 #' 
 #' # Plot.
 #' par(mar = c(1,1,1,1), mfrow = c(1,2))
-#' plot(net, main = "Element bounding boxes")
-#' plot(st_as_sfc(node_bbox), border = "red", lty = 2, add = TRUE)
-#' plot(st_as_sfc(edge_bbox), border = "blue", lty = 2, add = TRUE)
-#' plot(net, main = "Network bounding box")
-#' plot(st_as_sfc(net_bbox), border = "red", lty = 2, add = TRUE)
+#' plot(net, lwd = 2, cex = 4, main = "Element bounding boxes")
+#' plot(st_as_sfc(node_bbox), border = "red", lty = 2, lwd = 4, add = TRUE)
+#' plot(st_as_sfc(edge_bbox), border = "blue", lty = 2, lwd = 4, add = TRUE)
+#' plot(net, lwd = 2, cex = 4, main = "Network bounding box")
+#' plot(st_as_sfc(net_bbox), border = "red", lty = 2, lwd = 4, add = TRUE)
 #'
 #' @export
 st_network_bbox = function(x, ...) {

@@ -11,29 +11,32 @@ st_network_cost(x, from = igraph::V(x), to = igraph::V(x), weights = NULL, ...)
 
 \item{from}{The (set of) geospatial point(s) from which the shortest paths
 will be calculated. Can be an object of  class \code{\link[sf]{sf}} or
-\code{\link[sf]{sfc}}. Empty geometries will be ignored.
-Alternatively, it can be a numeric vector, containing the indices of the
-nodes from which the shortest paths will be calculated. By default, all
-nodes in the network are included.}
+\code{\link[sf]{sfc}}. Empty geometries are ignored.
+Alternatively, it can be a numeric vector, containing the indices of the nodes
+from which the shortest paths will be calculated, or a character vector,
+containing the names of the nodes from which the shortest paths will be
+calculated. By default, all nodes in the network are included.}
 
 \item{to}{The (set of) geospatial point(s) to which the shortest paths will
 be calculated. Can be an object of  class \code{\link[sf]{sf}} or
-\code{\link[sf]{sfc}}. Empty geometries will be ignored.
-Alternatively, it can be a numeric vector, containing the indices of the
-nodes to which the shortest paths will be calculated. By default, all nodes
-in the network are included.}
+\code{\link[sf]{sfc}}. Empty geometries are ignored.
+Alternatively, it can be a numeric vector, containing the indices of the nodes
+to which the shortest paths will be calculated, or a character vector,
+containing the names of the nodes to which the shortest paths will be
+calculated. By default, all nodes in the network are included.}
 
 \item{weights}{The edge weights to be used in the shortest path calculation.
 Can be a numeric vector giving edge weights, or a column name referring to
 an attribute column in the edges table containing those weights. If set to
-\code{NULL}, the values of a column named 'weight' in the edges table will
-be used automatically, as long as this column is present. If set to
-\code{NA}, no weights are used (even if the edges have a weight column).}
+\code{NULL}, the values of a column named \code{weight} in the edges table 
+will be used automatically, as long as this column is present. If set to
+\code{NA}, no weights are used, even if the edges have a \code{weight} 
+column.}
 
 \item{...}{Arguments passed on to \code{\link[igraph]{distances}}.}
 }
 \value{
-An nxm numeric matrix where n is the length of the \code{from}
+An n times m numeric matrix where n is the length of the \code{from}
 argument, and m is the length of the \code{to} argument.
 }
 \description{

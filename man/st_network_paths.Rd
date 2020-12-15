@@ -28,7 +28,7 @@ calculated.}
 
 \item{to}{The (set of) geospatial point(s) to which the shortest paths will be
 calculated. Can be an object of  class \code{\link[sf]{sf}} or
-\code{\link[sf]{sfc}}. Empty geometries will be ignored.
+\code{\link[sf]{sfc}}. Empty geometries are ignored.
 Alternatively, it can be a numeric vector, containing the indices of the nodes
 to which the shortest paths will be calculated, or a character vector,
 containing the names of the nodes to which the shortest paths will be
@@ -37,9 +37,10 @@ calculated. By default, all nodes in the network are included.}
 \item{weights}{The edge weights to be used in the shortest path calculation.
 Can be a numeric vector giving edge weights, or a column name referring to
 an attribute column in the edges table containing those weights. If set to
-\code{NULL}, the values of a column named 'weight' in the edges table will
-be used automatically, as long as this column is present. If set to
-\code{NA}, no weights are used (even if the edges have a weight column).}
+\code{NULL}, the values of a column named \code{weight} in the edges table 
+will be used automatically, as long as this column is present. If set to
+\code{NA}, no weights are used, even if the edges have a \code{weight} 
+column.}
 
 \item{output}{Character defining how to report the shortest paths. Can be
 \code{'nodes'} meaning that only indices of nodes in the paths are
@@ -49,10 +50,11 @@ returned. Defaults to \code{'both'}. Ignored when \code{all = TRUE}.}
 
 \item{all}{Whether to calculate all shortest paths or a single shortest path
 between two nodes. If \code{TRUE}, the igraph function
-\code{all_shortest_paths} is called internally, if \code{FALSE} the igraph
-function \code{shortest_paths} is called internally. If \code{TRUE}, the
-returned tibble will only have a \code{node_paths} column, no matter what
-the setting of \code{output} is. Defaults to \code{FALSE}.}
+\code{\link[igraph]{all_shortest_paths}} is called internally, if 
+\code{FALSE} the igraph function \code{\link[igraph]{shortest_paths}} is 
+called internally. If \code{TRUE}, the returned tibble will only have a 
+\code{node_paths} column, no matter what the setting of \code{output} is. 
+Defaults to \code{FALSE}.}
 
 \item{...}{Arguments passed on to the corresponding
 \code{\link[igraph:shortest_paths]{igraph}} function. Arguments
@@ -60,18 +62,19 @@ the setting of \code{output} is. Defaults to \code{FALSE}.}
 }
 \value{
 An object of class \code{\link[tibble]{tbl_df}} with one row per
-returned path. Depending on the setting of the 'output' argument, columns
-can be \code{node_paths} (a list column with for each path the ordered
-indices of nodes present in that path) and \code{edge_paths} (a list column
-with for each path the ordered indices of edges present in that path).
+returned path. Depending on the setting of the \code{output} argument, 
+columns can be \code{node_paths} (a list column with for each path the 
+ordered indices of nodes present in that path) and \code{edge_paths} 
+(a list column with for each path the ordered indices of edges present in 
+that path).
 }
 \description{
-Wrapper around the shortest path calculation functionalities in
-\code{\link[igraph:shortest_paths]{igraph}}, allowing to
-provide any geospatial point as `from` argument and any set of geospatial
-points as `to` argument. If such a geospatial point is not equal to a node
-in the network, it will be snapped to its nearest node before calculating
-the shortest paths.
+Combined wrapper around \code{\link[igraph]{shortest_paths}} and 
+\code{\link[igraph]{all_shortest_paths}} from \code{\link[igraph]{igraph}}, 
+allowing to provide any geospatial point as \code{from} argument and any 
+set of geospatial points as \code{to} argument. If such a geospatial point 
+is not equal to a node in the network, it will be snapped to its nearest 
+node before calculating the shortest paths.
 }
 \details{
 See the \code{\link[igraph:shortest_paths]{igraph}} documentation.
@@ -99,7 +102,7 @@ node_path
 
 par(mar = c(1,1,1,1))
 plot(net, col = "grey")
-plot(slice(net, node_path), col = "red", add = TRUE)
+plot(slice(activate(net, "nodes"), node_path), col = "red", add = TRUE)
 
 # Providing nodes as spatial points.
 # Points that don't equal a node will be snapped to their nearest node.
@@ -119,7 +122,7 @@ node_path
 
 par(mar = c(1,1,1,1))
 plot(net, col = "grey")
-plot(slice(net, node_path), col = "red", add = TRUE)
+plot(slice(activate(net, "nodes"), node_path), col = "red", add = TRUE)
 
 # Using another column for weights.
 net \%>\%

@@ -3,13 +3,14 @@
 #' Spatial morphers form spatial add-ons to the set of
 #' \code{\link[tidygraph]{morphers}} provided by \code{tidygraph}. These
 #' functions are not meant to be called directly. They should either be passed
-#' into \code{\link[tidygraph]{morph}} to create a temporary alternate
-#' representation of the input network. Such an alternate representation is a
+#' into \code{\link[tidygraph]{morph}} to create a temporary alternative
+#' representation of the input network. Such an alternative representation is a
 #' list of one or more network objects. Single elements of that list can be
 #' extracted directly as a new network by passing the morpher to
-#' \code{\link[tidygraph]{convert}} instead. Alternatively, if the morphed
-#' state contains multiple elements, all of them can be extracted together
-#' inside a \code{\link[tibble]{tibble}} by passing the morpher to
+#' \code{\link[tidygraph]{convert}} instead, to make the changes lasting rather
+#' than temporary. Alternatively, if the morphed state contains multiple 
+#' elements, all of them can be extracted together inside a 
+#' \code{\link[tibble]{tbl_df}} by passing the morpher to 
 #' \code{\link[tidygraph]{crystallise}}.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
@@ -19,7 +20,7 @@
 #'
 #' @return Either a \code{morphed_sfnetwork}, which is a list of one or more
 #' \code{\link{sfnetwork}} objects, or a \code{morphed_tbl_graph}, which is a
-#' list of one or more \code{\link[tidygraph]{tbl_graph}} object. See the
+#' list of one or more \code{\link[tidygraph]{tbl_graph}} objects. See the
 #' description of each morpher for details.
 #'
 #' @details It also possible to create your own morphers. See the documentation
@@ -174,8 +175,7 @@ to_spatial_shortest_paths = function(x, ...) {
 
 #' @describeIn spatial_morphers Remove loops and parallel edges. Returns a
 #' \code{morphed_sfnetwork} containing a single element of class
-#' \code{\link{sfnetwork}}. This morpher requires edges to be spatially
-#' explicit. If not, use \code{\link[tidygraph]{to_simple}}.
+#' \code{\link{sfnetwork}}.
 #'
 #' @param remove_parallels Should parallel edges be removed. Defaults to
 #' \code{TRUE}.
@@ -442,7 +442,7 @@ to_spatial_subdivision = function(x) {
 
 #' @describeIn spatial_morphers Subset the network by applying a spatial
 #' filter, i.e. a filter on the geometry column based on a spatial predicate.
-#' \code{...} is evaluated in the same manner as \code{\link{st_filter}}.
+#' \code{...} is evaluated in the same manner as \code{\link[sf]{st_filter}}.
 #' Returns a \code{morphed_sfnetwork} containing a single element of class
 #' \code{\link{sfnetwork}}. For filters on an attribute column, use
 #' \code{\link[tidygraph]{to_subgraph}}.

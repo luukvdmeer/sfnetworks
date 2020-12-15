@@ -23,12 +23,12 @@ of type \code{POINT}.}
 
 \item{edges}{The edges of the network. May be an object of class
 \code{\link[sf]{sf}}, with all features having an associated geometry of
-type \code{LINESTRING}. It may also be a regular \code{data.frame} or
-\code{tbl_df} object. In any case, the adjacent nodes of each edge must
-either be encoded in a \code{to} and \code{from} column, as integers or
-characters. Integers should refer to the position of a node in the nodes
-table, while characters should refer to the name of a node encoded in the
-column referred to in the \code{node_key} argument. Setting edges to
+type \code{LINESTRING}. It may also be a regular \code{\link{data.frame}} or
+\code{\link[tibble]{tbl_df}} object. In any case, the nodes at the ends of 
+each edge must either be encoded in a \code{to} and \code{from} column, as 
+integers or characters. Integers should refer to the position of a node in 
+the nodes table, while characters should refer to the name of a node encoded 
+in the column referred to in the \code{node_key} argument. Setting edges to
 \code{NULL} will create a network without edges.}
 
 \item{directed}{Should the constructed network be directed? Defaults to
@@ -36,8 +36,8 @@ column referred to in the \code{node_key} argument. Setting edges to
 
 \item{node_key}{The name of the column in the nodes table that character
 represented \code{to} and \code{from} columns should be matched against. If
-NA the first column is always chosen. This setting has no effect if \code{to}
-and \code{from} are given as integers. Defaults to \code{'name'}.}
+\code{NA}, the first column is always chosen. This setting has no effect if 
+\code{to} and \code{from} are given as integers. Defaults to \code{'name'}.}
 
 \item{edges_as_lines}{Should the edges be spatially explicit, i.e. have
 \code{LINESTRING} geometries stored in a geometry list column? If \code{NULL},

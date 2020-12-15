@@ -94,6 +94,7 @@ intersects = net \%>\%
   activate(edges) \%>\%
   filter(edge_intersects(poly))
 
+par(mar = c(1,1,1,1))
 plot(st_geometry(net, "edges"))
 plot(st_geometry(intersects, "edges"), col = "red", lwd = 2, add = TRUE)
 

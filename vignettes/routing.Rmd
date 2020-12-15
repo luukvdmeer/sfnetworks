@@ -92,7 +92,7 @@ plot_path = function(node_path) {
 
 colors = sf.colors(3, categorical = TRUE)
 
-plot(net, col = "darkgrey")
+plot(net, col = "grey")
 paths %>%
   pull(node_paths) %>%
   walk(plot_path)
@@ -114,7 +114,7 @@ st_crs(p3) = st_crs(net)
 
 paths = st_network_paths(net, from = p1, to = c(p2, p3))
 
-plot(net, col = "darkgrey")
+plot(net, col = "grey")
 paths %>%
   pull(node_paths) %>%
   walk(plot_path)
@@ -204,7 +204,7 @@ iso_poly = iso %>%
   st_union() %>%
   st_convex_hull()
 
-plot(net, col = "darkgrey")
+plot(net, col = "grey")
 plot(iso_poly, col = NA, border = 'black', lwd = 3, add = TRUE)
 plot(iso, col = colors[2], add = TRUE)
 plot(p, col = colors[1], pch = 8, cex = 2, lwd = 2, add = TRUE)

@@ -2,13 +2,15 @@
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @param name Name of the attribute to query. Either 'sf_column' or 'agr'.
+#' @param name Name of the attribute to query. Either \code{'sf_column'} or
+#' \code{'agr'}.
 #'
-#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently
-#' active element of x will be used.
+#' @param active Which network element (i.e. nodes or edges) to activate before
+#' extracting. If \code{NULL}, it will be set to the current active element of
+#' the given network. Defaults to \code{NULL}.
 #'
-#' @return The value of the attribute matched, or NULL if no exact match is
-#' found.
+#' @return The value of the attribute matched, or \code{NULL} if no exact 
+#' match is found.
 #'
 #' @details sf attributes include \code{sf_column} (the name of the sf column)
 #' and \code{agr} (the attribute-geometry-relationships).

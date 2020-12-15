@@ -2,7 +2,7 @@
 % Please edit documentation in R/bbox.R
 \name{st_network_bbox}
 \alias{st_network_bbox}
-\title{Get the bounding box of a sfnetwork}
+\title{Get the bounding box of a spatial networks}
 \usage{
 st_network_bbox(x, ...)
 }
@@ -12,7 +12,7 @@ st_network_bbox(x, ...)
 \item{...}{Arguments passed on to \code{\link[sf]{st_bbox}}.}
 }
 \value{
-An object of class \code{bbox}.
+An object of class \code{\link[sf:st_bbox]{bbox}}.
 }
 \description{
 A spatial network specific bounding box extractor, returning the combined
@@ -48,10 +48,10 @@ net_bbox
 
 # Plot.
 par(mar = c(1,1,1,1), mfrow = c(1,2))
-plot(net, main = "Element bounding boxes")
-plot(st_as_sfc(node_bbox), border = "red", lty = 2, add = TRUE)
-plot(st_as_sfc(edge_bbox), border = "blue", lty = 2, add = TRUE)
-plot(net, main = "Network bounding box")
-plot(st_as_sfc(net_bbox), border = "red", lty = 2, add = TRUE)
+plot(net, lwd = 2, cex = 4, main = "Element bounding boxes")
+plot(st_as_sfc(node_bbox), border = "red", lty = 2, lwd = 4, add = TRUE)
+plot(st_as_sfc(edge_bbox), border = "blue", lty = 2, lwd = 4, add = TRUE)
+plot(net, lwd = 2, cex = 4, main = "Network bounding box")
+plot(st_as_sfc(net_bbox), border = "red", lty = 2, lwd = 4, add = TRUE)
 
 }

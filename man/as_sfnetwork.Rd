@@ -69,7 +69,7 @@ points = st_as_sf(st_sfc(p1, p2, p3))
 as_sfnetwork(points)
 
 par(mar = c(1,1,1,1), mfrow = c(1,2))
-plot(points)
+plot(st_geometry(points))
 plot(as_sfnetwork(points))
 
 # With LINESTRING geometries.

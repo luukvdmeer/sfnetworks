@@ -20,9 +20,8 @@ meters. If set to \code{Inf} all features will be blended. Defaults to
 \code{Inf}.}
 
 \item{sort}{Should the nodes in the resulting network be sorted in the same
-order as those in x, followed by the new nodes blended in from y? Defaults
-to \code{FALSE}, meaning that node order might be changed. However, sorting
-might influence performance.}
+order as those in \code{x}, followed by the new nodes blended in from 
+\code{y}? Defaults to \code{FALSE}, meaning that node order might be changed.}
 }
 \value{
 An object of class \code{\link{sfnetwork}}.
@@ -40,8 +39,8 @@ Due to internal rounding of rational numbers, it may occur that the
 intersection point between a line and a point is not evaluated as 
 actually intersecting that line by the designated algorithm. Instead, the
 intersection point lies a tiny-bit away from the edge. Therefore, it is
-recommended to set the tolerance to a very small number (say 1e-5) even if
-you only want to blend points that intersect the line.
+recommended to set the tolerance to a very small number (for example 1e-5) 
+even if you only want to blend points that intersect the line.
 }
 \examples{
 library(sf, quietly = TRUE)
@@ -75,7 +74,7 @@ b1 = st_network_blend(net, pts)
 b1
 
 # Blend points with a tolerance.
-tol = units::set_units(40, "km")
+tol = units::set_units(0.2, "m")
 b2 = st_network_blend(net, pts, tolerance = tol)
 b2
 
@@ -92,7 +91,7 @@ plot(pts, cex = 2, col = "red", pch = 20, add = TRUE)
 # Blend with tolerance.
 within = st_is_within_distance(pts, st_geometry(net, "edges"), tol)
 pts_within = pts[lengths(within) > 0]
-plot(b2, cex = 2, main = "Blend with tolerance = 40 km")
+plot(b2, cex = 2, main = "Blend with tolerance = 0.2 m")
 plot(pts, cex = 2, col = "grey", pch = 20, add = TRUE)
 plot(pts_within, cex = 2, col = "red", pch = 20, add = TRUE)
 

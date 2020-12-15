@@ -1,12 +1,12 @@
 #' Join two spatial networks based on equality of node geometries
 #'
 #' A spatial network specific join function which makes a spatial full join on
-#' the geometries of the nodes data, based on the \code{st_equals} spatial
-#' predicate. Edge data are combined using a \code{bind_rows} semantic, meaning
-#' that data are matched by column name and values are filled with `NA` if
-#' missing in either of the networks. The \code{from} and \code{to} columns in
-#' the edge data are updated such that they match the new node indices of the
-#' resulting network.
+#' the geometries of the nodes data, based on the \code{\link[sf]{st_equals}} 
+#' spatial predicate. Edge data are combined using a 
+#' \code{\link[dplyr]{bind_rows}} semantic, meaning that data are matched by 
+#' column name and values are filled with \code{NA} if missing in either of the 
+#' networks. The \code{from} and \code{to} columns in the edge data are updated 
+#' such that they match the new node indices of the resulting network.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'

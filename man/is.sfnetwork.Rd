@@ -2,7 +2,7 @@
 % Please edit documentation in R/sfnetwork.R
 \name{is.sfnetwork}
 \alias{is.sfnetwork}
-\title{Check if an object is an sfnetwork}
+\title{Check if an object is a sfnetwork}
 \usage{
 is.sfnetwork(x)
 }
@@ -10,10 +10,10 @@ is.sfnetwork(x)
 \item{x}{Object to be checked.}
 }
 \description{
-Check if an object is an sfnetwork
+Check if an object is a sfnetwork
 }
 \examples{
-library(tidygraph, quietly = TRUE)
+library(tidygraph, quietly = TRUE, warn.conflicts = FALSE)
 
 net = as_sfnetwork(roxel)
 is.sfnetwork(net)

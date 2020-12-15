@@ -9,14 +9,16 @@ sf_attr(x, name, active = NULL)
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
 
-\item{name}{Name of the attribute to query. Either 'sf_column' or 'agr'.}
+\item{name}{Name of the attribute to query. Either \code{'sf_column'} or
+\code{'agr'}.}
 
-\item{active}{Either 'nodes' or 'edges'. If \code{NULL}, the currently
-active element of x will be used.}
+\item{active}{Which network element (i.e. nodes or edges) to activate before
+extracting. If \code{NULL}, it will be set to the current active element of
+the given network. Defaults to \code{NULL}.}
 }
 \value{
-The value of the attribute matched, or NULL if no exact match is
-found.
+The value of the attribute matched, or \code{NULL} if no exact 
+match is found.
 }
 \description{
 Query sf attributes from the active element of a sfnetwork
