@@ -226,7 +226,8 @@ description of each morpher for details.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>It also possible to create your own morphers. See the documentation
-of <code><a href='https://tidygraph.data-imaginist.com/reference/morph.html'>morph</a></code> for the requirements for custom morphers.</p>
+of <code><a href='https://tidygraph.data-imaginist.com/reference/morph.html'>morph</a></code> for the requirements for custom morphers.
+'</p>
     <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
 
     
@@ -291,10 +292,15 @@ Returns a <code>morphed_sfnetwork</code> containing a single element of class
 <code><a href='sfnetwork.html'>sfnetwork</a></code>. For filters on an attribute column, use
 <code><a href='https://tidygraph.data-imaginist.com/reference/morphers.html'>to_subgraph</a></code>.</p></li>
 </ul>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>The vignette on 
+<a href='https://luukvdmeer.github.io/sfnetworks/articles/morphers.html'>spatial 
+morphers</a>.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidygraph.data-imaginist.com'>tidygraph</a></span><span class='op'>)</span>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidygraph.data-imaginist.com'>tidygraph</a></span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 
 <span class='va'>net</span> <span class='op'>=</span> <span class='fu'><a href='as_sfnetwork.html'>as_sfnetwork</a></span><span class='op'>(</span><span class='va'>roxel</span>, directed <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_transform.html'>st_transform</a></span><span class='op'>(</span><span class='fl'>3035</span><span class='op'>)</span>
