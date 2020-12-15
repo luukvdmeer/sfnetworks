@@ -3,19 +3,17 @@
 \name{spatial_morphers}
 \alias{spatial_morphers}
 \alias{to_spatial_coordinates}
-\alias{to_spatial_subdivision}
 \alias{to_spatial_directed}
 \alias{to_spatial_explicit_edges}
 \alias{to_spatial_implicit_edges}
 \alias{to_spatial_shortest_paths}
 \alias{to_spatial_simple}
 \alias{to_spatial_smooth}
+\alias{to_spatial_subdivision}
 \alias{to_spatial_subset}
 \title{Spatial morphers for sfnetworks}
 \usage{
 to_spatial_coordinates(x)
-
-to_spatial_subdivision(x)
 
 to_spatial_directed(x)
 
@@ -28,6 +26,8 @@ to_spatial_shortest_paths(x, ...)
 to_spatial_simple(x, remove_parallels = TRUE, remove_loops = TRUE)
 
 to_spatial_smooth(x)
+
+to_spatial_subdivision(x)
 
 to_spatial_subset(x, ..., subset_by = NULL)
 }
@@ -75,17 +75,6 @@ list column. If edges are spatially explicit, the edge geometries are
 dropped. Returns a \code{morphed_tbl_graph} containing a single element of
 class \code{\link[tidygraph]{tbl_graph}}.
 
-\item \code{to_spatial_subdivision}: Construct a subdivision of the network by
-subdividing edges at each interior point that is equal to any
-other interior or boundary point in the edges table. Interior points in this
-sense are those points that are included in their linestring geometry 
-feature but are not endpoints of it, while boundary points are the endpoints
-of the linestrings. The network is reconstructed after subdivision such that
-edges are connected at the points of subdivision. Returns a
-\code{morphed_sfnetwork} containing a single element of class
-\code{\link{sfnetwork}}. This morpher requires edges to be spatially
-explicit.
-
 \item \code{to_spatial_directed}: Make a network directed in the direction given
 by the linestring geometries of the edges. Differs from
 \code{\link[tidygraph]{to_directed}}, which makes a network directed based
@@ -129,6 +118,17 @@ nodes are those nodes that have two incident edges. Connectivity of the
 network is preserved by concatenating the incident edges of each removed
 pseudo node. Returns a \code{morphed_sfnetwork} containing a single element
 of class \code{\link{sfnetwork}}.
+
+\item \code{to_spatial_subdivision}: Construct a subdivision of the network by
+subdividing edges at each interior point that is equal to any
+other interior or boundary point in the edges table. Interior points in this
+sense are those points that are included in their linestring geometry 
+feature but are not endpoints of it, while boundary points are the endpoints
+of the linestrings. The network is reconstructed after subdivision such that
+edges are connected at the points of subdivision. Returns a
+\code{morphed_sfnetwork} containing a single element of class
+\code{\link{sfnetwork}}. This morpher requires edges to be spatially
+explicit.
 
 \item \code{to_spatial_subset}: Subset the network by applying a spatial
 filter, i.e. a filter on the geometry column based on a spatial predicate.
