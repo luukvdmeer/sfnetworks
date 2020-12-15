@@ -49,7 +49,7 @@ supported.
 # From a linnet object.
 if (require(spatstat, quietly = TRUE)) {
   as_sfnetwork(simplenet)
-} 
+}
 
 # From a psp object.
 if (require(spatstat, quietly = TRUE)) {

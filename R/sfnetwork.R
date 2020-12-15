@@ -2,7 +2,7 @@
 #'
 #' \code{sfnetwork} is a tidy data structure for geospatial networks. It
 #' extends the \code{\link[tidygraph]{tbl_graph}} data structure for
-#' relational data into the domain of geospatial networks, whith nodes and
+#' relational data into the domain of geospatial networks, with nodes and
 #' edges embedded in geographical space, and offers smooth integration with
 #' \code{\link[sf]{sf}} for spatial data analysis.
 #'
@@ -14,10 +14,10 @@
 #' @param edges The edges of the network. May be an object of class
 #' \code{\link[sf]{sf}}, with all features having an associated geometry of
 #' type \code{LINESTRING}. It may also be a regular \code{\link{data.frame}} or
-#' \code{\link[tibble]{tbl_df}} object. In any case, the nodes at the ends of 
-#' each edge must either be encoded in a \code{to} and \code{from} column, as 
-#' integers or characters. Integers should refer to the position of a node in 
-#' the nodes table, while characters should refer to the name of a node encoded 
+#' \code{\link[tibble]{tbl_df}} object. In any case, the nodes at the ends of
+#' each edge must either be encoded in a \code{to} and \code{from} column, as
+#' integers or characters. Integers should refer to the position of a node in
+#' the nodes table, while characters should refer to the name of a node encoded
 #' in the column referred to in the \code{node_key} argument. Setting edges to
 #' \code{NULL} will create a network without edges.
 #'
@@ -26,7 +26,7 @@
 #'
 #' @param node_key The name of the column in the nodes table that character
 #' represented \code{to} and \code{from} columns should be matched against. If
-#' \code{NA}, the first column is always chosen. This setting has no effect if 
+#' \code{NA}, the first column is always chosen. This setting has no effect if
 #' \code{to} and \code{from} are given as integers. Defaults to \code{'name'}.
 #'
 #' @param edges_as_lines Should the edges be spatially explicit, i.e. have
@@ -50,7 +50,7 @@
 #' all edges have \code{LINESTRING} geometries, nodes and edges have the same
 #' CRS and boundary points of edges match their corresponding node coordinates.
 #' These checks are important, but also time consuming. If you are already sure
-#' your input data meet the requirements, the checks are unneccesary and can be
+#' your input data meet the requirements, the checks are unnecessary and can be
 #' turned off to improve performance.
 #'
 #' @param ... Arguments passed on to \code{\link[sf]{st_as_sf}}, if nodes need
@@ -216,7 +216,7 @@ as_sfnetwork.default = function(x, ...) {
 #' # From a linnet object.
 #' if (require(spatstat, quietly = TRUE)) {
 #'   as_sfnetwork(simplenet)
-#' } 
+#' }
 #'
 #' @export
 as_sfnetwork.linnet = function(x, ...) {
@@ -264,11 +264,11 @@ as_sfnetwork.psp = function(x, ...) {
 #' p3 = st_point(c(8, 52))
 #' points = st_as_sf(st_sfc(p1, p2, p3))
 #' as_sfnetwork(points)
-#' 
+#'
 #' par(mar = c(1,1,1,1), mfrow = c(1,2))
 #' plot(st_geometry(points))
 #' plot(as_sfnetwork(points))
-#' 
+#'
 #' # With LINESTRING geometries.
 #' as_sfnetwork(roxel)
 #'

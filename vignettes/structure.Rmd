@@ -141,7 +141,7 @@ plot(net)
 
 Other methods to convert 'foreign' objects into a sfnetwork exists as well, e.g. for SpatialLinesNetwork objects from `stplanr` and linnet objects from `spatstat`. See [here](https://luukvdmeer.github.io/sfnetworks/reference/as_sfnetwork.html) for an overview.
 
-### From a network specific filetype
+### From a network specific file type
 
 To create networks from spatial data file types, you can use the sf function `sf::st_read()` to read them into R and then construct a sfnetwork from the sf object(s) using either `sfnetwork()` or `as_sfnetwork()` as described above. To create networks from graph specific file types, you can use the igraph function `igraph::read_graph()` to read them into R, and then convert them to a sfnetwork using `as_sfnetwork()` if possible. Lets look at an example with a GraphML file. First, we will convert it to a tbl_graph after loading such that we can explore the data.
 

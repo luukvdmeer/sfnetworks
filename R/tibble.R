@@ -16,7 +16,7 @@
 #' extracting. If \code{NULL}, it will be set to the current active element of
 #' the given network. Defaults to \code{NULL}.
 #'
-#' @param spatial Should te extracted tibble be a 'spatial tibble', i.e. an
+#' @param spatial Should the extracted tibble be a 'spatial tibble', i.e. an
 #' object of class \code{c('sf', 'tbl_df')}, if it contains a geometry list
 #' column. Defaults to \code{TRUE}.
 #'
@@ -26,7 +26,7 @@
 #'
 #' @examples
 #' library(tibble, quietly = TRUE)
-#' 
+#'
 #' net = as_sfnetwork(roxel)
 #'
 #' # Extract the active network element as a spatial tibble.

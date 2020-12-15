@@ -24,10 +24,10 @@ of type \code{POINT}.}
 \item{edges}{The edges of the network. May be an object of class
 \code{\link[sf]{sf}}, with all features having an associated geometry of
 type \code{LINESTRING}. It may also be a regular \code{\link{data.frame}} or
-\code{\link[tibble]{tbl_df}} object. In any case, the nodes at the ends of 
-each edge must either be encoded in a \code{to} and \code{from} column, as 
-integers or characters. Integers should refer to the position of a node in 
-the nodes table, while characters should refer to the name of a node encoded 
+\code{\link[tibble]{tbl_df}} object. In any case, the nodes at the ends of
+each edge must either be encoded in a \code{to} and \code{from} column, as
+integers or characters. Integers should refer to the position of a node in
+the nodes table, while characters should refer to the name of a node encoded
 in the column referred to in the \code{node_key} argument. Setting edges to
 \code{NULL} will create a network without edges.}
 
@@ -36,7 +36,7 @@ in the column referred to in the \code{node_key} argument. Setting edges to
 
 \item{node_key}{The name of the column in the nodes table that character
 represented \code{to} and \code{from} columns should be matched against. If
-\code{NA}, the first column is always chosen. This setting has no effect if 
+\code{NA}, the first column is always chosen. This setting has no effect if
 \code{to} and \code{from} are given as integers. Defaults to \code{'name'}.}
 
 \item{edges_as_lines}{Should the edges be spatially explicit, i.e. have
@@ -60,7 +60,7 @@ geometries. In the case of spatially explicit edges, it is also checked that
 all edges have \code{LINESTRING} geometries, nodes and edges have the same
 CRS and boundary points of edges match their corresponding node coordinates.
 These checks are important, but also time consuming. If you are already sure
-your input data meet the requirements, the checks are unneccesary and can be
+your input data meet the requirements, the checks are unnecessary and can be
 turned off to improve performance.}
 
 \item{...}{Arguments passed on to \code{\link[sf]{st_as_sf}}, if nodes need
@@ -72,7 +72,7 @@ An object of class \code{sfnetwork}.
 \description{
 \code{sfnetwork} is a tidy data structure for geospatial networks. It
 extends the \code{\link[tidygraph]{tbl_graph}} data structure for
-relational data into the domain of geospatial networks, whith nodes and
+relational data into the domain of geospatial networks, with nodes and
 edges embedded in geographical space, and offers smooth integration with
 \code{\link[sf]{sf}} for spatial data analysis.
 }

@@ -176,7 +176,7 @@ A network may contain nodes that have only one incoming and one outgoing edge. F
 
 In graph theory terms this process is the opposite of subdivision and also called *smoothing*: smoothing a node $b$ with incident edges $o = \{a, b\}$ and $p = \{b, c\}$ removes $b$, $o$ and $p$ and creates the new edge $q = \{a, c\}$.
 
-The function `to_spatial_smooth()` iteratively smoothes pseudo nodes, and after each removal concatenates the linestring geometries of the two affected edges together into a new, single linestring geometry.
+The function `to_spatial_smooth()` iteratively smooths pseudo nodes, and after each removal concatenates the linestring geometries of the two affected edges together into a new, single linestring geometry.
 
 *NOTE: This function is still experimental. It needs more testing and may be slow on large networks*
 

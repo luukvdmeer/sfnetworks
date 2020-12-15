@@ -7,7 +7,7 @@
   - The `keep` argument is removed from the `to_spatial_simple()` morpher. It is now recommended to first sort data with `dplyr::arrange()` before calling the morpher.
   - The spatial morpher `to_spatial_dense_graph()` is deprecated. A new morpher `to_spatial_subdivision()`, with slightly different functionality, is added instead.
   - Functions `st_network_distance()` and `edge_straight_length()` are renamed to respectively `st_network_cost()` and `edge_displacement()`, which reflects their purpose better.
-  - Function arguments that were named `graph` are renamed to `x`, to have more consistency accross the package.
+  - Function arguments that were named `graph` are renamed to `x`, to have more consistency across the package.
 * Backward compatible changes to existing functions:
   - The construction function `sfnetwork()` now has an argument `length_as_weight` that, if set to TRUE, will add the lengths of edges as a weight attribute to the edges data. Refs [#65](https://github.com/luukvdmeer/sfnetworks/issues/65)
   - There is now an `as_sfnetwork()` method for sfc objects. Refs [#41](https://github.com/luukvdmeer/sfnetworks/issues/41)
@@ -23,7 +23,7 @@
   - The new function `st_network_bbox()` calculates the bounding box of the whole network by combining the bounding boxes of nodes and edges.
   - The new spatial morpher `to_spatial_subdivision()` subdivides edges at locations where an interior point is shared with either another interior point or endpoint of another edge. Refs [#73](https://github.com/luukvdmeer/sfnetworks/issues/73)
   - The new spatial morpher `to_spatial_smooth()` iteratively removes pseudo-nodes from the network. Refs [#70](https://github.com/luukvdmeer/sfnetworks/issues/70)
-  - Several spatial predicate functions are implemented as node and edge query functions, to interpretate spatial relations between network elements and other geospatial features directly inside tidy filter and mutate calls. Refs [#60](https://github.com/luukvdmeer/sfnetworks/issues/60)
+  - Several spatial predicate functions are implemented as node and edge query functions, to interpret spatial relations between network elements and other geospatial features directly inside tidy filter and mutate calls. Refs [#60](https://github.com/luukvdmeer/sfnetworks/issues/60)
   - There is now an `ggplot2::autoplot()` method for sfnetworks, allowing to easily plot a sfnetwork as a ggplot2 object. Refs [#86](https://github.com/luukvdmeer/sfnetworks/issues/86)
   - There is now a `print` method for morphed sfnetworks. Refs [#88](https://github.com/luukvdmeer/sfnetworks/issues/88)
   - There are now morphed sfnetworks method for `sf::st_join()`, `sf::st_filter()` and `sf::st_crop()`. Refs [#85](https://github.com/luukvdmeer/sfnetworks/issues/85)

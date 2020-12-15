@@ -102,7 +102,7 @@ straight_line_distance = function(x) {
 
 #' Query edges with spatial predicates
 #'
-#' These functions allow to interpretate spatial relations between edges and
+#' These functions allow to interpret spatial relations between edges and
 #' other geospatial features directly inside \code{\link[tidygraph]{filter}}
 #' and \code{\link[tidygraph]{mutate}} calls. All functions return a logical
 #' vector of the same length as the number of edges in the network. Element i
@@ -143,8 +143,8 @@ straight_line_distance = function(x) {
 #' p3 = st_point(c(4151756, 3207506))
 #' p4 = st_point(c(4151774, 3208031))
 #'
-#' poly = st_multipoint(c(p1, p2, p3, p4)) %>% 
-#'   st_cast('POLYGON') %>% 
+#' poly = st_multipoint(c(p1, p2, p3, p4)) %>%
+#'   st_cast('POLYGON') %>%
 #'   st_sfc(crs = 3035)
 #'
 #' # Use predicate query function in a filter call.
