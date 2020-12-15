@@ -46,7 +46,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -84,7 +84,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/luukvdmeer/sfnetworks/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -98,13 +98,12 @@
 
       
 
-      </header><script src="routing_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="routing_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="routing_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="routing_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>4. Routing</h1>
             
-            <h4 class="date">2020-12-14</h4>
+            <h4 class="date">2020-12-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/routing.Rmd"><code>vignettes/routing.Rmd</code></a></small>
       <div class="hidden name"><code>routing.Rmd</code></div>
@@ -255,7 +254,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">connected_net</span>, cex <span class="op">=</span> <span class="fl">1.1</span>, lwd <span class="op">=</span> <span class="fl">1.1</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="routing_files/figure-html/unnamed-chunk-5-1.png" width="480"></p>
-<p>Another way to calculate shortest paths, which fits smoothly in the tidygraph style of working, is by using the <code>to_spatial_shortest_paths</code> morpher function. This will subset the original network to only contain those nodes and edges that appear in a shortest path between two nodes. See the <a href="https://luukvdmeer.github.io/sfnetworks/articles/morphers.html">Spatial morphers</a> vignette for details.</p>
+<p>Another way to calculate shortest paths, which fits nicely in the tidygraph style of working, is by using the <code>to_spatial_shortest_paths</code> morpher function. This will subset the original network to only contain those nodes and edges that appear in a shortest path between two nodes. See the <a href="https://luukvdmeer.github.io/sfnetworks/articles/morphers.html">Spatial morphers</a> vignette for details.</p>
 </div>
 <div id="retrieving-a-cost-matrix" class="section level2">
 <h2 class="hasAnchor">
