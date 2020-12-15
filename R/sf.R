@@ -338,12 +338,12 @@ st_reverse.sfnetwork = function(x, ...) {
         "In directed networks st_reverse swaps columns 'to' and 'from'",
         call. = FALSE
       )
+      node_ids = edge_boundary_node_indices(x, matrix = TRUE)
+      from_ids = node_ids[, 1]
+      to_ids = node_ids[, 2]
+      x_tbg = reroute(as_tbl_graph(x), from = to_ids, to = from_ids)
+      x = tbg_to_sfn(x_tbg)
     }
-    node_ids = edge_boundary_node_indices(x, matrix = TRUE)
-    from_ids = node_ids[, 1]
-    to_ids = node_ids[, 2]
-    x_tbg = reroute(as_tbl_graph(x), from = to_ids, to = from_ids)
-    x = tbg_to_sfn(x_tbg)
   } else {
     warning(
       "st_reverse has no effect on nodes. Activate edges first?",
