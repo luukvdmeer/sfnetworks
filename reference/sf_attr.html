@@ -163,19 +163,21 @@
     </tr>
     <tr>
       <th>name</th>
-      <td><p>Name of the attribute to query. Either 'sf_column' or 'agr'.</p></td>
+      <td><p>Name of the attribute to query. Either <code>'sf_column'</code> or
+<code>'agr'</code>.</p></td>
     </tr>
     <tr>
       <th>active</th>
-      <td><p>Either 'nodes' or 'edges'. If <code>NULL</code>, the currently
-active element of x will be used.</p></td>
+      <td><p>Which network element (i.e. nodes or edges) to activate before
+extracting. If <code>NULL</code>, it will be set to the current active element of
+the given network. Defaults to <code>NULL</code>.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>The value of the attribute matched, or NULL if no exact match is
-found.</p>
+    <p>The value of the attribute matched, or <code>NULL</code> if no exact 
+match is found.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>sf attributes include <code>sf_column</code> (the name of the sf column)

@@ -316,9 +316,9 @@ function.</p></td>
 #&gt; </span><span style='color: #555555;'>1</span><span>     1     2 (7 51, 7 52)
 #&gt; </span><span style='color: #555555;'>2</span><span>     2     3 (7 52, 8 52)</div><div class='input'>
 <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, mfrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>points</span><span class='op'>)</span>
-</div><div class='img'><img src='as_sfnetwork-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>points</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='img'><img src='as_sfnetwork-2.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>points</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>points</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='img'><img src='as_sfnetwork-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># With LINESTRING geometries.</span>
 <span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>701</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>851</span><span> </span><span style='color: #555555;'>edges
@@ -354,7 +354,7 @@ function.</p></td>
 <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, mfrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
 <span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span><span class='op'>)</span>
 <span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='img'><img src='as_sfnetwork-3.png' alt='' width='700' height='433' /></div><div class='input'>
+</div><div class='img'><img src='as_sfnetwork-2.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -47,12 +47,12 @@
 
 
 <meta property="og:title" content="Shortest paths between points in geographical space — st_network_paths" />
-<meta property="og:description" content="Wrapper around the shortest path calculation functionalities in
-igraph, allowing to
-provide any geospatial point as `from` argument and any set of geospatial
-points as `to` argument. If such a geospatial point is not equal to a node
-in the network, it will be snapped to its nearest node before calculating
-the shortest paths." />
+<meta property="og:description" content="Combined wrapper around shortest_paths and 
+all_shortest_paths from igraph, 
+allowing to provide any geospatial point as from argument and any 
+set of geospatial points as to argument. If such a geospatial point 
+is not equal to a node in the network, it will be snapped to its nearest 
+node before calculating the shortest paths." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -154,12 +154,12 @@ the shortest paths." />
     </div>
 
     <div class="ref-description">
-    <p>Wrapper around the shortest path calculation functionalities in
-<code><a href='https://rdrr.io/pkg/igraph/man/distances.html'>igraph</a></code>, allowing to
-provide any geospatial point as `from` argument and any set of geospatial
-points as `to` argument. If such a geospatial point is not equal to a node
-in the network, it will be snapped to its nearest node before calculating
-the shortest paths.</p>
+    <p>Combined wrapper around <code><a href='https://rdrr.io/pkg/igraph/man/distances.html'>shortest_paths</a></code> and 
+<code><a href='https://rdrr.io/pkg/igraph/man/distances.html'>all_shortest_paths</a></code> from <code><a href='https://rdrr.io/pkg/igraph/man/aaa-igraph-package.html'>igraph</a></code>, 
+allowing to provide any geospatial point as <code>from</code> argument and any 
+set of geospatial points as <code>to</code> argument. If such a geospatial point 
+is not equal to a node in the network, it will be snapped to its nearest 
+node before calculating the shortest paths.</p>
     </div>
 
     <pre class="usage"><span class='fu'>st_network_paths</span><span class='op'>(</span>
@@ -194,7 +194,7 @@ calculated.</p></td>
       <th>to</th>
       <td><p>The (set of) geospatial point(s) to which the shortest paths will be
 calculated. Can be an object of  class <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a></code> or
-<code><a href='https://r-spatial.github.io/sf/reference/sfc.html'>sfc</a></code>. Empty geometries will be ignored.
+<code><a href='https://r-spatial.github.io/sf/reference/sfc.html'>sfc</a></code>. Empty geometries are ignored.
 Alternatively, it can be a numeric vector, containing the indices of the nodes
 to which the shortest paths will be calculated, or a character vector,
 containing the names of the nodes to which the shortest paths will be
@@ -205,9 +205,10 @@ calculated. By default, all nodes in the network are included.</p></td>
       <td><p>The edge weights to be used in the shortest path calculation.
 Can be a numeric vector giving edge weights, or a column name referring to
 an attribute column in the edges table containing those weights. If set to
-<code>NULL</code>, the values of a column named 'weight' in the edges table will
-be used automatically, as long as this column is present. If set to
-<code>NA</code>, no weights are used (even if the edges have a weight column).</p></td>
+<code>NULL</code>, the values of a column named <code>weight</code> in the edges table 
+will be used automatically, as long as this column is present. If set to
+<code>NA</code>, no weights are used, even if the edges have a <code>weight</code> 
+column.</p></td>
     </tr>
     <tr>
       <th>output</th>
@@ -221,10 +222,11 @@ returned. Defaults to <code>'both'</code>. Ignored when <code>all = TRUE</code>.
       <th>all</th>
       <td><p>Whether to calculate all shortest paths or a single shortest path
 between two nodes. If <code>TRUE</code>, the igraph function
-<code>all_shortest_paths</code> is called internally, if <code>FALSE</code> the igraph
-function <code>shortest_paths</code> is called internally. If <code>TRUE</code>, the
-returned tibble will only have a <code>node_paths</code> column, no matter what
-the setting of <code>output</code> is. Defaults to <code>FALSE</code>.</p></td>
+<code><a href='https://rdrr.io/pkg/igraph/man/distances.html'>all_shortest_paths</a></code> is called internally, if 
+<code>FALSE</code> the igraph function <code><a href='https://rdrr.io/pkg/igraph/man/distances.html'>shortest_paths</a></code> is 
+called internally. If <code>TRUE</code>, the returned tibble will only have a 
+<code>node_paths</code> column, no matter what the setting of <code>output</code> is. 
+Defaults to <code>FALSE</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -237,10 +239,11 @@ the setting of <code>output</code> is. Defaults to <code>FALSE</code>.</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>An object of class <code><a href='https://tibble.tidyverse.org/reference/tbl_df-class.html'>tbl_df</a></code> with one row per
-returned path. Depending on the setting of the 'output' argument, columns
-can be <code>node_paths</code> (a list column with for each path the ordered
-indices of nodes present in that path) and <code>edge_paths</code> (a list column
-with for each path the ordered indices of edges present in that path).</p>
+returned path. Depending on the setting of the <code>output</code> argument, 
+columns can be <code>node_paths</code> (a list column with for each path the 
+ordered indices of nodes present in that path) and <code>edge_paths</code> 
+(a list column with for each path the ordered indices of edges present in 
+that path).</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>See the <code><a href='https://rdrr.io/pkg/igraph/man/distances.html'>igraph</a></code> documentation.</p>
@@ -275,7 +278,7 @@ with for each path the ordered indices of edges present in that path).</p>
 #&gt; [20] 424 426 208 164 260 471 143 136 135 140 478  28  29 121</div><div class='input'>
 <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
 <span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>net</span>, col <span class='op'>=</span> <span class='st'>"grey"</span><span class='op'>)</span>
-</div><div class='input'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/slice.html'>slice</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='va'>node_path</span><span class='op'>)</span>, col <span class='op'>=</span> <span class='st'>"red"</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/slice.html'>slice</a></span><span class='op'>(</span><span class='fu'><a href='https://tidygraph.data-imaginist.com/reference/activate.html'>activate</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"nodes"</span><span class='op'>)</span>, <span class='va'>node_path</span><span class='op'>)</span>, col <span class='op'>=</span> <span class='st'>"red"</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 </div><div class='img'><img src='st_network_paths-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># Providing nodes as spatial points.</span>
 <span class='co'># Points that don't equal a node will be snapped to their nearest node.</span>
@@ -299,7 +302,7 @@ with for each path the ordered indices of edges present in that path).</p>
 #&gt; [20] 424 426 208 164 260 471 143 136 135 140 478  28  29 121</div><div class='input'>
 <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
 <span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>net</span>, col <span class='op'>=</span> <span class='st'>"grey"</span><span class='op'>)</span>
-</div><div class='input'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/slice.html'>slice</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='va'>node_path</span><span class='op'>)</span>, col <span class='op'>=</span> <span class='st'>"red"</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/slice.html'>slice</a></span><span class='op'>(</span><span class='fu'><a href='https://tidygraph.data-imaginist.com/reference/activate.html'>activate</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"nodes"</span><span class='op'>)</span>, <span class='va'>node_path</span><span class='op'>)</span>, col <span class='op'>=</span> <span class='st'>"red"</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 </div><div class='img'><img src='st_network_paths-2.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># Using another column for weights.</span>
 <span class='va'>net</span> <span class='op'>%&gt;%</span>

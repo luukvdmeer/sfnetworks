@@ -48,12 +48,12 @@
 
 <meta property="og:title" content="Join two spatial networks based on equality of node geometries — st_network_join" />
 <meta property="og:description" content="A spatial network specific join function which makes a spatial full join on
-the geometries of the nodes data, based on the st_equals spatial
-predicate. Edge data are combined using a bind_rows semantic, meaning
-that data are matched by column name and values are filled with `NA` if
-missing in either of the networks. The from and to columns in
-the edge data are updated such that they match the new node indices of the
-resulting network." />
+the geometries of the nodes data, based on the st_equals 
+spatial predicate. Edge data are combined using a 
+bind_rows semantic, meaning that data are matched by 
+column name and values are filled with NA if missing in either of the 
+networks. The from and to columns in the edge data are updated 
+such that they match the new node indices of the resulting network." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -156,12 +156,12 @@ resulting network." />
 
     <div class="ref-description">
     <p>A spatial network specific join function which makes a spatial full join on
-the geometries of the nodes data, based on the <code>st_equals</code> spatial
-predicate. Edge data are combined using a <code>bind_rows</code> semantic, meaning
-that data are matched by column name and values are filled with `NA` if
-missing in either of the networks. The <code>from</code> and <code>to</code> columns in
-the edge data are updated such that they match the new node indices of the
-resulting network.</p>
+the geometries of the nodes data, based on the <code><a href='https://r-spatial.github.io/sf/reference/geos_binary_pred.html'>st_equals</a></code> 
+spatial predicate. Edge data are combined using a 
+<code><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></code> semantic, meaning that data are matched by 
+column name and values are filled with <code>NA</code> if missing in either of the 
+networks. The <code>from</code> and <code>to</code> columns in the edge data are updated 
+such that they match the new node indices of the resulting network.</p>
     </div>
 
     <pre class="usage"><span class='fu'>st_network_join</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>...</span><span class='op'>)</span></pre>
