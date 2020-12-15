@@ -99,7 +99,7 @@ activate(net, "edges")
 
 ## Network cleaning functions
 
-The `sfnetworks` package contains a set of spatial network specific cleaning functions. They are currently modeled as *spatial morphers*. To learn more about spatial morphers and what they are, see the [dedicated vignette](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html) for that. For now, it is sufficient to know that you can use any spatial morpher function inside the `tidygraph::convert()` verb to convert your network into a different state.
+The `sfnetworks` package contains a set of spatial network specific cleaning functions. They are modeled as *spatial morphers*. To learn more about spatial morphers and what they are, see the [dedicated vignette](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html) for that. For now, it is sufficient to know that you can use any spatial morpher function inside the `tidygraph::convert()` verb to convert your network into a different state.
 
 Before presenting the cleaning functions that are currently implemented, lets create a network to be cleaned.
 
@@ -126,12 +126,17 @@ l5 = st_sfc(st_linestring(c(p9, p5, p10)))
 l6 = st_sfc(st_linestring(c(p8, p9)))
 l7 = st_sfc(st_linestring(c(p10, p12, p13, p10)))
 
-points = st_sfc(st_multipoint(c(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13)))
+points = c(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13) %>%
+  st_multipoint() %>%
+  st_sfc()
+
 lines = c(l1, l2, l3, l4, l5, l6, l7)
 
+edge_colors = function(x) sf.colors(ecount(x), categorical = TRUE)
+
 net = as_sfnetwork(lines)
-plot(st_geometry(net, "edges"), col = sf.colors(ecount(net), categorical = TRUE), lwd = 2)
-plot(st_geometry(net, "nodes"), pch = 20, cex = 1.5, add = TRUE)
+plot(st_geometry(net, "edges"), col = edge_colors(net), lwd = 4)
+plot(st_geometry(net, "nodes"), pch = 20, cex = 2, add = TRUE)
 ```
 
 ### Subdivide edges
@@ -158,30 +163,30 @@ For our example network, this means:
 ```{r, fig.show='hold', out.width = '50%'}
 subdivision = convert(net, to_spatial_subdivision)
 
-plot(st_geometry(net, "edges"), col = sf.colors(ecount(net), categorical = TRUE), lwd = 2)
-plot(points, pch = 4, cex = 0.5, add = TRUE)
-plot(st_geometry(net, "nodes"), pch = 20, cex = 1.5, add = TRUE)
-plot(st_geometry(subdivision, "edges"), col = sf.colors(ecount(subdivision), categorical = TRUE), lwd = 2)
-plot(points, pch = 4, cex = 0.5, add = TRUE)
-plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 1.5, add = TRUE)
+plot(st_geometry(net, "edges"), col = edge_colors(net), lwd = 4)
+plot(points, pch = 4, add = TRUE)
+plot(st_geometry(net, "nodes"), pch = 20, cex = 2, add = TRUE)
+plot(st_geometry(subdivision, "edges"), col = edge_colors(subdivision), lwd = 4)
+plot(points, pch = 4, add = TRUE)
+plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 2, add = TRUE)
 ```
 
 ### Smooth pseudo nodes
-A network may contain nodes that have only one incoming and one outgoing edge. For tasks like calculating shortest paths, such nodes are redundant, because they don't represent a point where different directions can possibly be taken. Sometimes, these type of nodes are referred to as *pseudo nodes*. Note that their equivalent in undirected networks is any node with only two incident edges, since *incoming* and *outgoing* does not have a meaning there. Therefore, we might want to get rid of these pseudo nodes.
+A network may contain nodes that have only one incoming and one outgoing edge. For tasks like calculating shortest paths, such nodes are redundant, because they don't represent a point where different directions can possibly be taken. Sometimes, these type of nodes are referred to as *pseudo nodes*. Note that their equivalent in undirected networks is any node with only two incident edges, since *incoming* and *outgoing* does not have a meaning there. To reduce complexity of subsequent operations, we might want to get rid of these pseudo nodes.
 
 In graph theory terms this process is the opposite of subdivision and also called *smoothing*: smoothing a node $b$ with incident edges $o = \{a, b\}$ and $p = \{b, c\}$ removes $b$, $o$ and $p$ and creates the new edge $q = \{a, c\}$.
 
-The function `to_spatial_smooth()` iteratively smooths pseudo nodes, and after each removal concatenates the linestring geometries of the two affected edges together into a new, single linestring geometry.
+The function `to_spatial_smooth()` iteratively smoothes pseudo nodes, and after each removal concatenates the linestring geometries of the two affected edges together into a new, single linestring geometry.
 
 *NOTE: This function is still experimental. It needs more testing and may be slow on large networks*
 
 ```{r, message=FALSE, fig.show='hold', out.width = '50%'}
 smoothed = convert(subdivision, to_spatial_smooth)
 
-plot(st_geometry(subdivision, "edges"), col = sf.colors(ecount(subdivision), categorical = TRUE), lwd = 2)
-plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 1.5, add = TRUE)
-plot(st_geometry(smoothed, "edges"), col = sf.colors(ecount(smoothed), categorical = TRUE), lwd = 2)
-plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
+plot(st_geometry(subdivision, "edges"), col = edge_colors(subdivision), lwd = 4)
+plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 2, add = TRUE)
+plot(st_geometry(smoothed, "edges"), col = edge_colors(smoothed), lwd = 4)
+plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 2, add = TRUE)
 ```
 
 ### Simplify network
@@ -192,10 +197,10 @@ The function `to_spatial_simple()` simplifies a network by removing parallel and
 ```{r, fig.show='hold', out.width = '50%'}
 simple = convert(smoothed, to_spatial_simple)
 
-plot(st_geometry(smoothed, "edges"), col = sf.colors(ecount(smoothed), categorical = TRUE), lwd = 2)
-plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
-plot(st_geometry(simple, "edges"), col = sf.colors(ecount(simple), categorical = TRUE), lwd = 2)
-plot(st_geometry(simple, "nodes"), pch = 20, cex = 1.5, add = TRUE)
+plot(st_geometry(smoothed, "edges"), col = edge_colors(smoothed), lwd = 4)
+plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 2, add = TRUE)
+plot(st_geometry(simple, "edges"), col = edge_colors(simple), lwd = 4)
+plot(st_geometry(simple, "nodes"), pch = 20, cex = 2, add = TRUE)
 ```
 
 When there are multiple edges connecting the same pair of nodes, which edge is marked as the 'original' and which as parallel edges depends on the order of the edges in the edges table. That is, by re-arranging the edges table before calling `to_spatial_simple()` you can influence which edge is kept whenever parallel edges are detected. For example, you might want to always keep the edge with the shortest distance.
@@ -206,8 +211,8 @@ simple = smoothed %>%
   arrange(st_length(.)) %>%
   convert(to_spatial_simple)
 
-plot(st_geometry(smoothed, "edges"), col = sf.colors(ecount(smoothed), categorical = TRUE), lwd = 2)
-plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
-plot(st_geometry(simple, "edges"), col = sf.colors(ecount(simple), categorical = TRUE), lwd = 2)
-plot(st_geometry(simple, "nodes"), pch = 20, cex = 1.5, add = TRUE)
+plot(st_geometry(smoothed, "edges"), col = edge_colors(smoothed), lwd = 4)
+plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 2, add = TRUE)
+plot(st_geometry(simple, "edges"), col = edge_colors(simple), lwd = 4)
+plot(st_geometry(simple, "nodes"), pch = 20, cex = 2, add = TRUE)
 ```

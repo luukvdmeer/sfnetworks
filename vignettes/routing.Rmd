@@ -135,7 +135,7 @@ plot(net, col = colors[2])
 plot(connected_net, cex = 1.1, lwd = 1.1, add = TRUE)
 ```
 
-Another way to calculate shortest paths, which fits smoothly in the tidygraph style of working, is by using the `to_spatial_shortest_paths` morpher function. This will subset the original network to only contain those nodes and edges that appear in a shortest path between two nodes. See the [Spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html) vignette for details.
+Another way to calculate shortest paths, which fits nicely in the tidygraph style of working, is by using the `to_spatial_shortest_paths` morpher function. This will subset the original network to only contain those nodes and edges that appear in a shortest path between two nodes. See the [Spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html) vignette for details.
 
 ## Retrieving a cost matrix
 

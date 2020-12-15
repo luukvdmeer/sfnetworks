@@ -28,7 +28,7 @@ old_hooks = fansi::set_knit_hooks(knitr::knit_hooks, which = c("output", "messag
 
 The integration with `sf` and addition of several spatial network specific functions in `sfnetworks` allow to easily filter information from a network based on spatial relationships, and to join new information into a network based on spatial relationships. This vignette presents several ways to do that.
 
-Both spatial filters and spatial joins use spatial predicate functions to examine spatial relationships. Spatial predicates are mathematically defined binary spatial relations between two simple feature geometries. Often used examples include the predicate *equals* (is geometry x equal to geometry y?) and the predicate *intersects* (does geometry x have at least one point in common with geometry y?). For an overview of all available spatial predicate functions in `sf` and links to detailed explanations of the underlying algorithms, see [here](https://r-spatial.github.io/sf/reference/geos_binary_pred.html).
+Both spatial filters and spatial joins use spatial predicate functions to examine spatial relationships. Spatial predicates are mathematically defined binary spatial relations between two simple feature geometries. Often used examples include the predicate *equals* (geometry x is equal to geometry y) and the predicate *intersects* (geometry x has at least one point in common with geometry y). For an overview of all available spatial predicate functions in `sf` and links to detailed explanations of the underlying algorithms, see [here](https://r-spatial.github.io/sf/reference/geos_binary_pred.html).
 
 ## Spatial filters
 
@@ -63,7 +63,7 @@ net = as_sfnetwork(roxel) %>%
 
 filtered = st_filter(net, poly, .pred = st_intersects)
 
-plot(net)
+plot(net, col = "grey")
 plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 plot(filtered)
 ```
@@ -73,7 +73,7 @@ filtered = net %>%
   activate("edges") %>%
   st_filter(poly, .pred = st_intersects)
 
-plot(net)
+plot(net, col = "grey")
 plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 plot(filtered)
 ```
@@ -87,7 +87,7 @@ filtered = net %>%
   activate("nodes") %>%
   filter(!node_is_isolated())
 
-plot(net)
+plot(net, col = "grey")
 plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 plot(filtered)
 ```
@@ -96,7 +96,7 @@ plot(filtered)
 
 In `tidygraph`, filtering information from networks is done by using specific node or edge query functions inside the `dplyr::filter()` verb. An example was already shown above, where isolated nodes were removed from the network.
 
-In `sfnetworks`, several spatial predicates are implemented as node and edge query functions such that you can also do spatial filtering in tidygraph style. See ?spatial_node_predicates for a list of all implemented spatial node query functions, and ?spatial_edge_predicates for the spatial edge query functions.
+In `sfnetworks`, several spatial predicates are implemented as node and edge query functions such that you can also do spatial filtering in tidygraph style. See [here](https://luukvdmeer.github.io/sfnetworks/reference/spatial_node_predicates.html) for a list of all implemented spatial node query functions, and [here](https://luukvdmeer.github.io/sfnetworks/reference/spatial_edge_predicates.html) for the spatial edge query functions.
 
 ```{r, fig.show='hold', out.width = '50%'}
 filtered = net %>%
@@ -105,7 +105,7 @@ filtered = net %>%
   activate("nodes") %>%
   filter(!node_is_isolated())
 
-plot(net)
+plot(net, col = "grey")
 plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 plot(filtered)
 ```
@@ -133,13 +133,13 @@ Lets show this with an example in which we first create imaginary postal code ar
 codes = net %>%
   st_make_grid(n = c(2, 2)) %>%
   st_as_sf() %>%
-  mutate(post_code = seq(1000, 1000 + n() * 10 - 10, 10))
+  mutate(post_code = as.character(seq(1000, 1000 + n() * 10 - 10, 10)))
 
 joined = st_join(net, codes, join = st_intersects)
 joined
 plot(net, col = "grey")
 plot(codes, col = NA, border = "red", lty = 4, lwd = 4, add = TRUE)
-text(st_coordinates(st_centroid(st_geometry(codes))), as.character(codes$post_code))
+text(st_coordinates(st_centroid(st_geometry(codes))), codes$post_code, cex = 2)
 plot(st_geometry(joined, "edges"))
 plot(st_as_sf(joined, "nodes"), pch = 20, add = TRUE)
 ```
@@ -184,12 +184,12 @@ nearest_nodes = st_nearest_feature(pois, net)
 snapped_pois = pois %>%
   st_set_geometry(st_geometry(net)[nearest_nodes])
 
-plot(net, cex = 1.5)
-plot(pois, pch = 8, cex = 1.5, add = TRUE)
-plot(st_nearest_points(pois[1, ], net)[nearest_nodes[1]], col = "grey", lty = 2, add = TRUE)
-plot(st_nearest_points(pois[2, ], net)[nearest_nodes[2]], col = "grey", lty = 2, add = TRUE)
-plot(net, cex = 1.5)
-plot(snapped_pois, pch = 8, cex = 1.5, add = TRUE)
+plot(net, cex = 2, lwd = 4)
+plot(pois, pch = 8, cex = 2, lwd = 2, add = TRUE)
+plot(st_nearest_points(pois[1, ], net)[nearest_nodes[1]], col = "grey", lty = 2, lwd = 2, add = TRUE)
+plot(st_nearest_points(pois[2, ], net)[nearest_nodes[2]], col = "grey", lty = 2, lwd = 2, add = TRUE)
+plot(net, cex = 2, lwd = 4)
+plot(snapped_pois, pch = 8, cex = 2, lwd = 2, add = TRUE)
 ```
 
 After snapping the POIs, we can use `sf::st_join()` as expected.
@@ -209,11 +209,11 @@ The function `st_network_blend()` does exactly that. For each POI, it finds the 
 ```{r, fig.show='hold', out.width = '50%'}
 blended = st_network_blend(net, pois)
 blended
-plot(net)
-plot(pois, pch = 8, cex = 1.5, add = TRUE)
-plot(st_nearest_points(pois[1, ], activate(net, "edges")), col = "grey", lty = 2, add = TRUE)
-plot(st_nearest_points(pois[2, ], activate(net, "edges")), col = "grey", lty = 2, add = TRUE)
-plot(blended, cex = 1.5)
+plot(net, cex = 2, lwd = 4)
+plot(pois, pch = 8, cex = 2, lwd = 2, add = TRUE)
+plot(st_nearest_points(pois[1, ], activate(net, "edges")), col = "grey", lty = 2, lwd = 2, add = TRUE)
+plot(st_nearest_points(pois[2, ], activate(net, "edges")), col = "grey", lty = 2, lwd = 2, add = TRUE)
+plot(blended, cex = 2, lwd = 4)
 ```
 
 ### Joining two networks
@@ -231,7 +231,7 @@ other_net = as_sfnetwork(c(edge2, edge3))
 
 joined = st_network_join(net, other_net)
 joined
-plot(net, pch = 15, cex = 2, lwd = 1.5)
-plot(other_net, col = "red", pch = 18, cex = 1.5, lty = 3, add = TRUE)
-plot(joined, cex = 1.5)
+plot(net, pch = 15, cex = 2, lwd = 4)
+plot(other_net, col = "red", pch = 18, cex = 2, lty = 2, lwd = 4, add = TRUE)
+plot(joined, cex = 2, lwd = 4)
 ```
