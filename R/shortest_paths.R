@@ -1,10 +1,10 @@
 #' Shortest paths between points in geographical space
 #'
-#' Combined wrapper around \code{\link[igraph]{shortest_paths}} and 
-#' \code{\link[igraph]{all_shortest_paths}} from \code{\link[igraph]{igraph}}, 
-#' allowing to provide any geospatial point as \code{from} argument and any 
-#' set of geospatial points as \code{to} argument. If such a geospatial point 
-#' is not equal to a node in the network, it will be snapped to its nearest 
+#' Combined wrapper around \code{\link[igraph]{shortest_paths}} and
+#' \code{\link[igraph]{all_shortest_paths}} from \code{\link[igraph]{igraph}},
+#' allowing to provide any geospatial point as \code{from} argument and any
+#' set of geospatial points as \code{to} argument. If such a geospatial point
+#' is not equal to a node in the network, it will be snapped to its nearest
 #' node before calculating the shortest paths.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
@@ -29,9 +29,9 @@
 #' @param weights The edge weights to be used in the shortest path calculation.
 #' Can be a numeric vector giving edge weights, or a column name referring to
 #' an attribute column in the edges table containing those weights. If set to
-#' \code{NULL}, the values of a column named \code{weight} in the edges table 
+#' \code{NULL}, the values of a column named \code{weight} in the edges table
 #' will be used automatically, as long as this column is present. If set to
-#' \code{NA}, no weights are used, even if the edges have a \code{weight} 
+#' \code{NA}, no weights are used, even if the edges have a \code{weight}
 #' column.
 #'
 #' @param output Character defining how to report the shortest paths. Can be
@@ -42,10 +42,10 @@
 #'
 #' @param all Whether to calculate all shortest paths or a single shortest path
 #' between two nodes. If \code{TRUE}, the igraph function
-#' \code{\link[igraph]{all_shortest_paths}} is called internally, if 
-#' \code{FALSE} the igraph function \code{\link[igraph]{shortest_paths}} is 
-#' called internally. If \code{TRUE}, the returned tibble will only have a 
-#' \code{node_paths} column, no matter what the setting of \code{output} is. 
+#' \code{\link[igraph]{all_shortest_paths}} is called internally, if
+#' \code{FALSE} the igraph function \code{\link[igraph]{shortest_paths}} is
+#' called internally. If \code{TRUE}, the returned tibble will only have a
+#' \code{node_paths} column, no matter what the setting of \code{output} is.
 #' Defaults to \code{FALSE}.
 #'
 #' @param ... Arguments passed on to the corresponding
@@ -57,10 +57,10 @@
 #' @seealso \code{\link{st_network_cost}}
 #'
 #' @return An object of class \code{\link[tibble]{tbl_df}} with one row per
-#' returned path. Depending on the setting of the \code{output} argument, 
-#' columns can be \code{node_paths} (a list column with for each path the 
-#' ordered indices of nodes present in that path) and \code{edge_paths} 
-#' (a list column with for each path the ordered indices of edges present in 
+#' returned path. Depending on the setting of the \code{output} argument,
+#' columns can be \code{node_paths} (a list column with for each path the
+#' ordered indices of nodes present in that path) and \code{edge_paths}
+#' (a list column with for each path the ordered indices of edges present in
 #' that path).
 #'
 #' @examples
@@ -77,13 +77,13 @@
 #' # Providing node indices.
 #' paths = st_network_paths(net, from = 495, to = 121)
 #' paths
-#' 
+#'
 #' node_path = paths %>%
 #'   slice(1) %>%
 #'   pull(node_paths) %>%
 #'   unlist()
 #' node_path
-#' 
+#'
 #' par(mar = c(1,1,1,1))
 #' plot(net, col = "grey")
 #' plot(slice(activate(net, "nodes"), node_path), col = "red", add = TRUE)
@@ -94,18 +94,19 @@
 #' st_crs(p1) = st_crs(net)
 #' p2 = st_geometry(net, "nodes")[121] + st_sfc(st_point(c(-10, 100)))
 #' st_crs(p2) = st_crs(net)
-#' 
+#'
 #' paths = st_network_paths(net, from = p1, to = p2)
 #' paths
-#' 
+#'
 #' node_path = paths %>%
 #'   slice(1) %>%
 #'   pull(node_paths) %>%
 #'   unlist()
 #' node_path
-#' 
+#'
 #' par(mar = c(1,1,1,1))
 #' plot(net, col = "grey")
+#' plot(c(p1, p2), col = "black", pch = 8, add = TRUE)
 #' plot(slice(activate(net, "nodes"), node_path), col = "red", add = TRUE)
 #'
 #' # Using another column for weights.
@@ -113,6 +114,11 @@
 #'   activate("edges") %>%
 #'   mutate(foo = runif(n(), min = 0, max = 1)) %>%
 #'   st_network_paths(p1, p2, weights = "foo")
+#'
+#' # Obtaining all shortest paths possible
+#' net = as_sfnetwork(roxel, directed = TRUE) %>%
+#'   st_transform(3035)
+#' st_network_paths(net, from = 5, to = 1, all = TRUE)
 #'
 #' @importFrom igraph V
 #' @export
@@ -190,9 +196,9 @@ st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
 #' @param weights The edge weights to be used in the shortest path calculation.
 #' Can be a numeric vector giving edge weights, or a column name referring to
 #' an attribute column in the edges table containing those weights. If set to
-#' \code{NULL}, the values of a column named \code{weight} in the edges table 
+#' \code{NULL}, the values of a column named \code{weight} in the edges table
 #' will be used automatically, as long as this column is present. If set to
-#' \code{NA}, no weights are used, even if the edges have a \code{weight} 
+#' \code{NA}, no weights are used, even if the edges have a \code{weight}
 #' column.
 #'
 #' @param ... Arguments passed on to \code{\link[igraph]{distances}}.
@@ -224,7 +230,7 @@ st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
 #' st_crs(p1) = st_crs(net)
 #' p2 = st_geometry(net, "nodes")[121] + st_sfc(st_point(c(-10, 100)))
 #' st_crs(p2) = st_crs(net)
-#' 
+#'
 #' st_network_cost(net, from = c(p1, p2), to = c(p1, p2))
 #'
 #' # Using another column for weights.

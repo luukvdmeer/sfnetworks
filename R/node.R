@@ -57,6 +57,7 @@
 #'
 #' disjoint = net %>%
 #'   filter(node_is_disjoint(poly))
+#'
 #' par(mar = c(1,1,1,1))
 #' plot(net)
 #' plot(within, col = "red", add = TRUE)

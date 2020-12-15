@@ -37,9 +37,9 @@ calculated. By default, all nodes in the network are included.}
 \item{weights}{The edge weights to be used in the shortest path calculation.
 Can be a numeric vector giving edge weights, or a column name referring to
 an attribute column in the edges table containing those weights. If set to
-\code{NULL}, the values of a column named \code{weight} in the edges table 
+\code{NULL}, the values of a column named \code{weight} in the edges table
 will be used automatically, as long as this column is present. If set to
-\code{NA}, no weights are used, even if the edges have a \code{weight} 
+\code{NA}, no weights are used, even if the edges have a \code{weight}
 column.}
 
 \item{output}{Character defining how to report the shortest paths. Can be
@@ -50,10 +50,10 @@ returned. Defaults to \code{'both'}. Ignored when \code{all = TRUE}.}
 
 \item{all}{Whether to calculate all shortest paths or a single shortest path
 between two nodes. If \code{TRUE}, the igraph function
-\code{\link[igraph]{all_shortest_paths}} is called internally, if 
-\code{FALSE} the igraph function \code{\link[igraph]{shortest_paths}} is 
-called internally. If \code{TRUE}, the returned tibble will only have a 
-\code{node_paths} column, no matter what the setting of \code{output} is. 
+\code{\link[igraph]{all_shortest_paths}} is called internally, if
+\code{FALSE} the igraph function \code{\link[igraph]{shortest_paths}} is
+called internally. If \code{TRUE}, the returned tibble will only have a
+\code{node_paths} column, no matter what the setting of \code{output} is.
 Defaults to \code{FALSE}.}
 
 \item{...}{Arguments passed on to the corresponding
@@ -62,18 +62,18 @@ Defaults to \code{FALSE}.}
 }
 \value{
 An object of class \code{\link[tibble]{tbl_df}} with one row per
-returned path. Depending on the setting of the \code{output} argument, 
-columns can be \code{node_paths} (a list column with for each path the 
-ordered indices of nodes present in that path) and \code{edge_paths} 
-(a list column with for each path the ordered indices of edges present in 
+returned path. Depending on the setting of the \code{output} argument,
+columns can be \code{node_paths} (a list column with for each path the
+ordered indices of nodes present in that path) and \code{edge_paths}
+(a list column with for each path the ordered indices of edges present in
 that path).
 }
 \description{
-Combined wrapper around \code{\link[igraph]{shortest_paths}} and 
-\code{\link[igraph]{all_shortest_paths}} from \code{\link[igraph]{igraph}}, 
-allowing to provide any geospatial point as \code{from} argument and any 
-set of geospatial points as \code{to} argument. If such a geospatial point 
-is not equal to a node in the network, it will be snapped to its nearest 
+Combined wrapper around \code{\link[igraph]{shortest_paths}} and
+\code{\link[igraph]{all_shortest_paths}} from \code{\link[igraph]{igraph}},
+allowing to provide any geospatial point as \code{from} argument and any
+set of geospatial points as \code{to} argument. If such a geospatial point
+is not equal to a node in the network, it will be snapped to its nearest
 node before calculating the shortest paths.
 }
 \details{
@@ -122,6 +122,7 @@ node_path
 
 par(mar = c(1,1,1,1))
 plot(net, col = "grey")
+plot(c(p1, p2), col = "black", pch = 8, add = TRUE)
 plot(slice(activate(net, "nodes"), node_path), col = "red", add = TRUE)
 
 # Using another column for weights.
@@ -129,6 +130,11 @@ net \%>\%
   activate("edges") \%>\%
   mutate(foo = runif(n(), min = 0, max = 1)) \%>\%
   st_network_paths(p1, p2, weights = "foo")
+
+# Obtaining all shortest paths possible
+net = as_sfnetwork(roxel, directed = TRUE) \%>\%
+  st_transform(3035)
+st_network_paths(net, from = 5, to = 1, all = TRUE)
 
 }
 \seealso{

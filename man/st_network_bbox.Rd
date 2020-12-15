@@ -2,7 +2,7 @@
 % Please edit documentation in R/bbox.R
 \name{st_network_bbox}
 \alias{st_network_bbox}
-\title{Get the bounding box of a spatial networks}
+\title{Get the bounding box of a spatial network}
 \usage{
 st_network_bbox(x, ...)
 }

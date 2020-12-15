@@ -1,4 +1,4 @@
-#' Get the bounding box of a spatial networks
+#' Get the bounding box of a spatial network
 #'
 #' A spatial network specific bounding box extractor, returning the combined
 #' bounding box of the nodes and edges in the network.
@@ -35,7 +35,7 @@
 #' edge_bbox
 #' net_bbox = st_network_bbox(net)
 #' net_bbox
-#' 
+#'
 #' # Plot.
 #' par(mar = c(1,1,1,1), mfrow = c(1,2))
 #' plot(net, lwd = 2, cex = 4, main = "Element bounding boxes")

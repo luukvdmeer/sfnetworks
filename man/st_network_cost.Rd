@@ -28,9 +28,9 @@ calculated. By default, all nodes in the network are included.}
 \item{weights}{The edge weights to be used in the shortest path calculation.
 Can be a numeric vector giving edge weights, or a column name referring to
 an attribute column in the edges table containing those weights. If set to
-\code{NULL}, the values of a column named \code{weight} in the edges table 
+\code{NULL}, the values of a column named \code{weight} in the edges table
 will be used automatically, as long as this column is present. If set to
-\code{NA}, no weights are used, even if the edges have a \code{weight} 
+\code{NA}, no weights are used, even if the edges have a \code{weight}
 column.}
 
 \item{...}{Arguments passed on to \code{\link[igraph]{distances}}.}
