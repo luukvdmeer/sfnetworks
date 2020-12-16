@@ -6,18 +6,19 @@
 #'
 #' @importFrom crayon silver
 #' @noRd
-cat_subtle = function(...) {
+cat_subtle = function(...) { # nocov start
+  # Util function for print method, testing should be up to crayon
   cat(silver(...))
-}
+} # nocov end
 
 #' Concatenate two linestrings together
 #'
-#' @param x The first line, as object of class \code{\link[sf]{sf}} or 
-#' \code{\link[sf]{sfc}} containing a single feature with \code{LINESTRING} 
+#' @param x The first line, as object of class \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}} containing a single feature with \code{LINESTRING}
 #' geometry.
 #'
-#' @param y The second line, as object of class \code{\link[sf]{sf}} or 
-#' \code{\link[sf]{sfc}} containing a single feature with \code{LINESTRING} 
+#' @param y The second line, as object of class \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}} containing a single feature with \code{LINESTRING}
 #' geometry.
 #'
 #' @return An object of class \code{\link[sf]{sfc}} containing a single
@@ -116,17 +117,17 @@ create_nodes_from_edges = function(edges) {
 
 #' Draw lines between two sets of points, row-wise
 #'
-#' @param x An object of class \code{\link[sf]{sfc}} with \code{POINT} 
+#' @param x An object of class \code{\link[sf]{sfc}} with \code{POINT}
 #' geometries, representing the points where lines need to start at.
 #'
-#' @param y An object of class \code{\link[sf]{sfc}} with \code{POINT} 
+#' @param y An object of class \code{\link[sf]{sfc}} with \code{POINT}
 #' geometries, representing the points where lines need to end at.
 #'
 #' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
 #' geometries.
 #'
 #' @details Lines are drawn row-wise. That is, between the first point in x
-#' and the first point in y, the second point in x and the second point in y, 
+#' and the first point in y, the second point in x and the second point in y,
 #' et cetera.
 #'
 #' @importFrom sf st_crs
@@ -145,7 +146,7 @@ draw_lines = function(x, y) {
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
-#' geometries, of length equal to twice the number of edges in x, and ordered 
+#' geometries, of length equal to twice the number of edges in x, and ordered
 #' as [start of edge 1, end of edge 1, start of edge 2, end of edge 2, ...].
 #'
 #' @details Boundary nodes differ from boundary points in the sense that
@@ -175,9 +176,9 @@ edge_boundary_nodes = function(x) {
 #' @return If matrix is \code{FALSE}, a numeric vector of length equal to twice
 #' the number of edges in x, and ordered as
 #' [start of edge 1, end of edge 1, start of edge 2, end of edge 2, ...]. If
-#' matrix is \code{TRUE}, a two-column matrix, with the number of rows equal to 
-#' the number of edges in the network. The first column contains the indices of 
-#' the start nodes of the edges, the seconds column contains the indices of the 
+#' matrix is \code{TRUE}, a two-column matrix, with the number of rows equal to
+#' the number of edges in the network. The first column contains the indices of
+#' the start nodes of the edges, the seconds column contains the indices of the
 #' end nodes of the edges.
 #'
 #' @importFrom igraph E ends
@@ -192,7 +193,7 @@ edge_boundary_node_indices = function(x, matrix = FALSE) {
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
-#' geometries, of length equal to twice the number of edges in x, and ordered 
+#' geometries, of length equal to twice the number of edges in x, and ordered
 #' as [start of edge 1, end of edge 1, start of edge 2, end of edge 2, ...].
 #'
 #' @details Boundary points differ from boundary nodes in the sense that
@@ -219,9 +220,10 @@ edge_boundary_points = function(x) {
 #'
 #' @importFrom sf st_point st_sfc
 #' @noRd
-empty_point = function(crs = NA) {
+empty_point = function(crs = NA) { # nocov start
+  # ! Function not in use currently
   st_sfc(st_point(), crs = crs)
-}
+} # nocov end
 
 #' Make edges spatially explicit
 #'
@@ -253,14 +255,14 @@ explicitize_edges = function(x) {
 
 #' Extend a straight line by a given distance
 #'
-#' @param l The line to extend, as object of class \code{\link[sf]{sf}} or 
-#' \code{\link[sf]{sfc}}, containing a single feature with \code{LINESTRING} 
+#' @param l The line to extend, as object of class \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}, containing a single feature with \code{LINESTRING}
 #' geometry.
 #'
-#' @param d The distance to extend the line by, in the same units as the CRS 
+#' @param d The distance to extend the line by, in the same units as the CRS
 #' of x.
 #'
-#' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING} 
+#' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
 #' geometry.
 #'
 #' @details Euclidean space is assumed no matter the CRS.
@@ -306,11 +308,11 @@ implicitize_edges = function(x) {
 
 #' Get the boundary points of LINESTRING geometries
 #'
-#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}} 
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 #' with \code{LINESTRING} geometries.
 #'
 #' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
-#' geometries, of length equal to twice the number of lines in x, and ordered 
+#' geometries, of length equal to twice the number of lines in x, and ordered
 #' as [start of line 1, end of line 1, start of line 2, end of line 2, ...].
 #'
 #' @details See issue #59 on the GitHub repo for a discussion on this function.
@@ -320,7 +322,7 @@ implicitize_edges = function(x) {
 #' @noRd
 linestring_boundary_points = function(x) {
   # Extract coordinates.
-  coords = sfc_to_df(st_geometry(x)) 
+  coords = sfc_to_df(st_geometry(x))
   # Find row-indices of the first and last coordinate pair of each linestring.
   # These are the boundary points.
   first_pair = !duplicated(coords[["sfg_id"]])
@@ -329,17 +331,17 @@ linestring_boundary_points = function(x) {
   # Extract boundary point coordinates.
   pairs = coords[idxs, names(coords) %in% c("x", "y", "z", "m")]
   # Rebuild sf structure.
-  points = sfc_point(pairs) 
-  st_crs(points) = st_crs(x) 
+  points = sfc_point(pairs)
+  st_crs(points) = st_crs(x)
   points
 }
 
 #' Get the points where linestrings cross
 #'
-#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}} 
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 #' with \code{LINESTRING} geometries.
 #'
-#' @param y An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}} 
+#' @param y An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 #' with \code{LINESTRING} geometries.
 #'
 #' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
@@ -347,7 +349,8 @@ linestring_boundary_points = function(x) {
 #'
 #' @importFrom sf st_crosses st_equals st_geometry st_intersection st_is
 #' @noRd
-linestring_crossings = function(x, y) {
+linestring_crossings = function(x, y) { #nocov start
+  # ! Function not in use currently
   # Get geometries of x and y.
   xgeom = st_geometry(x)
   ygeom = st_geometry(y)
@@ -366,20 +369,20 @@ linestring_crossings = function(x, y) {
   crossings = point_intersections[!is_boundary]
   # Return crossings.
   crossings
-}
+} # nocov end
 
 #' Split lines by other features
 #'
-#' @param x The lines to be splitted, as object of class \code{\link[sf]{sf}} 
+#' @param x The lines to be splitted, as object of class \code{\link[sf]{sf}}
 #' or \code{\link[sf]{sfc}} with \code{LINESTRING} geometries.
 #'
-#' @param y The features to split with, as object of class \code{\link[sf]{sf}} 
+#' @param y The features to split with, as object of class \code{\link[sf]{sf}}
 #' or \code{\link[sf]{sfc}}.
 #'
-#' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING} 
+#' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
 #' geometries.
 #'
-#' @details Features in x will only be splitted if they intersect with a 
+#' @details Features in x will only be splitted if they intersect with a
 #' feature in y.
 #'
 #' @importFrom lwgeom st_split

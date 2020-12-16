@@ -1,5 +1,7 @@
 library(igraph)
 library(sf)
+library(dplyr)
+library(tidygraph)
 
 test_that('sfnetwork created from Roxel example dataset has
           the expected number of nodes, edges and components
@@ -25,4 +27,33 @@ test_that('sfnetwork created from POLYGON-geometry sf gives and error', {
     as_sfnetwork(rdmpoly),
     'Geometries are not all of type LINESTRING, or all of type POINT'
   )
+})
+
+test_that('Creating an sfnetwork from an sf LINESTRING object with
+          from and to columns overwrites them with a warning.', {
+  column_from = rep(letters[1:3], 2)
+  column_to = c('c','a','b','b','c','c')
+  expect_warning(
+    net <- roxel[25:30,] %>%
+      mutate(from = column_from, to = column_to) %>%
+      as_sfnetwork(),
+    "Overwriting column"
+  )
+  expect_false(all(pull(activate(net, 'edges'), 'from') == column_from))
+  expect_false(all(pull(activate(net, 'edges'), 'to') == column_to))
+})
+
+test_that('Creating an sfnetwork from an sf LINESTRING object with
+          weight columns, when length_as_weigtht, overwrites it
+          with a warning.',{
+  set.seed(213)
+  column_weight = runif(6)
+  expect_warning(
+    net <- roxel[25:30,] %>%
+      mutate(weight = column_weight) %>%
+      as_sfnetwork(length_as_weight = T),
+    "Overwriting column"
+  )
+  expect_false(all(as.numeric(pull(activate(net, 'edges'), 'weight'))
+                   == column_weight))
 })
