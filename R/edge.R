@@ -23,7 +23,6 @@ NULL
 #' nodes, as described in
 #' \href{https://journals.sagepub.com/doi/10.1068/b130131p}{Giacomin & Levinson,
 #' 2015}.
-#'
 #' @examples
 #' library(sf, quietly = TRUE)
 #' library(tidygraph, quietly = TRUE)
@@ -47,7 +46,6 @@ edge_circuity = function() {
 
 #' @describeIn spatial_edge_measures The length of an edge linestring geometry
 #' as calculated by \code{\link[sf]{st_length}}.
-#'
 #' @examples
 #' net %>%
 #'   activate("edges") %>%
@@ -68,7 +66,6 @@ edge_length = function() {
 
 #' @describeIn spatial_edge_measures The straight-line distance between the two
 #' boundary nodes of an edge, as calculated by \code{\link[sf]{st_distance}}.
-#'
 #' @examples
 #' net %>%
 #'   activate("edges") %>%
@@ -117,8 +114,8 @@ straight_line_distance = function(x) {
 #' network.
 #'
 #' @details See \code{\link[sf]{geos_binary_pred}} for details on each spatial
-#' predicate. Just as with all query functions in tidygraph, spatial edge
-#' measures are meant to be called inside tidygraph verbs such as
+#' predicate. Just as with all query functions in tidygraph, these functions
+#' are meant to be called inside tidygraph verbs such as
 #' \code{\link[tidygraph]{mutate}} or \code{\link[tidygraph]{filter}}, where
 #' the network that is currently being worked on is known and thus not needed
 #' as an argument to the function. If you want to use an algorithm outside of

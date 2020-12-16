@@ -211,6 +211,58 @@ as_sfnetwork.default = function(x, ...) {
   as_sfnetwork(as_tbl_graph(x), ...)
 }
 
+#' @describeIn as_sfnetwork Only sf objects with either exclusively geometries 
+#' of type \code{LINESTRING} or exclusively geometries of type \code{POINT} are
+#' supported. For lines, is assumed that the given features form the edges.
+#' Nodes are created at the endpoints of the lines. Endpoints which are shared 
+#' between multiple edges become a single node. For points, it is assumed that 
+#' the given features geometries form the nodes. They will be connected by
+#' edges sequentially. Hence, point 1 to point 2, point 2 to point 3, et cetera.
+#' @examples
+#' # From an sf object.
+#' library(sf, quietly = TRUE)
+#'
+#' # With LINESTRING geometries.
+#' as_sfnetwork(roxel)
+#'
+#' par(mar = c(1,1,1,1), mfrow = c(1,2))
+#' plot(st_geometry(roxel))
+#' plot(as_sfnetwork(roxel))
+#'
+#' # With POINT geometries.
+#' p1 = st_point(c(7, 51))
+#' p2 = st_point(c(7, 52))
+#' p3 = st_point(c(8, 52))
+#' points = st_as_sf(st_sfc(p1, p2, p3))
+#' as_sfnetwork(points)
+#'
+#' par(mar = c(1,1,1,1), mfrow = c(1,2))
+#' plot(st_geometry(points))
+#' plot(as_sfnetwork(points))
+#'
+#' @export
+as_sfnetwork.sf = function(x, ...) {
+  if (has_single_geom_type(x, "LINESTRING")) {
+    # Workflow:
+    # It is assumed that the given LINESTRING geometries form the edges.
+    # Nodes need to be created at the boundary points of the edges.
+    # Identical boundary points should become the same node.
+    n_lst = create_nodes_from_edges(x)
+  } else if (has_single_geom_type(x, "POINT")) {
+    # Workflow:
+    # It is assumed that the given POINT geometries form the nodes.
+    # Edges need to be created as linestrings between those nodes.
+    # It is assumed that the given nodes are connected sequentially.
+    n_lst = create_edges_from_nodes(x)
+  } else {
+    stop(
+      "Geometries are not all of type LINESTRING, or all of type POINT",
+      call. = FALSE
+    )
+  }
+  sfnetwork(n_lst$nodes, n_lst$edges, force = TRUE, ...)
+}
+
 #' @name as_sfnetwork
 #' @examples
 #' # From a linnet object.
@@ -251,52 +303,6 @@ as_sfnetwork.psp = function(x, ...) {
   x_linestring = st_collection_extract(x_sf, "LINESTRING")
   # Apply as_sfnetwork.sf.
   as_sfnetwork(x_linestring, ...)
-}
-
-#' @name as_sfnetwork
-#' @examples
-#' # From an sf object.
-#' library(sf, quietly = TRUE)
-#'
-#' # With POINT geometries.
-#' p1 = st_point(c(7, 51))
-#' p2 = st_point(c(7, 52))
-#' p3 = st_point(c(8, 52))
-#' points = st_as_sf(st_sfc(p1, p2, p3))
-#' as_sfnetwork(points)
-#'
-#' par(mar = c(1,1,1,1), mfrow = c(1,2))
-#' plot(st_geometry(points))
-#' plot(as_sfnetwork(points))
-#'
-#' # With LINESTRING geometries.
-#' as_sfnetwork(roxel)
-#'
-#' par(mar = c(1,1,1,1), mfrow = c(1,2))
-#' plot(st_geometry(roxel))
-#' plot(as_sfnetwork(roxel))
-#'
-#' @export
-as_sfnetwork.sf = function(x, ...) {
-  if (has_single_geom_type(x, "LINESTRING")) {
-    # Workflow:
-    # It is assumed that the given LINESTRING geometries form the edges.
-    # Nodes need to be created at the boundary points of the edges.
-    # Identical boundary points should become the same node.
-    n_lst = create_nodes_from_edges(x)
-  } else if (has_single_geom_type(x, "POINT")) {
-    # Workflow:
-    # It is assumed that the given POINT geometries form the nodes.
-    # Edges need to be created as linestrings between those nodes.
-    # It is assumed that the given nodes are connected sequentially.
-    n_lst = create_edges_from_nodes(x)
-  } else {
-    stop(
-      "Geometries are not all of type LINESTRING, or all of type POINT",
-      call. = FALSE
-    )
-  }
-  sfnetwork(n_lst$nodes, n_lst$edges, force = TRUE, ...)
 }
 
 #' @name as_sfnetwork
