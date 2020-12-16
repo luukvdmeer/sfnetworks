@@ -21,6 +21,7 @@ reference:
       - st_network_blend
       - st_network_bbox
       - spatial_node_predicates
+      - node_coordinates
       - spatial_edge_predicates
       - spatial_edge_measures
       - spatial_morphers
