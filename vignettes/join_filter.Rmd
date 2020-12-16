@@ -92,6 +92,8 @@ plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 plot(filtered)
 ```
 
+For non-spatial filters applied to attribute columns, simply use `dplyr::filter()` instead of `sf::st_filter()`.
+
 ### Using spatial node and edge query functions
 
 In `tidygraph`, filtering information from networks is done by using specific node or edge query functions inside the `dplyr::filter()` verb. An example was already shown above, where isolated nodes were removed from the network.
@@ -110,6 +112,16 @@ plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 plot(filtered)
 ```
 
+A nice application of this in road networks is to find underpassing and overpassing roads (i.e. edges that cross other edges but are not connected at that point). As we can see in the example below, such roads are not present in our Roxel data, which results in a network without edges.
+
+The `tidygraph::.E()` function used in the example makes it possible to directly access the complete edges table inside verbs. In this case, that means that for each edge we evaluate if it crosses with *any* other edge in the network. Similarly, we can use `tidygraph::.N()` to access the nodes table and `tidygraph::.G()` to access the network object as a whole.
+
+```{r}
+net %>%
+  activate("edges") %>%
+  filter(edge_crosses(.E()))
+```
+
 If you just want to store the information about the investigated spatial relation, without filtering the network, you can also use the spatial node and edge query functions inside a `dplyr::mutate()` verb.
 
 ```{r}
@@ -117,7 +129,21 @@ net %>%
   mutate(in_poly = node_intersects(poly))
 ```
 
-For non-spatial filters applied to attribute columns, simply use `dplyr::filter()` instead of `sf::st_filter()`.
+Besides predicate query functions, you can also use the [coordinate query functions](https://luukvdmeer.github.io/sfnetworks/reference/node_coordinates.html) for spatial filters on the nodes. For example:
+
+```{r, fig.show='hold', out.width = '50%'}
+v = 4152000
+l = st_linestring(rbind(c(v, st_bbox(net)["ymin"]), c(v, st_bbox(net)["ymax"])))
+
+filtered = net %>%
+  activate("nodes") %>%
+  filter(node_X() > v)
+
+plot(net, col = "grey")
+plot(l, col = "red", lty = 4, lwd = 4, add = TRUE)
+plot(net, col = "grey")
+plot(filtered, col = "red", add = TRUE)
+```
 
 ## Spatial joins
 

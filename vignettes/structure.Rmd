@@ -275,6 +275,38 @@ as_sfnetwork(roxel, directed = TRUE) %>%
   st_reverse()
 ```
 
+### Coordinates
+
+The coordinates of the active element of a sfnetwork can be extracted with the sf function `sf::st_coordinates()`.
+
+```{r}
+node_coords = net %>%
+  activate("nodes") %>%
+  st_coordinates()
+
+node_coords[1:4, ]
+```
+
+Besides X and Y coordinates, the features in the network can possibly also have Z and M coordinates.
+
+```{r}
+# Currently there are neither Z nor M coordinates.
+st_z_range(net)
+st_m_range(net)
+
+# Add Z coordinates with value 0 to all features.
+# This will affect both nodes and edges, no matter which element is active.
+st_zm(net, drop = FALSE, what = "Z")
+```
+
+[Coordinate query functions](https://luukvdmeer.github.io/sfnetworks/reference/node_coordinates.html) can be used for the nodes to extract only specific coordinate values. Such query functions are meant to be used inside `dplyr::mutate()` or `dplyr::filter()` verbs. Whenever a coordinate value is not available for a node, `NA` is returned along with a warning. Note also that the two-digit coordinate values are only for printing. The real values contain just as much precision as in the geometry list column.
+
+```{r}
+net %>%
+  st_zm(drop = FALSE, what = "Z") %>%
+  mutate(X = node_X(), Y = node_Y(), Z = node_Z(), M = node_M())
+```
+
 ### Coordinate Reference System
 
 The Coordinate Reference System in which the coordinates of the network geometries are stored can be extracted with the sf function `sf::st_crs()`. The CRS in a valid spatial network structure is *always* the same for nodes and edges. 
@@ -295,7 +327,7 @@ The bounding box of the active element of a sfnetwork can be extracted with the 
 
 ```{r}
 net %>%
-  activate(nodes) %>%
+  activate("nodes") %>%
   st_bbox()
 ```
 
@@ -340,7 +372,3 @@ net %>%
 ```
 
 However, be careful, because we are currently not sure if this information survives all functions from `igraph` and `tidygraph`. If you have any issues with this, please let us know in our [issue tracker](https://github.com/luukvdmeer/sfnetworks/issues).
-
-### Other
-
-Also other getter and setter functions for several parts of spatial information are supported for sfnetworks, e.g. `sf::st_coordinates()`, `sf::st_z_range()` and `sf::st_m_range()`.
