@@ -103,7 +103,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>5. Spatial morphers</h1>
             
-            <h4 class="date">2020-12-15</h4>
+            <h4 class="date">2020-12-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/morphers.Rmd"><code>vignettes/morphers.Rmd</code></a></small>
       <div class="hidden name"><code>morphers.Rmd</code></div>
@@ -278,42 +278,12 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div id="spatial-morphers" class="section level2">
 <h2 class="hasAnchor">
 <a href="#spatial-morphers" class="anchor"></a>Spatial morphers</h2>
-<p>A lot of morpher functions are offered by <code>tidygraph</code>. See the overview of them <a href="https://tidygraph.data-imaginist.com/reference/morphers.html">here</a>. Most of them should work without problems on sfnetworks, and can be useful for spatial network analysis. On top of that offer, <code>sfnetworks</code> adds some additional <em>spatial morphers</em> that fit use-cases for which <code>tidygraph</code> does not have an implemented morpher function. See the overview of them <a href="https://luukvdmeer.github.io/sfnetworks/reference/spatial_morphers.html">here</a>. Some of the spatial morphers change the original networks topology, while others simply change the way the spatial coordinates are stored. Below they will all be shortly introduced.</p>
-<div id="to_spatial_coordinates" class="section level3">
-<h3 class="hasAnchor">
-<a href="#to_spatial_coordinates" class="anchor"></a>to_spatial_coordinates</h3>
-<p>The <code><a href="../reference/spatial_morphers.html">to_spatial_coordinates()</a></code> morpher stores the coordinates of the nodes in separate coordinate columns, instead of an sf-style geometry list column. Edge geometries are dropped. The morphed state contains a single element, and since the geometry list column is gone, this is a tbl_graph instead of a sfnetwork.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">convert</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">to_spatial_coordinates</span>, .clean <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A tbl_graph: 701 nodes and 851 edges
-#&gt; #
-#&gt; # An undirected multigraph with 14 components
-#&gt; #
-#&gt; # Node Data: 701 x 2 (active)</span><span>
-#&gt;          X        Y
-#&gt;      </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span>    </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span> 4</span><span style="text-decoration: underline;">151</span><span>491. 3</span><span style="text-decoration: underline;">207</span><span>923.
-#&gt; </span><span style="color: #555555;">2</span><span> 4</span><span style="text-decoration: underline;">151</span><span>474. 3</span><span style="text-decoration: underline;">207</span><span>946.
-#&gt; </span><span style="color: #555555;">3</span><span> 4</span><span style="text-decoration: underline;">151</span><span>398. 3</span><span style="text-decoration: underline;">207</span><span>777.
-#&gt; </span><span style="color: #555555;">4</span><span> 4</span><span style="text-decoration: underline;">151</span><span>370. 3</span><span style="text-decoration: underline;">207</span><span>673.
-#&gt; </span><span style="color: #555555;">5</span><span> 4</span><span style="text-decoration: underline;">151</span><span>408. 3</span><span style="text-decoration: underline;">207</span><span>539.
-#&gt; </span><span style="color: #555555;">6</span><span> 4</span><span style="text-decoration: underline;">151</span><span>421. 3</span><span style="text-decoration: underline;">207</span><span>592.
-#&gt; </span><span style="color: #555555;"># … with 695 more rows</span><span>
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Edge Data: 851 x 4</span><span>
-#&gt;    from    to name                  type       
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>                 </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>      
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbecker Strasse   residential
-#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersallee          secondary  
-#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-Bernd-Strasse residential
-#&gt; </span><span style="color: #555555;"># … with 848 more rows</span><span>
-</span></code></pre>
-</div>
+<p>A lot of morpher functions are offered by <code>tidygraph</code>. See the overview of them <a href="https://tidygraph.data-imaginist.com/reference/morphers.html">here</a>. Most of them should work without problems on sfnetworks, and can be useful for spatial network analysis. On top of that offer, <code>sfnetworks</code> adds some additional <em>spatial morphers</em> that fit use-cases for which <code>tidygraph</code> does not have an implemented morpher function. See the overview of them <a href="https://luukvdmeer.github.io/sfnetworks/reference/spatial_morphers.html">here</a>. Below they will all be shortly introduced.</p>
 <div id="to_spatial_directed" class="section level3">
 <h3 class="hasAnchor">
 <a href="#to_spatial_directed" class="anchor"></a>to_spatial_directed</h3>
 <p>The <code><a href="../reference/spatial_morphers.html">to_spatial_directed()</a></code> morpher turns an undirected network into a directed one based on the direction given by the linestring geometries of the edges. Hence, from the node corresponding to the first point of the linestring, to the node corresponding to the last point of the linestring. This in contradiction to <code><a href="https://tidygraph.data-imaginist.com/reference/morphers.html">tidygraph::to_directed()</a></code>, which bases the direction on the node indices given in the <em>to</em> and <em>from</em> columns of the edges. In undirected networks the lowest node index is always used as <em>from</em> index, no matter the order of endpoints in the edges’ linestring geometry. Therefore, the <em>from</em> and <em>to</em> node indices of an edge may not always correspond to the first and last endpoint of the linestring geometry, and <code><a href="../reference/spatial_morphers.html">to_spatial_directed()</a></code> gives different results as <code><a href="https://tidygraph.data-imaginist.com/reference/morphers.html">tidygraph::to_directed()</a></code>.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">net</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>bc_undir <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/centrality.html">centrality_betweenness</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -354,35 +324,24 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># … with 848 more rows</span><span>
 </span></code></pre>
 </div>
-<div id="to_spatial_explicit_edges" class="section level3">
+<div id="to_spatial_explicit" class="section level3">
 <h3 class="hasAnchor">
-<a href="#to_spatial_explicit_edges" class="anchor"></a>to_spatial_explicit_edges</h3>
-<p>If your original network is <em>spatially implicit</em> (i.e. edges do not have a geometry list column), the <code><a href="../reference/spatial_morphers.html">to_spatial_explicit_edges()</a></code> morpher explicitizes the edges by creating a geometry list column for them. If the edges table can be directly converted to an sf object using <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">sf::st_as_sf()</a></code>, extra arguments can be provided as <code>...</code>, which will be forwarded to <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">sf::st_as_sf()</a></code> internally. Otherwise, straight lines will be drawn between the end nodes of each edge. The morphed state contains a single sfnetwork.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<a href="#to_spatial_explicit" class="anchor"></a>to_spatial_explicit</h3>
+<p>If your original network is <em>spatially implicit</em> (i.e. edges do not have a geometry list column), the <code><a href="../reference/spatial_morphers.html">to_spatial_explicit()</a></code> morpher explicitizes the edges by creating a geometry list column for them. If the edges table can be directly converted to an sf object using <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">sf::st_as_sf()</a></code>, extra arguments can be provided as <code>...</code>, which will be forwarded to <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">sf::st_as_sf()</a></code> internally. Otherwise, straight lines will be drawn between the end nodes of each edge. The morphed state contains a single sfnetwork.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">implicit_net</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_set_geometry</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, <span class="cn">NULL</span><span class="op">)</span>
-<span class="va">explicit_net</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">convert</a></span><span class="op">(</span><span class="va">implicit_net</span>, <span class="va">to_spatial_explicit_edges</span><span class="op">)</span>
+<span class="va">explicit_net</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">convert</a></span><span class="op">(</span><span class="va">implicit_net</span>, <span class="va">to_spatial_explicit</span><span class="op">)</span>
 
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">implicit_net</span>, draw_lines <span class="op">=</span> <span class="cn">FALSE</span>, main <span class="op">=</span> <span class="st">"Implicit edges"</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">explicit_net</span>, main <span class="op">=</span> <span class="st">"Explicit edges"</span><span class="op">)</span></code></pre></div>
-<p><img src="morphers_files/figure-html/unnamed-chunk-8-1.png" width="50%"><img src="morphers_files/figure-html/unnamed-chunk-8-2.png" width="50%"></p>
-</div>
-<div id="to_spatial_implicit_edges" class="section level3">
-<h3 class="hasAnchor">
-<a href="#to_spatial_implicit_edges" class="anchor"></a>to_spatial_implicit_edges</h3>
-<p>If your original network is <em>spatially explicit</em> (i.e. edges have a geometry list column), the <code><a href="../reference/spatial_morphers.html">to_spatial_implicit_edges()</a></code> morpher implicitizes the edges by removing the geometry list column from them. The morphed state contains a single sfnetwork.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">implicit_net</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">convert</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">to_spatial_implicit_edges</span><span class="op">)</span>
-
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">net</span>, main <span class="op">=</span> <span class="st">"Explicit edges"</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">implicit_net</span>, draw_lines <span class="op">=</span> <span class="cn">FALSE</span>, main <span class="op">=</span> <span class="st">"Implicit edges"</span><span class="op">)</span></code></pre></div>
-<p><img src="morphers_files/figure-html/unnamed-chunk-9-1.png" width="50%"><img src="morphers_files/figure-html/unnamed-chunk-9-2.png" width="50%"></p>
+<p><img src="morphers_files/figure-html/unnamed-chunk-7-1.png" width="50%"><img src="morphers_files/figure-html/unnamed-chunk-7-2.png" width="50%"></p>
 </div>
 <div id="to_spatial_shortest_paths" class="section level3">
 <h3 class="hasAnchor">
 <a href="#to_spatial_shortest_paths" class="anchor"></a>to_spatial_shortest_paths</h3>
 <p>The <code>to_spatial_shortest_paths</code> morpher limits the original network to those nodes and edges that are part of the shortest path between two nodes. Just as with the other shortest path calculation functionalities presented in the <a href="https://luukvdmeer.github.io/sfnetworks/articles/routing.html">Routing</a> vignette, besides node indices or names, any geospatial point (as sf or sfc object) can be provided as <em>from</em> and <em>to</em> node. Internally, such points will be snapped to their nearest node before calculating the shortest path.</p>
 <p>The morpher only accepts a single <em>from</em> node. If also a single <em>to</em> node is provided, the morphed state of the network contains a single sfnetwork. However, it is also possible to provide multiple <em>to</em> nodes. Then, the morphed state of the network contains multiple sfnetworks, one for each from-to combination.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">net</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">convert</a></span><span class="op">(</span><span class="va">to_spatial_shortest_paths</span>, from <span class="op">=</span> <span class="fl">1</span>, to <span class="op">=</span> <span class="fl">100</span>, weights <span class="op">=</span> <span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
@@ -417,7 +376,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;">3</span><span> (4151370 3207673)                     4
 #&gt; </span><span style="color: #555555;"># … with 23 more rows</span><span>
 </span></code></pre>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">new_net</span> <span class="op">=</span> <span class="va">net</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">morph</a></span><span class="op">(</span><span class="va">to_spatial_shortest_paths</span>, from <span class="op">=</span> <span class="fl">1</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">100</span>, <span class="fl">10</span><span class="op">)</span>, weights <span class="op">=</span> <span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -432,7 +391,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">in_paths</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="morphers_files/figure-html/unnamed-chunk-11-1.png" width="480"></p>
+<p><img src="morphers_files/figure-html/unnamed-chunk-9-1.png" width="480"></p>
 </div>
 <div id="to_spatial_simple" class="section level3">
 <h3 class="hasAnchor">
@@ -454,7 +413,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <h3 class="hasAnchor">
 <a href="#to_spatial_subset" class="anchor"></a>to_spatial_subset</h3>
 <p>The <code><a href="../reference/spatial_morphers.html">to_spatial_subset()</a></code> morpher takes a subset of the network by applying a spatial filter. A spatial filter is a filter on a geometry list column based on a spatial predicate. The morphed state contains a single sfnetwork. We can use this for example to spatially join information <em>only</em> to a spatial subset of the nodes in the network. A tiny example just to get an idea of how this would work:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">codes</span> <span class="op">=</span> <span class="va">net</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_make_grid.html">st_make_grid</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -500,7 +459,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 </span></code></pre>
 <p>If you want to apply the spatial filter to the edges instead of the nodes, either activate edges before morphing, or set <code>subset_by = "edges"</code>.</p>
 <p>For filters on attribute columns, use <code><a href="https://tidygraph.data-imaginist.com/reference/morphers.html">tidygraph::to_subgraph()</a></code> instead. Again, a tiny fictional example just to get an idea of how this would work:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">net</span> <span class="op">=</span> <span class="va">net</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>building <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">TRUE</span>,<span class="cn">FALSE</span><span class="op">)</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
@@ -525,9 +484,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923) FALSE           </span><span style="color: #BB0000;">NA</span><span>
 #&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946) FALSE           </span><span style="color: #BB0000;">NA</span><span>
 #&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777) FALSE           </span><span style="color: #BB0000;">NA</span><span>
-#&gt; </span><span style="color: #555555;">4</span><span> (4151370 3207673) TRUE          </span><span style="text-decoration: underline;">1</span><span>020
-#&gt; </span><span style="color: #555555;">5</span><span> (4151408 3207539) FALSE           </span><span style="color: #BB0000;">NA</span><span>
-#&gt; </span><span style="color: #555555;">6</span><span> (4151421 3207592) TRUE          </span><span style="text-decoration: underline;">1</span><span>020
+#&gt; </span><span style="color: #555555;">4</span><span> (4151370 3207673) FALSE           </span><span style="color: #BB0000;">NA</span><span>
+#&gt; </span><span style="color: #555555;">5</span><span> (4151408 3207539) TRUE          </span><span style="text-decoration: underline;">1</span><span>020
+#&gt; </span><span style="color: #555555;">6</span><span> (4151421 3207592) FALSE           </span><span style="color: #BB0000;">NA</span><span>
 #&gt; </span><span style="color: #555555;"># … with 695 more rows</span><span>
 #&gt; </span><span style="color: #555555;">#
 #&gt; # Edge Data:     851 x 5</span><span>

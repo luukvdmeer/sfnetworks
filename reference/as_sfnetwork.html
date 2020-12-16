@@ -163,13 +163,13 @@ supported.</p>
 <span class='co'># S3 method for default</span>
 <span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
+<span class='co'># S3 method for sf</span>
+<span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
+
 <span class='co'># S3 method for linnet</span>
 <span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for psp</span>
-<span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
-
-<span class='co'># S3 method for sf</span>
 <span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for sfc</span>
@@ -201,24 +201,109 @@ function.</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>An object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p>
+    <h2 class="hasAnchor" id="methods-by-class-"><a class="anchor" href="#methods-by-class-"></a>Methods (by class)</h2>
+
+    
+<ul>
+<li><p><code>sf</code>: Only sf objects with either exclusively geometries 
+of type <code>LINESTRING</code> or exclusively geometries of type <code>POINT</code> are
+supported. For lines, is assumed that the given features form the edges.
+Nodes are created at the endpoints of the lines. Endpoints which are shared 
+between multiple edges become a single node. For points, it is assumed that 
+the given features geometries form the nodes. They will be connected by
+edges sequentially. Hence, point 1 to point 2, point 2 to point 3, et cetera.</p></li>
+</ul>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># From a linnet object.</span>
+    <pre class="examples"><div class='input'><span class='co'># From an sf object.</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Linking to GEOS 3.8.0, GDAL 3.0.4, PROJ 7.0.0</span></div><div class='input'>
+<span class='co'># With LINESTRING geometries.</span>
+<span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>701</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>851</span><span> </span><span style='color: #555555;'>edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style='color: #555555;'>EPSG:4326</span><span> </span><span style='color: #555555;'>
+#&gt; #
+#&gt; # A directed multigraph with 14 components with spatially explicit edges
+#&gt; #
+#&gt; # Node Data:     701 x 1 (active)</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: POINT</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
+#&gt;              geometry
+#&gt;           </span><span style='color: #555555;font-style: italic;'>&lt;POINT [°]&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span> (7.533722 51.95556)
+#&gt; </span><span style='color: #555555;'>2</span><span> (7.533461 51.95576)
+#&gt; </span><span style='color: #555555;'>3</span><span> (7.532442 51.95422)
+#&gt; </span><span style='color: #555555;'>4</span><span>  (7.53209 51.95328)
+#&gt; </span><span style='color: #555555;'>5</span><span> (7.532709 51.95209)
+#&gt; </span><span style='color: #555555;'>6</span><span> (7.532869 51.95257)
+#&gt; </span><span style='color: #555555;'># … with 695 more rows</span><span>
+#&gt; </span><span style='color: #555555;'>#
+#&gt; # Edge Data:     851 x 5</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
+#&gt;    from    to name           type                                       geometry
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>          </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>                              </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [°]&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>     1     2 Havixbecker S… residen…     (7.533722 51.95556, 7.533461 51.95576)
+#&gt; </span><span style='color: #555555;'>2</span><span>     3     4 Pienersallee   seconda… (7.532442 51.95422, 7.53236 51.95377, 7.5…
+#&gt; </span><span style='color: #555555;'>3</span><span>     5     6 Schulte-Bernd… residen… (7.532709 51.95209, 7.532823 51.95239, 7.…
+#&gt; </span><span style='color: #555555;'># … with 848 more rows</span><span></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, mfrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='img'><img src='as_sfnetwork-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='co'># With POINT geometries.</span>
+<span class='va'>p1</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>7</span>, <span class='fl'>51</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>p2</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>7</span>, <span class='fl'>52</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>p3</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>8</span>, <span class='fl'>52</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>points</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/sfc.html'>st_sfc</a></span><span class='op'>(</span><span class='va'>p1</span>, <span class='va'>p2</span>, <span class='va'>p3</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>points</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>3</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>2</span><span> </span><span style='color: #555555;'>edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style='color: #555555;'>NA</span><span> </span><span style='color: #555555;'>
+#&gt; #
+#&gt; # A rooted tree with spatially explicit edges
+#&gt; #
+#&gt; # Node Data:     3 x 1 (active)</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: POINT</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span><span>
+#&gt;         x
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;POINT&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>  (7 51)
+#&gt; </span><span style='color: #555555;'>2</span><span>  (7 52)
+#&gt; </span><span style='color: #555555;'>3</span><span>  (8 52)
+#&gt; </span><span style='color: #555555;'>#
+#&gt; # Edge Data:     2 x 3</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span><span>
+#&gt;    from    to            x
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>     1     2 (7 51, 7 52)
+#&gt; </span><span style='color: #555555;'>2</span><span>     2     3 (7 52, 8 52)</div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, mfrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>points</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>points</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='img'><img src='as_sfnetwork-2.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='co'># From a linnet object.</span>
 <span class='kw'>if</span> <span class='op'>(</span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='http://www.spatstat.org'>spatstat</a></span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
   <span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>simplenet</span><span class='op'>)</span>
 <span class='op'>}</span>
-</div><div class='output co'>#&gt; <span class='message'></span>
+</div><div class='output co'>#&gt; <span class='message'>Registered S3 method overwritten by 'spatstat':</span>
+#&gt; <span class='message'>  method     from</span>
+#&gt; <span class='message'>  print.boxx cli </span></div><div class='output co'>#&gt; <span class='message'></span>
 #&gt; <span class='message'>spatstat 1.64-1       (nickname: ‘Help you I can, yes!’) </span>
 #&gt; <span class='message'>For an introduction to spatstat, type ‘beginner’ </span></div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Note: spatstat version 1.64-1 is out of date by more than 7 months; we recommend upgrading to the latest version.</span></div><div class='output co'>#&gt; <span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>10</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>10</span><span> </span><span style='color: #555555;'>edges
+#&gt; <span class='message'>Note: spatstat version 1.64-1 is out of date by more than 7 months; we recommend upgrading to the latest version.</span></div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>10</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>10</span><span> </span><span style='color: #555555;'>edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style='color: #555555;'>NA</span><span> </span><span style='color: #555555;'>
 #&gt; #
 #&gt; # A directed acyclic simple graph with 1 component with spatially explicit edges
 #&gt; #
-#&gt; </span><span></div><div class='output co'>#&gt; <span class='message'>Registered S3 method overwritten by 'cli':</span>
-#&gt; <span class='message'>  method     from    </span>
-#&gt; <span class='message'>  print.boxx spatstat</span></div><div class='output co'>#&gt; </span><span style='color: #555555;'># Node Data:     10 x 1 (active)</span><span>
+#&gt; # Node Data:     10 x 1 (active)</span><span>
 #&gt; </span><span style='color: #555555;'># Geometry type: POINT</span><span>
 #&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
 #&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 0.1497036 ymin: 0.1608339 xmax: 0.8418658 ymax:
@@ -282,79 +367,6 @@ function.</p></td>
 #&gt; </span><span style='color: #555555;'>2</span><span>     3     4 segment (0.9370754 0.7191123, 0.1387102 0.8110551)
 #&gt; </span><span style='color: #555555;'>3</span><span>     5     6 segment (0.2861395 0.9346722, 0.9888917 0.3881083)
 #&gt; </span><span style='color: #555555;'># … with 7 more rows</span><span></div><div class='input'>
-<span class='co'># From an sf object.</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Linking to GEOS 3.8.0, GDAL 3.0.4, PROJ 7.0.0</span></div><div class='input'>
-<span class='co'># With POINT geometries.</span>
-<span class='va'>p1</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>7</span>, <span class='fl'>51</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>p2</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>7</span>, <span class='fl'>52</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>p3</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>8</span>, <span class='fl'>52</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>points</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/sfc.html'>st_sfc</a></span><span class='op'>(</span><span class='va'>p1</span>, <span class='va'>p2</span>, <span class='va'>p3</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>points</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>3</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>2</span><span> </span><span style='color: #555555;'>edges
-#&gt; #
-#&gt; # CRS: </span><span> </span><span style='color: #555555;'>NA</span><span> </span><span style='color: #555555;'>
-#&gt; #
-#&gt; # A rooted tree with spatially explicit edges
-#&gt; #
-#&gt; # Node Data:     3 x 1 (active)</span><span>
-#&gt; </span><span style='color: #555555;'># Geometry type: POINT</span><span>
-#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span><span>
-#&gt;         x
-#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;POINT&gt;</span><span>
-#&gt; </span><span style='color: #555555;'>1</span><span>  (7 51)
-#&gt; </span><span style='color: #555555;'>2</span><span>  (7 52)
-#&gt; </span><span style='color: #555555;'>3</span><span>  (8 52)
-#&gt; </span><span style='color: #555555;'>#
-#&gt; # Edge Data:     2 x 3</span><span>
-#&gt; </span><span style='color: #555555;'># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span><span>
-#&gt;    from    to            x
-#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING&gt;</span><span>
-#&gt; </span><span style='color: #555555;'>1</span><span>     1     2 (7 51, 7 52)
-#&gt; </span><span style='color: #555555;'>2</span><span>     2     3 (7 52, 8 52)</div><div class='input'>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, mfrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>points</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>points</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='img'><img src='as_sfnetwork-1.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='co'># With LINESTRING geometries.</span>
-<span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>701</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>851</span><span> </span><span style='color: #555555;'>edges
-#&gt; #
-#&gt; # CRS: </span><span> </span><span style='color: #555555;'>EPSG:4326</span><span> </span><span style='color: #555555;'>
-#&gt; #
-#&gt; # A directed multigraph with 14 components with spatially explicit edges
-#&gt; #
-#&gt; # Node Data:     701 x 1 (active)</span><span>
-#&gt; </span><span style='color: #555555;'># Geometry type: POINT</span><span>
-#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
-#&gt;              geometry
-#&gt;           </span><span style='color: #555555;font-style: italic;'>&lt;POINT [°]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'>1</span><span> (7.533722 51.95556)
-#&gt; </span><span style='color: #555555;'>2</span><span> (7.533461 51.95576)
-#&gt; </span><span style='color: #555555;'>3</span><span> (7.532442 51.95422)
-#&gt; </span><span style='color: #555555;'>4</span><span>  (7.53209 51.95328)
-#&gt; </span><span style='color: #555555;'>5</span><span> (7.532709 51.95209)
-#&gt; </span><span style='color: #555555;'>6</span><span> (7.532869 51.95257)
-#&gt; </span><span style='color: #555555;'># … with 695 more rows</span><span>
-#&gt; </span><span style='color: #555555;'>#
-#&gt; # Edge Data:     851 x 5</span><span>
-#&gt; </span><span style='color: #555555;'># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
-#&gt;    from    to name           type                                       geometry
-#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>          </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>                              </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [°]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'>1</span><span>     1     2 Havixbecker S… residen…     (7.533722 51.95556, 7.533461 51.95576)
-#&gt; </span><span style='color: #555555;'>2</span><span>     3     4 Pienersallee   seconda… (7.532442 51.95422, 7.53236 51.95377, 7.5…
-#&gt; </span><span style='color: #555555;'>3</span><span>     5     6 Schulte-Bernd… residen… (7.532709 51.95209, 7.532823 51.95239, 7.…
-#&gt; </span><span style='color: #555555;'># … with 848 more rows</span><span></div><div class='input'>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, mfrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='img'><img src='as_sfnetwork-2.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

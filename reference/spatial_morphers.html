@@ -174,13 +174,9 @@ elements, all of them can be extracted together inside a
 <code><a href='https://tidygraph.data-imaginist.com/reference/morph.html'>crystallise</a></code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>to_spatial_coordinates</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
+    <pre class="usage"><span class='fu'>to_spatial_directed</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
 
-<span class='fu'>to_spatial_directed</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
-
-<span class='fu'>to_spatial_explicit_edges</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
-
-<span class='fu'>to_spatial_implicit_edges</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
+<span class='fu'>to_spatial_explicit</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='fu'>to_spatial_shortest_paths</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
@@ -234,11 +230,6 @@ of <code><a href='https://tidygraph.data-imaginist.com/reference/morph.html'>mor
 
     
 <ul>
-<li><p><code>to_spatial_coordinates</code>: Store the spatial coordinates of the nodes in
-separate coordinate columns, instead of a <code><a href='https://r-spatial.github.io/sf/reference/sfc.html'>sfc</a></code> geometry
-list column. If edges are spatially explicit, the edge geometries are
-dropped. Returns a <code>morphed_tbl_graph</code> containing a single element of
-class <code><a href='https://tidygraph.data-imaginist.com/reference/tbl_graph.html'>tbl_graph</a></code>.</p></li>
 <li><p><code>to_spatial_directed</code>: Make a network directed in the direction given
 by the linestring geometries of the edges. Differs from
 <code><a href='https://tidygraph.data-imaginist.com/reference/morphers.html'>to_directed</a></code>, which makes a network directed based
@@ -247,17 +238,14 @@ undirected networks these indices may not correspond with the endpoints of
 the linestring geometries. Returns a <code>morphed_sfnetwork</code> containing a
 single element of class <code><a href='sfnetwork.html'>sfnetwork</a></code>. This morpher requires edges
 to be spatially explicit. If not, use <code><a href='https://tidygraph.data-imaginist.com/reference/morphers.html'>to_directed</a></code>.</p></li>
-<li><p><code>to_spatial_explicit_edges</code>: Create linestring geometries between from and
-to nodes of spatially implicit edges. If the edges data can be directly
-converted to an object of class <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a></code> using
-<code><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></code>, extra arguments can be provided as <code>...</code>
-which will be forwarded to st_as_sf internally. Otherwise, straight lines
-will be drawn between source and target nodes of edges. Returns a
+<li><p><code>to_spatial_explicit</code>: Create linestring geometries between source 
+and target nodes of edges. If the edges data can be directly converted to 
+an object of class <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a></code> using <code><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></code>, 
+extra arguments can be provided as <code>...</code> and will be forwarded to 
+<code><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></code> internally. Otherwise, straight lines will be 
+drawn between the source and target node of each edge. Returns a
 <code>morphed_sfnetwork</code> containing a single element of class
 <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></li>
-<li><p><code>to_spatial_implicit_edges</code>: Remove linestring geometries of spatially
-explicit edges. Returns a <code>morphed_sfnetwork</code> containing a single
-element of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></li>
 <li><p><code>to_spatial_shortest_paths</code>: Limit a network to those nodes and edges that
 are part of the shortest path between two nodes. <code>...</code> is evaluated in
 the same manner as <code><a href='st_network_paths.html'>st_network_paths</a></code>. Returns a

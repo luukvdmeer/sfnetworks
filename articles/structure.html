@@ -103,7 +103,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>1. The sfnetwork data structure</h1>
             
-            <h4 class="date">2020-12-15</h4>
+            <h4 class="date">2020-12-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/structure.Rmd"><code>vignettes/structure.Rmd</code></a></small>
       <div class="hidden name"><code>structure.Rmd</code></div>
@@ -424,12 +424,12 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># … with 98 more rows, and 8 more variables: cnfkm </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span style="color: #555555;">, fromrelation </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span style="color: #555555;">,</span><span>
 #&gt; </span><span style="color: #555555;">#   ref </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span style="color: #555555;">, name </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span style="color: #555555;">, xohmkm </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span style="color: #555555;">, wires </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span style="color: #555555;">, ithmaxa </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span style="color: #555555;">, lid </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>
 </span></code></pre>
-<p>Forwarding of additional arguments to <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">sf::st_as_sf()</a></code> only affects the nodes table, since that is the one that by definition <em>has</em> to be an sf object. Therefore, it left the edges unaffected and created a network without a geometry list-column for the edges (i.e. a network with spatially implicit edges). We can ‘spatially explicitize’ the edges after construction by using a spatial morpher function named <code><a href="../reference/spatial_morphers.html">to_spatial_explicit_edges()</a></code>. To learn more about spatial morphers and what they are, see the <a href="https://luukvdmeer.github.io/sfnetworks/articles/morphers.html">dedicated vignette</a> for that. For now, it is sufficient to know that you can use any spatial morpher function inside the <code><a href="https://tidygraph.data-imaginist.com/reference/morph.html">tidygraph::convert()</a></code> verb to convert your network into a different state.</p>
-<p>The <code><a href="../reference/spatial_morphers.html">to_spatial_explicit_edges()</a></code> function also accepts <code>...</code> arguments that are forwarded to <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">sf::st_as_sf()</a></code>.</p>
+<p>Forwarding of additional arguments to <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">sf::st_as_sf()</a></code> only affects the nodes table, since that is the one that by definition <em>has</em> to be an sf object. Therefore, it left the edges unaffected and created a network without a geometry list-column for the edges (i.e. a network with spatially implicit edges). We can ‘spatially explicitize’ the edges after construction by using a spatial morpher function named <code><a href="../reference/spatial_morphers.html">to_spatial_explicit()</a></code>. To learn more about spatial morphers and what they are, see the <a href="https://luukvdmeer.github.io/sfnetworks/articles/morphers.html">dedicated vignette</a> for that. For now, it is sufficient to know that you can use any spatial morpher function inside the <code><a href="https://tidygraph.data-imaginist.com/reference/morph.html">tidygraph::convert()</a></code> verb to convert your network into a different state.</p>
+<p>The <code><a href="../reference/spatial_morphers.html">to_spatial_explicit()</a></code> function also accepts <code>...</code> arguments that are forwarded to <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">sf::st_as_sf()</a></code>.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">graphml_net</span> <span class="op">=</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/read_graph.html">read_graph</a></span><span class="op">(</span><span class="va">url</span>, format <span class="op">=</span> <span class="st">"graphml"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span>wkt <span class="op">=</span> <span class="st">"wktsrid4326"</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">convert</a></span><span class="op">(</span><span class="va">to_spatial_explicit_edges</span>, wkt <span class="op">=</span> <span class="st">"wktsrid4326"</span>, crs <span class="op">=</span> <span class="fl">4326</span>, .clean <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">convert</a></span><span class="op">(</span><span class="va">to_spatial_explicit</span>, wkt <span class="op">=</span> <span class="st">"wktsrid4326"</span>, crs <span class="op">=</span> <span class="fl">4326</span>, .clean <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="co">#&gt; Checking if spatial network structure is valid...</span>
 <span class="co">#&gt; Spatial network structure is valid</span>
 
@@ -680,11 +680,109 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># … with 698 more rows</span><span>
 </span></code></pre>
 </div>
+<div id="coordinates" class="section level3">
+<h3 class="hasAnchor">
+<a href="#coordinates" class="anchor"></a>Coordinates</h3>
+<p>The coordinates of the active element of a sfnetwork can be extracted with the sf function <code><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">sf::st_coordinates()</a></code>.</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">node_coords</span> <span class="op">=</span> <span class="va">net</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="op">)</span>
+
+<span class="va">node_coords</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="op">]</span>
+<span class="co">#&gt;          X        Y</span>
+<span class="co">#&gt; 1 7.533722 51.95556</span>
+<span class="co">#&gt; 2 7.533461 51.95576</span>
+<span class="co">#&gt; 3 7.532442 51.95422</span>
+<span class="co">#&gt; 4 7.532090 51.95328</span></code></pre></div>
+<p>Besides X and Y coordinates, the features in the network can possibly also have Z and M coordinates.</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Currently there are neither Z nor M coordinates.</span>
+<span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_z_range.html">st_z_range</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span>
+<span class="co">#&gt; NULL</span>
+<span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_m_range.html">st_m_range</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span>
+<span class="co">#&gt; NULL</span>
+
+<span class="co"># Add Z coordinates with value 0 to all features.</span>
+<span class="co"># This will affect both nodes and edges, no matter which element is active.</span>
+<span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_zm.html">st_zm</a></span><span class="op">(</span><span class="va">net</span>, drop <span class="op">=</span> <span class="cn">FALSE</span>, what <span class="op">=</span> <span class="st">"Z"</span><span class="op">)</span></code></pre></div>
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">
+#&gt; #
+#&gt; # A directed multigraph with 14 components with spatially explicit edges
+#&gt; #
+#&gt; # Node Data:     701 x 2 (active)</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XYZ</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
+#&gt;                  geometry     bc
+#&gt;               </span><span style="color: #555555;font-style: italic;">&lt;POINT [°]&gt;</span><span>  </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span> Z (7.533722 51.95556 0) </span><span style="text-decoration: underline;">12</span><span>936.
+#&gt; </span><span style="color: #555555;">2</span><span> Z (7.533461 51.95576 0) </span><span style="text-decoration: underline;">11</span><span>824 
+#&gt; </span><span style="color: #555555;">3</span><span> Z (7.532442 51.95422 0) </span><span style="text-decoration: underline;">11</span><span>926.
+#&gt; </span><span style="color: #555555;">4</span><span>  Z (7.53209 51.95328 0)  </span><span style="text-decoration: underline;">7</span><span>259.
+#&gt; </span><span style="color: #555555;">5</span><span> Z (7.532709 51.95209 0)  </span><span style="text-decoration: underline;">5</span><span>668 
+#&gt; </span><span style="color: #555555;">6</span><span> Z (7.532869 51.95257 0)  </span><span style="text-decoration: underline;">2</span><span>374 
+#&gt; </span><span style="color: #555555;"># … with 695 more rows</span><span>
+#&gt; </span><span style="color: #555555;">#
+#&gt; # Edge Data:     851 x 5</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XYZ</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
+#&gt;    from    to name          type                                        geometry
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>         </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                               </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbecker … residen… Z (7.533722 51.95556 0, 7.533461 51.95576 …
+#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersallee  seconda… Z (7.532442 51.95422 0, 7.53236 51.95377 0…
+#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-Bern… residen… Z (7.532709 51.95209 0, 7.532823 51.95239 …
+#&gt; </span><span style="color: #555555;"># … with 848 more rows</span><span>
+</span></code></pre>
+<p><a href="https://luukvdmeer.github.io/sfnetworks/reference/node_coordinates.html">Coordinate query functions</a> can be used for the nodes to extract only specific coordinate values. Such query functions are meant to be used inside <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">dplyr::mutate()</a></code> or <code><a href="https://dplyr.tidyverse.org/reference/filter.html">dplyr::filter()</a></code> verbs. Whenever a coordinate value is not available for a node, <code>NA</code> is returned along with a warning. Note also that the two-digit coordinate values are only for printing. The real values contain just as much precision as in the geometry list column.</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">net</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_zm.html">st_zm</a></span><span class="op">(</span>drop <span class="op">=</span> <span class="cn">FALSE</span>, what <span class="op">=</span> <span class="st">"Z"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>X <span class="op">=</span> <span class="fu"><a href="../reference/node_coordinates.html">node_X</a></span><span class="op">(</span><span class="op">)</span>, Y <span class="op">=</span> <span class="fu"><a href="../reference/node_coordinates.html">node_Y</a></span><span class="op">(</span><span class="op">)</span>, Z <span class="op">=</span> <span class="fu"><a href="../reference/node_coordinates.html">node_Z</a></span><span class="op">(</span><span class="op">)</span>, M <span class="op">=</span> <span class="fu"><a href="../reference/node_coordinates.html">node_M</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; Warning: Problem with `mutate()` input `M`.</span>
+<span class="co">#&gt; [34mℹ[39m M coordinates are not available</span>
+<span class="co">#&gt; [34mℹ[39m Input `M` is `node_M()`.</span>
+<span class="co">#&gt; Warning: M coordinates are not available</span></code></pre></div>
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">
+#&gt; #
+#&gt; # A directed multigraph with 14 components with spatially explicit edges
+#&gt; #
+#&gt; # Node Data:     701 x 6 (active)</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XYZ</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
+#&gt;                  geometry     bc     X     Y     Z M    
+#&gt;               </span><span style="color: #555555;font-style: italic;">&lt;POINT [°]&gt;</span><span>  </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;lgl&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span> Z (7.533722 51.95556 0) </span><span style="text-decoration: underline;">12</span><span>936.  7.53  52.0     0 </span><span style="color: #BB0000;">NA</span><span>   
+#&gt; </span><span style="color: #555555;">2</span><span> Z (7.533461 51.95576 0) </span><span style="text-decoration: underline;">11</span><span>824   7.53  52.0     0 </span><span style="color: #BB0000;">NA</span><span>   
+#&gt; </span><span style="color: #555555;">3</span><span> Z (7.532442 51.95422 0) </span><span style="text-decoration: underline;">11</span><span>926.  7.53  52.0     0 </span><span style="color: #BB0000;">NA</span><span>   
+#&gt; </span><span style="color: #555555;">4</span><span>  Z (7.53209 51.95328 0)  </span><span style="text-decoration: underline;">7</span><span>259.  7.53  52.0     0 </span><span style="color: #BB0000;">NA</span><span>   
+#&gt; </span><span style="color: #555555;">5</span><span> Z (7.532709 51.95209 0)  </span><span style="text-decoration: underline;">5</span><span>668   7.53  52.0     0 </span><span style="color: #BB0000;">NA</span><span>   
+#&gt; </span><span style="color: #555555;">6</span><span> Z (7.532869 51.95257 0)  </span><span style="text-decoration: underline;">2</span><span>374   7.53  52.0     0 </span><span style="color: #BB0000;">NA</span><span>   
+#&gt; </span><span style="color: #555555;"># … with 695 more rows</span><span>
+#&gt; </span><span style="color: #555555;">#
+#&gt; # Edge Data:     851 x 5</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XYZ</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
+#&gt;    from    to name          type                                        geometry
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>         </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                               </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbecker … residen… Z (7.533722 51.95556 0, 7.533461 51.95576 …
+#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersallee  seconda… Z (7.532442 51.95422 0, 7.53236 51.95377 0…
+#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-Bern… residen… Z (7.532709 51.95209 0, 7.532823 51.95239 …
+#&gt; </span><span style="color: #555555;"># … with 848 more rows</span><span>
+</span></code></pre>
+</div>
 <div id="coordinate-reference-system" class="section level3">
 <h3 class="hasAnchor">
 <a href="#coordinate-reference-system" class="anchor"></a>Coordinate Reference System</h3>
 <p>The Coordinate Reference System in which the coordinates of the network geometries are stored can be extracted with the sf function <code><a href="https://r-spatial.github.io/sf/reference/st_crs.html">sf::st_crs()</a></code>. The CRS in a valid spatial network structure is <em>always</em> the same for nodes and edges.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span>
 <span class="co">#&gt; Coordinate Reference System:</span>
 <span class="co">#&gt;   User input: EPSG:4326 </span>
@@ -708,7 +806,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="co">#&gt;         BBOX[-90,-180,90,180]],</span>
 <span class="co">#&gt;     ID["EPSG",4326]]</span></code></pre></div>
 <p>Coordinates can be transformed using the sf function <code><a href="https://r-spatial.github.io/sf/reference/st_transform.html">sf::st_transform()</a></code>. Since the CRS is the same for nodes and edges, transforming coordinates of the active element into a different CRS will automatically also transform the coordinates of the inactive element into the same target CRS.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="va">net</span>, <span class="fl">3035</span><span class="op">)</span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
 #&gt; #
@@ -746,14 +844,14 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <h3 class="hasAnchor">
 <a href="#bounding-box" class="anchor"></a>Bounding box</h3>
 <p>The bounding box of the active element of a sfnetwork can be extracted with the sf function <code><a href="https://r-spatial.github.io/sf/reference/st_bbox.html">sf::st_bbox()</a></code>.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">net</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="va">nodes</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html">st_bbox</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt;      xmin      ymin      xmax      ymax </span>
 <span class="co">#&gt;  7.522622 51.941512  7.546705 51.961203</span></code></pre></div>
 <p>The bounding boxes of the nodes and edges are not necessarily the same. Therefore, sfnetworks adds the <code><a href="../reference/st_network_bbox.html">st_network_bbox()</a></code> function to retrieve the combined bounding box of the nodes and edges. In this combined bounding box, the most extreme coordinates of the two individual element bounding boxes are preserved. Hence, the <code>xmin</code> value of the network bounding box is the smallest <code>xmin</code> value of the node and edge bounding boxes, et cetera.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">node1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">51</span><span class="op">)</span><span class="op">)</span>
 <span class="va">node2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">51.5</span><span class="op">)</span><span class="op">)</span>
 <span class="va">node3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span>
@@ -778,14 +876,14 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">edge_bbox</span>, border <span class="op">=</span> <span class="st">"blue"</span>, lty <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">small_net</span>, lwd <span class="op">=</span> <span class="fl">2</span>, cex <span class="op">=</span> <span class="fl">4</span>, main <span class="op">=</span> <span class="st">"Network bounding box"</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">net_bbox</span>, border <span class="op">=</span> <span class="st">"red"</span>, lty <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="structure_files/figure-html/unnamed-chunk-25-1.png" width="50%"><img src="structure_files/figure-html/unnamed-chunk-25-2.png" width="50%"></p>
+<p><img src="structure_files/figure-html/unnamed-chunk-28-1.png" width="50%"><img src="structure_files/figure-html/unnamed-chunk-28-2.png" width="50%"></p>
 </div>
 <div id="attribute-geometry-relationships" class="section level3">
 <h3 class="hasAnchor">
 <a href="#attribute-geometry-relationships" class="anchor"></a>Attribute-geometry relationships</h3>
 <p>In sf objects there is the possibility to store information about how attributes relate to geometries (for more information, see <a href="https://r-spatial.github.io/sf/articles/sf1.html#how-attributes-relate-to-geometries">here</a>). You can get and set this information with the function <code><a href="https://r-spatial.github.io/sf/reference/st_agr.html">sf::st_agr()</a></code> (for the setter, you can also use the pipe-friendly version <code><a href="https://r-spatial.github.io/sf/reference/st_agr.html">sf::st_set_agr()</a></code>). In a sfnetwork, you can use the same functions to get and set this information for the active element of the network.</p>
 <p>Note that the <em>to</em> and <em>from</em> columns are not really attributes of edges seen from a network analysis perspective, but they are included in the agr factor to ensure smooth interaction with <code>sf</code>.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">net</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_agr.html">st_set_agr</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"name"</span> <span class="op">=</span> <span class="st">"constant"</span>, <span class="st">"type"</span> <span class="op">=</span> <span class="st">"constant"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -794,11 +892,6 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="co">#&gt;     &lt;NA&gt;     &lt;NA&gt; constant constant </span>
 <span class="co">#&gt; Levels: constant aggregate identity</span></code></pre></div>
 <p>However, be careful, because we are currently not sure if this information survives all functions from <code>igraph</code> and <code>tidygraph</code>. If you have any issues with this, please let us know in our <a href="https://github.com/luukvdmeer/sfnetworks/issues">issue tracker</a>.</p>
-</div>
-<div id="other" class="section level3">
-<h3 class="hasAnchor">
-<a href="#other" class="anchor"></a>Other</h3>
-<p>Also other getter and setter functions for several parts of spatial information are supported for sfnetworks, e.g. <code><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">sf::st_coordinates()</a></code>, <code><a href="https://r-spatial.github.io/sf/reference/st_z_range.html">sf::st_z_range()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/st_m_range.html">sf::st_m_range()</a></code>.</p>
 </div>
 </div>
   </div>

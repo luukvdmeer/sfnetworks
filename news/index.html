@@ -157,8 +157,10 @@
 </li>
 <li>The <code>snap</code> argument is removed from all shortest paths related functions, which will now always snap geospatial points provides as from or to locations to their nearest node on the network before calculating paths.</li>
 <li>The <code>keep</code> argument is removed from the <code><a href="../reference/spatial_morphers.html">to_spatial_simple()</a></code> morpher. It is now recommended to first sort data with <code><a href="https://dplyr.tidyverse.org/reference/arrange.html">dplyr::arrange()</a></code> before calling the morpher.</li>
+<li>The spatial morpher <code>to_spatial_coordinates()</code> is deprecated. Use the new node coordinate query functions instead.</li>
 <li>The spatial morpher <code>to_spatial_dense_graph()</code> is deprecated. A new morpher <code><a href="../reference/spatial_morphers.html">to_spatial_subdivision()</a></code>, with slightly different functionality, is added instead.</li>
-<li>Functions <code>st_network_distance()</code> and <code>edge_straight_length()</code> are renamed to respectively <code><a href="../reference/st_network_cost.html">st_network_cost()</a></code> and <code><a href="../reference/spatial_edge_measures.html">edge_displacement()</a></code>, which reflects their purpose better.</li>
+<li>The spatial morpher <code>to_spatial_implicit_edges()</code> is deprecated. Use <code><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">sf::st_set_geometry()</a></code> instead, with activated edges and value <code>NULL</code>.</li>
+<li>Functions <code>st_network_distance()</code>, <code>edge_straight_length()</code> and <code>to_spatial_explicit_edges()</code> are renamed to respectively <code><a href="../reference/st_network_cost.html">st_network_cost()</a></code>, <code><a href="../reference/spatial_edge_measures.html">edge_displacement()</a></code> and <code><a href="../reference/spatial_morphers.html">to_spatial_explicit()</a></code>, which either reflects their purpose better or fits better into the naming conventions within the package.</li>
 <li>Function arguments that were named <code>graph</code> are renamed to <code>x</code>, to have more consistency across the package.</li>
 </ul>
 </li>
@@ -170,7 +172,7 @@
 </li>
 <li>All existing <code>st_network_*</code> functions in sfnetwork are now generic, such that they can easily be modified by extensions of sfnetwork objects. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/80"><a href='https://github.com/luukvdmeer/sfnetworks/issues/80'>#80</a></a>
 </li>
-<li>The <code><a href="../reference/spatial_morphers.html">to_spatial_explicit_edges()</a></code> morpher now accepts arguments that are forwarded directly to <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">sf::st_as_sf()</a></code>. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/83"><a href='https://github.com/luukvdmeer/sfnetworks/issues/83'>#83</a></a>
+<li>The <code>to_spatial_explicit_edges()</code> morpher now accepts arguments that are forwarded directly to <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">sf::st_as_sf()</a></code>. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/83"><a href='https://github.com/luukvdmeer/sfnetworks/issues/83'>#83</a></a>
 </li>
 <li>Functions that split edges now give a warning that attributes are assumed to be constant. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/84"><a href='https://github.com/luukvdmeer/sfnetworks/issues/84'>#84</a></a>
 </li>
@@ -192,11 +194,12 @@
 </li>
 <li>Several spatial predicate functions are implemented as node and edge query functions, to interpret spatial relations between network elements and other geospatial features directly inside tidy filter and mutate calls. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/60"><a href='https://github.com/luukvdmeer/sfnetworks/issues/60'>#60</a></a>
 </li>
+<li>Node coordinate query functions <code><a href="../reference/node_coordinates.html">node_X()</a></code>, <code><a href="../reference/node_coordinates.html">node_Y()</a></code>, <code><a href="../reference/node_coordinates.html">node_Z()</a></code> and <code><a href="../reference/node_coordinates.html">node_M()</a></code> are implemented to query specific coordinate values from the nodes.</li>
 <li>There is now an <code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html">ggplot2::autoplot()</a></code> method for sfnetworks, allowing to easily plot a sfnetwork as a ggplot2 object. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/86"><a href='https://github.com/luukvdmeer/sfnetworks/issues/86'>#86</a></a>
 </li>
 <li>There is now a <code>print</code> method for morphed sfnetworks. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/88"><a href='https://github.com/luukvdmeer/sfnetworks/issues/88'>#88</a></a>
 </li>
-<li>There are now morphed sfnetworks method for <code><a href="https://r-spatial.github.io/sf/reference/st_join.html">sf::st_join()</a></code>, <code><a href="https://r-spatial.github.io/sf/reference/st_join.html">sf::st_filter()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/st_crop.html">sf::st_crop()</a></code>. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/85"><a href='https://github.com/luukvdmeer/sfnetworks/issues/85'>#85</a></a>
+<li>There are now morphed sfnetworks method for <code>sf::st_geometry&lt;-()</code>, <code><a href="https://r-spatial.github.io/sf/reference/st_join.html">sf::st_join()</a></code>, <code><a href="https://r-spatial.github.io/sf/reference/st_join.html">sf::st_filter()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/st_crop.html">sf::st_crop()</a></code>. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/85"><a href='https://github.com/luukvdmeer/sfnetworks/issues/85'>#85</a></a>
 </li>
 </ul>
 </li>
@@ -235,7 +238,7 @@
 </li>
 <li>Addition of a “node_key” argument to the construction functions, in line with the recent update of tidygraph. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/53"><a href='https://github.com/luukvdmeer/sfnetworks/issues/53'>#53</a></a>
 </li>
-<li>Better integration with Z and M coordinates by adding them as coordinate columns when calling spatial morpher <code><a href="../reference/spatial_morphers.html">to_spatial_coordinates()</a></code>. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/62"><a href='https://github.com/luukvdmeer/sfnetworks/issues/62'>#62</a></a>
+<li>Better integration with Z and M coordinates by adding them as coordinate columns when calling spatial morpher <code>to_spatial_coordinates()</code>. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/62"><a href='https://github.com/luukvdmeer/sfnetworks/issues/62'>#62</a></a>
 </li>
 <li>Improved pkgdown structure. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/44"><a href='https://github.com/luukvdmeer/sfnetworks/issues/44'>#44</a></a>
 </li>
