@@ -54,29 +54,6 @@
 #' @name spatial_morphers
 NULL
 
-#' @describeIn spatial_morphers Store the spatial coordinates of the nodes in
-#' separate coordinate columns, instead of a \code{\link[sf]{sfc}} geometry
-#' list column. If edges are spatially explicit, the edge geometries are
-#' dropped. Returns a \code{morphed_tbl_graph} containing a single element of
-#' class \code{\link[tidygraph]{tbl_graph}}.
-#' @importFrom rlang !!!
-#' @importFrom sf st_coordinates
-#' @importFrom tidygraph mutate
-#' @export
-to_spatial_coordinates = function(x) {
-  # Drop edge geometries if present.
-  if (has_spatially_explicit_edges(x)) x = drop_edge_geom(x)
-  # Create X and Y coordinate columns for the nodes.
-  # Drop original node geometries.
-  x_new = activate(x, "nodes")
-  x_new = mutate(x_new, !!!as.data.frame(st_coordinates(x_new)))
-  x_new = drop_node_geom(x_new)
-  # Return in a list.
-  list(
-    coords = x_new %preserve_active% x
-  )
-}
-
 #' @describeIn spatial_morphers Make a network directed in the direction given
 #' by the linestring geometries of the edges. Differs from
 #' \code{\link[tidygraph]{to_directed}}, which makes a network directed based

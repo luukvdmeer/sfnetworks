@@ -105,15 +105,7 @@ As can be seen, the *.tidygraph_node_index* and *.tidygraph_edge_index* columns 
 
 ## Spatial morphers
 
-A lot of morpher functions are offered by `tidygraph`. See the overview of them [here](https://tidygraph.data-imaginist.com/reference/morphers.html). Most of them should work without problems on sfnetworks, and can be useful for spatial network analysis. On top of that offer, `sfnetworks` adds some additional *spatial morphers* that fit use-cases for which `tidygraph` does not have an implemented morpher function. See the overview of them [here](https://luukvdmeer.github.io/sfnetworks/reference/spatial_morphers.html). Some of the spatial morphers change the original networks topology, while others simply change the way the spatial coordinates are stored. Below they will all be shortly introduced.
-
-### to_spatial_coordinates
-
-The `to_spatial_coordinates()` morpher stores the coordinates of the nodes in separate coordinate columns, instead of an sf-style geometry list column. Edge geometries are dropped. The morphed state contains a single element, and since the geometry list column is gone, this is a tbl_graph instead of a sfnetwork.
-
-```{r}
-convert(net, to_spatial_coordinates, .clean = TRUE)
-```
+A lot of morpher functions are offered by `tidygraph`. See the overview of them [here](https://tidygraph.data-imaginist.com/reference/morphers.html). Most of them should work without problems on sfnetworks, and can be useful for spatial network analysis. On top of that offer, `sfnetworks` adds some additional *spatial morphers* that fit use-cases for which `tidygraph` does not have an implemented morpher function. See the overview of them [here](https://luukvdmeer.github.io/sfnetworks/reference/spatial_morphers.html). Below they will all be shortly introduced.
 
 ### to_spatial_directed
 
