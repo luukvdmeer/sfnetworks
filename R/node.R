@@ -1,3 +1,91 @@
+#' Query node coordinates
+#'
+#' These functions allow to query specific coordinate values from the
+#' geometries of the nodes.
+#'
+#' @return A numeric vector of the same length as the number of nodes in the
+#' network.
+#'
+#' @details Just as with all query functions in tidygraph, these functions
+#' are meant to be called inside tidygraph verbs such as
+#' \code{\link[tidygraph]{mutate}} or \code{\link[tidygraph]{filter}}, where
+#' the network that is currently being worked on is known and thus not needed
+#' as an argument to the function. If you want to use an algorithm outside of
+#' the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to
+#' set the context temporarily while the algorithm is being evaluated.
+#'
+#' @note If a requested coordinate value is not available for a node, \code{NA}
+#' will be returned.
+#'
+#' @examples
+#' library(sf, quietly = TRUE)
+#' library(tidygraph, quietly = TRUE)
+#'
+#' # Create a network.
+#' net = as_sfnetwork(roxel)
+#'
+#' # Use query function in a filter call.
+#' filtered = net %>%
+#'   activate("nodes") %>%
+#'   filter(node_X() > 7.54)
+#'
+#' par(mar = c(1,1,1,1))
+#' plot(net, col = "grey")
+#' plot(filtered, col = "red", add = TRUE)
+#'
+#' # Use query function in a mutate call.
+#' net %>%
+#'   activate("nodes") %>%
+#'   mutate(X = node_X(), Y = node_Y())
+#'
+#' @name node_coordinates
+NULL
+
+#' @name node_coordinates
+#' @export
+node_X = function() {
+  x = .G()
+  require_active_nodes(x)
+  get_coords(x, "X")
+}
+
+#' @name node_coordinates
+#' @export
+node_Y = function() {
+  x = .G()
+  require_active_nodes(x)
+  get_coords(x, "Y")
+}
+
+#' @name node_coordinates
+#' @export
+node_Z = function() {
+  x = .G()
+  require_active_nodes(x)
+  get_coords(x, "Z")
+}
+
+#' @name node_coordinates
+#' @export
+node_M = function() {
+  x = .G()
+  require_active_nodes(x)
+  get_coords(x, "M")
+}
+
+#' @importFrom igraph vcount
+#' @importFrom sf st_coordinates
+get_coords = function(x, value) {
+  all_coords = st_coordinates(x)
+  tryCatch(
+    all_coords[, value],
+    error = function(e) {
+      warning(value, " coordinates are not available", call. = FALSE)
+      rep(NA, vcount(x))
+    }
+  )
+}
+
 #' Query nodes with spatial predicates
 #'
 #' These functions allow to interpret spatial relations between nodes and
@@ -19,8 +107,8 @@
 #' network.
 #'
 #' @details See \code{\link[sf]{geos_binary_pred}} for details on each spatial
-#' predicate. Just as with all query functions in tidygraph, spatial node
-#' measures are meant to be called inside tidygraph verbs such as
+#' predicate. Just as with all query functions in tidygraph, these functions
+#' are meant to be called inside tidygraph verbs such as
 #' \code{\link[tidygraph]{mutate}} or \code{\link[tidygraph]{filter}}, where
 #' the network that is currently being worked on is known and thus not needed
 #' as an argument to the function. If you want to use an algorithm outside of
@@ -53,9 +141,11 @@
 #'
 #' # Use predicate query function in a filter call.
 #' within = net %>%
+#'   activate("nodes") %>%
 #'   filter(node_is_within(poly))
 #'
 #' disjoint = net %>%
+#'   activate("nodes") %>%
 #'   filter(node_is_disjoint(poly))
 #'
 #' par(mar = c(1,1,1,1))
@@ -65,7 +155,7 @@
 #'
 #' # Use predicate query function in a mutate call.
 #' net %>%
-#'   activate(nodes) %>%
+#'   activate("nodes") %>%
 #'   mutate(within = node_is_within(poly)) %>%
 #'   select(within)
 #'
