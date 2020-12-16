@@ -141,6 +141,14 @@ edge_geom = function(x) {
 }
 
 #' @name sf
+#' @importFrom sf st_geometry<-
+#' @export
+`st_geometry<-.morphed_sfnetwork` = function(x, value) {
+  x[] = lapply(x, `st_geometry<-`, value = value)
+  x
+}
+
+#' @name sf
 #' @examples
 #' # Get bbox of the active network element.
 #' st_bbox(net)
