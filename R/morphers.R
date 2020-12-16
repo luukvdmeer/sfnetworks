@@ -141,16 +141,6 @@ to_spatial_explicit = function(x, ...) {
   }
 }
 
-#' @describeIn spatial_morphers Remove linestring geometries of spatially
-#' explicit edges. Returns a \code{morphed_sfnetwork} containing a single
-#' element of class \code{\link{sfnetwork}}.
-#' @export
-to_spatial_implicit_edges = function(x) {
-  list(
-    implicit = implicitize_edges(x)
-  )
-}
-
 #' @describeIn spatial_morphers Limit a network to those nodes and edges that
 #' are part of the shortest path between two nodes. \code{...} is evaluated in
 #' the same manner as \code{\link{st_network_paths}}. Returns a

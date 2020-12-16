@@ -142,17 +142,6 @@ plot(implicit_net, draw_lines = FALSE, main = "Implicit edges")
 plot(explicit_net, main = "Explicit edges")
 ```
 
-### to_spatial_implicit_edges
-
-If your original network is *spatially explicit* (i.e. edges have a geometry list column), the `to_spatial_implicit_edges()` morpher implicitizes the edges by removing the geometry list column from them. The morphed state contains a single sfnetwork.
-
-```{r, fig.show='hold', out.width = '50%'}
-implicit_net = convert(net, to_spatial_implicit_edges)
-
-plot(net, main = "Explicit edges")
-plot(implicit_net, draw_lines = FALSE, main = "Implicit edges")
-```
-
 ### to_spatial_shortest_paths
 
 The `to_spatial_shortest_paths` morpher limits the original network to those nodes and edges that are part of the shortest path between two nodes. Just as with the other shortest path calculation functionalities presented in the [Routing](https://luukvdmeer.github.io/sfnetworks/articles/routing.html) vignette, besides node indices or names, any geospatial point (as sf or sfc object) can be provided as *from* and *to* node. Internally, such points will be snapped to their nearest node before calculating the shortest path.
