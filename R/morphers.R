@@ -105,12 +105,12 @@ to_spatial_directed = function(x) {
   )
 }
 
-#' @describeIn spatial_morphers Create linestring geometries between from and
-#' to nodes of spatially implicit edges. If the edges data can be directly
-#' converted to an object of class \code{\link[sf]{sf}} using
-#' \code{\link[sf]{st_as_sf}}, extra arguments can be provided as \code{...}
-#' which will be forwarded to st_as_sf internally. Otherwise, straight lines
-#' will be drawn between source and target nodes of edges. Returns a
+#' @describeIn spatial_morphers Create linestring geometries between source 
+#' and target nodes of edges. If the edges data can be directly converted to 
+#' an object of class \code{\link[sf]{sf}} using \code{\link[sf]{st_as_sf}}, 
+#' extra arguments can be provided as \code{...} and will be forwarded to 
+#' \code{\link[sf]{st_as_sf}} internally. Otherwise, straight lines will be 
+#' drawn between the source and target node of each edge. Returns a
 #' \code{morphed_sfnetwork} containing a single element of class
 #' \code{\link{sfnetwork}}.
 #' @importFrom rlang !! :=
@@ -118,12 +118,14 @@ to_spatial_directed = function(x) {
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph mutate
 #' @export
-to_spatial_explicit_edges = function(x, ...) {
+to_spatial_explicit = function(x, ...) {
+  # Workflow:
+  # --> If ... is given, convert edges to sf by forwarding ... to st_as_sf.
+  # --> If ... is not given, draw straight lines from source to target nodes.
   args = list(...)
   if (length(args) > 0) {
     # Convert edges to sf by forwarding ... to st_as_sf.
-    e = as_tibble(as_tbl_graph(x), "edges")
-    e_sf = st_as_sf(e, ...)
+    e_sf = st_as_sf(as_tibble(as_tbl_graph(x), "edges"), ...)
     geom_colname = attr(e_sf, "sf_column")
     # Add geometries of created sf object to the edges table of the network.
     x_new = mutate(activate(x, "edges"), !!geom_colname := st_geometry(e_sf))
