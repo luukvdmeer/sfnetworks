@@ -63,13 +63,18 @@ the features given in y.
 }
 \details{
 See \code{\link[sf]{geos_binary_pred}} for details on each spatial
-predicate. Just as with all query functions in tidygraph, spatial edge
-measures are meant to be called inside tidygraph verbs such as
+predicate. Just as with all query functions in tidygraph, these functions
+are meant to be called inside tidygraph verbs such as
 \code{\link[tidygraph]{mutate}} or \code{\link[tidygraph]{filter}}, where
 the network that is currently being worked on is known and thus not needed
 as an argument to the function. If you want to use an algorithm outside of
 the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to
 set the context temporarily while the algorithm is being evaluated.
+}
+\note{
+Note that \code{edge_is_within_distance} is a wrapper around the
+\code{st_is_within_distance} predicate from sf. Hence, it is based on
+'as-the-crow-flies' distance, and not on distances over the network.
 }
 \examples{
 library(sf, quietly = TRUE)

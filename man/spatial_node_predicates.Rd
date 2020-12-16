@@ -48,8 +48,8 @@ the features given in y.
 }
 \details{
 See \code{\link[sf]{geos_binary_pred}} for details on each spatial
-predicate. Just as with all query functions in tidygraph, spatial node
-measures are meant to be called inside tidygraph verbs such as
+predicate. Just as with all query functions in tidygraph, these functions
+are meant to be called inside tidygraph verbs such as
 \code{\link[tidygraph]{mutate}} or \code{\link[tidygraph]{filter}}, where
 the network that is currently being worked on is known and thus not needed
 as an argument to the function. If you want to use an algorithm outside of
@@ -83,9 +83,11 @@ poly = st_multipoint(c(p1, p2, p3, p4)) \%>\%
 
 # Use predicate query function in a filter call.
 within = net \%>\%
+  activate("nodes") \%>\%
   filter(node_is_within(poly))
 
 disjoint = net \%>\%
+  activate("nodes") \%>\%
   filter(node_is_disjoint(poly))
 
 par(mar = c(1,1,1,1))
@@ -95,7 +97,7 @@ plot(disjoint, col = "blue", add = TRUE)
 
 # Use predicate query function in a mutate call.
 net \%>\%
-  activate(nodes) \%>\%
+  activate("nodes") \%>\%
   mutate(within = node_is_within(poly)) \%>\%
   select(within)
 

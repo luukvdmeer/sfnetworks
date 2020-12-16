@@ -2,10 +2,8 @@
 % Please edit documentation in R/morphers.R
 \name{spatial_morphers}
 \alias{spatial_morphers}
-\alias{to_spatial_coordinates}
 \alias{to_spatial_directed}
-\alias{to_spatial_explicit_edges}
-\alias{to_spatial_implicit_edges}
+\alias{to_spatial_explicit}
 \alias{to_spatial_shortest_paths}
 \alias{to_spatial_simple}
 \alias{to_spatial_smooth}
@@ -13,13 +11,9 @@
 \alias{to_spatial_subset}
 \title{Spatial morphers for sfnetworks}
 \usage{
-to_spatial_coordinates(x)
-
 to_spatial_directed(x)
 
-to_spatial_explicit_edges(x, ...)
-
-to_spatial_implicit_edges(x)
+to_spatial_explicit(x, ...)
 
 to_spatial_shortest_paths(x, ...)
 
@@ -71,12 +65,6 @@ of \code{\link[tidygraph]{morph}} for the requirements for custom morphers.
 }
 \section{Functions}{
 \itemize{
-\item \code{to_spatial_coordinates}: Store the spatial coordinates of the nodes in
-separate coordinate columns, instead of a \code{\link[sf]{sfc}} geometry
-list column. If edges are spatially explicit, the edge geometries are
-dropped. Returns a \code{morphed_tbl_graph} containing a single element of
-class \code{\link[tidygraph]{tbl_graph}}.
-
 \item \code{to_spatial_directed}: Make a network directed in the direction given
 by the linestring geometries of the edges. Differs from
 \code{\link[tidygraph]{to_directed}}, which makes a network directed based
@@ -86,18 +74,14 @@ the linestring geometries. Returns a \code{morphed_sfnetwork} containing a
 single element of class \code{\link{sfnetwork}}. This morpher requires edges
 to be spatially explicit. If not, use \code{\link[tidygraph]{to_directed}}.
 
-\item \code{to_spatial_explicit_edges}: Create linestring geometries between from and
-to nodes of spatially implicit edges. If the edges data can be directly
-converted to an object of class \code{\link[sf]{sf}} using
-\code{\link[sf]{st_as_sf}}, extra arguments can be provided as \code{...}
-which will be forwarded to st_as_sf internally. Otherwise, straight lines
-will be drawn between source and target nodes of edges. Returns a
+\item \code{to_spatial_explicit}: Create linestring geometries between source 
+and target nodes of edges. If the edges data can be directly converted to 
+an object of class \code{\link[sf]{sf}} using \code{\link[sf]{st_as_sf}}, 
+extra arguments can be provided as \code{...} and will be forwarded to 
+\code{\link[sf]{st_as_sf}} internally. Otherwise, straight lines will be 
+drawn between the source and target node of each edge. Returns a
 \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}.
-
-\item \code{to_spatial_implicit_edges}: Remove linestring geometries of spatially
-explicit edges. Returns a \code{morphed_sfnetwork} containing a single
-element of class \code{\link{sfnetwork}}.
 
 \item \code{to_spatial_shortest_paths}: Limit a network to those nodes and edges that
 are part of the shortest path between two nodes. \code{...} is evaluated in

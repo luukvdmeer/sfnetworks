@@ -3,9 +3,9 @@
 \name{as_sfnetwork}
 \alias{as_sfnetwork}
 \alias{as_sfnetwork.default}
+\alias{as_sfnetwork.sf}
 \alias{as_sfnetwork.linnet}
 \alias{as_sfnetwork.psp}
-\alias{as_sfnetwork.sf}
 \alias{as_sfnetwork.sfc}
 \alias{as_sfnetwork.sfNetwork}
 \alias{as_sfnetwork.sfnetwork}
@@ -16,11 +16,11 @@ as_sfnetwork(x, ...)
 
 \method{as_sfnetwork}{default}(x, ...)
 
+\method{as_sfnetwork}{sf}(x, ...)
+
 \method{as_sfnetwork}{linnet}(x, ...)
 
 \method{as_sfnetwork}{psp}(x, ...)
-
-\method{as_sfnetwork}{sf}(x, ...)
 
 \method{as_sfnetwork}{sfc}(x, ...)
 
@@ -45,21 +45,27 @@ If an object can be read by \code{\link[tidygraph]{as_tbl_graph}} and the
 nodes can be read by \code{\link[sf]{st_as_sf}}, it is automatically
 supported.
 }
+\section{Methods (by class)}{
+\itemize{
+\item \code{sf}: Only sf objects with either exclusively geometries 
+of type \code{LINESTRING} or exclusively geometries of type \code{POINT} are
+supported. For lines, is assumed that the given features form the edges.
+Nodes are created at the endpoints of the lines. Endpoints which are shared 
+between multiple edges become a single node. For points, it is assumed that 
+the given features geometries form the nodes. They will be connected by
+edges sequentially. Hence, point 1 to point 2, point 2 to point 3, et cetera.
+}}
+
 \examples{
-# From a linnet object.
-if (require(spatstat, quietly = TRUE)) {
-  as_sfnetwork(simplenet)
-}
-
-# From a psp object.
-if (require(spatstat, quietly = TRUE)) {
-  set.seed(42)
-  test_psp = psp(runif(10), runif(10), runif(10), runif(10), window=owin())
-  as_sfnetwork(test_psp)
-}
-
 # From an sf object.
 library(sf, quietly = TRUE)
+
+# With LINESTRING geometries.
+as_sfnetwork(roxel)
+
+par(mar = c(1,1,1,1), mfrow = c(1,2))
+plot(st_geometry(roxel))
+plot(as_sfnetwork(roxel))
 
 # With POINT geometries.
 p1 = st_point(c(7, 51))
@@ -72,11 +78,16 @@ par(mar = c(1,1,1,1), mfrow = c(1,2))
 plot(st_geometry(points))
 plot(as_sfnetwork(points))
 
-# With LINESTRING geometries.
-as_sfnetwork(roxel)
+# From a linnet object.
+if (require(spatstat, quietly = TRUE)) {
+  as_sfnetwork(simplenet)
+}
 
-par(mar = c(1,1,1,1), mfrow = c(1,2))
-plot(st_geometry(roxel))
-plot(as_sfnetwork(roxel))
+# From a psp object.
+if (require(spatstat, quietly = TRUE)) {
+  set.seed(42)
+  test_psp = psp(runif(10), runif(10), runif(10), runif(10), window=owin())
+  as_sfnetwork(test_psp)
+}
 
 }
