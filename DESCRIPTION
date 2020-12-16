@@ -9,19 +9,24 @@ Authors@R:
     c(person(given = "Lucas",
              family = "van der Meer",
              role = c("aut", "cre"),
-             email = "luukvandermeer@live.nl"),
+             email = "luukvandermeer@live.nl", 
+             comment = c(ORCID = "0000-0001-6336-8628")),
       person(given = "Lorena",
              family = "Abad",
              role = "aut",
-             email = "lore.abad6@gmail.com"),
+             email = "lore.abad6@gmail.com",
+             comment = c(ORCID = "0000-0003-0554-734X")),
       person(given = "Andrea",
              family = "Gilardi",
              role = "aut",
-             email = "andrea.gilardi@unimib.it"),
+             email = "andrea.gilardi@unimib.it",
+             comment = c(ORCID = "0000-0002-9424-7439")),
       person(given = "Robin",
              family = "Lovelace",
              role = "aut",
-             email = "r.lovelace@leeds.ac.uk"))
+             email = "r.lovelace@leeds.ac.uk",
+             comment = c(ORCID = "0000-0001-5679-6536")))
+Maintainer: Lucas van der Meer <luukvandermeer@live.nl>      
 Depends: R (>= 3.6)
 License: file LICENSE
 Encoding: UTF-8
