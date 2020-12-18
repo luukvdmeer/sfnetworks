@@ -267,7 +267,7 @@ net %>%
   plot(vertex.color = "black", main = "Nodes without geometries")
 ```
 
-Geometries can be replaced also by using [geometry unary operations](https://r-spatial.github.io/sf/reference/geos_unary.html), as long as they don't break the valid spatial network structure. In practice this means that only `sf::st_reverse()` and `sf::st_simplify()` are supported. When calling `sf::st_reverse()` on the edges of a directed network, not only the geometries will be reversed, but the *from* and *to* columns of the edges will be swapped as well. In the case of undirected networks the these columns remain unchanged, since the terms *from* and *to* don't have a meaning in undirected networks and can be used interchangeably.
+Geometries can be replaced also by using [geometry unary operations](https://r-spatial.github.io/sf/reference/geos_unary.html), as long as they don't break the valid spatial network structure. In practice this means that only `sf::st_reverse()` and `sf::st_simplify()` are supported. When calling `sf::st_reverse()` on the edges of a directed network, not only the geometries will be reversed, but the *from* and *to* columns of the edges will be swapped as well. In the case of undirected networks these columns remain unchanged, since the terms *from* and *to* don't have a meaning in undirected networks and can be used interchangeably.
 
 ```{r}
 as_sfnetwork(roxel, directed = TRUE) %>%
