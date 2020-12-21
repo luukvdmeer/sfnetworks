@@ -235,19 +235,18 @@ paths_sf = as_sfnetwork(roxel) %>%
   slice(unlist(paths$edge_paths)) %>% 
   sf::st_as_sf()
 table(paths_sf$type)
-plot(roxel["type"], lwd = 5, reset = FALSE)
-plot(paths_sf$geometry, add = TRUE, lwd = 2)
+plot(paths_sf["type"], lwd = 5, reset = FALSE)
 ```
 
 As with the overall network, the paths we calculated are dominated by residential streets.
-For the puroposes of illustration, lets imagine we're routing for a vehicle that we want to keep away from residential roads, and which have much lower costs per unit distance on secondary roads:
+For the purposes of illustration, lets imagine we're routing for a vehicle that we want to keep away from residential roads, and which have much lower costs per unit distance on secondary roads:
 
 ```{r}
 weighting_profile = c(
-  cycleway = 10,
-  footway = 10,
-  path = 10,
-  pedestrian = 10,
+  cycleway = Inf,
+  footway = Inf,
+  path = Inf,
+  pedestrian = Inf,
   residential = 3,
   secondary = 1,
   service = 1,
@@ -260,7 +259,7 @@ roxel$weights = sf::st_length(roxel) * roxel$weight_multiplier
 
 We can now recalculate the routes:
 
-```{r}
+```{r, out.width="49%", fig.show='hold'}
 net_weighted = as_sfnetwork(roxel, directed = FALSE) %>%
   st_transform(3035) %>%
   activate("edges") %>%
@@ -272,7 +271,9 @@ paths_sf_weighted = as_sfnetwork(roxel) %>%
   slice(unlist(paths_weighted$edge_paths)) %>% 
   sf::st_as_sf()
 table(paths_sf_weighted$type)
-plot(roxel["type"], lwd = 5, reset = FALSE)
+plot(roxel["type"], lwd = 5, reset = FALSE, main = "No (distance based) weighting profile")
+plot(paths_sf$geometry, add = TRUE, lwd = 2)
+plot(roxel["type"], lwd = 5, reset = FALSE, main = "Custom weighting profile to avoid residential streets")
 plot(paths_sf_weighted$geometry, add = TRUE, lwd = 2)
 ```
 
