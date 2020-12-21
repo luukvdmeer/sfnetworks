@@ -213,3 +213,72 @@ plot(iso_poly, col = NA, border = 'black', lwd = 3, add = TRUE)
 plot(iso, col = colors[2], add = TRUE)
 plot(p, col = colors[1], pch = 8, cex = 2, lwd = 2, add = TRUE)
 ```
+
+## Custom routing profiles
+
+In many cases the shortest path in geographical distances is not actually the fastest or in some other way optimal.
+The most appropriate route may depend on many factors, including staying away from large and potentially unpleasant highways for motor traffic.
+All networks have different characteristics.
+In OSM networks the 'highway' type is often a good (albeit crude) approximation of the network.
+The `roxel` object represents a largely residential network:
+
+```{r}
+table(roxel$type)
+```
+
+Building on the shortest paths calculated in a previous section we can try an alternative routing profile.
+Let's take a look at these paths to see what type of ways they travel on:
+
+```{r}
+paths_sf = as_sfnetwork(roxel) %>% 
+  activate("edges") %>%
+  slice(unlist(paths$edge_paths)) %>% 
+  sf::st_as_sf()
+table(paths_sf$type)
+plot(roxel["type"], lwd = 5, reset = FALSE)
+plot(paths_sf$geometry, add = TRUE, lwd = 2)
+```
+
+As with the overall network, the paths we calculated are dominated by residential streets.
+For the puroposes of illustration, lets imagine we're routing for a vehicle that we want to keep away from residential roads, and which have much lower costs per unit distance on secondary roads:
+
+```{r}
+weighting_profile = c(
+  cycleway = 10,
+  footway = 10,
+  path = 10,
+  pedestrian = 10,
+  residential = 3,
+  secondary = 1,
+  service = 1,
+  track = 10,
+  unclassified = 1 
+)
+roxel$weight_multiplier = weighting_profile[roxel$type]
+roxel$weights = sf::st_length(roxel) * roxel$weight_multiplier 
+```
+
+We can now recalculate the routes:
+
+```{r}
+net_weighted = as_sfnetwork(roxel, directed = FALSE) %>%
+  st_transform(3035) %>%
+  activate("edges") %>%
+  mutate(weight = weights)
+
+paths_weighted = st_network_paths(net_weighted, from = 495, to = c(458, 121))
+paths_sf_weighted = as_sfnetwork(roxel) %>% 
+  activate("edges") %>%
+  slice(unlist(paths_weighted$edge_paths)) %>% 
+  sf::st_as_sf()
+table(paths_sf_weighted$type)
+plot(roxel["type"], lwd = 5, reset = FALSE)
+plot(paths_sf_weighted$geometry, add = TRUE, lwd = 2)
+```
+
+The result show routes that avoid residential networks.
+Developing more sophisticated routing profiles is beyond the scope of this package.
+If you need complex mode-specific routing profiles, we recommend looking at routing proviles associated with open source routing engines, such as [`bike.lua`](https://github.com/fossgis-routing-server/cbf-routing-profiles/blob/master/bike.lua) in in the OSRM project.
+
+Another direction of travel could be to extend on the approach illustrated here, but this work could be well-suited to a separate package that builds on `sfnetworks` (remembering that sophisticated routing profiles account for nodes and edges).
+If you'd like to work on such a project to improve mode-specific routing in R by building on this package, please let us know in the issue tracker!
