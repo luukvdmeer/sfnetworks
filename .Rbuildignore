@@ -9,4 +9,5 @@
 ^CODE_OF_CONDUCT\.md$
 ^CONTRIBUTING\.md$
 ^bench$
-^man/figures/
+^logo\.png$
+^hexlogo\.R$
