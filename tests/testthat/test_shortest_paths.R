@@ -109,3 +109,39 @@ test_that('Duplicated to nodes are removed from st_network_cost calculations
     )
     expect_equal(ncol(costmatsf), 2)
 })
+
+test_that('st_network_paths weights argument is passed implicitly
+          and explicitly',{
+  expect_silent(
+    nodepaths_exp <- net %>%
+      activate('edges') %>%
+      mutate(length = edge_length()) %>%
+      st_network_paths(8, 3, weights = 'length') %>%
+      pull(node_paths) %>% unlist()
+  )
+  expect_silent(
+    nodepaths_imp <- net %>%
+      activate('edges') %>%
+      mutate(weight = edge_length()) %>%
+      st_network_paths(8, 3) %>%
+      pull(node_paths) %>% unlist()
+  )
+  expect_setequal(
+    nodepaths_exp, nodepaths_imp
+  )
+})
+
+test_that('edge_path without set weight is equal or shorter than
+          edge_path with set weight', {
+  edgepaths_weight <- net %>%
+      activate('edges') %>%
+      mutate(weight = edge_length()) %>%
+      st_network_paths(8, 3) %>%
+      pull(node_paths) %>% unlist()
+
+  edgepaths_noweight <- net %>%
+      st_network_paths(8, 3) %>%
+      pull(node_paths) %>% unlist()
+
+  expect_true(length(edgepaths_weight) <= length(edgepaths_weight))
+})
