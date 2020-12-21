@@ -211,11 +211,11 @@ as_sfnetwork.default = function(x, ...) {
   as_sfnetwork(as_tbl_graph(x), ...)
 }
 
-#' @describeIn as_sfnetwork Only sf objects with either exclusively geometries 
+#' @describeIn as_sfnetwork Only sf objects with either exclusively geometries
 #' of type \code{LINESTRING} or exclusively geometries of type \code{POINT} are
 #' supported. For lines, is assumed that the given features form the edges.
-#' Nodes are created at the endpoints of the lines. Endpoints which are shared 
-#' between multiple edges become a single node. For points, it is assumed that 
+#' Nodes are created at the endpoints of the lines. Endpoints which are shared
+#' between multiple edges become a single node. For points, it is assumed that
 #' the given features geometries form the nodes. They will be connected by
 #' edges sequentially. Hence, point 1 to point 2, point 2 to point 3, et cetera.
 #' @examples
@@ -445,4 +445,51 @@ print.morphed_sfnetwork = function(x, ...) {
 #' @export
 is.sfnetwork = function(x) {
   inherits(x, "sfnetwork")
+}
+
+#' Convert a sfnetwork object into linnet format
+#'
+#' A method to convert \code{sfnetwork} object into
+#' \code{\link[spatstat]{linnet}} format and enhance the interoperability
+#' between \code{sfnetworks} and \code{spatstat}.
+#'
+#' @param X A \code{sfnetwork} object with implicit or explicit edges and
+#'   projected CRS.
+#' @param ... Arguments passed to \code{\link[spatstat]{linnet}} (only
+#'   \code{sparse} and \code{warn}).
+#'
+#' @return An object of class \code{linnet}.
+#'
+#' @name as.linnet
+#' @export
+#' @importFrom sf st_as_sf
+#' @examples
+#' if (require("spatstat", quietly = TRUE)) {
+#'   roxel_sfn = as_sfnetwork(roxel) %>%
+#'     sf::st_transform(3035)
+#'   (roxel_linnet = as.linnet(roxel_sfn, sparse = TRUE))
+#'   plot(roxel_linnet)
+#' }
+as.linnet.sfnetwork <- function(X, ...) {
+  # Check the presence of spatstat
+  if (!requireNamespace("spatstat", quietly = TRUE)) {
+    stop("Package spatstat required, please install it first.", call. = FALSE)
+  }
+
+  # Extract the vertices of the sfnetwork
+  X_vertices_ppp <- spatstat::as.ppp(
+    sf::st_as_sf(X, "nodes")
+  )
+
+  # Extract the edge list
+  X_edge_list <- as.matrix(
+    (as.data.frame(activate(X, "edges")))[, c("from", "to")]
+  )
+
+  # build linnet
+  spatstat::linnet(
+    vertices = X_vertices_ppp,
+    edges = X_edge_list,
+    ...
+  )
 }
