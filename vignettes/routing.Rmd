@@ -27,6 +27,14 @@ old_hooks = fansi::set_knit_hooks(knitr::knit_hooks, which = c("output", "messag
 ```
 
 Calculating shortest paths between pairs of nodes is a core task in network analysis. The `sfnetworks` package uses shortest [path functions in `igraph`](https://igraph.org/r/doc/distances.html) to calculate paths between origins and destinations linked by edges in `sfnetworks` objects. This vignette demonstrates their functionality.
+We will use the following packages:
+
+```{r, message=FALSE}
+library(sfnetworks)
+library(sf)
+library(tidygraph)
+library(tidyverse)
+```
 
 In this regard it is important to remember that `sfnetworks` is a general-purpose package for spatial network analysis, not specifically optimized for a single task. If your *only* purpose is many-to-many routing in large networks, there might be other approaches that are faster and fit better to your needs. For example, the R package [dodgr](https://github.com/ATFutures/dodgr) was designed for many-to-many routing on large dual-weighted graphs, with its main focus on OpenStreetMap road network data. The R package [cppRouting](https://github.com/vlarmet/cppRouting) that contains functions to calculate shortest paths and isochrones/isodistances on weighted graphs.
 It is also possible to use the interfaces to external OpenStreetMap routing engines such as [graphhopper](https://github.com/crazycapivara/graphhopper-r), [osrm](https://github.com/rCarto/osrm) and [opentripplanner](https://github.com/ropensci/opentripplanner). The [stplanr](https://github.com/ropensci/stplanr) package for sustainable transport planning lets you use many routing engines from a single interface, using the [`route()` function](https://docs.ropensci.org/stplanr/reference/route.html), including routing using local R objects.
@@ -41,14 +49,7 @@ The route of the shortest path between two nodes in a network is influenced by t
 
 Every function that is about the calculation of shortest paths also accepts a `weights` argument which allows you to provide edge weights explicitly. In `sfnetworks`, this argument can be a numeric vector of the same length as the number of edges in the network, but also the name of a column in the edges table. The `weights` argument will always overrule the default behavior of using the *weight* column for edge weights. If you have a *weight* column but want to calculate paths *without* using weights, set the `weights = NA`.
 
-The `edge_length()` function can be used to calculate the geographic length of each edge, such that you can use those as weights in shortest paths calculations. The function is meant to be used inside a `dplyr::mutate()` verb, as follows:
-
-```{r, message=FALSE}
-library(sfnetworks)
-library(sf)
-library(tidygraph)
-library(tidyverse)
-```
+The `edge_length()` function can be used to calculate the length of each edge in geographic space, such that you can use those as weights in shortest paths calculations. The function is meant to be used inside a `dplyr::mutate()` verb, as follows:
 
 ```{r}
 net = as_sfnetwork(roxel, directed = FALSE) %>%
