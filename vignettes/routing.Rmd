@@ -69,7 +69,7 @@ The function `st_network_paths()` is a wrapper around the igraph function `igrap
 
 Just as `igraph::shortest_paths()`, the `st_network_paths()` function is meant for one-to-one and one-to-many routing. Hence, it is only possible to provide a single *from* location, while the *to* locations can be more than one.
 
-Lets start with the most basic example of providing node indices as *from* and *to* locations. Remember that a node index in a sfnetwork refers to the position of the node in the nodes table of the network (i.e. its rownumber). There is also the possibility to use character encoded node names instead of numeric node indices. This requires the nodes table to have a column *name* with a unique name for each node. 
+Lets start with the most basic example of providing node indices as *from* and *to* locations. Remember that a node index in an `sfnetwork` object refers to the position of the node in the nodes table of the network (i.e. its row number). There is also the possibility to use character encoded node names instead of numeric node indices. This requires the nodes table to have a column *name* with a unique name for each node. 
 
 Since we have created a *weight* column in the previous section, these weights (i.e. the length of the edge geometries) will be used automatically in the shortest paths calculation.
 
@@ -106,7 +106,7 @@ net %>%
   plot(col = colors, pch = 8, cex = 2, lwd = 2, add = TRUE)
 ```
 
-Now we will create some geospatial points that do not intersect with any node in the network. Providing them to `st_network_paths()` will first find the nearest node to each of them, and then calculate the shortest paths accordingly.
+Next we will create some geospatial points that do not intersect with any node in the network. Providing them to `st_network_paths()` will first find the nearest node to each of them, and then calculate the shortest paths accordingly.
 
 ```{r, fig.height=5, fig.width=5}
 p1 = st_geometry(net, "nodes")[495] + st_sfc(st_point(c(50, -50)))
@@ -148,6 +148,7 @@ The shortest paths calculation as described above is only supported for one-to-o
 st_network_cost(net, from = c(p1, p2, p3), to = c(p1, p2, p3))
 ```
 
+The units of the cost will be the same as the units of length used in `sf`, in this case meters.
 If we don't provide any from and to points, `st_network_cost()` will by default calculate the cost matrix for the entire network.
 
 ```{r}
@@ -173,7 +174,7 @@ types = net %>%
 
 types
 
-# Randomly define a walking speed in m/s for each type.
+# Randomly define a walking speed in m/s for each type, with values between 3 and 7 km/hr.
 set.seed(1)
 speeds = runif(length(types), 3*1000/60/60, 7*1000/60/60)
 
