@@ -132,7 +132,7 @@ st_network_paths = function(x, from, to = igraph::V(x), weights = NULL,
 #' @export
 st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
                                       weights = NULL, output = "both",
-                                      all = FALSE, ...) {
+                                      all = FALSE, simple = FALSE, ...) {
   if (length(from) > 1) {
     warning(
       "Although argument 'from' has length > 1, ",
@@ -143,7 +143,13 @@ st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
   # Set common shortest paths arguments.
   args = set_paths_args(x, from, to, weights)
   if(all){
-    paths = do.call(all_shortest_paths, args)
+    paths = do.call(all_shortest_paths, c(args, ...))
+    # Extract paths of node indices.
+    npaths = lapply(paths[[1]], as.integer)
+    # Return as column in a tibble.
+    as_tibble(do.call(cbind, list(node_paths = npaths)))
+  } else if(simple) {
+    paths = do.call(all_simple_paths, c(args, ...))
     # Extract paths of node indices.
     npaths = lapply(paths[[1]], as.integer)
     # Return as column in a tibble.
