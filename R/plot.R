@@ -55,11 +55,11 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
   do.call(plot, dots)
 }
 
-#' autoplot method for sfnetworks
+#' Plot sfnetwork geometries with ggplot2
 #'
 #' Plot the geometries of an object of class \code{\link{sfnetwork}}
 #' automatically as a \code{\link[ggplot2]{ggplot}} object. Use this method
-#' without the .sfnetwork suffix and after loading the ggplot2 package.
+#' without the .sfnetwork suffix and after loading the \code{ggplot2} package.
 #'
 #' @param object An object of class \code{\link{sfnetwork}}.
 #'

@@ -28,6 +28,14 @@ old_hooks = fansi::set_knit_hooks(knitr::knit_hooks, which = c("output", "messag
 
 In some of the previous vignettes they were already mentioned here and there: spatial morpher functions. This vignette describes in more detail what they are and how to use them.
 
+```{r, message=FALSE}
+library(sfnetworks)
+library(sf)
+library(tidygraph)
+library(tidyverse)
+library(igraph)
+```
+
 ## Morphing and unmorphing
 *Morphing* networks is a functionality that has its roots in `tidygraph`. It allows you to *temporarily* change the topology of the original network with the `tidygraph::morph()` verb, perform some actions on this "morphed state" of the network using `dplyr` verbs, and finally merge the changes back into the original network with the `tidygraph::unmorph()` verb. How the topology is changed during morphing depends on the used *morpher function*, which you provide to `tidygraph::morph()`.
 
@@ -36,13 +44,6 @@ You can choose between a wide range of available *morpher functions* in `tidygra
 In network analysis, community detection algorithms allow you to discover cohesive groups in networks, based on specific network properties. There is a large offer of (wrappers around) such algorithms in `tidygraph`, see [here](https://tidygraph.data-imaginist.com/reference/group_graph.html). Most of them are intended for and can only be applied to the nodes. For example, the often used [Louvain algorithm](https://en.wikipedia.org/wiki/Louvain_method), that seeks to optimize [modularity](https://en.wikipedia.org/wiki/Modularity_(networks)) of the partition.
 
 But what if we want to detect communities within *edges*? Then, the `tidygraph::to_linegraph()` morpher comes in handy. It converts a network into its linegraph, where nodes become edges and edges become nodes. That is, we can morph the network into its linegraph, run the community detection algorithm on the *nodes* of the morphed state, attach to each node information about the group it is assigned to, and automatically merge those changes back into the *edges* of the original network.
-
-```{r, message=FALSE}
-library(sfnetworks)
-library(sf)
-library(tidygraph)
-library(tidyverse)
-```
 
 ```{r}
 net = as_sfnetwork(roxel, directed = FALSE) %>%
@@ -73,6 +74,31 @@ grouped_net %>%
   transmute(group = as.factor(group)) %>%
   filter(group %in% c(1:11)) %>%
   plot(lwd = 4, add = TRUE)
+```
+
+Another application of the `tidygraph::to_linegraph()` morpher is to find "cut edges" in the network. These are edges that break the connectivity of a connected component when they are removed. Hence, they have a crucial function in preserving the connectivity of a network.
+
+```{r, fig.show='hold', out.width = '50%'}
+new_net = net %>%
+  mutate(is_cut = node_is_cut()) %>%
+  morph(to_linegraph) %>%
+  mutate(is_cut = node_is_cut()) %>%
+  unmorph()
+
+cut_nodes = new_net %>%
+  activate("nodes") %>%
+  filter(is_cut) %>%
+  st_geometry()
+
+cut_edges = new_net %>%
+  activate("edges") %>%
+  filter(is_cut) %>%
+  st_geometry()
+
+plot(net, main = "Cut nodes")
+plot(cut_nodes, col = "red", pch = 20, cex = 2, add = TRUE)
+plot(net, main = "Cut edges")
+plot(cut_edges, col = "red", lwd = 4, add = TRUE)
 ```
 
 Internally, a morphed state of a network is a list, in which each element is a network on its own. Some morphers create a list with only a single element, like the linegraph example above, while others create a list with multiple elements. For example, the `tidygraph::to_components()` morpher splits the original network into its unconnected components, storing each component as a separate network in the list, with the first element being the largest component.

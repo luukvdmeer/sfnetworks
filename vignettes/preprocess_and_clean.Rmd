@@ -28,13 +28,6 @@ old_hooks = fansi::set_knit_hooks(knitr::knit_hooks, which = c("output", "messag
 
 Unfortunately real-world datasets are not always as friendly as those used in tutorials. Pre-processing of the data will often be needed, as well as cleaning the network after construction. This vignette presents some examples that may be of use when going through this phase.
 
-## Common pre-processing tasks
-
-### Rounding coordinates
-You might have a set of lines in which some endpoints are *almost* shared between two lines. However, the coordinates are stored with so much precision that there is a minor difference between the two points. When constructing a sfnetwork these lines will *not* be connected because the points are not *exactly* equal.
-
-We can pre-process the lines by reducing the precision of the coordinates such that the points become *exactly* equal. A tiny example:
-
 ```{r, message=FALSE}
 library(sfnetworks)
 library(sf)
@@ -42,6 +35,13 @@ library(tidygraph)
 library(tidyverse)
 library(igraph)
 ```
+
+## Common pre-processing tasks
+
+### Rounding coordinates
+You might have a set of lines in which some endpoints are *almost* shared between two lines. However, the coordinates are stored with so much precision that there is a minor difference between the two points. When constructing a sfnetwork these lines will *not* be connected because the points are not *exactly* equal.
+
+We can pre-process the lines by reducing the precision of the coordinates such that the points become *exactly* equal. A tiny example:
 
 ```{r}
 p1 = st_point(c(7, 51))

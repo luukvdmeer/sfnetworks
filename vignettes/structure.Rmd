@@ -30,6 +30,14 @@ The core of the sfnetworks package is the sfnetwork data structure. It inherits 
 
 It is possible to apply any function from the [tidyverse packages](https://www.tidyverse.org/) for data science directly to a sfnetwork, as long as `tidygraph` implemented a network specific method for it. On top of that, `sfnetworks` added several methods for functions from the [sf package](https://r-spatial.github.io/sf/) for spatial data science, such that you can also apply those directly to the network. This takes away the need to constantly switch between the tbl_graph, tbl_df and sf classes when working with geospatial networks.
 
+```{r, message=FALSE}
+library(sfnetworks)
+library(sf)
+library(tidygraph)
+library(tidyverse)
+library(igraph)
+```
+
 ## Philosophy
 
 The philosophy of a tbl_graph object is best described by the following paragraph from the [tidygraph introduction](https://www.data-imaginist.com/2017/introducing-tidygraph/): "Relational data cannot in any meaningful way be encoded as a single tidy data frame. On the other hand, both node and edge data by itself fits very well within the tidy concept as each node and edge is, in a sense, a single observation. Thus, a close approximation of tidyness for relational data is two tidy data frames, one describing the node data and one describing the edge data." 
@@ -43,13 +51,6 @@ We do need to make a note here. In a geospatial network, the nodes *always* have
 ### From a nodes and edges table
 
 The most basic way to construct a sfnetwork with spatially explicit edges is by providing the `sfnetwork` construction function one sf object containing the nodes, and another sf object containing the edges. This edges table should include a *from* and *to* column referring to the node indices of the edge endpoints. With a node index we mean the position of a node in the nodes table (i.e. its rownumber). A small toy example:
-
-```{r, message=FALSE}
-library(sfnetworks)
-library(sf)
-library(tidygraph)
-library(tidyverse)
-```
 
 ```{r}
 p1 = st_point(c(7, 51))
