@@ -26,9 +26,19 @@ options(crayon.enabled = TRUE)
 old_hooks = fansi::set_knit_hooks(knitr::knit_hooks, which = c("output", "message", "error"))
 ```
 
-Calculating shortest paths between pairs of nodes is a core task in network analysis. The `sfnetworks` package offers wrappers around shortest paths calculation function from `igraph` that makes it easier to use them when working with spatial data and tidyverse packages. This vignette will present their functionality.
+Calculating shortest paths between pairs of nodes is a core task in network analysis. The `sfnetworks` package uses shortest [path functions in `igraph`](https://igraph.org/r/doc/distances.html) to calculate paths between origins and destinations linked by edges in `sfnetworks` objects. This vignette demonstrates their functionality.
+We will use the following packages:
 
-In this regard it is important to remember that `sfnetworks` is a general-purpose package for spatial network analysis, not specifically optimized for a single task. If your *only* purpose is many-to-many routing in large networks, there might be other packages out there that are faster and fit better to your needs. For example, [dodgr](https://github.com/ATFutures/dodgr) is a package that is designed for many-to-many routing on large dual-weighted graphs, with its main focus on OpenStreetMap road network data. For these data, it is also possible to use the R-bridges to external OpenStreetMap routing engines such as [graphhopper](https://github.com/crazycapivara/graphhopper-r), [osrm](https://github.com/rCarto/osrm) and [opentripplanner](https://github.com/ropensci/opentripplanner). The [stplanr](https://github.com/ropensci/stplanr) package for sustainable transport planning lets you connect to such engines from within a single interface. Finally, there is [cppRouting](https://github.com/vlarmet/cppRouting) that contains functions to calculate shortest paths and isochrones/isodistances on weighted graphs. Of course, all these packages can be happily used *alongside* `sfnetworks`.
+```{r, message=FALSE}
+library(sfnetworks)
+library(sf)
+library(tidygraph)
+library(tidyverse)
+```
+
+In this regard it is important to remember that `sfnetworks` is a general-purpose package for spatial network analysis, not specifically optimized for a single task. If your *only* purpose is many-to-many routing in large networks, there might be other approaches that are faster and fit better to your needs. For example, the R package [dodgr](https://github.com/ATFutures/dodgr) was designed for many-to-many routing on large dual-weighted graphs, with its main focus on OpenStreetMap road network data. The R package [cppRouting](https://github.com/vlarmet/cppRouting) that contains functions to calculate shortest paths and isochrones/isodistances on weighted graphs.
+It is also possible to use the interfaces to external OpenStreetMap routing engines such as [graphhopper](https://github.com/crazycapivara/graphhopper-r), [osrm](https://github.com/rCarto/osrm) and [opentripplanner](https://github.com/ropensci/opentripplanner). The [stplanr](https://github.com/ropensci/stplanr) package for sustainable transport planning lets you use many routing engines from a single interface, using the [`route()` function](https://docs.ropensci.org/stplanr/reference/route.html), including routing using local R objects.
+Of course, all these packages can be happily used *alongside* `sfnetworks`.
 
 ## Setting edge weights
 
@@ -37,16 +47,9 @@ The route of the shortest path between two nodes in a network is influenced by t
 - If there is a column in the edges table named *weight*, the values in these column are automatically used as edge weights. These values should be numeric, otherwise an error will be thrown.
 - If there is no *weight* column, shortest paths are calculated without edge weights. In practice that means that the weight of all edges is equal to 1. That is, the shortest path between node A and node B is the path with the fewest *number* of edges.
 
-Every function that is about the calculation of shortest paths also accepts a `weights` argument which allows you to provide edge weights explicitly. In `sfnetworks`, this argument can be a numeric vector of the same length as the number of edges in the network, but also the name of a column in the edges table. The `weights` argument will always overrule the default behavior of using the *weight* column for edge weights. If you have a *weight* column but want to calculate paths *without* using weights, set the `weights` argument to `NA`.
+Every function that is about the calculation of shortest paths also accepts a `weights` argument which allows you to provide edge weights explicitly. In `sfnetworks`, this argument can be a numeric vector of the same length as the number of edges in the network, but also the name of a column in the edges table. The `weights` argument will always overrule the default behavior of using the *weight* column for edge weights. If you have a *weight* column but want to calculate paths *without* using weights, set the `weights = NA`.
 
-The `edge_length()` function can be used to calculate the geographic length of each edge, such that you can use those as weights in shortest paths calculations. The function is meant to be used inside a `dplyr::mutate()` verb, as follows:
-
-```{r, message=FALSE}
-library(sfnetworks)
-library(sf)
-library(tidygraph)
-library(tidyverse)
-```
+The `edge_length()` function can be used to calculate the length of each edge in geographic space, such that you can use those as weights in shortest paths calculations. The function is meant to be used inside a `dplyr::mutate()` verb, as follows:
 
 ```{r}
 net = as_sfnetwork(roxel, directed = FALSE) %>%
@@ -66,7 +69,7 @@ The function `st_network_paths()` is a wrapper around the igraph function `igrap
 
 Just as `igraph::shortest_paths()`, the `st_network_paths()` function is meant for one-to-one and one-to-many routing. Hence, it is only possible to provide a single *from* location, while the *to* locations can be more than one.
 
-Lets start with the most basic example of providing node indices as *from* and *to* locations. Remember that a node index in a sfnetwork refers to the position of the node in the nodes table of the network (i.e. its rownumber). There is also the possibility to use character encoded node names instead of numeric node indices. This requires the nodes table to have a column *name* with a unique name for each node. 
+Lets start with the most basic example of providing node indices as *from* and *to* locations. Remember that a node index in an `sfnetwork` object refers to the position of the node in the nodes table of the network (i.e. its row number). There is also the possibility to use character encoded node names instead of numeric node indices. This requires the nodes table to have a column *name* with a unique name for each node. 
 
 Since we have created a *weight* column in the previous section, these weights (i.e. the length of the edge geometries) will be used automatically in the shortest paths calculation.
 
@@ -103,7 +106,7 @@ net %>%
   plot(col = colors, pch = 8, cex = 2, lwd = 2, add = TRUE)
 ```
 
-Now we will create some geospatial points that do not intersect with any node in the network. Providing them to `st_network_paths()` will first find the nearest node to each of them, and then calculate the shortest paths accordingly.
+Next we will create some geospatial points that do not intersect with any node in the network. Providing them to `st_network_paths()` will first find the nearest node to each of them, and then calculate the shortest paths accordingly.
 
 ```{r, fig.height=5, fig.width=5}
 p1 = st_geometry(net, "nodes")[495] + st_sfc(st_point(c(50, -50)))
@@ -145,6 +148,7 @@ The shortest paths calculation as described above is only supported for one-to-o
 st_network_cost(net, from = c(p1, p2, p3), to = c(p1, p2, p3))
 ```
 
+The units of the cost will be the same as the units of length used in `sf`, in this case meters.
 If we don't provide any from and to points, `st_network_cost()` will by default calculate the cost matrix for the entire network.
 
 ```{r}
@@ -170,7 +174,7 @@ types = net %>%
 
 types
 
-# Randomly define a walking speed in m/s for each type.
+# Randomly define a walking speed in m/s for each type, with values between 3 and 7 km/hr.
 set.seed(1)
 speeds = runif(length(types), 3*1000/60/60, 7*1000/60/60)
 
@@ -209,3 +213,73 @@ plot(iso_poly, col = NA, border = 'black', lwd = 3, add = TRUE)
 plot(iso, col = colors[2], add = TRUE)
 plot(p, col = colors[1], pch = 8, cex = 2, lwd = 2, add = TRUE)
 ```
+
+## Custom routing profiles
+
+In many cases the shortest path in geographical distances is not actually the fastest or in some other way optimal.
+The most appropriate route may depend on many factors, including staying away from large and potentially unpleasant highways for motor traffic.
+All networks have different characteristics.
+In OSM networks the 'highway' type is often a good (albeit crude) approximation of the network.
+The `roxel` object represents a largely residential network:
+
+```{r}
+table(roxel$type)
+```
+
+Building on the shortest paths calculated in a previous section we can try an alternative routing profile.
+Let's take a look at these paths to see what type of ways they travel on:
+
+```{r}
+paths_sf = as_sfnetwork(roxel) %>% 
+  activate("edges") %>%
+  slice(unlist(paths$edge_paths)) %>% 
+  sf::st_as_sf()
+table(paths_sf$type)
+plot(paths_sf["type"], lwd = 5, reset = FALSE)
+```
+
+As with the overall network, the paths we calculated are dominated by residential streets.
+For the purposes of illustration, lets imagine we're routing for a vehicle that we want to keep away from residential roads, and which have much lower costs per unit distance on secondary roads:
+
+```{r}
+weighting_profile = c(
+  cycleway = Inf,
+  footway = Inf,
+  path = Inf,
+  pedestrian = Inf,
+  residential = 3,
+  secondary = 1,
+  service = 1,
+  track = 10,
+  unclassified = 1 
+)
+roxel$weight_multiplier = weighting_profile[roxel$type]
+roxel$weights = sf::st_length(roxel) * roxel$weight_multiplier 
+```
+
+We can now recalculate the routes:
+
+```{r, out.width="49%", fig.show='hold'}
+net_weighted = as_sfnetwork(roxel, directed = FALSE) %>%
+  st_transform(3035) %>%
+  activate("edges") %>%
+  mutate(weight = weights)
+
+paths_weighted = st_network_paths(net_weighted, from = 495, to = c(458, 121))
+paths_sf_weighted = as_sfnetwork(roxel) %>% 
+  activate("edges") %>%
+  slice(unlist(paths_weighted$edge_paths)) %>% 
+  sf::st_as_sf()
+table(paths_sf_weighted$type)
+plot(roxel["type"], lwd = 5, reset = FALSE, main = "No (distance based) weighting profile")
+plot(paths_sf$geometry, add = TRUE, lwd = 2)
+plot(roxel["type"], lwd = 5, reset = FALSE, main = "Custom weighting profile to avoid residential streets")
+plot(paths_sf_weighted$geometry, add = TRUE, lwd = 2)
+```
+
+The result show routes that avoid residential networks.
+Developing more sophisticated routing profiles is beyond the scope of this package.
+If you need complex mode-specific routing profiles, we recommend looking at routing proviles associated with open source routing engines, such as [`bike.lua`](https://github.com/fossgis-routing-server/cbf-routing-profiles/blob/master/bike.lua) in in the OSRM project.
+
+Another direction of travel could be to extend on the approach illustrated here, but this work could be well-suited to a separate package that builds on `sfnetworks` (remembering that sophisticated routing profiles account for nodes and edges).
+If you'd like to work on such a project to improve mode-specific routing in R by building on this package, please let us know in the issue tracker!
