@@ -15,7 +15,7 @@ test_that('Only the first from argument
     net,
     from = from_indices,
     to = rdm,
-    all = TRUE), 'only the first element is used')
+    type = "all_shortest"), 'only the first element is used')
   resulting_from_nodes = paths %>%
     rowwise() %>%
     mutate(node_from = first(node_paths)) %>%
@@ -34,7 +34,7 @@ test_that('Empty geometries for all from and/or to arguments
     net,
     from = rdm[1],
     to = st_sfc(st_point(), crs = st_crs(net)),
-    all = TRUE
+    type = "all_shortest"
   ), 'are all empty')
 })
 
@@ -112,6 +112,7 @@ test_that('Duplicated to nodes are removed from st_network_cost calculations
 
 test_that('st_network_paths weights argument is passed implicitly
           and explicitly',{
+  # Set weights to a named column
   expect_silent(
     nodepaths_exp <- net %>%
       activate('edges') %>%
@@ -119,6 +120,7 @@ test_that('st_network_paths weights argument is passed implicitly
       st_network_paths(8, 3, weights = 'length') %>%
       pull(node_paths) %>% unlist()
   )
+  # Set weights to a column called weight
   expect_silent(
     nodepaths_imp <- net %>%
       activate('edges') %>%
@@ -126,8 +128,20 @@ test_that('st_network_paths weights argument is passed implicitly
       st_network_paths(8, 3) %>%
       pull(node_paths) %>% unlist()
   )
+  # Do not set weight but expect it is computed internally
+  expect_silent(
+    nodepaths_aut <- net %>%
+      st_network_paths(8, 3) %>%
+      pull(node_paths) %>% unlist()
+  )
   expect_setequal(
     nodepaths_exp, nodepaths_imp
+  )
+  expect_setequal(
+    nodepaths_exp, nodepaths_aut
+  )
+  expect_setequal(
+    nodepaths_aut, nodepaths_imp
   )
 })
 
@@ -140,7 +154,7 @@ test_that('edge_path without set weight is equal or shorter than
       pull(node_paths) %>% unlist()
 
   edgepaths_noweight <- net %>%
-      st_network_paths(8, 3) %>%
+      st_network_paths(8, 3, weights = NA) %>%
       pull(node_paths) %>% unlist()
 
   expect_true(length(edgepaths_noweight) <= length(edgepaths_weight))

@@ -127,7 +127,7 @@
 #' @importFrom igraph V
 #' @export
 st_network_paths = function(x, from, to = igraph::V(x), weights = NULL,
-                             output = "both", all = FALSE, ...) {
+                            type = "shortest", ...) {
   UseMethod("st_network_paths")
 }
 

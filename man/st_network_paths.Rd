@@ -9,8 +9,7 @@ st_network_paths(
   from,
   to = igraph::V(x),
   weights = NULL,
-  output = "both",
-  all = FALSE,
+  type = "shortest",
   ...
 )
 }
@@ -43,11 +42,6 @@ geographic edge lengths will be calculated internally and used as weights.
 If set to \code{NA}, no weights are used, even if the edges have a
 \code{weight} column. Ignored when \code{type = 'all_simple'}.}
 
-\item{...}{Arguments passed on to the corresponding
-\code{\link[igraph:shortest_paths]{igraph}} or
-\code{\link[igraph:all_simple_paths]{igraph}} function. Arguments
-\code{predecessors} and \code{inbound.edges} are ignored.}
-
 \item{type}{Character defining which type of path calculation should be
 performed. If set to \code{'shortest'} paths are calculated using
 \code{\link[igraph]{shortest_paths}}, if set to
@@ -55,6 +49,11 @@ performed. If set to \code{'shortest'} paths are calculated using
 \code{\link[igraph]{all_shortest_paths}}, if set to
 \code{'all_simple'} paths are calculated using
 \code{\link[igraph]{all_simple_paths}}. Defaults to \code{'shortest'}.}
+
+\item{...}{Arguments passed on to the corresponding
+\code{\link[igraph:shortest_paths]{igraph}} or
+\code{\link[igraph:all_simple_paths]{igraph}} function. Arguments
+\code{predecessors} and \code{inbound.edges} are ignored.}
 }
 \value{
 An object of class \code{\link[tibble]{tbl_df}} with one row per
