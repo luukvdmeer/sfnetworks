@@ -3,7 +3,7 @@
 \name{autoplot}
 \alias{autoplot}
 \alias{autoplot.sfnetwork}
-\title{autoplot method for sfnetworks}
+\title{Plot sfnetwork geometries with ggplot2}
 \usage{
 autoplot.sfnetwork(object, ...)
 }
@@ -15,7 +15,7 @@ autoplot.sfnetwork(object, ...)
 \description{
 Plot the geometries of an object of class \code{\link{sfnetwork}}
 automatically as a \code{\link[ggplot2]{ggplot}} object. Use this method
-without the .sfnetwork suffix and after loading the ggplot2 package.
+without the .sfnetwork suffix and after loading the \code{ggplot2} package.
 }
 \details{
 See \code{\link[ggplot2]{autoplot}}.

@@ -3,35 +3,37 @@
 \name{as.linnet}
 \alias{as.linnet}
 \alias{as.linnet.sfnetwork}
-\title{Convert an sfnetwork object into linnet format}
+\title{Convert a sfnetwork into a linnet}
 \usage{
 as.linnet.sfnetwork(X, ...)
 }
 \arguments{
-\item{X}{An \code{sfnetwork} object with implicit or explicit edges and
-projected CRS.}
+\item{X}{An object of class \code{\link{sfnetwork}} with a projected CRS.}
 
-\item{...}{Arguments passed to \code{\link[spatstat]{linnet}} (only
-\code{sparse} and \code{warn}).}
+\item{...}{Arguments passed to \code{\link[spatstat]{linnet}}.}
 }
 \value{
-An object of class \code{linnet}.
+An object of class \code{\link[spatstat]{linnet}}.
 }
 \description{
-A method to convert \code{sfnetwork} object into
+A method to convert an object of class \code{\link{sfnetwork}} into
 \code{\link[spatstat]{linnet}} format and enhance the interoperability
 between \code{sfnetworks} and \code{spatstat}. Use this method without the
 .sfnetwork suffix and after loading the \code{spatstat} package.
-}
-\details{
-Check also \code{\link[sfnetworks]{as_sfnetwork}} for other methods to
-convert \code{\link[spatstat]{linnet}} objects into \code{sfnetwork} format.
 }
 \examples{
 if (require("spatstat", quietly = TRUE)) {
   roxel_sfn = as_sfnetwork(roxel) \%>\%
     sf::st_transform(3035)
-  (roxel_linnet = as.linnet(roxel_sfn, sparse = TRUE))
+
+  roxel_linnet = as.linnet(roxel_sfn, sparse = TRUE)
+  roxel_linnet
+  par(mar = c(1,1,1,1))
   plot(roxel_linnet)
 }
+
+}
+\seealso{
+\code{\link{as_sfnetwork}} to convert objects of class
+\code{\link[spatstat]{linnet}} into objects of class \code{\link{sfnetwork}}.
 }
