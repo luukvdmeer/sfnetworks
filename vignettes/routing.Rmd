@@ -39,12 +39,12 @@ library(tidyverse)
 
 ## Setting edge weights
 
-The route of the shortest path between two nodes in a network is influenced by the *weights* or *impedance* of the edges. If you don't provide these weights explicitly, shortest paths calculation functions in `igraph` (as well as their spatial wrappers in `sfnetworks`) proceed as follows:
+The route of the shortest path between two nodes in a network is influenced by the *weights* or *impedance* of the edges. If you don't provide these weights explicitly, shortest paths calculation functions in `sfnetworks` proceed as follows:
 
-- If there is a column in the edges table named *weight*, the values in these column are automatically used as edge weights. These values should be numeric, otherwise an error will be thrown.
-- If there is no *weight* column, shortest paths are calculated without edge weights. In practice that means that the weight of all edges is equal to 1. That is, the shortest path between node A and node B is the path with the fewest *number* of edges.
+- If there is a column in the edges table named *weight*, the values in this column are automatically used as edge weights. Beware that if these values are not numeric, `igraph` will internally run `as.numeric()`.
+- If there is no *weight* column, `st_network_paths()` internally calculates the geographic edge lengths and uses them as *weight*.
 
-Every function that is about the calculation of shortest paths also accepts a `weights` argument which allows you to provide edge weights explicitly. In `sfnetworks`, this argument can be a numeric vector of the same length as the number of edges in the network, but also the name of a column in the edges table. The `weights` argument will always overrule the default behavior of using the *weight* column for edge weights. If you have a *weight* column but want to calculate paths *without* using weights, set `weights = NA`.
+Every function that is about the calculation of shortest paths also accepts a `weights` argument which allows you to provide edge weights explicitly. In `sfnetworks`, this argument can be a numeric vector of the same length as the number of edges in the network, but also the name of a column in the edges table. The `weights` argument will always overrule the default behavior of using the *weight* column for edge weights. If you have a *weight* column but want to calculate paths *without* using weights, set `weights = NA`. In practice that means that the weight of all edges is equal to 1. That is, the shortest path between node A and node B is the path with the fewest *number* of edges.
 
 The `edge_length()` function can be used to calculate the length of each edge in geographic space, such that you can use those as weights in shortest paths calculations. The function is meant to be used inside a `dplyr::mutate()` verb, as follows:
 
@@ -272,4 +272,4 @@ plot(st_geometry(weighted_paths_sf), add = TRUE)
 ```
 
 *NOTE: Developing more sophisticated routing profiles is beyond the scope of this package.
-If you need complex mode-specific routing profiles, we recommend looking at routing profiles associated with open source routing engines, such as [bike.lua](https://github.com/fossgis-routing-server/cbf-routing-profiles/blob/master/bike.lua) in in the OSRM project. Another direction of travel could be to extend on the approach illustrated here, but this work could be well-suited to a separate package that builds on `sfnetworks` (remembering that sophisticated routing profiles account for nodes and edges). If you'd like to work on such a project to improve mode-specific routing in R by building on this package, please let us know in the [discussion room](https://github.com/luukvdmeer/sfnetworks/discussions)!*
+If you need complex mode-specific routing profiles, we recommend looking at routing profiles associated with open source routing engines, such as [bike.lua](https://github.com/fossgis-routing-server/cbf-routing-profiles/blob/master/bike.lua) in the OSRM project. Another direction of travel could be to extend on the approach illustrated here, but this work could be well-suited to a separate package that builds on `sfnetworks` (remembering that sophisticated routing profiles account for nodes and edges). If you'd like to work on such a project to improve mode-specific routing in R by building on this package, please let us know in the [discussion room](https://github.com/luukvdmeer/sfnetworks/discussions)!*
