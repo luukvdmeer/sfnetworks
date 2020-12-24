@@ -143,5 +143,5 @@ test_that('edge_path without set weight is equal or shorter than
       st_network_paths(8, 3) %>%
       pull(node_paths) %>% unlist()
 
-  expect_true(length(edgepaths_weight) <= length(edgepaths_weight))
+  expect_true(length(edgepaths_noweight) <= length(edgepaths_weight))
 })
