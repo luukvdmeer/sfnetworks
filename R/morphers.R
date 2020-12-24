@@ -8,9 +8,9 @@
 #' list of one or more network objects. Single elements of that list can be
 #' extracted directly as a new network by passing the morpher to
 #' \code{\link[tidygraph]{convert}} instead, to make the changes lasting rather
-#' than temporary. Alternatively, if the morphed state contains multiple 
-#' elements, all of them can be extracted together inside a 
-#' \code{\link[tibble]{tbl_df}} by passing the morpher to 
+#' than temporary. Alternatively, if the morphed state contains multiple
+#' elements, all of them can be extracted together inside a
+#' \code{\link[tibble]{tbl_df}} by passing the morpher to
 #' \code{\link[tidygraph]{crystallise}}.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
@@ -26,8 +26,8 @@
 #' @details It also possible to create your own morphers. See the documentation
 #' of \code{\link[tidygraph]{morph}} for the requirements for custom morphers.
 #''
-#' @seealso The vignette on 
-#' \href{https://luukvdmeer.github.io/sfnetworks/articles/morphers.html}{spatial 
+#' @seealso The vignette on
+#' \href{https://luukvdmeer.github.io/sfnetworks/articles/morphers.html}{spatial
 #' morphers}.
 #'
 #' @examples
@@ -82,11 +82,11 @@ to_spatial_directed = function(x) {
   )
 }
 
-#' @describeIn spatial_morphers Create linestring geometries between source 
-#' and target nodes of edges. If the edges data can be directly converted to 
-#' an object of class \code{\link[sf]{sf}} using \code{\link[sf]{st_as_sf}}, 
-#' extra arguments can be provided as \code{...} and will be forwarded to 
-#' \code{\link[sf]{st_as_sf}} internally. Otherwise, straight lines will be 
+#' @describeIn spatial_morphers Create linestring geometries between source
+#' and target nodes of edges. If the edges data can be directly converted to
+#' an object of class \code{\link[sf]{sf}} using \code{\link[sf]{st_as_sf}},
+#' extra arguments can be provided as \code{...} and will be forwarded to
+#' \code{\link[sf]{st_as_sf}} internally. Otherwise, straight lines will be
 #' drawn between the source and target node of each edge. Returns a
 #' \code{morphed_sfnetwork} containing a single element of class
 #' \code{\link{sfnetwork}}.
@@ -120,17 +120,18 @@ to_spatial_explicit = function(x, ...) {
 
 #' @describeIn spatial_morphers Limit a network to those nodes and edges that
 #' are part of the shortest path between two nodes. \code{...} is evaluated in
-#' the same manner as \code{\link{st_network_paths}}. Returns a
-#' \code{morphed_sfnetwork} that may contain multiple elements of class
-#' \code{\link{sfnetwork}}, depending on the number of requested paths. When
-#' unmorphing only the first instance of both the node and edge data will be
-#' used, as the the same node and/or edge can be present in multiple paths.
+#' the same manner as \code{\link{st_network_paths}} with
+#' \code{type = 'shortest'}. Returns a \code{morphed_sfnetwork} that may
+#' contain multiple elements of class \code{\link{sfnetwork}}, depending on
+#' the number of requested paths. When unmorphing only the first instance of
+#' both the node and edge data will be used, as the the same node and/or edge
+#' can be present in multiple paths.
 #' @importFrom tidygraph slice
 #' @export
 to_spatial_shortest_paths = function(x, ...) {
   args = list(...)
   args$x = x
-  args$output = "both"
+  args$type = "shortest"
   # Call st_network_paths with the given arguments.
   paths = do.call("st_network_paths", args)
   # Subset the network for each computed shortest path.
@@ -320,7 +321,7 @@ to_spatial_smooth = function(x) {
 #' @describeIn spatial_morphers Construct a subdivision of the network by
 #' subdividing edges at each interior point that is equal to any
 #' other interior or boundary point in the edges table. Interior points in this
-#' sense are those points that are included in their linestring geometry 
+#' sense are those points that are included in their linestring geometry
 #' feature but are not endpoints of it, while boundary points are the endpoints
 #' of the linestrings. The network is reconstructed after subdivision such that
 #' edges are connected at the points of subdivision. Returns a
