@@ -1,5 +1,8 @@
 # development
 
+* Addition of a sfnetwork methods for `linnet` objects, to enhance interoperability between `sfnetwork` and the `spatstat` package for spatial point patterns on linear networks.
+* Addition of extra example to the [routing](https://luukvdmeer.github.io/sfnetworks/articles/routing.html) and [spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html) vignettes.
+
 # sfnetworks v0.4.0 "Hiltrup"
 
 * Backward incompatible changes to existing functions:
