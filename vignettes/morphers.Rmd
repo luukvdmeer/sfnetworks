@@ -101,7 +101,7 @@ plot(net, main = "Cut edges")
 plot(cut_edges, col = "red", lwd = 4, add = TRUE)
 ```
 
-Internally, a morphed state of a network is a list, in which each element is a network on its own. Some morphers create a list with only a single element, like the linegraph example above, while others create a list with multiple elements. For example, the `tidygraph::to_components()` morpher splits the original network into its unconnected components, storing each component as a separate network in the list, with the first element being the largest component.
+Internally, a morphed state of a network is a list, in which each element is a network on its own. Some morphers create a list with only a single element, like the linegraph example above, while others create a list with multiple elements. For example, the `tidygraph::to_components()` morpher splits the original network into its unconnected components, storing each component as a separate network in the list.
 
 ```{r}
 morphed_net = morph(net, to_components)
@@ -118,16 +118,15 @@ The mapping back to the original network is stored in *.tidygraph_node_index* an
 
 ## Converting
 
-Morphing is meant to make *temporary* changes to your network. However, what if you want to make *lasting* changes? Good news! The *same* morpher functions that are used for temporary conversions during morphing can be used for lasting conversions when you provide them to the `tidygraph::convert()` verb instead. In that case, the morphed state of the original network will be returned as a new network itself. This is mainly meant for those morpher functions that produce a morphed state with a *single* element. Whenever the morphed state consists of *multiple* elements, only one of them is returned as the new network. By default that is the first one, but you can pick an element yourself by setting the `.select` argument.
+Morphing is meant to make *temporary* changes to your network. However, what if you want to make *lasting* changes? Good news! The *same* morpher functions that are used for temporary conversions during morphing can be used for lasting conversions when you provide them to the `tidygraph::convert()` verb instead. In that case, the morphed state of the original network will be returned as a new network itself. This is mainly meant for those morpher functions that produce a morphed state with a *single* element. For example converting the network into its complement, where nodes are connected only if they were not connected in the original graph.
 
 ```{r}
-# Converting the network into its largest component.
-convert(net, to_components)
-# Converting the network into its smallest component.
-convert(net, to_components, .select = 14)
+convert(net, to_complement)
 ```
 
-As can be seen, the *.tidygraph_node_index* and *.tidygraph_edge_index* columns are present in the network returned by `tidygraph::convert()`. If you rather don't have that, set `.clean = TRUE`.
+The internally created *.tidygraph_node_index* and/or *.tidygraph_edge_index* columns are present in the network returned by `tidygraph::convert()`. If you rather don't have that, set `.clean = TRUE`.
+
+Whenever the morphed state consists of *multiple* elements, only one of them is returned as the new network. By default that is the first one, but you can pick an element yourself by setting the `.select` argument, e.g. `.select = 2`.
 
 ## Spatial morphers
 
