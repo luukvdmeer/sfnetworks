@@ -167,3 +167,13 @@ test_that("node_paths without set weight is equal or shorter than
 
   expect_true(length(nodepaths_noweight) <= length(nodepaths_weight))
 })
+
+test_that("All simple paths wrapper gives a known number of paths", {
+  expect_equal(
+    net %>%
+      convert(to_spatial_directed) %>%
+      st_network_paths(1,12,type = 'all_simple') %>%
+      nrow(),
+    6
+  )
+})
