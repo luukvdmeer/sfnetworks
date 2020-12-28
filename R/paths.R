@@ -132,11 +132,12 @@ st_network_paths = function(x, from, to = igraph::V(x), weights = NULL,
 }
 
 #' @importFrom igraph V
+#' @importFrom sf st_geometry
 #' @export
 st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
                                       weights = NULL, type = "shortest",
                                       ...) {
-  if (length(from) > 1) {
+  if (length(st_geometry(from)) > 1) {
     warning(
       "Although argument 'from' has length > 1, ",
       "only the first element is used",
@@ -309,6 +310,7 @@ st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
 set_path_endpoints = function(x, p, name) {
   # Case 1: input is geospatial point geometries.
   if (is.sf(p) || is.sfc(p)) {
+    p = st_geometry(p)
     missing = is_empty(p)
     if (any(missing)) {
       if (all(missing)) {
