@@ -23,76 +23,29 @@ test_that("Only the first from argument
   expect_setequal(resulting_from_nodes, first(from_indices))
 })
 
-test_that("Empty geometries for all from and/or to arguments
-          give an error", {
-  expect_error(st_network_cost(
-      net,
-      from = st_sfc(st_point(), crs = st_crs(net)),
-      to = rdm[1:2]
-  ), "are all empty")
-  expect_error(st_network_paths(
-    net,
-    from = rdm[1],
-    to = st_sfc(st_point(), crs = st_crs(net)),
-    type = "all_shortest"
-  ), "are all empty")
-})
-
-test_that("Empty geometries for some from and/or to arguments are
-          ignored with a warning", {
-  expect_warning(st_network_paths(
-    net,
-    from = c(st_sfc(st_point(), crs = st_crs(net)), rdm[3]),
-    to = rdm[1:2]
-  ), "are ignored")
-  expect_warning(st_network_cost(
-    net,
-    from = rdm[1],
-    to = c(rdm[3:4], st_sfc(st_point()))
-  ), "are ignored")
-})
-
-test_that("NA indices for all from and/or to arguments give an error", {
+test_that("NA indices for in from and/or to arguments give an error", {
   expect_error(st_network_paths(
     net,
     from = as.numeric(NA),
     to = c(3,28,98)
-  ), "are all NA")
+  ), "NA values present")
+  expect_error(st_network_cost(
+    net,
+    from = 2,
+    to = as.numeric(c(NA, 3, NA))
+  ), "NA values present")
   expect_error(st_network_paths(
     net,
-    from = 2,
-    to = as.numeric(c(NA, NA, NA))
-  ), "are all NA")
-})
-
-test_that("NA indices for some from and/or to arguments are ignored with
-          a warning", {
-  expect_warning(st_network_cost(
-    net,
-    from = as.numeric(c(27,NA)),
-    to = c(3,28,98)
-  ), "are ignored")
-  expect_warning(st_network_paths(
-    net,
-    from = 2,
-    to = as.numeric(c(NA, 32, 29, NA))
-  ), "are ignored")
-})
-
-test_that("Objects in the to and/or from argument that are not numeric, sf,
-          or sfc give an error", {
-    expect_error(st_network_cost(
-      net,
-      from = 4,
-      to = c(TRUE, FALSE, TRUE)
-    ), "not accepted")
+    from = rdm[1],
+    to = c(rdm, st_sfc(st_point()))
+  ), "NA values present")
 })
 
 test_that("Duplicated to nodes are removed from st_network_cost calculations
           with a warning", {
     expect_warning(
       costmat <- st_network_cost(net, 1, c(3, 2, 3)),
-      "node indices were removed"
+      "Duplicated values in argument 'to' were removed"
     )
     expect_equal(ncol(costmat), 2)
     # Test with duplicated sf to points that have same nearest node
@@ -105,7 +58,7 @@ test_that("Duplicated to nodes are removed from st_network_cost calculations
     pts2 = c(p2, p3, p4)
     expect_warning(
       costmatsf <- st_network_cost(net, pts1, pts2),
-      "node indices were removed"
+      "Duplicated values in argument 'to' were removed"
     )
     expect_equal(ncol(costmatsf), 2)
 })
@@ -172,7 +125,7 @@ test_that("All simple paths wrapper gives a known number of paths", {
   expect_equal(
     net %>%
       convert(to_spatial_directed) %>%
-      st_network_paths(1,12,type = 'all_simple') %>%
+      st_network_paths(1, 12, type = 'all_simple') %>%
       nrow(),
     6
   )
