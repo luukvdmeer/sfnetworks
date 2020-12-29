@@ -18,11 +18,10 @@
 #' @name spatial_edge_measures
 NULL
 
-#' @describeIn spatial_edge_measures The ratio of the length of an edge
-#' linestring geometry versus the straight-line distance between its boundary
-#' nodes, as described in
-#' \href{https://journals.sagepub.com/doi/10.1068/b130131p}{Giacomin & Levinson,
-#' 2015}.
+#' @describeIn spatial_edge_measures The angle in radians between a straight 
+#' line from the edge startpoint pointing north, and the straight line from
+#' the edge startpoint and the edge endpoint. Calculated with
+#' \code{\link[lwgeom]{st_geod_azimuth}}.
 #' @examples
 #' library(sf, quietly = TRUE)
 #' library(tidygraph, quietly = TRUE)
@@ -30,6 +29,27 @@ NULL
 #' net = as_sfnetwork(roxel, directed = FALSE) %>%
 #'   st_transform(3035)
 #'
+#' net %>%
+#'   activate("edges") %>%
+#'   mutate(azimuth = edge_azimuth())
+#'
+#' @importFrom lwgeom st_geod_azimuth
+#' @importFrom tidygraph .G
+#' @export
+edge_azimuth = function() {
+  x = .G()
+  require_active_edges(x)
+  require_spatially_explicit_edges(x)
+  bounds = edge_boundary_nodes(x)
+  st_geod_azimuth(bounds)[seq(1, length(bounds), 2)]
+}
+
+#' @describeIn spatial_edge_measures The ratio of the length of an edge
+#' linestring geometry versus the straight-line distance between its boundary
+#' nodes, as described in
+#' \href{https://journals.sagepub.com/doi/10.1068/b130131p}{Giacomin & Levinson,
+#' 2015}.
+#' @examples
 #' net %>%
 #'   activate("edges") %>%
 #'   mutate(circuity = edge_circuity())

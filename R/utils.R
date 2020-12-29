@@ -160,10 +160,10 @@ draw_lines = function(x, y) {
 #' @importFrom sf st_as_sf st_geometry
 #' @noRd
 edge_boundary_nodes = function(x) {
-  nodes = nodes_as_sf(x)
+  nodes = node_geom(x)
   id_mat = ends(x, E(x), names = FALSE)
-  id_vct = do.call("c", lapply(seq_len(nrow(id_mat)), function(i) id_mat[i, ]))
-  st_geometry(nodes[id_vct, ])
+  id_vct = as.vector(t(id_mat))
+  nodes[id_vct]
 }
 
 #' Get the indices of the boundary nodes of edges in an sfnetwork
