@@ -26,7 +26,6 @@
 #' }
 #'
 #' @name as.linnet
-#' @export
 as.linnet.sfnetwork <- function(X, ...) {
   # Check the presence of spatstat.
   if (!requireNamespace("spatstat", quietly = TRUE)) {
