@@ -12,6 +12,10 @@
 
 <!-- badges: end -->
 
+`sfnetworks` is an R package for analysis of geospatial networks. It connects the functionalities of the `tidygraph` package for network analysis and the `sf` package for spatial data science.
+
+## Background
+
 Thanks to active developer and user communities, R is becoming an increasingly popular language for interactive geospatial data analysis. A large step forward was the release of the [sf package](https://r-spatial.github.io/sf/), which provides classes and functions to represent and manipulate spatial vector data. Unlike its predecessors, `sf` is compatible with the popular data science oriented packages that form the [tidyverse](https://www.tidyverse.org/), most notably the data manipulation toolbox [dplyr](https://dplyr.tidyverse.org/), and more generally with the concept of [tidy data](https://vita.had.co.nz/papers/tidy-data.pdf).
 
 R is also well-suited for network analysis, thanks to the R interface of the [igraph library](https://igraph.org/). The [tidygraph package](https://tidygraph.data-imaginist.com/index.html) extends `igraph` into the domain of the tidyverse, enabling compatibility with `dplyr` by treating a graph as a collection of two tidy data frames describing respectively the nodes and edges.
