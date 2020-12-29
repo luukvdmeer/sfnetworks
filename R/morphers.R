@@ -318,6 +318,56 @@ to_spatial_smooth = function(x) {
   )
 }
 
+#' @importFrom igraph decompose degree edge_attr incident_edges induced_subgraph 
+#' is_directed
+#' @importFrom sf st_as_sf st_combine st_line_merge
+#' @export
+to_spatial_smooth_v2 = function(x) {
+  # Check wether x is directed.
+  directed = is_directed(x)
+  # Detect pseudo nodes in x.
+  if (directed) {
+    # A node is a pseudo node if its in degree is 1 and its out degree is 1.
+    pseudo = degree(x, mode = "in") == 1 & degree(x, mode = "out") == 1
+  } else {
+    # A node is a pseudo node if its degree is 2.
+    pseudo = degree(x) == 2
+  }
+  # Subset x to only contain pseudo nodes and the edges between them.
+  # Decompose this subgraph to find connected sets of pseudo nodes.
+  x_pseudo = decompose(induced_subgraph(x, pseudo))
+  # For each set of connected pseudo nodes:
+  # --> Find the indices of the incident edges to be merged.
+  get_incident_idxs = function(i) {
+    nodes = vertex_attr(i, ".tidygraph_node_index")
+    incidents = do.call("c", incident_edges(x, nodes, mode = "all"))
+    unique(as.integer(incidents))
+  }
+  I = lapply(x_pseudo, get_incident_idxs)
+  # For each set of connected pseudo nodes:
+  # --> Merge the geometries of the incident edges.
+  orig_edge_geoms = edge_geom(x)
+  merge_incident_geoms = function(i) {
+    st_line_merge(st_combine(orig_edge_geoms[i]))
+  }
+  G = lapply(I, merge_incident_geoms)
+  # Create an sf object with the newly created edges.
+  E = st_as_sf(do.call("c", G))
+  E$.tidygraph_edge_index = I
+  # Remove all pseudo nodes from the original network.
+  x_not_pseudo = induced_subgraph(x, !pseudo)
+  # Store edge indices of that network in list format.
+  # Otherwise they can not be binded with the newly created edges.
+  orig_edge_idxs = edge_attr(x_not_pseudo, ".tidygraph_edge_index")
+  edge_attr(x_not_pseudo, ".tidygraph_edge_index") = list(orig_edge_idxs)
+  # Join the network of newly created edges with the original network.
+  x_new = join_(x_not_pseudo, as_sfnetwork(E, directed = directed))
+  # Return in a list.
+  list(
+    smooth = x_new %preserve_active% x
+  )
+}
+
 #' @describeIn spatial_morphers Construct a subdivision of the network by
 #' subdividing edges at each interior point that is equal to any
 #' other interior or boundary point in the edges table. Interior points in this

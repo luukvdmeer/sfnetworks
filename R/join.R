@@ -45,13 +45,17 @@ st_network_join = function(x, y, ...) {
   UseMethod("st_network_join")
 }
 
-#' @importFrom tidygraph as_tbl_graph graph_join
-#' @importFrom units set_units
 #' @export
 st_network_join.sfnetwork = function(x, y, ...) {
   if (! is.sfnetwork(y)) y = as_sfnetwork(y)
   stopifnot(have_equal_crs(x, y))
   stopifnot(have_equal_edge_type(x, y))
+  join_(x, y, ...) %preserve_active% x
+}
+
+#' @importFrom tidygraph as_tbl_graph graph_join
+join_ = function(x, y, ...) {
+  # Retrieve names of node geometry columns of x and y.
   x_geom_colname = node_geom_colname(x)
   y_geom_colname = node_geom_colname(y)
   # Regular graph join based on geometry columns.
@@ -62,6 +66,5 @@ st_network_join.sfnetwork = function(x, y, ...) {
     ...
   )
   # Convert back to sfnetwork.
-  g_sfn = tbg_to_sfn(g_tbg)
-  g_sfn %preserve_active% x
+  tbg_to_sfn(g_tbg)
 }
