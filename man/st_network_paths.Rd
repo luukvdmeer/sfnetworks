@@ -19,7 +19,7 @@ st_network_paths(
 \item{from}{The geospatial point from which the paths will be
 calculated. Can be an object an object of class \code{\link[sf]{sf}} or
 \code{\link[sf]{sfc}}, containing a single feature. When multiple features
-are given, only the first one is taken. Empty geometries are ignored.
+are given, only the first one is taken.
 Alternatively, it can be an integer, referring to the index of the
 node from which the paths will be calculated, or a character,
 referring to the name of the node from which the paths will be
@@ -27,7 +27,7 @@ calculated.}
 
 \item{to}{The (set of) geospatial point(s) to which the paths will be
 calculated. Can be an object of  class \code{\link[sf]{sf}} or
-\code{\link[sf]{sfc}}. Empty geometries are ignored.
+\code{\link[sf]{sfc}}.
 Alternatively, it can be a numeric vector, containing the indices of the nodes
 to which the paths will be calculated, or a character vector,
 containing the names of the nodes to which the paths will be
@@ -129,15 +129,17 @@ net \%>\%
   mutate(foo = runif(n(), min = 0, max = 1)) \%>\%
   st_network_paths(p1, p2, weights = "foo")
 
-# Obtaining all shortest paths between two nodes.
-net = as_sfnetwork(roxel, directed = TRUE) \%>\%
-  st_transform(3035)
-st_network_paths(net, from = 5, to = 1, weights = NA, type = "all_shortest")
-
 # Obtaining all simple paths between two nodes.
-# Beware, this function can take long when computed for several 'to"
-# nodes in the network, or when several paths are possible.
+# Beware, this function can take long when:
+# --> Providing a lot of 'to' nodes.
+# --> The network is large and dense.
 st_network_paths(net, from = 1, to = 12, type = "all_simple")
+
+# Obtaining all shortest paths between two nodes.
+# Not using edge weights.
+# Hence, a shortest path is the paths with the least number of edges.
+net = as_sfnetwork(roxel, directed = TRUE)
+st_network_paths(net, from = 5, to = 1, weights = NA, type = "all_shortest")
 
 }
 \seealso{

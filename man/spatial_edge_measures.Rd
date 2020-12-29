@@ -2,11 +2,14 @@
 % Please edit documentation in R/edge.R
 \name{spatial_edge_measures}
 \alias{spatial_edge_measures}
+\alias{edge_azimuth}
 \alias{edge_circuity}
 \alias{edge_length}
 \alias{edge_displacement}
 \title{Query spatial edge measures}
 \usage{
+edge_azimuth()
+
 edge_circuity()
 
 edge_length()
@@ -33,6 +36,11 @@ set the context temporarily while the algorithm is being evaluated.
 }
 \section{Functions}{
 \itemize{
+\item \code{edge_azimuth}: The angle in radians between a straight 
+line from the edge startpoint pointing north, and the straight line from
+the edge startpoint and the edge endpoint. Calculated with
+\code{\link[lwgeom]{st_geod_azimuth}}.
+
 \item \code{edge_circuity}: The ratio of the length of an edge
 linestring geometry versus the straight-line distance between its boundary
 nodes, as described in
@@ -52,6 +60,10 @@ library(tidygraph, quietly = TRUE)
 
 net = as_sfnetwork(roxel, directed = FALSE) \%>\%
   st_transform(3035)
+
+net \%>\%
+  activate("edges") \%>\%
+  mutate(azimuth = edge_azimuth())
 
 net \%>\%
   activate("edges") \%>\%

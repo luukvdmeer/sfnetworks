@@ -11,7 +11,7 @@ st_network_cost(x, from = igraph::V(x), to = igraph::V(x), weights = NULL, ...)
 
 \item{from}{The (set of) geospatial point(s) from which the shortest paths
 will be calculated. Can be an object of  class \code{\link[sf]{sf}} or
-\code{\link[sf]{sfc}}. Empty geometries are ignored.
+\code{\link[sf]{sfc}}.
 Alternatively, it can be a numeric vector, containing the indices of the nodes
 from which the shortest paths will be calculated, or a character vector,
 containing the names of the nodes from which the shortest paths will be
@@ -19,7 +19,7 @@ calculated. By default, all nodes in the network are included.}
 
 \item{to}{The (set of) geospatial point(s) to which the shortest paths will
 be calculated. Can be an object of  class \code{\link[sf]{sf}} or
-\code{\link[sf]{sfc}}. Empty geometries are ignored.
+\code{\link[sf]{sfc}}.
 Alternatively, it can be a numeric vector, containing the indices of the nodes
 to which the shortest paths will be calculated, or a character vector,
 containing the names of the nodes to which the shortest paths will be
