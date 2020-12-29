@@ -118,12 +118,12 @@
 #' # Beware, this function can take long when:
 #' # --> Providing a lot of 'to' nodes.
 #' # --> The network is large and dense.
+#' net = as_sfnetwork(roxel, directed = TRUE)
 #' st_network_paths(net, from = 1, to = 12, type = "all_simple")
 #'
 #' # Obtaining all shortest paths between two nodes.
 #' # Not using edge weights.
 #' # Hence, a shortest path is the paths with the least number of edges.
-#' net = as_sfnetwork(roxel, directed = TRUE)
 #' st_network_paths(net, from = 5, to = 1, weights = NA, type = "all_shortest")
 #'
 #' @importFrom igraph V
@@ -160,7 +160,7 @@ st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
   # Igraph does not support NA values in 'from' and 'to' nodes.
   if (any(is.na(c(from, to)))) {
     stop(
-      "NA values present in argument 'from' and/or 'to'", 
+      "NA values present in argument 'from' and/or 'to'",
       call. = FALSE
     )
   }
@@ -308,7 +308,7 @@ st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
   # Igraph does not support NA values in 'from' and 'to' nodes.
   if (any(is.na(c(from, to)))) {
     stop(
-      "NA values present in argument 'from' and/or 'to'", 
+      "NA values present in argument 'from' and/or 'to'",
       call. = FALSE
     )
   }
@@ -336,9 +336,9 @@ set_path_endpoints = function(x, p) {
 #' @importFrom igraph edge_attr
 #' @importFrom tidygraph activate with_graph
 set_path_weights = function(x, weights) {
-  # Case 1: Weights is a character pointing to a column in the edges table.
-  # --> Return the values in that column, if it exists.
   if (is.character(weights) & length(weights) == 1) {
+    # Case 1: Weights is a character pointing to a column in the edges table.
+    # --> Return the values in that column, if it exists.
     values = edge_attr(x, weights)
     if (is.null(values)) {
       stop(
@@ -347,13 +347,13 @@ set_path_weights = function(x, weights) {
       )
     }
     values
-  }
-  # Case 2: Weights is NULL and there is no 'weight' column in the edges table.
-  # --> Use the length of the edge linestrings as weights.
-  if (is.null(weights) & is.null(edge_attr(x, "weight"))) {
+  } else if (is.null(weights) & is.null(edge_attr(x, "weight"))) {
+    # Case 2: Weights is NULL and there is no 'weight' column in the edges table.
+    # --> Use the length of the edge linestrings as weights.
     with_graph(activate(x, "edges"), edge_length())
+  } else {
+    # All other cases: igraph will handle the given weights.
+    # No need for pre-processing.
+    weights
   }
-  # All other cases: igraph will handle the given weights.
-  # No need for pre-processing.
-  weights
 }
