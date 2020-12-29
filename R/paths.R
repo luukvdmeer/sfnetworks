@@ -13,7 +13,7 @@
 #' @param from The geospatial point from which the paths will be
 #' calculated. Can be an object an object of class \code{\link[sf]{sf}} or
 #' \code{\link[sf]{sfc}}, containing a single feature. When multiple features
-#' are given, only the first one is taken. Empty geometries are ignored.
+#' are given, only the first one is taken.
 #' Alternatively, it can be an integer, referring to the index of the
 #' node from which the paths will be calculated, or a character,
 #' referring to the name of the node from which the paths will be
@@ -21,7 +21,7 @@
 #'
 #' @param to The (set of) geospatial point(s) to which the paths will be
 #' calculated. Can be an object of  class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}. Empty geometries are ignored.
+#' \code{\link[sf]{sfc}}.
 #' Alternatively, it can be a numeric vector, containing the indices of the nodes
 #' to which the paths will be calculated, or a character vector,
 #' containing the names of the nodes to which the paths will be
@@ -114,15 +114,17 @@
 #'   mutate(foo = runif(n(), min = 0, max = 1)) %>%
 #'   st_network_paths(p1, p2, weights = "foo")
 #'
-#' # Obtaining all shortest paths between two nodes.
-#' net = as_sfnetwork(roxel, directed = TRUE) %>%
-#'   st_transform(3035)
-#' st_network_paths(net, from = 5, to = 1, weights = NA, type = "all_shortest")
-#'
 #' # Obtaining all simple paths between two nodes.
-#' # Beware, this function can take long when computed for several 'to"
-#' # nodes in the network, or when several paths are possible.
+#' # Beware, this function can take long when:
+#' # --> Providing a lot of 'to' nodes.
+#' # --> The network is large and dense.
 #' st_network_paths(net, from = 1, to = 12, type = "all_simple")
+#'
+#' # Obtaining all shortest paths between two nodes.
+#' # Not using edge weights.
+#' # Hence, a shortest path is the paths with the least number of edges.
+#' net = as_sfnetwork(roxel, directed = TRUE)
+#' st_network_paths(net, from = 5, to = 1, weights = NA, type = "all_shortest")
 #'
 #' @importFrom igraph V
 #' @export
@@ -137,8 +139,17 @@ st_network_paths = function(x, from, to = igraph::V(x), weights = NULL,
 st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
                                       weights = NULL, type = "shortest",
                                       ...) {
-  if (is.sf(from)) from = st_geometry(from)
-  if (is.sf(to)) to = st_geometry(to)
+  # If 'from' points are given as simple feature geometries:
+  # --> Convert them to node indices.
+  if (is.sf(from) | is.sfc(from)) {
+    from = set_path_endpoints(x, from)
+  }
+  # If 'to' points are given as simple feature geometries:
+  # --> Convert them to node indices.
+  if (is.sf(to) | is.sfc(to)) {
+    to = set_path_endpoints(x, to)
+  }
+  # Igraph does not support multiple 'from' nodes.
   if (length(from) > 1) {
     warning(
       "Although argument 'from' has length > 1, ",
@@ -146,8 +157,14 @@ st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
       call. = FALSE
     )
   }
-
-  # Call igraph function according to type argument
+  # Igraph does not support NA values in 'from' and 'to' nodes.
+  if (any(is.na(c(from, to)))) {
+    stop(
+      "NA values present in argument 'from' and/or 'to'", 
+      call. = FALSE
+    )
+  }
+  # Call paths calculation function according to type argument.
   switch(
     type,
     shortest = get_shortest_paths(x, from, to, weights, ...),
@@ -160,25 +177,21 @@ st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
 #' @importFrom igraph shortest_paths
 #' @importFrom tibble as_tibble
 get_shortest_paths = function(x, from, to, weights, ...) {
-  # Set arguments.
-  from = set_path_endpoints(x, from, name = "from")
-  to = set_path_endpoints(x, to, name = "to")
+  # Set weights.
   weights = set_path_weights(x, weights)
   # Call igraph function.
   paths = shortest_paths(x, from, to, weights = weights, output = "both", ...)
   # Extract paths of node indices and edge indices.
   npaths = lapply(paths[[1]], as.integer)
   epaths = lapply(paths[[2]], as.integer)
-  # Return node and edge paths as columns in a tibble.
+  # Return as columns in a tibble.
   as_tibble(do.call(cbind, list(node_paths = npaths, edge_paths = epaths)))
 }
 
 #' @importFrom igraph all_shortest_paths
 #' @importFrom tibble as_tibble
 get_all_shortest_paths = function(x, from, to, weights, ...) {
-  # Set arguments.
-  from = set_path_endpoints(x, from, name = "from")
-  to = set_path_endpoints(x, to, name = "to")
+  # Set weights.
   weights = set_path_weights(x, weights)
   # Call igraph function.
   paths = all_shortest_paths(x, from, to, weights = weights, ...)
@@ -191,9 +204,6 @@ get_all_shortest_paths = function(x, from, to, weights, ...) {
 #' @importFrom igraph all_simple_paths
 #' @importFrom tibble as_tibble
 get_all_simple_paths = function(x, from, to, ...) {
-  # Set arguments.
-  from = set_path_endpoints(x, from, name = "from")
-  to = set_path_endpoints(x, to, name = "to")
   # Call igraph function.
   paths = all_simple_paths(x, from, to, ...)
   # Extract paths of node indices.
@@ -214,7 +224,7 @@ get_all_simple_paths = function(x, from, to, ...) {
 #'
 #' @param from The (set of) geospatial point(s) from which the shortest paths
 #' will be calculated. Can be an object of  class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}. Empty geometries are ignored.
+#' \code{\link[sf]{sfc}}.
 #' Alternatively, it can be a numeric vector, containing the indices of the nodes
 #' from which the shortest paths will be calculated, or a character vector,
 #' containing the names of the nodes from which the shortest paths will be
@@ -222,7 +232,7 @@ get_all_simple_paths = function(x, from, to, ...) {
 #'
 #' @param to The (set of) geospatial point(s) to which the shortest paths will
 #' be calculated. Can be an object of  class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}. Empty geometries are ignored.
+#' \code{\link[sf]{sfc}}.
 #' Alternatively, it can be a numeric vector, containing the indices of the nodes
 #' to which the shortest paths will be calculated, or a character vector,
 #' containing the names of the nodes to which the shortest paths will be
@@ -291,86 +301,59 @@ st_network_cost = function(x, from = igraph::V(x), to = igraph::V(x),
 #' @export
 st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
                                          weights = NULL, ...) {
-  if (is.sf(from)) from = st_geometry(from)
-  if (is.sf(to)) to = st_geometry(to)
-  # In igraph::distances argument 'from' is called 'v'
-  from = set_path_endpoints(x, from, name = "from")
-  to = set_path_endpoints(x, to, name = "to")
-  weights = set_path_weights(x, weights)
-  # In igraph::distances argument 'to' cannot have duplicated indices
+  # If 'from' and/or 'to' points are given as simple feature geometries:
+  # --> Convert them to node indices.
+  if (is.sf(from) | is.sfc(from)) from = set_path_endpoints(x, from)
+  if (is.sf(to) | is.sfc(to)) to = set_path_endpoints(x, to)
+  # Igraph does not support NA values in 'from' and 'to' nodes.
+  if (any(is.na(c(from, to)))) {
+    stop(
+      "NA values present in argument 'from' and/or 'to'", 
+      call. = FALSE
+    )
+  }
+  # Igraph does not support duplicated 'to' nodes.
   # This can happen without the user knowing when POINT geometries
-  # are given to the 'to' argument that happen to snap to a same node
-  if(any(duplicated(to))) {
+  # are given to the 'to' argument that happen to snap to a same node.
+  if (any(duplicated(to))) {
     warning(
-      "Duplicated 'to' node indices were removed.",
+      "Duplicated values in argument 'to' were removed.",
       call. = FALSE
     )
     to = unique(to)
   }
+  # Set weights.
+  weights = set_path_weights(x, weights)
+  # Call igraph function.
   distances(x, from, to, weights = weights, ...)
 }
 
 #' @importFrom sf st_geometry st_nearest_feature
-set_path_endpoints = function(x, p, name) {
-  # Case 1: input is geospatial point geometries.
-  if (is.sfc(p)) {
-    missing = is_empty(p)
-    if (any(missing)) {
-      if (all(missing)) {
-        stop(
-          "Geometries in argument '", name, "' are all empty",
-          call. = FALSE
-        )
-      } else {
-        warning(
-          "Empty geometries in argument '", name, "' are ignored",
-          call. = FALSE
-        )
-      }
-    }
-    return (st_nearest_feature(p[!missing], nodes_as_sf(x)))
-  }
-  # Case 2: input is numeric node indices.
-  if (is.numeric(p) | is.character(p)) {
-    missing = is.na(p)
-    if (any(missing)) {
-      if (all(missing)) {
-        stop(
-          "Indices or names in argument '", name, "' are all NA",
-          call. = FALSE
-        )
-      } else {
-        warning(
-          "NA indices or names in argument '", name, "' are ignored",
-          call. = FALSE
-        )
-      }
-    }
-    return (p[!missing])
-  }
-  stop(
-    "Objects of class ",
-    class(p),
-    " not accepted as input to argument '", name, "'",
-    call. = FALSE
-  )
+set_path_endpoints = function(x, p) {
+  st_nearest_feature(st_geometry(p), nodes_as_sf(x))
 }
 
 #' @importFrom igraph edge_attr
 #' @importFrom tidygraph activate with_graph
 set_path_weights = function(x, weights) {
+  # Case 1: Weights is a character pointing to a column in the edges table.
+  # --> Return the values in that column, if it exists.
   if (is.character(weights) & length(weights) == 1) {
-    col = edge_attr(x, weights)
-    if (is.null(col)) {
+    values = edge_attr(x, weights)
+    if (is.null(values)) {
       stop(
         "Edge attribute '", weights, "' not found",
         call. = FALSE
       )
     }
-    col
-  } else if (is.null(weights) & is.null(edge_attr(x, "weight"))) {
-    with_graph(activate(x, "edges"), edge_length())
-  } else {
-    weights
+    values
   }
+  # Case 2: Weights is NULL and there is no 'weight' column in the edges table.
+  # --> Use the length of the edge linestrings as weights.
+  if (is.null(weights) & is.null(edge_attr(x, "weight"))) {
+    with_graph(activate(x, "edges"), edge_length())
+  }
+  # All other cases: igraph will handle the given weights.
+  # No need for pre-processing.
+  weights
 }
