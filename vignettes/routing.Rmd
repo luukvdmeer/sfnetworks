@@ -41,10 +41,10 @@ library(tidyverse)
 
 The route of the shortest path between two nodes in a network is influenced by the *weights* or *impedance* of the edges. If you don't provide these weights explicitly, shortest paths calculation functions in `sfnetworks` proceed as follows:
 
-- If there is a column in the edges table named *weight*, the values in this column are automatically used as edge weights. Beware that if these values are not numeric, `igraph` will internally run `as.numeric()`.
-- If there is no *weight* column, `st_network_paths()` internally calculates the geographic edge lengths and uses them as *weight*.
+- If there is a column in the edges table named *weight*, the values in this column are automatically used as edge weights. These values are meant to be numeric. If they are not, `igraph` will silently try to convert them with `as.numeric()`.
+- If there is no *weight* column, `st_network_paths()` internally calculates the geographic lengths of the edges and uses those as weights.
 
-Every function that is about the calculation of shortest paths also accepts a `weights` argument which allows you to provide edge weights explicitly. In `sfnetworks`, this argument can be a numeric vector of the same length as the number of edges in the network, but also the name of a column in the edges table. The `weights` argument will always overrule the default behavior of using the *weight* column for edge weights. If you have a *weight* column but want to calculate paths *without* using weights, set `weights = NA`. In practice that means that the weight of all edges is equal to 1. That is, the shortest path between node A and node B is the path with the fewest *number* of edges.
+Every function that is about the calculation of shortest paths also accepts a `weights` argument which allows you to provide edge weights explicitly. In `sfnetworks`, this argument can be a numeric vector of the same length as the number of edges in the network, but also the name of a column in the edges table. The `weights` argument will always overrule the default behavior of using the *weight* column for edge weights. If you have a *weight* column but want to calculate paths *without* using weights, set `weights = NA`. In practice that means that the weight of all edges is equal to 1. Hence, the shortest path between node A and node B is the path with the fewest *number* of edges.
 
 The `edge_length()` function can be used to calculate the length of each edge in geographic space, such that you can use those as weights in shortest paths calculations. The function is meant to be used inside a `dplyr::mutate()` verb, as follows:
 
@@ -59,10 +59,11 @@ net
 
 ## Calculating shortest paths
 
-The function `st_network_paths()` is a wrapper around the igraph function `igraph::shortest_paths()`. There are two main differences:
+The function `st_network_paths()` is a wrapper around the igraph function `igraph::shortest_paths()`. There are three main differences:
 
 - Besides node indices and node names, `st_network_paths()` gives the additional option to provide any (set of) geospatial point(s) as *from* and *to* location(s) of the shortest paths, either as sf or sfc object. Provided points that do not equal any node in the network will be snapped to their nearest node before calculating the paths.
 - To allow smooth integration with the tidyverse, the output of `st_network_paths()` is a tibble, with one row per returned path. The column *node_paths* contains the ordered list of node indices in the path, and the column *edge_paths* contains the ordered list of edge indices in the path.
+- Whenever `weights = NULL` *and* there is no column in the edges table named *weight*, `st_network_paths()` by default uses the geographic edge length as weight.
 
 Just as `igraph::shortest_paths()`, the `st_network_paths()` function is meant for one-to-one and one-to-many routing. Hence, it is only possible to provide a single *from* location, while the *to* locations can be more than one.
 
