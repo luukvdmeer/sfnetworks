@@ -36,7 +36,7 @@ set the context temporarily while the algorithm is being evaluated.
 }
 \section{Functions}{
 \itemize{
-\item \code{edge_azimuth}: The angle in radians between a straight 
+\item \code{edge_azimuth}: The angle in radians between a straight
 line from the edge startpoint pointing north, and the straight line from
 the edge startpoint and the edge endpoint. Calculated with
 \code{\link[lwgeom]{st_geod_azimuth}}.
@@ -58,8 +58,7 @@ boundary nodes of an edge, as calculated by \code{\link[sf]{st_distance}}.
 library(sf, quietly = TRUE)
 library(tidygraph, quietly = TRUE)
 
-net = as_sfnetwork(roxel, directed = FALSE) \%>\%
-  st_transform(3035)
+net = as_sfnetwork(roxel, directed = FALSE)
 
 net \%>\%
   activate("edges") \%>\%

@@ -133,12 +133,12 @@ net \%>\%
 # Beware, this function can take long when:
 # --> Providing a lot of 'to' nodes.
 # --> The network is large and dense.
+net = as_sfnetwork(roxel, directed = TRUE)
 st_network_paths(net, from = 1, to = 12, type = "all_simple")
 
 # Obtaining all shortest paths between two nodes.
 # Not using edge weights.
 # Hence, a shortest path is the paths with the least number of edges.
-net = as_sfnetwork(roxel, directed = TRUE)
 st_network_paths(net, from = 5, to = 1, weights = NA, type = "all_shortest")
 
 }
