@@ -352,7 +352,11 @@ to_spatial_smooth_v2 = function(x) {
   }
   G = lapply(I, merge_incident_geoms)
   # Create an sf object with the newly created edges.
+  # Use the same sf column name as in the original edges.
   E = st_as_sf(do.call("c", G))
+  geom_colname = edge_geom_colname(x)
+  names(E)[1] = geom_colname
+  attr(E, "sf_column") = geom_colname
   E$.tidygraph_edge_index = I
   # Remove all pseudo nodes from the original network.
   x_not_pseudo = induced_subgraph(x, !pseudo)
