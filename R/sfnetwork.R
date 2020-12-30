@@ -329,7 +329,7 @@ as_sfnetwork.sfNetwork = function(x, ...) {
 #' @name as_sfnetwork
 #' @export
 as_sfnetwork.sfnetwork = function(x, ...) {
-  x
+  as_sfnetwork(as_tbl_graph(x), ...)
 }
 
 #' @name as_sfnetwork
