@@ -318,13 +318,20 @@ to_spatial_smooth = function(x) {
   )
 }
 
-#' @importFrom igraph decompose degree edge_attr incident_edges induced_subgraph 
-#' is_directed
-#' @importFrom sf st_as_sf st_combine st_line_merge
+#' @importFrom dplyr bind_rows
+#' @importFrom igraph adjacent_vertices decompose degree delete_vertices
+#' edge_attr get.edge.ids induced_subgraph is_directed vertex_attr
+#' @importFrom sf st_as_sf st_combine st_crs st_line_merge
 #' @export
 to_spatial_smooth_v2 = function(x) {
-  # Check wether x is directed.
+  # Retrieve nodes and edges from the network.
+  nodes = nodes_as_sf(x)
+  edges = edges_as_table(x)
+  # Check wether:
+  # --> x is directed.
+  # --> x has spatially explicit edges.
   directed = is_directed(x)
+  spatial = is.sf(edges)
   # Detect pseudo nodes in x.
   if (directed) {
     # A node is a pseudo node if its in degree is 1 and its out degree is 1.
@@ -337,38 +344,120 @@ to_spatial_smooth_v2 = function(x) {
   # Decompose this subgraph to find connected sets of pseudo nodes.
   x_pseudo = decompose(induced_subgraph(x, pseudo))
   # For each set of connected pseudo nodes:
-  # --> Find the indices of the incident edges to be merged.
-  get_incident_idxs = function(i) {
-    nodes = vertex_attr(i, ".tidygraph_node_index")
-    incidents = do.call("c", incident_edges(x, nodes, mode = "all"))
-    unique(as.integer(incidents))
+  # --> Find the indices of the edges that need to be merged.
+  # --> Find the indices of the end nodes of the merged edge.
+  get_path = function(G) {
+    # Retrieve the original node indices of the pseudo nodes in this set.
+    # Retrieve the original edge indices of the edges that connect them.
+    N = vertex_attr(G, ".tidygraph_node_index")
+    E = edge_attr(G, ".tidygraph_edge_index")
+    # Find all required node and edge indices.
+    if (directed) {
+      # Find the following:
+      # --> The index of the pseudo node where an edge comes into the set.
+      # --> The index of the pseudo node where an edge goes out of the set.
+      n_i = N[degree(G, mode = "in") == 0]
+      n_o = N[degree(G, mode = "out") == 0]
+      # If these nodes do not exists:
+      # --> We are dealing with a loop of connected pseudo nodes.
+      # --> The loop is by definition not connected to the rest of the network.
+      # --> Hence, there is no need to create a new edge.
+      # --> Therefore we should not return a path.
+      if (length(n_i) == 0) return (NULL)
+      # Find the following:
+      # --> The index of the edge that comes in to the pseudo node set.
+      # --> The index of the node at the other end of that edge.
+      # We'll call this the source node and source edge of the set.
+      src_node = as.integer(adjacent_vertices(x, n_i, mode = "in"))
+      src_edge = get.edge.ids(x, c(src_node, n_i))
+      # Find the following:
+      # --> The index of the edge that goes out of the pseudo node set.
+      # --> The index of the node at the other end of that edge.
+      # We'll call this the target node and target edge of the set.
+      trg_node = as.integer(adjacent_vertices(x, n_o, mode = "out"))
+      trg_edge = get.edge.ids(x, c(n_o, trg_node))
+    } else {
+      # In an undirected network there is no in or out. Instead, we find:
+      # --> The node with the lowest index connected to the set as source.
+      # --> The node with the highest index connected to the set as target.
+      if (length(N) == 1) {
+        # When we have a single pseudo node that forms a set:
+        # --> It will be adjacent to the source and target.
+        con_nodes = as.integer(adjacent_vertices(x, N)[[1]])
+        src_node = min(con_nodes)
+        src_edge = get.edge.ids(x, c(src_node, N))
+        trg_node = max(con_nodes)
+        trg_edge = get.edge.ids(x, c(N, trg_node))
+      } else {
+        # When we have a set of multiple pseudo nodes:
+        # --> There are two pseudo nodes that form the boundary of the set.
+        # --> These are the ones connected to only one other pseudo node.
+        N_b = N[degree(G) == 1] # Boundary nodes of the pseudo node set.
+        # If these boundaries do not exists:
+        # --> We are dealing with a loop of connected pseudo nodes.
+        # --> The loop is by definition not connected to the rest of the network.
+        # --> Hence, there is no need to create a new edge.
+        # --> Therefore we should not return a path.
+        if (length(N_b) == 0) return (NULL)
+        # Find the source/target node connected to the first set boundary.
+        # --> Its adjacent nodes will be a pseudo node and a source/target.
+        n_1 = N_b[1]
+        adj_nodes = as.integer(adjacent_vertices(x, n_1)[[1]])
+        con_node_1 = adj_nodes[!(adj_nodes %in% N)]
+        # Find the source/target node connected to the second set boundary.
+        # --> Its adjacent nodes will be a pseudo node and a source/target.
+        n_2 = N_b[2]
+        adj_nodes = as.integer(adjacent_vertices(x, n_2)[[1]])
+        con_node_2 = adj_nodes[!(adj_nodes %in% N)]
+        # Define which of them is the source and which the target.
+        if (con_node_1 < con_node_2) {
+          src_node = con_node_1
+          src_edge = get.edge.ids(x, c(src_node, n_1))
+          trg_node = con_node_2
+          trg_edge = get.edge.ids(x, c(trg_node, n_2))
+        } else {
+          src_node = con_node_2
+          src_edge = get.edge.ids(x, c(src_node, n_2))
+          trg_node = con_node_1
+          trg_edge = get.edge.ids(x, c(trg_node, n_1))
+        }
+      }
+    }
+    # List all edge indices in the path.
+    edge_idxs = c(src_edge, E, trg_edge)
+    # Return all retrieved information in a list.
+    list(from = src_node, to = trg_node, .tidygraph_edge_index = edge_idxs)
   }
-  I = lapply(x_pseudo, get_incident_idxs)
-  # For each set of connected pseudo nodes:
-  # --> Merge the geometries of the incident edges.
-  orig_edge_geoms = edge_geom(x)
-  merge_incident_geoms = function(i) {
-    st_line_merge(st_combine(orig_edge_geoms[i]))
+  new_edges = data.frame(do.call("rbind", lapply(x_pseudo, get_path)))
+  new_edges$from = as.integer(new_edges$from)
+  new_edges$to = as.integer(new_edges$to)
+  # If edges are spatially explicit, new geometries have to be created.
+  if (spatial) {
+    # For each path:
+    # --> Merge all edge geometries in the path into a single geometry.
+    orig_geoms = st_geometry(edges)
+    merge_geoms = function(I) st_line_merge(st_combine(orig_geoms[I]))
+    new_geoms = do.call("c", lapply(new_edges$.tidygraph_edge_index, merge_geoms))
+    # Add the geometries to the new edges data frame.
+    # Use the same geometry column name as in the original edges data frame.
+    new_edges$geometry = new_geoms
+    new_edges = st_as_sf(new_edges)
+    geom_colname = attr(edges, "sf_column")
+    if (geom_colname != "geometry") {
+      names(new_edges)[4] = geom_colname
+      attr(new_edges, "sf_column") = geom_colname
+    }
   }
-  G = lapply(I, merge_incident_geoms)
-  # Create an sf object with the newly created edges.
-  # Use the same sf column name as in the original edges.
-  E = st_as_sf(do.call("c", G))
-  geom_colname = edge_geom_colname(x)
-  names(E)[1] = geom_colname
-  attr(E, "sf_column") = geom_colname
-  E$.tidygraph_edge_index = I
-  # Remove all pseudo nodes from the original network.
-  x_not_pseudo = induced_subgraph(x, !pseudo)
-  # Store edge indices of that network in list format.
-  # Otherwise they can not be binded with the newly created edges.
-  orig_edge_idxs = edge_attr(x_not_pseudo, ".tidygraph_edge_index")
-  edge_attr(x_not_pseudo, ".tidygraph_edge_index") = list(orig_edge_idxs)
-  # Join the network of newly created edges with the original network.
-  x_new = join_(x_not_pseudo, as_sfnetwork(E, directed = directed))
+  # Bind the orignal and new edges.
+  edges$.tidygraph_edge_index = list(edges$.tidygraph_edge_index)
+  all_edges = bind_rows(edges, new_edges)
+  # Recreate an sfnetwork.
+  x_new = sfnetwork_(nodes, all_edges, directed = directed)
+  # Remove pseudo nodes.
+  x_new = delete_vertices(x_new, pseudo)
   # Return in a list.
   list(
-    smooth = x_new %preserve_active% x
+    smooth = x_new %preserve_attrs% x
   )
 }
 

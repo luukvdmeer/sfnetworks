@@ -45,6 +45,20 @@ sf_attr = function(x, name, active = NULL) {
   )
 }
 
+#' Preserve the attributes of the original network
+#'
+#' @param new An object of class \code{\link{sfnetwork}}.
+#'
+#' @param orig An object of class \code{\link{sfnetwork}}.
+#'
+#' @importFrom igraph graph_attr
+#' @noRd
+`%preserve_attrs%` = function(new, orig) {
+  graph_attr(new) = graph_attr(orig)
+  attributes(new) = attributes(orig)
+  new
+}
+
 #' Get attribute column names from the active element of a sfnetwork
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
