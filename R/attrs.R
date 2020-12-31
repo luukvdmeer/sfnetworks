@@ -51,7 +51,7 @@ sf_attr = function(x, name, active = NULL) {
 #'
 #' @param orig An object of class \code{\link{sfnetwork}}.
 #'
-#' @importFrom igraph graph_attr
+#' @importFrom igraph graph_attr graph_attr<-
 #' @noRd
 `%preserve_attrs%` = function(new, orig) {
   graph_attr(new) = graph_attr(orig)
