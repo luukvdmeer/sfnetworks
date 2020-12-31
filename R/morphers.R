@@ -78,7 +78,7 @@ to_spatial_directed = function(x) {
   x_new = join_nodes(x_new, nodes_as_sf(x), join = st_equals)
   # Return in a list.
   list(
-    directed = x_new %preserve_active% x
+    directed = x_new %preserve_attrs% x
   )
 }
 
@@ -109,7 +109,7 @@ to_spatial_explicit = function(x, ...) {
     st_geometry(x_new) = geom_colname
     # Return in a list.
     list(
-      explicit = x_new %preserve_active% x
+      explicit = x_new %preserve_attrs% x
     )
   } else {
     list(
@@ -138,7 +138,7 @@ to_spatial_shortest_paths = function(x, ...) {
   get_single_path = function(i) {
     x_new = slice(activate(x, "edges"), as.integer(paths$edge_paths[[i]]))
     x_new = slice(activate(x_new, "nodes"), as.integer(paths$node_paths[[i]]))
-    x_new %preserve_active% x
+    x_new %preserve_attrs% x
   }
   lapply(seq_len(nrow(paths)), get_single_path)
 }
@@ -167,7 +167,7 @@ to_spatial_simple = function(x, remove_parallels = TRUE, remove_loops = TRUE) {
   }
   # Return in a list.
   list(
-    simple = x_new %preserve_active% x
+    simple = x_new %preserve_attrs% x
   )
 }
 
@@ -314,7 +314,7 @@ to_spatial_smooth = function(x) {
   x_new = filter(activate(x_new, "nodes"), !pseudo)
   # Return in a list.
   list(
-    smooth = x_new %preserve_active% x
+    smooth = x_new %preserve_attrs% x
   )
 }
 
@@ -688,7 +688,7 @@ to_spatial_subdivision = function(x) {
   x_new = sfnetwork_(new_nodes, new_edges, directed = is_directed(x))
   # Return in a list.
   list(
-    subdivision = x_new %preserve_active% x
+    subdivision = x_new %preserve_attrs% x
   )
 }
 
@@ -715,6 +715,6 @@ to_spatial_subset = function(x, ..., subset_by = NULL) {
     raise_unknown_input(subset_by)
   )
   list(
-    subset = x_new %preserve_active% x
+    subset = x_new %preserve_attrs% x
   )
 }
