@@ -718,3 +718,16 @@ to_spatial_subset = function(x, ..., subset_by = NULL) {
     subset = x_new %preserve_attrs% x
   )
 }
+
+#' @describeIn spatial_morphers Transform the geospatial coordinates of the
+#' network into a different coordinate reference system. \code{...} is 
+#' evaluated in the same manner as \code{\link[sf]{st_transform}}.
+#' Returns a \code{morphed_sfnetwork} containing a single element of class
+#' \code{\link{sfnetwork}}.
+#' @importFrom sf st_transform
+#' @export
+to_spatial_transformed = function(x, ...) {
+  list(
+    transformed = st_transform(x, ...)
+  )
+}
