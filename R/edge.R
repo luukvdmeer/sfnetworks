@@ -26,8 +26,7 @@ NULL
 #' library(sf, quietly = TRUE)
 #' library(tidygraph, quietly = TRUE)
 #'
-#' net = as_sfnetwork(roxel, directed = FALSE) %>%
-#'   st_transform(3035)
+#' net = as_sfnetwork(roxel)
 #'
 #' net %>%
 #'   activate("edges") %>%
