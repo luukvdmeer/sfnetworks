@@ -21,7 +21,7 @@ NULL
 #' @describeIn spatial_edge_measures The angle in radians between a straight 
 #' line from the edge startpoint pointing north, and the straight line from
 #' the edge startpoint and the edge endpoint. Calculated with
-#' \code{\link[lwgeom]{st_geod_azimuth}}.
+#' \code{\link[lwgeom]{st_geod_azimuth}}. Requires a geographic CRS.
 #' @examples
 #' library(sf, quietly = TRUE)
 #' library(tidygraph, quietly = TRUE)
