@@ -39,7 +39,7 @@ set the context temporarily while the algorithm is being evaluated.
 \item \code{edge_azimuth}: The angle in radians between a straight 
 line from the edge startpoint pointing north, and the straight line from
 the edge startpoint and the edge endpoint. Calculated with
-\code{\link[lwgeom]{st_geod_azimuth}}.
+\code{\link[lwgeom]{st_geod_azimuth}}. Requires a geographic CRS.
 
 \item \code{edge_circuity}: The ratio of the length of an edge
 linestring geometry versus the straight-line distance between its boundary
@@ -58,8 +58,7 @@ boundary nodes of an edge, as calculated by \code{\link[sf]{st_distance}}.
 library(sf, quietly = TRUE)
 library(tidygraph, quietly = TRUE)
 
-net = as_sfnetwork(roxel, directed = FALSE) \%>\%
-  st_transform(3035)
+net = as_sfnetwork(roxel)
 
 net \%>\%
   activate("edges") \%>\%

@@ -9,6 +9,7 @@
 \alias{to_spatial_smooth}
 \alias{to_spatial_subdivision}
 \alias{to_spatial_subset}
+\alias{to_spatial_transformed}
 \title{Spatial morphers for sfnetworks}
 \usage{
 to_spatial_directed(x)
@@ -24,6 +25,8 @@ to_spatial_smooth(x)
 to_spatial_subdivision(x)
 
 to_spatial_subset(x, ..., subset_by = NULL)
+
+to_spatial_transformed(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
@@ -122,6 +125,12 @@ filter, i.e. a filter on the geometry column based on a spatial predicate.
 Returns a \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}. For filters on an attribute column, use
 \code{\link[tidygraph]{to_subgraph}}.
+
+\item \code{to_spatial_transformed}: Transform the geospatial coordinates of the
+network into a different coordinate reference system. \code{...} is 
+evaluated in the same manner as \code{\link[sf]{st_transform}}.
+Returns a \code{morphed_sfnetwork} containing a single element of class
+\code{\link{sfnetwork}}.
 }}
 
 \examples{
