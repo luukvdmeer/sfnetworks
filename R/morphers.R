@@ -321,7 +321,7 @@ to_spatial_smooth = function(x) {
 #' @importFrom dplyr bind_rows
 #' @importFrom igraph adjacent_vertices decompose degree delete_vertices
 #' edge_attr get.edge.ids induced_subgraph is_directed vertex_attr
-#' @importFrom sf st_as_sf st_combine st_crs st_line_merge
+#' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_line_merge
 #' @export
 to_spatial_smooth_v2 = function(x) {
   # Retrieve nodes and edges from the network.
@@ -332,21 +332,39 @@ to_spatial_smooth_v2 = function(x) {
   # --> x has spatially explicit edges.
   directed = is_directed(x)
   spatial = is.sf(edges)
-  # Detect pseudo nodes in x.
+  ## ==========================
+  # STEP I: DETECT PSEUDO NODES
+  # The first step is to detect which nodes in x are pseudo nodes.
+  # In directed networks, we define a pseudo node as follows:
+  # --> A node with only one incoming and one outgoing edge.
+  # In undirected networks, we define a pseudo node as follows:
+  # --> A node with only two connections.
+  ## ==========================
   if (directed) {
-    # A node is a pseudo node if its in degree is 1 and its out degree is 1.
     pseudo = degree(x, mode = "in") == 1 & degree(x, mode = "out") == 1
   } else {
-    # A node is a pseudo node if its degree is 2.
     pseudo = degree(x) == 2
   }
+  ## ===============================
+  # STEP II: FIND EDGES TO BE MERGED
+  # The connectivity of the network should be preserved.
+  # Therefore we need to:
+  # --> Find adjacent nodes of a pseudo node.
+  # --> Connect these by merging the incident edges of the pseudo node.
+  # However, an adjacent node can also be another pseudo node.
+  # Then, we need to look further until we find a non-pseudo (junction) node.
+  # Hence, instead of processing each pseudo node on its own, we need to:
+  # --> Find connected sets of pseudo nodes.
+  # --> Find the adjacent junction nodes to that set.
+  # --> Connect these by merging the edges in the set *and* its incident edges.
+  ## ===============================
   # Subset x to only contain pseudo nodes and the edges between them.
   # Decompose this subgraph to find connected sets of pseudo nodes.
   x_pseudo = decompose(induced_subgraph(x, pseudo))
   # For each set of connected pseudo nodes:
+  # --> Find the indices of the adjacent junction node(s).
   # --> Find the indices of the edges that need to be merged.
-  # --> Find the indices of the end nodes of the merged edge.
-  get_path = function(G) {
+  find_edges = function(G) {
     # Retrieve the original node indices of the pseudo nodes in this set.
     # Retrieve the original edge indices of the edges that connect them.
     N = vertex_attr(G, ".tidygraph_node_index")
@@ -378,8 +396,8 @@ to_spatial_smooth_v2 = function(x) {
       trg_edge = get.edge.ids(x, c(n_o, trg_node))
     } else {
       # In an undirected network there is no in or out. Instead, we find:
-      # --> The node with the lowest index connected to the set as source.
-      # --> The node with the highest index connected to the set as target.
+      # --> As source: The node with the lowest index connected to the set.
+      # --> As target: The node with the highest index connected to the set.
       if (length(N) == 1) {
         # When we have a single pseudo node that forms a set:
         # --> It will be adjacent to the source and target.
@@ -392,7 +410,7 @@ to_spatial_smooth_v2 = function(x) {
         # When we have a set of multiple pseudo nodes:
         # --> There are two pseudo nodes that form the boundary of the set.
         # --> These are the ones connected to only one other pseudo node.
-        N_b = N[degree(G) == 1] # Boundary nodes of the pseudo node set.
+        N_b = N[degree(G) == 1]
         # If these boundaries do not exists:
         # --> We are dealing with a loop of connected pseudo nodes.
         # --> The loop is by definition not connected to the rest of the network.
@@ -400,16 +418,18 @@ to_spatial_smooth_v2 = function(x) {
         # --> Therefore we should not return a path.
         if (length(N_b) == 0) return (NULL)
         # Find the source/target node connected to the first set boundary.
-        # --> Its adjacent nodes will be a pseudo node and a source/target.
+        # --> Its adjacent nodes will be one pseudo node and a source/target.
+        # --> The source/target node is the one not present in the pseudo set.
         n_1 = N_b[1]
         adj_nodes = as.integer(adjacent_vertices(x, n_1)[[1]])
         con_node_1 = adj_nodes[!(adj_nodes %in% N)]
         # Find the source/target node connected to the second set boundary.
         # --> Its adjacent nodes will be a pseudo node and a source/target.
+        # --> The source/target node is the one not present in the pseudo set.
         n_2 = N_b[2]
         adj_nodes = as.integer(adjacent_vertices(x, n_2)[[1]])
         con_node_2 = adj_nodes[!(adj_nodes %in% N)]
-        # Define which of them is the source and which the target.
+        # Define which of found nodes is the source and which the target.
         if (con_node_1 < con_node_2) {
           src_node = con_node_1
           src_edge = get.edge.ids(x, c(src_node, n_1))
@@ -428,16 +448,46 @@ to_spatial_smooth_v2 = function(x) {
     # Return all retrieved information in a list.
     list(from = src_node, to = trg_node, .tidygraph_edge_index = edge_idxs)
   }
-  new_edges = data.frame(do.call("rbind", lapply(x_pseudo, get_path)))
+  new_edge_list = lapply(x_pseudo, find_edges)
+  # Create a data frame with the merged edges.
+  new_edges = data.frame(do.call("rbind", new_edge_list))
   new_edges$from = as.integer(new_edges$from)
   new_edges$to = as.integer(new_edges$to)
-  # If edges are spatially explicit, new geometries have to be created.
+  ## ====================================
+  # STEP III: CONCATENATE EDGE GEOMETRIES
+  # If the edges to be merged have geometries:
+  # --> These geometries have to be concatenated into a single new geometry.
+  # --> The new geometry should go from the defined source to target node.
+  ## ====================================
   if (spatial) {
-    # For each path:
-    # --> Merge all edge geometries in the path into a single geometry.
-    orig_geoms = st_geometry(edges)
-    merge_geoms = function(I) st_line_merge(st_combine(orig_geoms[I]))
-    new_geoms = do.call("c", lapply(new_edges$.tidygraph_edge_index, merge_geoms))
+    # For each new edge:
+    # --> Merge all original edge geometries in the path into a single geometry.
+    edge_geoms = st_geometry(edges)
+    node_geoms = st_geometry(nodes)
+    merge_geoms = function(E) {
+      orig_edges = E$.tidygraph_edge_index
+      orig_geoms = edge_geoms[orig_edges]
+      new_geom = st_line_merge(st_combine(orig_geoms))
+      # There is one situation where merging lines like this is problematic.
+      # That is when the source and target node of the new edge are the same.
+      # Hence, the original edges to be merged form a closed loop.
+      # Any original edge endpoint can then be the startpoint of the new edge.
+      # st_line_merge chooses the point with the lowest x coordinate.
+      # This is not necessarily the source node we defined.
+      # This behaviour comes from third partly libs and can not be tuned.
+      # Hence, we manually need to reorder the points in the merged line.
+      if (src == trg & length(orig_edges) > 1) {
+        pts = st_cast(new_geom, "POINT")
+        src_idx = st_equals(node_geoms[src], pts)[[1]]
+        if (length(src_idx) == 1) {
+          n = length(pts)
+          ordered_pts = c(pts[c(src_idx:n)], pts[c(2:src_idx)])
+          new_geom = st_cast(st_combine(ordered_pts), "LINESTRING")
+        }
+      }
+      new_geom
+    }
+    new_geoms = do.call("c", lapply(new_edge_list, merge_geoms))
     # Add the geometries to the new edges data frame.
     # Use the same geometry column name as in the original edges data frame.
     new_edges$geometry = new_geoms
@@ -448,12 +498,23 @@ to_spatial_smooth_v2 = function(x) {
       attr(new_edges, "sf_column") = geom_colname
     }
   }
-  # Bind the orignal and new edges.
+  ## ========================================
+  # STEP IV: ADD MERGED EDGES TO THE NETWORK
+  # The newly created edges should be added to the original network.
+  # This must happen before removing the pseudo nodes.
+  # Otherwise, the source and target indices do not match anymore.
+  ## ========================================
+  # Bind the original and new edges.
   edges$.tidygraph_edge_index = list(edges$.tidygraph_edge_index)
   all_edges = bind_rows(edges, new_edges)
   # Recreate an sfnetwork.
   x_new = sfnetwork_(nodes, all_edges, directed = directed)
-  # Remove pseudo nodes.
+  ## ============================================
+  # STEP V: REMOVE PSEUDO NODES FROM THE NETWORK
+  # Remove all the detected pseudo nodes from the original network.
+  # This will automatically also remove their incident edges.
+  # Remember that their replacement edges have already been added in step IV.
+  ## ============================================
   x_new = delete_vertices(x_new, pseudo)
   # Return in a list.
   list(
