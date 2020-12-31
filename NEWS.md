@@ -1,6 +1,7 @@
 # development
 
 * Addition of an edge measure function `edge_azimuth()`, to calculate the azimuth (i.e. bearing) of edges. Refs [#107](https://github.com/luukvdmeer/sfnetworks/issues/107)
+* Addition of a `to_spatial_transformed()` morpher, to temporarily transform a sfnetwork into a different CRS.
 * Addition of a sfnetwork methods for `linnet` objects, to enhance interoperability between `sfnetwork` and the `spatstat` package for spatial point patterns on linear networks.
 * Changes to `st_network_paths()`:
   - Addition of a new argument `type`, which lets you set the type of paths calculation that should be performed.
@@ -8,6 +9,7 @@
   - Besides shortest paths, there is now also the possibility to calculate all simple paths between nodes, by setting `type = 'all_simple'`. Be aware that computation time gets high when providing a lot of 'to' nodes, or when the network is large and dense. Refs [#105](https://github.com/luukvdmeer/sfnetworks/issues/105)
   - Whenever `weights = NULL` *and* there is no column named 'weight' in the edges table, geographic edge length will be calculated internally and used as weights in shortest path calculation. Before, paths would be calculated without edge weights in this case. Refs [#106](https://github.com/luukvdmeer/sfnetworks/issues/106)
   - Whenever the given 'from' and/or 'to' nodes contain NA values and/or empty point geometries, igraph behaviour is now replicated by throwing an error. Before, these values would simply be ignored.
+* Performance improvement of the `to_spatial_smooth()` morpher. As a result of this it does not store the original edge data anymore in a '.orig_data' column. Instead, non-merged edges keep their attributes, while merged edges loose their attributes.
 * Bug fixes:
   - `st_network_paths()` now correctly handles cases where an unexisting column is passed to the `weights` argument, by throwing an error. Fixes [#99](https://github.com/luukvdmeer/sfnetworks/issues/99)
 * Addition of extra examples to the [routing](https://luukvdmeer.github.io/sfnetworks/articles/routing.html) and [spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html) vignettes.

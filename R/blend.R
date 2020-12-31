@@ -247,5 +247,5 @@ blend_ = function(x, y, tolerance, sort) {
       # Join spatially with the new network.
       x_new = join_nodes(x_new, y, join = sf::st_equals)
     }
-    x_new %preserve_active% x
+    x_new %preserve_attrs% x
 }

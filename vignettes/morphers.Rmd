@@ -235,3 +235,23 @@ net %>%
   st_join(codes, join = st_intersects) %>%
   unmorph()
 ```
+
+### to_spatial_transformed
+
+The `to_spatial_transformed()` morpher temporarily transforms the network into a different coordinate reference system. An example of a situation in which this can be helpful, is the usage of the spatial edge measure function `edge_azimuth()`. This function calculates the azimuth (or *bearing*) of edge linestrings, but requires a geographic CRS for that.
+
+```{r, error = TRUE}
+# Azimuth calculation fails with our projected CRS.
+# The function complains the coordinates are not longitude/latitude.
+net %>%
+  activate("edges") %>%
+  mutate(azimuth = edge_azimuth())
+```
+```{r}
+# We make it work by temporarily transforming to a different CRS.
+net %>%
+  activate("edges") %>%
+  morph(to_spatial_transformed, 4326) %>%
+  mutate(azimuth = edge_azimuth()) %>%
+  unmorph()
+```

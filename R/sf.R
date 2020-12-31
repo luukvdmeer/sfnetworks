@@ -446,7 +446,7 @@ join_nodes = function(x, y,  ...) {
   # Create a new network with the updated data.
   n_new$.sfnetwork_index = NULL
   x_new = sfnetwork_(n_new, edges_as_table(x), directed = is_directed(x))
-  x_new %preserve_active% x
+  x_new %preserve_attrs% x
 }
 
 #' @importFrom igraph is_directed
@@ -460,7 +460,7 @@ join_edges = function(x, y, ...) {
   e_new = st_join(x_sf, y_sf, ...)
   # Create a new network with the updated data.
   x_new = sfnetwork_(nodes_as_sf(x), e_new, directed = is_directed(x))
-  x_new %preserve_active% x
+  x_new %preserve_attrs% x
 }
 
 #' @name sf
