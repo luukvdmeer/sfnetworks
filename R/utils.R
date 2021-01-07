@@ -11,29 +11,6 @@ cat_subtle = function(...) { # nocov start
   cat(silver(...))
 } # nocov end
 
-#' Concatenate two linestrings together
-#'
-#' @param x The first line, as object of class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}} containing a single feature with \code{LINESTRING}
-#' geometry.
-#'
-#' @param y The second line, as object of class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}} containing a single feature with \code{LINESTRING}
-#' geometry.
-#'
-#' @return An object of class \code{\link[sf]{sfc}} containing a single
-#' feature with \code{LINESTRING} geometry.
-#'
-#' @details The endpoint of line x should match the startpoint of line y.
-#'
-#' @importFrom sf st_cast st_crs st_geometry st_sfc
-#' @noRd
-concat_lines = function(x, y) {
-  x_pts = st_cast(st_geometry(x), "POINT")
-  y_pts = st_cast(st_geometry(y), "POINT")[-1]
-  st_sfc(st_cast(do.call("c", c(x_pts, y_pts)), "LINESTRING"), crs = st_crs(x))
-}
-
 #' Create edges from nodes
 #'
 #' @param nodes An object of class \code{\link[sf]{sf}} with \code{POINT}
