@@ -2,7 +2,7 @@
 #'
 #' @param x A vector.
 #'
-#' @return \code{TRUE} when the vector contains duplicated values, 
+#' @return \code{TRUE} when the vector contains duplicated values,
 #' \code{FALSE} otherwise.
 #'
 #' @noRd
@@ -67,12 +67,12 @@ has_spatially_explicit_edges = function(x) {
 #' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
 #'
 #' @return A boolean vector of the same length as the number of features in x.
-#' 
+#'
 #' @importFrom sf st_dimension
 #' @noRd
-is_empty = function(x) {
+is_empty = function(x) { # nocov start
   is.na(st_dimension(x))
-}
+} # nocov end
 
 #' Check if two sf objects have the same LINESTRING boundary points
 #'
@@ -89,14 +89,14 @@ is_empty = function(x) {
 #' corresponding row in y. Hence, x and y should be of the same length.
 #'
 #' @noRd
-have_equal_boundary_points = function(x, y) {
+have_equal_boundary_points = function(x, y) { # nocov start
   all(
     have_equal_geometries(
-      linestring_boundary_points(x), 
+      linestring_boundary_points(x),
       linestring_boundary_points(y)
     )
   )
-}
+} # nocov end
 
 #' Check if the CRS of two objects are the same
 #'
@@ -116,7 +116,7 @@ have_equal_crs = function(x, y) {
 }
 
 #' Check if two sfnetworks have the same type of edges
-#' 
+#'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @param y An object of class \code{\link{sfnetwork}}.
@@ -178,7 +178,7 @@ nodes_match_edge_boundaries = function(x) {
 
 #' Check if sf will assume planar coordinates for some operations on an object
 #'
-#' @param x An object of class \code{\link{sfnetwork}}, \code{\link[sf]{sf}}, 
+#' @param x An object of class \code{\link{sfnetwork}}, \code{\link[sf]{sf}},
 #' \code{\link[sf]{sfc}}.
 #'
 #' @return \code{TRUE} when the coordinates of x are longitude-latitude, but sf
