@@ -2,12 +2,12 @@
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @param value A named factor with appropriate levels. Names should 
-#' correspond to the attribute columns of the targeted element of x. Attribute 
+#' @param value A named factor with appropriate levels. Names should
+#' correspond to the attribute columns of the targeted element of x. Attribute
 #' columns do not involve the geometry list column, but do involve the from and
 #' to columns.
 #'
-#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently 
+#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently
 #' active element of x will be used.
 #'
 #' @return For the getter, a named agr factor. The setter only modifies x.
@@ -75,9 +75,9 @@ edge_agr = function(x) {
 #' @return A named agr factor with appropriate levels.
 #'
 #' @noRd
-concat_agr = function(x, y) {
+concat_agr = function(x, y) { # nocov start
   unlist(list(x, y))
-}
+} # nocov end
 
 #' Create an empty agr factor
 #'
@@ -85,8 +85,8 @@ concat_agr = function(x, y) {
 #' in the agr factor.
 #'
 #' @return A named factor with appropriate levels. Values are all equal to
-#' \code{\link[sf]{NA_agr_}}. Names correspond to the  attribute columns of the 
-#' targeted element of x. Attribute columns do not  involve the geometry list 
+#' \code{\link[sf]{NA_agr_}}. Names correspond to the  attribute columns of the
+#' targeted element of x. Attribute columns do not  involve the geometry list
 #' column, but do involve the from and to columns.
 #'
 #' @noRd
@@ -105,17 +105,17 @@ empty_agr = function(names) {
 #' in the agr factor.
 #'
 #' @return \code{TRUE} is the agr factor is valid, \code{FALSE} otherwise. An
-#' agr factor is valid if it is a named factor with appropriate names and 
-#' levels. 
+#' agr factor is valid if it is a named factor with appropriate names and
+#' levels.
 #'
 #' @noRd
-is_valid_agr = function(agr, names, levels = sf:::agr_levels) {
+is_valid_agr = function(agr, names, levels = sf:::agr_levels) { # nocov start
   all(
-    is.factor(agr), 
-    identical(levels(agr), levels), 
+    is.factor(agr),
+    identical(levels(agr), levels),
     identical(names(agr), names)
   )
-}
+} # nocov end
 
 #' Make an agr factor valid
 #'
@@ -127,10 +127,10 @@ is_valid_agr = function(agr, names, levels = sf:::agr_levels) {
 #' @param levels A character vector containing the levels that should be present
 #' in the agr factor.
 #'
-#' @return A named factor with appropriate levels. Names are guaranteed to 
-#' correspond to the attribute columns of the targeted element of x and are 
-#' guaranteed to be sorted in the same order as those attribute columns. 
-#' Attribute columns do not involve the geometry list column, but do involve 
+#' @return A named factor with appropriate levels. Names are guaranteed to
+#' correspond to the attribute columns of the targeted element of x and are
+#' guaranteed to be sorted in the same order as those attribute columns.
+#' Attribute columns do not involve the geometry list column, but do involve
 #' the from and to columns.
 #'
 #' @noRd
