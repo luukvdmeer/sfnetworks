@@ -31,10 +31,9 @@
 #'
 #' @details It also possible to create your own morphers. See the documentation
 #' of \code{\link[tidygraph]{morph}} for the requirements for custom morphers.
-#''
+#'
 #' @seealso The vignette on
-#' \href{https://luukvdmeer.github.io/sfnetworks/articles/morphers.html}{spatial
-#' morphers}.
+#' \href{https://luukvdmeer.github.io/sfnetworks/articles/morphers.html}{spatial morphers}.
 #'
 #' @examples
 #' library(sf, quietly = TRUE)
@@ -187,7 +186,7 @@ to_spatial_simple = function(x, remove_parallels = TRUE, remove_loops = TRUE) {
 #' of class \code{\link{sfnetwork}}.
 #' @importFrom dplyr bind_rows
 #' @importFrom igraph adjacent_vertices decompose degree delete_vertices
-#' edge_attr get.edge.ids induced_subgraph is_directed vertex_attr
+#' edge_attr edge_attr<- get.edge.ids induced_subgraph is_directed vertex_attr
 #' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_line_merge
 #' @export
 to_spatial_smooth = function(x, store_orig_data = FALSE) {
@@ -474,7 +473,7 @@ to_spatial_subdivision = function(x) {
   new_edge_coords = data.frame(lapply(edge_coords, function(i) rep(i, reps)))
   ## ==========================================
   # STEP IV: CONSTRUCT THE NEW EDGES GEOMETRIES
-  # With the new coordinates of the edge points we need to recreate linestrings.
+  # With the new coords of the edge points we need to recreate linestrings.
   # First we need to know which edge points belong to which *new* edge.
   # Then we need to build a linestring geometry for each new edge.
   ## ==========================================
@@ -505,7 +504,7 @@ to_spatial_subdivision = function(x) {
   ## ===================================
   # Find which *original* edge belongs to which *new* edge:
   # --> Use the list of new edge points constructed before.
-  # --> In that list we already mapped each new edge point to its original edge.
+  # --> There we already mapped each new edge point to its original edge.
   # --> First define which new edge points are startpoints of new edges.
   # --> Then retrieve the original edge index from these new startpoints.
   # --> This gives us a single original edge index for each new edge.
@@ -530,7 +529,8 @@ to_spatial_subdivision = function(x) {
   # We will restore them by:
   # --> Adding back the attributes to nodes that were already a node before.
   # --> Filling attribute values of newly added nodes with NA.
-  # Beware at this stage each new edge boundary is stored as separate node.
+  # Beware at this stage the nodes are recreated from scratch.
+  # That means each boundary point of the new edges is stored as separate node.
   # Boundaries with equal geometries will be merged into a single node later.
   ## =====================================
   # Find which of the *original* edge points equaled which *original* node.

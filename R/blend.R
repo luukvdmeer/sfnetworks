@@ -21,7 +21,8 @@
 #'
 #' @param sort Should the nodes in the resulting network be sorted in the same
 #' order as those in \code{x}, followed by the new nodes blended in from 
-#' \code{y}? Defaults to \code{FALSE}, meaning that node order might be changed.
+#' \code{y}? Defaults to \code{FALSE}, meaning that node order might be 
+#' changed.
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
@@ -190,7 +191,7 @@ blend_ = function(x, y, tolerance, sort) {
         # --> This occurs because of precision issues.
         # --> See https://github.com/r-spatial/sf/issues/790
         # --> To solve it:
-        # --> Extend r in the same direction by 2x the distance d between r and q.
+        # --> Extend r by 2x the distance d between r and q.
         # --> Assume Euclidean space for convenience.
         # --> This should guarantee intersection between r and q.
         d = st_distance(st_set_crs(r, NA), st_set_crs(q, NA))

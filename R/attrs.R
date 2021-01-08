@@ -75,10 +75,10 @@ sf_attr = function(x, name, active = NULL) {
 #' indices of start and end nodes of an edge are. Hence, the function
 #' \code{graph_attribute_names} will return a vector of names that includes
 #' the name of the geometry column, but - when active = 'edges' - not the
-#' names of the to and from columns. The function \code{spatial_attribute_names}
-#' will return a vector of names that does not include the name of the
-#' geometry column, but - when active = 'edges' - does include the names of
-#' the to and from colums.
+#' names of the to and from columns. The function 
+#' \code{spatial_attribute_names} will return a vector of names that does not 
+#' include the name of the geometry column, but - when active = 'edges' - does 
+#' include the names of the to and from colums.
 #'
 #' @name attr_names
 #' @noRd

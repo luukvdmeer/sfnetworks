@@ -12,7 +12,8 @@
 #' @return An object of class \code{\link[spatstat]{linnet}}.
 #'
 #' @seealso \code{\link{as_sfnetwork}} to convert objects of class
-#' \code{\link[spatstat]{linnet}} into objects of class \code{\link{sfnetwork}}.
+#' \code{\link[spatstat]{linnet}} into objects of class 
+#' \code{\link{sfnetwork}}.
 #'
 #' @examples
 #' if (require("spatstat", quietly = TRUE)) {

@@ -187,21 +187,6 @@ edge_boundary_points = function(x) {
   linestring_boundary_points(edges)
 }
 
-#' Create an empty point geometry
-#'
-#' @param crs The CRS to assign to the empty point, as an object of class
-#' \code{crs}. Defaults to \code{NA}, meaning that no CRS will be assigned.
-#'
-#' @return An object of class \code{\link[sf]{sfc}} containing a single
-#' feature with an empty \code{POINT} geometry.
-#'
-#' @importFrom sf st_point st_sfc
-#' @noRd
-empty_point = function(crs = NA) { # nocov start
-  # ! Function not in use currently
-  st_sfc(st_point(), crs = crs)
-} # nocov end
-
 #' Make edges spatially explicit
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.

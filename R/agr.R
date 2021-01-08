@@ -66,19 +66,6 @@ edge_agr = function(x) {
   x
 }
 
-#' Concatenate two agr factors
-#'
-#' @param x A named agr factor with appropriate levels.
-#'
-#' @param y A named agr factor with appropriate levels.
-#'
-#' @return A named agr factor with appropriate levels.
-#'
-#' @noRd
-concat_agr = function(x, y) { # nocov start
-  unlist(list(x, y))
-} # nocov end
-
 #' Create an empty agr factor
 #'
 #' @param names A character vector containing the names that should be present
@@ -94,29 +81,6 @@ empty_agr = function(names) {
   structure(rep(sf::NA_agr_, length(names)), names = names)
 }
 
-#' Check if an agr factor is valid
-#'
-#' @param agr The agr factor to be checked.
-#'
-#' @param names A character vector containing the names that should be present
-#' in the agr factor.
-#'
-#' @param levels A character vector containing the levels that should be present
-#' in the agr factor.
-#'
-#' @return \code{TRUE} is the agr factor is valid, \code{FALSE} otherwise. An
-#' agr factor is valid if it is a named factor with appropriate names and
-#' levels.
-#'
-#' @noRd
-is_valid_agr = function(agr, names, levels = sf:::agr_levels) { # nocov start
-  all(
-    is.factor(agr),
-    identical(levels(agr), levels),
-    identical(names(agr), names)
-  )
-} # nocov end
-
 #' Make an agr factor valid
 #'
 #' @param agr The agr factor to be made valid.
@@ -124,8 +88,8 @@ is_valid_agr = function(agr, names, levels = sf:::agr_levels) { # nocov start
 #' @param names A character vector containing the names that should be present
 #' in the agr factor.
 #'
-#' @param levels A character vector containing the levels that should be present
-#' in the agr factor.
+#' @param levels A character vector containing the levels that should be 
+#' present in the agr factor.
 #'
 #' @return A named factor with appropriate levels. Names are guaranteed to
 #' correspond to the attribute columns of the targeted element of x and are

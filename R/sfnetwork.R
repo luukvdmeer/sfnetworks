@@ -30,10 +30,10 @@
 #' \code{to} and \code{from} are given as integers. Defaults to \code{'name'}.
 #'
 #' @param edges_as_lines Should the edges be spatially explicit, i.e. have
-#' \code{LINESTRING} geometries stored in a geometry list column? If \code{NULL},
-#' this will be automatically defined, by setting the argument to \code{TRUE}
-#' when the edges are given as an object of class \code{\link[sf]{sf}}, and
-#' \code{FALSE} otherwise. Defaults to \code{NULL}.
+#' \code{LINESTRING} geometries stored in a geometry list column? If 
+#' \code{NULL}, this will be automatically defined, by setting the argument to 
+#' \code{TRUE} when the edges are given as an object of class 
+#' \code{\link[sf]{sf}}, and \code{FALSE} otherwise. Defaults to \code{NULL}.
 #'
 #' @param length_as_weight Should the length of the edges be stored in a column
 #' named \code{weight}? If set to \code{TRUE}, this will calculate the length
@@ -106,7 +106,11 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
     nodes = tryCatch(
       st_as_sf(nodes, ...),
       error = function(e) {
-        stop("Failed to convert nodes to sf object because: ", e, call. = FALSE)
+        stop(
+          "Failed to convert nodes to sf object because: ", 
+          e, 
+          call. = FALSE
+        )
       }
     )
   }
@@ -217,7 +221,7 @@ as_sfnetwork.default = function(x, ...) {
 #' Nodes are created at the endpoints of the lines. Endpoints which are shared
 #' between multiple edges become a single node. For points, it is assumed that
 #' the given features geometries form the nodes. They will be connected by
-#' edges sequentially. Hence, point 1 to point 2, point 2 to point 3, et cetera.
+#' edges sequentially. Hence, point 1 to point 2, point 2 to point 3, etc.
 #' @examples
 #' # From an sf object.
 #' library(sf, quietly = TRUE)

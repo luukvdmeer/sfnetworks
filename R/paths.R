@@ -22,8 +22,8 @@
 #' @param to The (set of) geospatial point(s) to which the paths will be
 #' calculated. Can be an object of  class \code{\link[sf]{sf}} or
 #' \code{\link[sf]{sfc}}.
-#' Alternatively, it can be a numeric vector, containing the indices of the nodes
-#' to which the paths will be calculated, or a character vector,
+#' Alternatively it can be a numeric vector containing the indices of the nodes
+#' to which the paths will be calculated, or a character vector
 #' containing the names of the nodes to which the paths will be
 #' calculated. By default, all nodes in the network are included.
 #'
@@ -225,16 +225,16 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' @param from The (set of) geospatial point(s) from which the shortest paths
 #' will be calculated. Can be an object of  class \code{\link[sf]{sf}} or
 #' \code{\link[sf]{sfc}}.
-#' Alternatively, it can be a numeric vector, containing the indices of the nodes
-#' from which the shortest paths will be calculated, or a character vector,
+#' Alternatively it can be a numeric vector containing the indices of the nodes
+#' from which the shortest paths will be calculated, or a character vector
 #' containing the names of the nodes from which the shortest paths will be
 #' calculated. By default, all nodes in the network are included.
 #'
 #' @param to The (set of) geospatial point(s) to which the shortest paths will
 #' be calculated. Can be an object of  class \code{\link[sf]{sf}} or
 #' \code{\link[sf]{sfc}}.
-#' Alternatively, it can be a numeric vector, containing the indices of the nodes
-#' to which the shortest paths will be calculated, or a character vector,
+#' Alternatively it can be a numeric vector containing the indices of the nodes
+#' to which the shortest paths will be calculated, or a character vector
 #' containing the names of the nodes to which the shortest paths will be
 #' calculated. By default, all nodes in the network are included.
 #'

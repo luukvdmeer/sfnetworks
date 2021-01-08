@@ -308,8 +308,8 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
 
 # Geometric binary predicates internally are applied to the geometry of the
 # given object. Since there is a st_geometry.sfnetwork method, they work
-# automatically on sfnetwork objects too. However, st_intersects is the only one
-# that is a generic, and thus an sfnetwork method needs to be created for it.
+# automatically on sfnetwork objects too. However, st_intersects is the only 
+# generic, and thus an sfnetwork method needs to be created for it.
 
 #' @name sf
 #' @importFrom sf st_as_sf st_intersects
@@ -323,15 +323,15 @@ st_intersects.sfnetwork = function(x, y = x, ...) {
 # Geometric unary operations
 # =============================================================================
 
-# NOTE: Only those geometric unary operations y = f(x) are supported in which:
-# The geometry type of y is POINT when the geometry type of x is POINT and the
-# POINT geometries in y have the same coordinates as their corresponding POINT
-# geometries in x (this is basically useless but is what happens when you call
-# for example st_reverse on POINT geometries).
-# Or:
-# The geometry type of y is LINESTRING when the geometry type of x is LINESTRING
-# and the LINESTRING geometries in y have the same boundary points (source and
-# target may be switched) as their corresponding LINESTRING geometries in x.
+# Only those geometric unary operations y = f(x) are supported in which:
+# --> The geometry type of y is POINT when the geometry type of x is POINT and 
+# the POINT geometries in y have the same coordinates as their corresponding 
+# POINT geometries in x (this is basically useless but is what happens when 
+# you call for example st_reverse on POINT geometries).
+# --> The geometry type of y is LINESTRING when the geometry type of x is 
+# LINESTRING and the LINESTRING geometries in y have the same boundary points 
+# as their corresponding LINESTRING geometries in x (source and target may be
+# switched).
 
 #' @name sf
 #' @importFrom igraph is_directed

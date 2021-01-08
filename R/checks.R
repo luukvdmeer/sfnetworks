@@ -53,50 +53,14 @@ has_spatial_nodes = function(x) {
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @return \code{TRUE} if the network has spatially explicit edges, \code{FALSE}
-#' otherwise.
+#' @return \code{TRUE} if the network has spatially explicit edges, 
+#' \code{FALSE} otherwise.
 #'
 #' @importFrom igraph edge_attr
 #' @noRd
 has_spatially_explicit_edges = function(x) {
   any(vapply(edge_attr(x), is.sfc, FUN.VALUE = logical(1)), na.rm = TRUE)
 }
-
-#' Check for empty geometries
-#'
-#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
-#'
-#' @return A boolean vector of the same length as the number of features in x.
-#'
-#' @importFrom sf st_dimension
-#' @noRd
-is_empty = function(x) { # nocov start
-  is.na(st_dimension(x))
-} # nocov end
-
-#' Check if two sf objects have the same LINESTRING boundary points
-#'
-#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
-#' with \code{LINESTRING} geometries.
-#'
-#' @param y An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
-#' with \code{LINESTRING} geometries.
-#'
-#' @return \code{TRUE} when the boundary points are the same, \code{FALSE}
-#' otherwise.
-#'
-#' @details This is a pairwise check. Each row in x is compared to its
-#' corresponding row in y. Hence, x and y should be of the same length.
-#'
-#' @noRd
-have_equal_boundary_points = function(x, y) { # nocov start
-  all(
-    have_equal_geometries(
-      linestring_boundary_points(x),
-      linestring_boundary_points(y)
-    )
-  )
-} # nocov end
 
 #' Check if the CRS of two objects are the same
 #'
@@ -126,8 +90,8 @@ have_equal_crs = function(x, y) {
 #'
 #' @noRd
 have_equal_edge_type = function(x, y) {
-  both_ex = has_spatially_explicit_edges(x) && has_spatially_explicit_edges(y)
-  both_im = !has_spatially_explicit_edges(x) && !has_spatially_explicit_edges(y)
+  both_ex = has_spatially_explicit_edges(x) & has_spatially_explicit_edges(y)
+  both_im = !has_spatially_explicit_edges(x) & !has_spatially_explicit_edges(y)
   both_ex || both_im
 }
 
@@ -148,7 +112,7 @@ have_equal_geometries = function(x, y) {
   diag(st_equals(x, y, sparse = FALSE))
 }
 
-#' Check if any of the edge boundary points is equal to any of its boundary nodes
+#' Check if any boundary point of an edge is equal to any of its boundary nodes
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'

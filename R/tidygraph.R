@@ -87,7 +87,8 @@ unmorph.morphed_sfnetwork = function(.data, ...) {
 #' From: https://github.com/thomasp85/tidygraph/blob/master/R/tbl_graph.R
 #' November 5, 2020
 #'
-#' @importFrom igraph is_simple is_directed is_bipartite is_connected is_dag gorder
+#' @importFrom igraph is_simple is_directed is_bipartite is_connected is_dag 
+#' gorder
 #' @noRd
 describe_graph = function(x) {
   if (gorder(x) == 0) return('An empty graph')
@@ -132,7 +133,8 @@ is_tree = function(x) {
     (gorder(x) - gsize(x) == 1)
 }
 
-#' @importFrom igraph is_connected is_simple gorder gsize count_components is_directed
+#' @importFrom igraph is_connected is_simple gorder gsize count_components 
+#' is_directed
 is_forest = function(x) {
   !is_connected(x) &&
     is_simple(x) &&
