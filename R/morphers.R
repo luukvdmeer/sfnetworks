@@ -18,6 +18,12 @@
 #' @param ... Arguments to be passed on to other functions. See the description
 #' of each morpher for details.
 #'
+#' @param store_orig_data Whenever multiple features (i.e. nodes and/or edges) 
+#' are merged into a single feature during morphing, should the data of the 
+#' original features be stored as an attribute of the new feature, in a column 
+#' named \code{.orig_data}. This is in line with the design principles of
+#' \code{tidygraph}. Defaults to \code{FALSE}.
+#'
 #' @return Either a \code{morphed_sfnetwork}, which is a list of one or more
 #' \code{\link{sfnetwork}} objects, or a \code{morphed_tbl_graph}, which is a
 #' list of one or more \code{\link[tidygraph]{tbl_graph}} objects. See the
@@ -184,7 +190,7 @@ to_spatial_simple = function(x, remove_parallels = TRUE, remove_loops = TRUE) {
 #' edge_attr get.edge.ids induced_subgraph is_directed vertex_attr
 #' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_line_merge
 #' @export
-to_spatial_smooth = function(x) {
+to_spatial_smooth = function(x, store_orig_data = FALSE) {
   # Retrieve nodes and edges from the network.
   nodes = nodes_as_sf(x)
   edges = edges_as_table(x)
@@ -368,7 +374,7 @@ to_spatial_smooth = function(x) {
   # Otherwise, the source and target indices do not match their nodes anymore.
   ## ========================================
   # Bind the original and new edges.
-  edges$.tidygraph_edge_index = list(edges$.tidygraph_edge_index)
+  edges$.tidygraph_edge_index = as.list(edges$.tidygraph_edge_index)
   all_edges = bind_rows(edges, new_edges)
   # Recreate an sfnetwork.
   x_new = sfnetwork_(nodes, all_edges, directed = directed)
@@ -379,6 +385,20 @@ to_spatial_smooth = function(x) {
   # Remember that their replacement edges have already been added in step IV.
   ## ============================================
   x_new = delete_vertices(x_new, pseudo)
+  ## =============================================
+  # STEP VI: STORE ORIGINAL EDGE DATA IF REQUESTED
+  # Users can request to store the data of original edges in a special column.
+  # This column will - by tidygraph design - be named .orig_data.
+  # The value in this column is for each edge a tibble containing:
+  # --> The data of the original edges that were merged into the new edge.
+  ## =============================================
+  if (store_orig_data) {
+    # Store the original edge data in a .orig_data column.
+    orig_edge_idxs = edge_attr(x_new, ".tidygraph_edge_index")
+    copy_orig_data = function(i) edges[i, , drop = FALSE]
+    edge_attr(x_new, ".orig_data") = lapply(orig_edge_idxs, copy_orig_data)
+
+  }
   # Return in a list.
   list(
     smooth = x_new %preserve_attrs% x
