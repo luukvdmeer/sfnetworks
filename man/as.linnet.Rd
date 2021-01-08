@@ -35,5 +35,6 @@ if (require("spatstat", quietly = TRUE)) {
 }
 \seealso{
 \code{\link{as_sfnetwork}} to convert objects of class
-\code{\link[spatstat]{linnet}} into objects of class \code{\link{sfnetwork}}.
+\code{\link[spatstat]{linnet}} into objects of class 
+\code{\link{sfnetwork}}.
 }

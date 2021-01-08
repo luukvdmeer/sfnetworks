@@ -44,8 +44,8 @@ the edge startpoint and the edge endpoint. Calculated with
 \item \code{edge_circuity}: The ratio of the length of an edge
 linestring geometry versus the straight-line distance between its boundary
 nodes, as described in
-\href{https://journals.sagepub.com/doi/10.1068/b130131p}{Giacomin & Levinson,
-2015}.
+\href{https://journals.sagepub.com/doi/10.1068/b130131p}{Giacomin & 
+Levinson, 2015}.
 
 \item \code{edge_length}: The length of an edge linestring geometry
 as calculated by \code{\link[sf]{st_length}}.

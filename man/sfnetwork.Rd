@@ -40,10 +40,10 @@ represented \code{to} and \code{from} columns should be matched against. If
 \code{to} and \code{from} are given as integers. Defaults to \code{'name'}.}
 
 \item{edges_as_lines}{Should the edges be spatially explicit, i.e. have
-\code{LINESTRING} geometries stored in a geometry list column? If \code{NULL},
-this will be automatically defined, by setting the argument to \code{TRUE}
-when the edges are given as an object of class \code{\link[sf]{sf}}, and
-\code{FALSE} otherwise. Defaults to \code{NULL}.}
+\code{LINESTRING} geometries stored in a geometry list column? If 
+\code{NULL}, this will be automatically defined, by setting the argument to 
+\code{TRUE} when the edges are given as an object of class 
+\code{\link[sf]{sf}}, and \code{FALSE} otherwise. Defaults to \code{NULL}.}
 
 \item{length_as_weight}{Should the length of the edges be stored in a column
 named \code{weight}? If set to \code{TRUE}, this will calculate the length

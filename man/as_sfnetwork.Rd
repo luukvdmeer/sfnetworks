@@ -53,7 +53,7 @@ supported. For lines, is assumed that the given features form the edges.
 Nodes are created at the endpoints of the lines. Endpoints which are shared
 between multiple edges become a single node. For points, it is assumed that
 the given features geometries form the nodes. They will be connected by
-edges sequentially. Hence, point 1 to point 2, point 2 to point 3, et cetera.
+edges sequentially. Hence, point 1 to point 2, point 2 to point 3, etc.
 }}
 
 \examples{

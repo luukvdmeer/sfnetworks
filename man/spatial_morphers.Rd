@@ -20,7 +20,7 @@ to_spatial_shortest_paths(x, ...)
 
 to_spatial_simple(x, remove_parallels = TRUE, remove_loops = TRUE)
 
-to_spatial_smooth(x)
+to_spatial_smooth(x, store_orig_data = FALSE)
 
 to_spatial_subdivision(x)
 
@@ -38,6 +38,12 @@ of each morpher for details.}
 \code{TRUE}.}
 
 \item{remove_loops}{Should loops be remove. Defaults to \code{TRUE}.}
+
+\item{store_orig_data}{Whenever multiple features (i.e. nodes and/or edges) 
+are merged into a single feature during morphing, should the data of the 
+original features be stored as an attribute of the new feature, in a column 
+named \code{.orig_data}. This is in line with the design principles of
+\code{tidygraph}. Defaults to \code{FALSE}.}
 
 \item{subset_by}{Whether to create subgraphs based on nodes or edges.}
 }
@@ -64,7 +70,6 @@ elements, all of them can be extracted together inside a
 \details{
 It also possible to create your own morphers. See the documentation
 of \code{\link[tidygraph]{morph}} for the requirements for custom morphers.
-'
 }
 \section{Functions}{
 \itemize{
@@ -157,6 +162,5 @@ net \%>\%
 }
 \seealso{
 The vignette on
-\href{https://luukvdmeer.github.io/sfnetworks/articles/morphers.html}{spatial
-morphers}.
+\href{https://luukvdmeer.github.io/sfnetworks/articles/morphers.html}{spatial morphers}.
 }
