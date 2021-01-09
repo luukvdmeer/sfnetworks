@@ -80,10 +80,12 @@ to_spatial_directed = function(x) {
   x_new = as_sfnetwork(edges, directed = TRUE)
   # Spatial left join between nodes of x_new and original nodes of x.
   # This is needed since node attributes got lost when constructing x_new.
-  x_new = join_nodes(x_new, nodes_as_sf(x), join = st_equals)
+  if (length(node_spatial_attribute_names(x)) > 0) {
+    x_new = spatial_join_nodes(x_new, nodes_as_sf(x), join = st_equals)
+  }
   # Return in a list.
   list(
-    directed = x_new %preserve_attrs% x
+    directed = x_new %preserve_graph_attrs% x
   )
 }
 
@@ -95,10 +97,8 @@ to_spatial_directed = function(x) {
 #' drawn between the source and target node of each edge. Returns a
 #' \code{morphed_sfnetwork} containing a single element of class
 #' \code{\link{sfnetwork}}.
-#' @importFrom rlang !! :=
-#' @importFrom sf st_as_sf st_geometry
-#' @importFrom tibble as_tibble
-#' @importFrom tidygraph as_tbl_graph mutate
+#' @importFrom igraph edge_attr<-
+#' @importFrom sf st_as_sf
 #' @export
 to_spatial_explicit = function(x, ...) {
   # Workflow:
@@ -106,21 +106,17 @@ to_spatial_explicit = function(x, ...) {
   # --> If ... is not given, draw straight lines from source to target nodes.
   args = list(...)
   if (length(args) > 0) {
-    # Convert edges to sf by forwarding ... to st_as_sf.
-    e_sf = st_as_sf(as_tibble(as_tbl_graph(x), "edges"), ...)
-    geom_colname = attr(e_sf, "sf_column")
-    # Add geometries of created sf object to the edges table of the network.
-    x_new = mutate(activate(x, "edges"), !!geom_colname := st_geometry(e_sf))
-    st_geometry(x_new) = geom_colname
-    # Return in a list.
-    list(
-      explicit = x_new %preserve_attrs% x
-    )
+    edges = edges_as_table(x)
+    new_edges = st_as_sf(edges, ...)
+    edge_attr(x) = as.list(new_edges[, !names(new_edges) %in% c("from", "to")])
+    x_new = x
   } else {
-    list(
-      explicit = explicitize_edges(x)
-    )
+    x_new = explicitize_edges(x)
   }
+  # Return in a list.
+  list(
+    explicit = x_new
+  )
 }
 
 #' @describeIn spatial_morphers Limit a network to those nodes and edges that
@@ -131,7 +127,7 @@ to_spatial_explicit = function(x, ...) {
 #' the number of requested paths. When unmorphing only the first instance of
 #' both the node and edge data will be used, as the the same node and/or edge
 #' can be present in multiple paths.
-#' @importFrom tidygraph slice
+#' @importFrom igraph delete_edges delete_vertices edge_attr vertex_attr
 #' @export
 to_spatial_shortest_paths = function(x, ...) {
   args = list(...)
@@ -139,11 +135,16 @@ to_spatial_shortest_paths = function(x, ...) {
   args$type = "shortest"
   # Call st_network_paths with the given arguments.
   paths = do.call("st_network_paths", args)
+  # Retrieve original node and edge indices from the network.
+  orig_node_idxs = vertex_attr(x, ".tidygraph_node_index")
+  orig_edge_idxs = edge_attr(x, ".tidygraph_edge_index")
   # Subset the network for each computed shortest path.
   get_single_path = function(i) {
-    x_new = slice(activate(x, "edges"), as.integer(paths$edge_paths[[i]]))
-    x_new = slice(activate(x_new, "nodes"), as.integer(paths$node_paths[[i]]))
-    x_new %preserve_attrs% x
+    edge_idxs = as.integer(paths$edge_paths[[i]])
+    node_idxs = as.integer(paths$node_paths[[i]])
+    x_new = delete_edges(x, orig_edge_idxs[-edge_idxs])
+    x_new = delete_vertices(x_new, orig_node_idxs[-node_idxs])
+    x_new %preserve_all_attrs% x
   }
   lapply(seq_len(nrow(paths)), get_single_path)
 }
@@ -157,22 +158,21 @@ to_spatial_shortest_paths = function(x, ...) {
 #'
 #' @param remove_loops Should loops be remove. Defaults to \code{TRUE}.
 #'
-#' @importFrom tidygraph filter edge_is_loop edge_is_multiple
+#' @importFrom igraph delete_edges which_loop which_multiple
 #' @export
 to_spatial_simple = function(x, remove_parallels = TRUE, remove_loops = TRUE) {
-  # Activate edges.
-  x_new = activate(x, "edges")
+  x_new = x
   # Remove parallels if requested.
   if (remove_parallels) {
-    x_new = filter(x_new, !edge_is_multiple())
+    x_new = delete_edges(x_new, which(which_multiple(x_new)))
   }
   # Remove loops if requested.
   if (remove_loops) {
-    x_new = filter(x_new, !edge_is_loop())
+    x_new = delete_edges(x_new, which(which_loop(x_new)))
   }
   # Return in a list.
   list(
-    simple = x_new %preserve_attrs% x
+    simple = x_new %preserve_all_attrs% x
   )
 }
 
@@ -383,7 +383,7 @@ to_spatial_smooth = function(x, store_orig_data = FALSE) {
   # This will automatically also remove their incident edges.
   # Remember that their replacement edges have already been added in step IV.
   ## ============================================
-  x_new = delete_vertices(x_new, pseudo)
+  x_new = delete_vertices(x_new, pseudo) %preserve_all_attrs% x
   ## =============================================
   # STEP VI: STORE ORIGINAL EDGE DATA IF REQUESTED
   # Users can request to store the data of original edges in a special column.
@@ -396,11 +396,11 @@ to_spatial_smooth = function(x, store_orig_data = FALSE) {
     orig_edge_idxs = edge_attr(x_new, ".tidygraph_edge_index")
     copy_orig_data = function(i) edges[i, , drop = FALSE]
     edge_attr(x_new, ".orig_data") = lapply(orig_edge_idxs, copy_orig_data)
-
+    edge_agr(x_new) = valid_agr(edge_agr(x_new))
   }
   # Return in a list.
   list(
-    smooth = x_new %preserve_attrs% x
+    smooth = x_new
   )
 }
 
@@ -571,7 +571,7 @@ to_spatial_subdivision = function(x) {
   x_new = sfnetwork_(new_nodes, new_edges, directed = is_directed(x))
   # Return in a list.
   list(
-    subdivision = x_new %preserve_attrs% x
+    subdivision = x_new %preserve_all_attrs% x
   )
 }
 
@@ -584,7 +584,6 @@ to_spatial_subdivision = function(x) {
 #'
 #' @param subset_by Whether to create subgraphs based on nodes or edges.
 #'
-#' @importFrom sf st_filter
 #' @export
 to_spatial_subset = function(x, ..., subset_by = NULL) {
   if (is.null(subset_by)) {
@@ -593,12 +592,12 @@ to_spatial_subset = function(x, ..., subset_by = NULL) {
   }
   x_new = switch(
     subset_by,
-    nodes = st_filter(activate(x, "nodes"), ...),
-    edges = st_filter(activate(x, "edges"), ...),
+    nodes = spatial_filter_nodes(x, ...),
+    edges = spatial_filter_edges(x, ...),
     raise_unknown_input(subset_by)
   )
   list(
-    subset = x_new %preserve_attrs% x
+    subset = x_new
   )
 }
 

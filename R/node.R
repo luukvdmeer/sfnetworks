@@ -77,7 +77,7 @@ get_coords = function(x, value) {
     all_coords[, value],
     error = function(e) {
       warning(value, " coordinates are not available", call. = FALSE)
-      rep(NA, vcount(x))
+      rep(NA, length(x))
     }
   )
 }

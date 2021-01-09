@@ -50,19 +50,20 @@ st_network_join.sfnetwork = function(x, y, ...) {
   if (! is.sfnetwork(y)) y = as_sfnetwork(y)
   stopifnot(have_equal_crs(x, y))
   stopifnot(have_equal_edge_type(x, y))
-  join_(x, y, ...)
+  spatial_join_network(x, y, ...)
 }
 
 #' @importFrom tidygraph as_tbl_graph graph_join
-join_ = function(x, y, ...) {
+spatial_join_network = function(x, y, ...) {
   # Retrieve names of node geometry columns of x and y.
   x_geom_colname = node_geom_colname(x)
   y_geom_colname = node_geom_colname(y)
   # Regular graph join based on geometry columns.
-  graph_join(
+  x_new = graph_join(
     x = as_tbl_graph(x),
     y = as_tbl_graph(y),
     by = structure(names = x_geom_colname, .Data = y_geom_colname),
     ...
-  ) %preserve_attrs% x
+  )
+  x_new %preserve_graph_attrs% x
 }
