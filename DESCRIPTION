@@ -28,7 +28,7 @@ Authors@R:
              comment = c(ORCID = "0000-0001-5679-6536")))
 Maintainer: Lucas van der Meer <luukvandermeer@live.nl>      
 Depends: R (>= 3.6)
-License: file LICENSE
+License: Apache License (>= 2) | file LICENSE
 Encoding: UTF-8
 LazyData: true
 ByteCompile: true
