@@ -93,7 +93,7 @@
 #' sfnetwork(nodes, edges, length_as_weight = TRUE)
 #'
 #' @importFrom sf st_as_sf
-#' @importFrom tidygraph mutate tbl_graph
+#' @importFrom tidygraph tbl_graph with_graph
 #' @export
 sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
                      edges_as_lines = NULL, length_as_weight = FALSE,
@@ -149,9 +149,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
     if ("weight" %in% edge_graph_attribute_names(x_sfn)) {
       raise_overwrite("weight")
     }
-    x_sfn = activate(x_sfn, "edges")
-    x_sfn = mutate(x_sfn, weight = edge_length())
-    x_sfn = activate(x_sfn, "nodes")
+    edge_attr(x_sfn, "weight") = with_graph(x_sfn, edge_length())
   }
   x_sfn
 }

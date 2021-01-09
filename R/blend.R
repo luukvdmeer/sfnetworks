@@ -219,14 +219,14 @@ blend_ = function(x, y, tolerance, sort) {
       if (idx_col %in% names(nodes)) raise_reserved_attr(idx_col)
       nodes[, idx_col] = seq_len(nrow(nodes))
       # Join original nodes spatially with the new network.
-      x_new = join_nodes(x_new, nodes, join = st_equals)
+      x_new = spatial_join_nodes(x_new, nodes, join = st_equals)
       # Sort based on original node index.
       x_new = arrange(x_new, !!sym(idx_col))
       # Remove the node index column.
       x_new = mutate(x_new, !!idx_col := NULL)
     } else if (length(node_spatial_attribute_names(x)) > 0) {
       # Join original nodes spatially with the new network.
-      x_new = join_nodes(x_new, nodes_as_sf(x), join = st_equals)
+      x_new = spatial_join_nodes(x_new, nodes_as_sf(x), join = st_equals)
     }
     # Spatial left join between nodes of x_new and point features of y.
     # This is needed when:
@@ -246,7 +246,7 @@ blend_ = function(x, y, tolerance, sort) {
       # Keep only those features in y that were blended.
       y = y[on | close, ]
       # Join spatially with the new network.
-      x_new = join_nodes(x_new, y, join = sf::st_equals)
+      x_new = spatial_join_nodes(x_new, y, join = sf::st_equals)
     }
-    x_new %preserve_attrs% x
+    x_new %preserve_graph_attrs% x
 }

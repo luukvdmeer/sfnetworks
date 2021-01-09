@@ -45,15 +45,46 @@ sf_attr = function(x, name, active = NULL) {
   )
 }
 
+#' Preserve the attributes of the original network and its elements
+#'
+#' @param new An object of class \code{\link{sfnetwork}}.
+#'
+#' @param orig An object of class \code{\link{sfnetwork}}.
+#'
+#' @details All attributes include the graph attributes *and* the attributes
+#' of its element objects (i.e. nodes and edges). Graph attributes always 
+#' contain the class of the object and the name of the active element. Users 
+#' can also add their own attributes to the network. Element attributes 
+#' contain the name of the geometry list column and the agr factor of the
+#' element. Note that we talk about the attributes of the element *objects*. 
+#' Hence, attributes attached to the object that stores the elements data. 
+#' This is *not* the same as the attribute columns *in* the element data.
+#'
+#' @importFrom igraph graph_attr graph_attr<-
+#' @noRd
+`%preserve_all_attrs%` = function(new, orig) {
+  graph_attr(new) = graph_attr(orig)
+  attributes(new) = attributes(orig)
+  attributes(vertex_attr(new)) = attributes(vertex_attr(orig))
+  attributes(edge_attr(new)) = attributes(edge_attr(orig))
+  new
+}
+
 #' Preserve the attributes of the original network
 #'
 #' @param new An object of class \code{\link{sfnetwork}}.
 #'
 #' @param orig An object of class \code{\link{sfnetwork}}.
 #'
+#' @details The graph attributes are the attributes directly attached to
+#' the network object as a whole. Hence, this does *not* include attributes 
+#' belonging to the element objects (i.e. the nodes table or the edges table). 
+#' Graph attributes always includes the class of the object and the name of the
+#' active element. Users can also add their own attributes to the network.
+#'
 #' @importFrom igraph graph_attr graph_attr<-
 #' @noRd
-`%preserve_attrs%` = function(new, orig) {
+`%preserve_graph_attrs%` = function(new, orig) {
   graph_attr(new) = graph_attr(orig)
   attributes(new) = attributes(orig)
   new

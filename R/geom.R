@@ -98,49 +98,21 @@ mutate_geom = function(x, y, active = NULL) {
   )
 }
 
-#' @importFrom igraph vertex_attr
-#' @importFrom rlang !! :=
-#' @importFrom tidygraph mutate
+#' @importFrom igraph vertex_attr<-
+#' @importFrom sf st_geometry
 mutate_node_geom = function(x, y) {
-  if (is.character(y)) {
-    # Set another column to be the new geometry column.
-    stopifnot(is.sfc(vertex_attr(x, y)))
-    node_geom_colname(x) = y
-  } else {
-    # Replace the geometries of the current geometry column with new values.
-    geom_col = node_geom_colname(x)
-    x = mutate(activate(x, "nodes"), !!geom_col := y) %preserve_active% x
-  }
+  nodes = nodes_as_sf(x)
+  st_geometry(nodes) = y
+  vertex_attr(x) = as.list(nodes)
   x
 }
 
-#' @importFrom igraph edge_attr edge_attr_names
-#' @importFrom rlang !! :=
-#' @importFrom tidygraph mutate
+#' @importFrom igraph edge_attr<-
+#' @importFrom sf st_geometry
 mutate_edge_geom = function(x, y) {
-  if (is.character(y)) {
-    # Set another column to be the new geometry column.
-    stopifnot(is.sfc(edge_attr(x, y)))
-    edge_geom_colname(x) = y
-  } else {
-    stopifnot(is.sfc(y))
-    # Replace the geometries in the current geometry column with y.
-    geom_col = edge_geom_colname(x)
-    # What if there is currently no column marked as geometry column?
-    # --> This means a new geometry column is created.
-    # --> Use the same geometry column name as the one in the nodes.
-    # --> If that is an existing column, create a column named 'geometry'.
-    if (is.null(geom_col)) {
-      geom_col = node_geom_colname(x)
-      if (geom_col %in% edge_attr_names(x)) {
-        geom_col = "geometry"
-        if (geom_col %in% edge_attr_names(x)) raise_overwrite(geom_col)
-      }
-    }
-    # Replace.
-    x = mutate(activate(x, "edges"), !!geom_col := y) %preserve_active% x
-    edge_geom_colname(x) = geom_col
-  }
+  edges = edges_as_table(x)
+  st_geometry(edges) = y
+  edge_attr(x) = as.list(edges[, !names(edges) %in% c("from", "to")])
   x
 }
 

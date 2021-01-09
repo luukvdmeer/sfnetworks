@@ -1,37 +1,3 @@
-#' Proceed only when edges are active
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @return Nothing when the edges of x are activated, an error message
-#' otherwise.
-#'
-#' @noRd
-require_active_edges = function(x) {
-  if (attr(x, "active") == "nodes") {
-    stop(
-      "This call requires the edges to be active", 
-      call. = FALSE
-    )
-  }
-}
-
-#' Proceed only when nodes are active
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @return Nothing when the nodes of x are activated, an error message
-#' otherwise.
-#'
-#' @noRd
-require_active_nodes = function(x) {
-  if (attr(x, "active") == "edges") {
-    stop(
-      "This call requires the nodes to be active", 
-      call. = FALSE
-    )
-  }
-}
-
 #' Proceed only when edges are spatially explicit
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.

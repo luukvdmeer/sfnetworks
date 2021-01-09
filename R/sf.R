@@ -402,8 +402,8 @@ st_join.sfnetwork = function(x, y, ...) {
   active = attr(x, "active")
   switch(
     active,
-    nodes = join_nodes(x, y, ...),
-    edges = join_edges(x, y, ...),
+    nodes = spatial_join_nodes(x, y, ...),
+    edges = spatial_join_edges(x, y, ...),
     raise_unknown_input(active)
   )
 }
@@ -416,42 +416,45 @@ st_join.morphed_sfnetwork = function(x, y, ...) {
   x
 }
 
-#' @importFrom igraph is_directed
+#' @importFrom igraph delete_vertices vertex_attr<-
 #' @importFrom sf st_as_sf st_join
-join_nodes = function(x, y,  ...) {
+spatial_join_nodes = function(x, y, ...) {
   # Convert x and y to sf.
   x_sf = nodes_as_sf(x)
   y_sf = st_as_sf(y)
-  # Add .sfnetwork_index column to keep track of original network indices.
+  # Add .sfnetwork_index column to keep track of original node indices.
   if (".sfnetwork_index" %in% c(names(x_sf), names(y_sf))) {
     raise_reserved_attr(".sfnetwork_index")
   }
-  x_sf$.sfnetwork_index = seq_len(nrow(x_sf))
+  orig_idxs = seq_len(nrow(x_sf))
+  x_sf$.sfnetwork_index = orig_idxs
   # Join with st_join.
   n_new = st_join(x_sf, y_sf, ...)
   # If there were multiple matches:
   # --> Raise an error.
   # --> Allowing multiple matches for nodes breaks the valid network structure.
   # --> See the package vignettes for more info.
-  if (has_duplicates(n_new$.sfnetwork_index)) raise_multiple_matches()
+  if (has_duplicates(n_new$.sfnetwork_index)) {
+    raise_multiple_matches()
+  }
   # If an inner join was requested instead of a left join:
   # --> This means only nodes in x that had a match in y are preserved.
-  # --> The other nodes are not preserved, i.e. removed.
-  # --> Edges adjacent to these removed nodes need to be filtered out as well.
+  # --> The other nodes need to be removed.
   args = list(...)
-  if (!is.null(args$left) && args$left) {
-    keep_ind = n_new$.sfnetwork_index
-    x = slice(activate(x, "nodes"), keep_ind)
+  if (!is.null(args$left) && !args$left) {
+    keep_idxs = n_new$.sfnetwork_index
+    remove_idxs = find_indices_to_remove(orig_idxs, keep_idxs)
+    x = delete_vertices(x, remove_idxs) %preserve_all_attrs% x
   }
   # Create a new network with the updated data.
   n_new$.sfnetwork_index = NULL
-  x_new = sfnetwork_(n_new, edges_as_table(x), directed = is_directed(x))
-  x_new %preserve_attrs% x
+  vertex_attr(x) = as.list(n_new)
+  x
 }
 
 #' @importFrom igraph is_directed
 #' @importFrom sf st_as_sf st_join
-join_edges = function(x, y, ...) {
+spatial_join_edges = function(x, y, ...) {
   expect_spatially_explicit_edges(x)
   # Convert x and y to sf.
   x_sf = edges_as_sf(x)
@@ -460,15 +463,20 @@ join_edges = function(x, y, ...) {
   e_new = st_join(x_sf, y_sf, ...)
   # Create a new network with the updated data.
   x_new = sfnetwork_(nodes_as_sf(x), e_new, directed = is_directed(x))
-  x_new %preserve_attrs% x
+  x_new %preserve_graph_attrs% x
 }
 
 #' @name sf
 #' @importFrom sf st_crop
 #' @export
 st_crop.sfnetwork = function(x, y, ...) {
-  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  filter_network(st_crop, x, y, ...)
+  active = attr(x, "active")
+  switch(
+    active,
+    nodes = spatial_filter_nodes(x, y, ..., .operator = st_crop),
+    edges = spatial_filter_edges(x, y, ..., .operator = st_crop),
+    raise_unknown_input(active)
+  )
 }
 
 #' @name sf
@@ -501,8 +509,13 @@ st_crop.morphed_sfnetwork = function(x, y, ...) {
 #' @importFrom sf st_filter
 #' @export
 st_filter.sfnetwork = function(x, y, ...) {
-  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  filter_network(st_filter, x, y, ...)
+  active = attr(x, "active")
+  switch(
+    active,
+    nodes = spatial_filter_nodes(x, y, ...),
+    edges = spatial_filter_edges(x, y, ...),
+    raise_unknown_input(active)
+  )
 }
 
 #' @name sf
@@ -513,20 +526,47 @@ st_filter.morphed_sfnetwork = function(x, y, ...) {
   x
 }
 
+#' @importFrom igraph delete_vertices
 #' @importFrom sf st_as_sf
-#' @importFrom tidygraph slice
-filter_network = function(op, x, y, ...) {
+spatial_filter_nodes = function(x, y, ..., .operator = sf::st_filter) {
   # Convert x and y to sf.
-  x_sf = st_as_sf(x)
+  x_sf = nodes_as_sf(x)
   y_sf = st_as_sf(y)
-  # Add .sfnetwork_index column to keep track of original network indices.
+  # Add .sfnetwork_index column to keep track of original node indices.
   if (".sfnetwork_index" %in% names(x_sf)) {
     raise_reserved_attr(".sfnetwork_index")
   }
-  x_sf$.sfnetwork_index = seq_len(nrow(x_sf))
+  orig_idxs = seq_len(nrow(x_sf))
+  x_sf$.sfnetwork_index = orig_idxs
   # Filter with the given operator.
-  d_tmp = do.call(match.fun(op), list(x_sf, y_sf, ...))
+  d_tmp = do.call(match.fun(.operator), list(x_sf, y_sf, ...))
   # Subset the original network based on the result of the filter operation.
-  keep_ind = d_tmp$.sfnetwork_index
-  slice(x, keep_ind)
+  keep_idxs = d_tmp$.sfnetwork_index
+  remove_idxs = find_indices_to_remove(orig_idxs, keep_idxs)
+  delete_vertices(x, remove_idxs) %preserve_all_attrs% x
+}
+
+#' @importFrom igraph delete_edges
+#' @importFrom sf st_as_sf
+spatial_filter_edges = function(x, y, ..., .operator = sf::st_filter) {
+  expect_spatially_explicit_edges(x)
+  # Convert x and y to sf.
+  x_sf = edges_as_sf(x)
+  y_sf = st_as_sf(y)
+  # Add .sfnetwork_index column to keep track of original edge indices.
+  if (".sfnetwork_index" %in% names(x_sf)) {
+    raise_reserved_attr(".sfnetwork_index")
+  }
+  orig_idxs = seq_len(nrow(x_sf))
+  x_sf$.sfnetwork_index = orig_idxs
+  # Filter with the given operator.
+  d_tmp = do.call(match.fun(.operator), list(x_sf, y_sf, ...))
+  # Subset the original network based on the result of the filter operation.
+  keep_idxs = d_tmp$.sfnetwork_index
+  remove_idxs = find_indices_to_remove(orig_idxs, keep_idxs)
+  delete_edges(x, remove_idxs) %preserve_all_attrs% x
+}
+
+find_indices_to_remove = function(orig_idxs, keep_idxs) {
+  if (length(keep_idxs) == 0) orig_idxs else orig_idxs[-keep_idxs]
 }

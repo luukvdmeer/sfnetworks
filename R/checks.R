@@ -92,7 +92,7 @@ have_equal_crs = function(x, y) {
 have_equal_edge_type = function(x, y) {
   both_ex = has_spatially_explicit_edges(x) & has_spatially_explicit_edges(y)
   both_im = !has_spatially_explicit_edges(x) & !has_spatially_explicit_edges(y)
-  both_ex || both_im
+  both_ex | both_im
 }
 
 #' Check if two sf objects have the same geometries
