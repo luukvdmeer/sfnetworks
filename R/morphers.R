@@ -18,9 +18,9 @@
 #' @param ... Arguments to be passed on to other functions. See the description
 #' of each morpher for details.
 #'
-#' @param store_orig_data Whenever multiple features (i.e. nodes and/or edges) 
-#' are merged into a single feature during morphing, should the data of the 
-#' original features be stored as an attribute of the new feature, in a column 
+#' @param store_orig_data Whenever multiple features (i.e. nodes and/or edges)
+#' are merged into a single feature during morphing, should the data of the
+#' original features be stored as an attribute of the new feature, in a column
 #' named \code{.orig_data}. This is in line with the design principles of
 #' \code{tidygraph}. Defaults to \code{FALSE}.
 #'
@@ -603,7 +603,7 @@ to_spatial_subset = function(x, ..., subset_by = NULL) {
 }
 
 #' @describeIn spatial_morphers Transform the geospatial coordinates of the
-#' network into a different coordinate reference system. \code{...} is 
+#' network into a different coordinate reference system. \code{...} is
 #' evaluated in the same manner as \code{\link[sf]{st_transform}}.
 #' Returns a \code{morphed_sfnetwork} containing a single element of class
 #' \code{\link{sfnetwork}}.

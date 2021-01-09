@@ -1,5 +1,5 @@
 library(tidygraph)
-test_that('Morphing works for sfnetwork and tbl_graph objects', {
+test_that("Morphing works for sfnetwork and tbl_graph objects", {
   expect_s3_class(
     roxel %>%
       as_sfnetwork() %>%
@@ -19,5 +19,3 @@ test_that('Morphing works for sfnetwork and tbl_graph objects', {
     "no applicable method for 'morph' applied to"
   )
 })
-
-# test_that('Unmorphing ')

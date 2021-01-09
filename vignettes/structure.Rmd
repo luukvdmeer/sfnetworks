@@ -23,7 +23,10 @@ par(mar = c(1, 1, 1, 1))
 options(crayon.enabled = TRUE)
 # Hooks needs to be set to deal with outputs
 # thanks to fansi logic
-old_hooks = fansi::set_knit_hooks(knitr::knit_hooks, which = c("output", "message", "error"))
+old_hooks = fansi::set_knit_hooks(
+  knitr::knit_hooks,
+  which = c("output", "message", "error")
+)
 ```
 
 The core of the sfnetworks package is the sfnetwork data structure. It inherits the tbl_graph class from the [tidygraph package](https://tidygraph.data-imaginist.com/index.html), which itself inherits the igraph class from the [igraph package](https://igraph.org/). Therefore, sfnetwork objects are recognized by all network analysis algorithms that `igraph` offers (which are a lot, see [here](https://igraph.org/r/doc/)) as well as by the tidy wrappers that `tidygraph` has built around them.
@@ -147,7 +150,8 @@ Other methods to convert 'foreign' objects into a sfnetwork exists as well, e.g.
 To create networks from spatial data file types, you can use the sf function `sf::st_read()` to read them into R and then construct a sfnetwork from the sf object(s) using either `sfnetwork()` or `as_sfnetwork()` as described above. To create networks from graph specific file types, you can use the igraph function `igraph::read_graph()` to read them into R, and then convert them to a sfnetwork using `as_sfnetwork()` if possible. Lets look at an example with a GraphML file. First, we will convert it to a tbl_graph after loading such that we can explore the data.
 
 ```{r}
-url = 'https://raw.githubusercontent.com/ComplexNetTSP/Power_grids/v1.0.0/Countries/Netherlands/graphml/Netherlands_highvoltage.graphml'
+url = "https://raw.githubusercontent.com/ComplexNetTSP/Power_grids/v1.0.0/
+Countries/Netherlands/graphml/Netherlands_highvoltage.graphml"
 
 igraph::read_graph(url, format = "graphml") %>%
   as_tbl_graph()
@@ -227,7 +231,7 @@ net = net %>%
   mutate(bc = centrality_betweenness())
 
 ggplot() +
-  geom_sf(data = st_as_sf(net, "edges"), col = 'grey50') + 
+  geom_sf(data = st_as_sf(net, "edges"), col = "grey50") +
   geom_sf(data = st_as_sf(net, "nodes"), aes(col = bc, size = bc)) +
   ggtitle("Betweenness centrality in Münster Roxel")
 ```

@@ -6,7 +6,10 @@ net = as_sfnetwork(roxel, directed = FALSE) %>%
   st_transform(3035)
 
 # Create random points inside network bbox
-rdm = net %>% st_bbox() %>% st_as_sfc() %>% st_sample(4, type = "random")
+rdm = net %>%
+  st_bbox() %>%
+  st_as_sfc() %>%
+  st_sample(4, type = "random")
 
 test_that("Only the first from argument
           is used for shortest paths calculations", {
@@ -27,7 +30,7 @@ test_that("NA indices for in from and/or to arguments give an error", {
   expect_error(st_network_paths(
     net,
     from = as.numeric(NA),
-    to = c(3,28,98)
+    to = c(3, 28, 98)
   ), "NA values present")
   expect_error(st_network_cost(
     net,
@@ -64,14 +67,15 @@ test_that("Duplicated to nodes are removed from st_network_cost calculations
 })
 
 test_that("st_network_paths weights argument is passed implicitly,
-          explicitly and automatically",{
+          explicitly and automatically", {
   # Set weights to a named column
   expect_silent(
     nodepaths_exp <- net %>%
       activate("edges") %>%
       mutate(length = edge_length()) %>%
       st_network_paths(8, 3, weights = "length") %>%
-      pull(node_paths) %>% unlist()
+      pull(node_paths) %>%
+      unlist()
   )
   # Set weights to a column called weight
   expect_silent(
@@ -79,13 +83,15 @@ test_that("st_network_paths weights argument is passed implicitly,
       activate("edges") %>%
       mutate(weight = edge_length()) %>%
       st_network_paths(8, 3) %>%
-      pull(node_paths) %>% unlist()
+      pull(node_paths) %>%
+      unlist()
   )
   # Do not set weight but expect it is computed internally
   expect_silent(
     nodepaths_aut <- net %>%
       st_network_paths(8, 3) %>%
-      pull(node_paths) %>% unlist()
+      pull(node_paths) %>%
+      unlist()
   )
   expect_setequal(
     nodepaths_exp, nodepaths_imp
@@ -109,14 +115,16 @@ test_that("Unexisting 'weights' column passed to st_network_paths
 test_that("node_paths without set weight is equal or shorter than
           node_paths with set weight", {
   nodepaths_weight <- net %>%
-      activate("edges") %>%
-      mutate(weight = edge_length()) %>%
-      st_network_paths(8, 3) %>%
-      pull(node_paths) %>% unlist()
+    activate("edges") %>%
+    mutate(weight = edge_length()) %>%
+    st_network_paths(8, 3) %>%
+    pull(node_paths) %>%
+    unlist()
 
   nodepaths_noweight <- net %>%
-      st_network_paths(8, 3, weights = NA) %>%
-      pull(node_paths) %>% unlist()
+    st_network_paths(8, 3, weights = NA) %>%
+    pull(node_paths) %>%
+    unlist()
 
   expect_true(length(nodepaths_noweight) <= length(nodepaths_weight))
 })
@@ -125,7 +133,7 @@ test_that("All simple paths wrapper gives a known number of paths", {
   expect_equal(
     net %>%
       convert(to_spatial_directed) %>%
-      st_network_paths(1, 12, type = 'all_simple') %>%
+      st_network_paths(1, 12, type = "all_simple") %>%
       nrow(),
     6
   )

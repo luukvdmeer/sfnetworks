@@ -23,7 +23,10 @@ par(mar = c(1, 1, 1, 1))
 options(crayon.enabled = TRUE)
 # Hooks needs to be set to deal with outputs
 # thanks to fansi logic
-old_hooks = fansi::set_knit_hooks(knitr::knit_hooks, which = c("output", "message", "error"))
+old_hooks = fansi::set_knit_hooks(
+  knitr::knit_hooks,
+  which = c("output", "message", "error")
+)
 ```
 
 Unfortunately real-world datasets are not always as friendly as those used in tutorials. Pre-processing of the data will often be needed, as well as cleaning the network after construction. This vignette presents some examples that may be of use when going through this phase.

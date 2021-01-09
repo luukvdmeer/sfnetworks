@@ -23,7 +23,10 @@ par(mar = c(1, 1, 1, 1))
 options(crayon.enabled = TRUE)
 # Hooks needs to be set to deal with outputs
 # thanks to fansi logic
-old_hooks = fansi::set_knit_hooks(knitr::knit_hooks, which = c("output", "message", "error"))
+old_hooks = fansi::set_knit_hooks(
+  knitr::knit_hooks,
+  which = c("output", "message", "error")
+)
 ```
 
 Calculating shortest paths between pairs of nodes is a core task in network analysis. The `sfnetworks` package offers wrappers around the path calculation functions of `igraph`, making it easier to use them when working with spatial data and tidyverse packages. This vignette demonstrates their functionality.
@@ -171,9 +174,10 @@ types = net %>%
 
 types
 
-# Randomly define a walking speed in m/s for each type, with values between 3 and 7 km/hr.
+# Randomly define a walking speed in m/s for each type,
+# with values between 3 and 7 km/hr.
 set.seed(1)
-speeds = runif(length(types), 3*1000/60/60, 7*1000/60/60)
+speeds = runif(length(types), 3 * 1000 / 60 / 60, 7 * 1000 / 60 / 60)
 
 # Assign a speed to each edge based on its type.
 # Calculate travel time for each edge based on that.
@@ -206,7 +210,7 @@ iso_poly = iso %>%
   st_convex_hull()
 
 plot(net, col = "grey")
-plot(iso_poly, col = NA, border = 'black', lwd = 3, add = TRUE)
+plot(iso_poly, col = NA, border = "black", lwd = 3, add = TRUE)
 plot(iso, col = colors[2], add = TRUE)
 plot(p, col = colors[1], pch = 8, cex = 2, lwd = 2, add = TRUE)
 ```
@@ -222,9 +226,9 @@ table(roxel$type)
 Building on the shortest paths calculated in a previous section we can try an alternative routing profile. Let's take a look at these paths to see what type of ways they travel on:
 
 ```{r, fig.height=5, fig.width=5}
-paths_sf = net %>% 
+paths_sf = net %>%
   activate("edges") %>%
-  slice(unlist(paths$edge_paths)) %>% 
+  slice(unlist(paths$edge_paths)) %>%
   st_as_sf()
 
 table(paths_sf$type)
@@ -245,7 +249,7 @@ weighting_profile = c(
   secondary = 1,
   service = 1,
   track = 10,
-  unclassified = 1 
+  unclassified = 1
 )
 
 weighted_net = net %>%
@@ -259,16 +263,18 @@ We can now recalculate the routes. The result show routes that avoid residential
 ```{r, fig.show='hold', out.width = '50%'}
 weighted_paths = st_network_paths(weighted_net, from = 495, to = c(458, 121))
 
-weighted_paths_sf = weighted_net %>% 
+weighted_paths_sf = weighted_net %>%
   activate("edges") %>%
-  slice(unlist(weighted_paths$edge_paths)) %>% 
+  slice(unlist(weighted_paths$edge_paths)) %>%
   st_as_sf()
 
 table(weighted_paths_sf$type)
 
-plot(st_as_sf(net, "edges")["type"], lwd = 4, key.pos = NULL, reset = FALSE, main = "Distance weights")
+plot(st_as_sf(net, "edges")["type"], lwd = 4,
+     key.pos = NULL, reset = FALSE, main = "Distance weights")
 plot(st_geometry(paths_sf), add = TRUE)
-plot(st_as_sf(net, "edges")["type"], lwd = 4, key.pos = NULL, reset = FALSE, main = "Custom weights")
+plot(st_as_sf(net, "edges")["type"], lwd = 4,
+     key.pos = NULL, reset = FALSE, main = "Custom weights")
 plot(st_geometry(weighted_paths_sf), add = TRUE)
 ```
 

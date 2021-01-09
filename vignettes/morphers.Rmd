@@ -23,7 +23,10 @@ par(mar = c(1, 1, 1, 1))
 options(crayon.enabled = TRUE)
 # Hooks needs to be set to deal with outputs
 # thanks to fansi logic
-old_hooks = fansi::set_knit_hooks(knitr::knit_hooks, which = c("output", "message", "error"))
+old_hooks = fansi::set_knit_hooks(
+  knitr::knit_hooks,
+  which = c("output", "message", "error")
+)
 ```
 
 In some of the previous vignettes they were already mentioned here and there: spatial morpher functions. This vignette describes in more detail what they are and how to use them.
@@ -168,13 +171,21 @@ The morpher only accepts a single *from* node. If also a single *to* node is pro
 ```{r}
 net %>%
   activate("edges") %>%
-  convert(to_spatial_shortest_paths, from = 1, to = 100, weights = edge_length())
+  convert(
+    to_spatial_shortest_paths,
+    from = 1, to = 100,
+    weights = edge_length()
+  )
 ```
 
 ```{r, fig.width=5, fig.height=5}
 new_net = net %>%
   activate("edges") %>%
-  morph(to_spatial_shortest_paths, from = 1, to = seq(10, 100, 10), weights = edge_length()) %>%
+  morph(
+    to_spatial_shortest_paths,
+    from = 1, to = seq(10, 100, 10),
+    weights = edge_length()
+  ) %>%
   mutate(in_paths = TRUE) %>%
   unmorph()
 
@@ -228,7 +239,7 @@ For filters on attribute columns, use `tidygraph::to_subgraph()` instead. Again,
 ```{r}
 net = net %>%
   activate("nodes") %>%
-  mutate(building = sample(c(TRUE,FALSE), n(), replace = TRUE))
+  mutate(building = sample(c(TRUE, FALSE), n(), replace = TRUE))
 
 net %>%
   morph(to_subgraph, building) %>%

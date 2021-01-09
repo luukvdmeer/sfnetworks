@@ -13,25 +13,25 @@ pois = data.frame(
   ) %>%
   st_as_sf(coords = c("x", "y"))
 
-test_that('st_network_blend with tolerance argument too large gives a
-          warning and does not perform split', {
+test_that("st_network_blend with tolerance argument too large gives a
+          warning and does not perform split", {
   expect_warning(
-    blend1 <- st_network_blend(net, pois[1:2,], tolerance = 0.05),
+    blend1 <- st_network_blend(net, pois[1:2, ], tolerance = 0.05),
     "No edges splitted"
   )
   expect_equal(vcount(blend1), 2)
   expect_equal(ecount(blend1), 1)
 })
 
-test_that('st_network_blend splits edges with nodes on and/or close to
-          the network', {
+test_that("st_network_blend splits edges with nodes on and/or close to
+          the network", {
   expect_warning(blend2 <- st_network_blend(net, pois),
                  "attributes are constant over geometries")
   expect_equal(vcount(blend2), 4)
   expect_equal(ecount(blend2), 3)
 })
 
-test_that('st_network_blend sorts nodes in the correct way when sort = TRUE', {
+test_that("st_network_blend sorts nodes in the correct way when sort = TRUE", {
   suppressWarnings({
     net_sort = st_network_blend(net, pois, sort = FALSE)
     net_unsort =  st_network_blend(net, pois, sort = TRUE)

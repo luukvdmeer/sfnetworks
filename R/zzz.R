@@ -16,7 +16,7 @@
 # Code copied from: https://github.com/r-lib/vctrs/blob/master/R/register-s3.R
 # As suggested here: https://vctrs.r-lib.org/reference/s3_register.html
 # (To avoid taking a dependency on vctrs for this one function,
-# please feel free to copy and paste the function source into your own 
+# please feel free to copy and paste the function source into your own
 # package.)
 s3_register = function(generic, class, method = NULL) {
   stopifnot(is.character(generic), length(generic) == 1)

@@ -23,7 +23,10 @@ par(mar = c(1, 1, 1, 1))
 options(crayon.enabled = TRUE)
 # Hooks needs to be set to deal with outputs
 # thanks to fansi logic
-old_hooks = fansi::set_knit_hooks(knitr::knit_hooks, which = c("output", "message", "error"))
+old_hooks = fansi::set_knit_hooks(
+  knitr::knit_hooks,
+  which = c("output", "message", "error")
+)
 ```
 
 The integration with `sf` and addition of several spatial network specific functions in `sfnetworks` allow to easily filter information from a network based on spatial relationships, and to join new information into a network based on spatial relationships. This vignette presents several ways to do that.
@@ -54,8 +57,8 @@ p2 = st_point(c(4151340, 3207520))
 p3 = st_point(c(4151756, 3207506))
 p4 = st_point(c(4151774, 3208031))
 
-poly = st_multipoint(c(p1, p2, p3, p4)) %>% 
-  st_cast('POLYGON') %>% 
+poly = st_multipoint(c(p1, p2, p3, p4)) %>%
+  st_cast("POLYGON") %>%
   st_sfc(crs = 3035)
 
 net = as_sfnetwork(roxel) %>%
@@ -200,7 +203,8 @@ edge = st_sfc(st_linestring(c(node1, node2)))
 
 net = as_sfnetwork(edge)
 
-pois = data.frame(poi_type = c("bakery", "butcher"), x = c(0, 0.6), y = c(0.1, 0.1)) %>%
+pois = data.frame(poi_type = c("bakery", "butcher"),
+                  x = c(0, 0.6), y = c(0.1, 0.1)) %>%
   st_as_sf(coords = c("x", "y"))
 
 # Find indices of nearest nodes.
@@ -212,8 +216,10 @@ snapped_pois = pois %>%
 
 plot(net, cex = 2, lwd = 4)
 plot(pois, pch = 8, cex = 2, lwd = 2, add = TRUE)
-plot(st_nearest_points(pois[1, ], net)[nearest_nodes[1]], col = "grey", lty = 2, lwd = 2, add = TRUE)
-plot(st_nearest_points(pois[2, ], net)[nearest_nodes[2]], col = "grey", lty = 2, lwd = 2, add = TRUE)
+plot(st_nearest_points(pois[1, ], net)[nearest_nodes[1]],
+     col = "grey", lty = 2, lwd = 2, add = TRUE)
+plot(st_nearest_points(pois[2, ], net)[nearest_nodes[2]],
+     col = "grey", lty = 2, lwd = 2, add = TRUE)
 plot(net, cex = 2, lwd = 4)
 plot(snapped_pois, pch = 8, cex = 2, lwd = 2, add = TRUE)
 ```
@@ -237,8 +243,10 @@ blended = st_network_blend(net, pois)
 blended
 plot(net, cex = 2, lwd = 4)
 plot(pois, pch = 8, cex = 2, lwd = 2, add = TRUE)
-plot(st_nearest_points(pois[1, ], activate(net, "edges")), col = "grey", lty = 2, lwd = 2, add = TRUE)
-plot(st_nearest_points(pois[2, ], activate(net, "edges")), col = "grey", lty = 2, lwd = 2, add = TRUE)
+plot(st_nearest_points(pois[1, ], activate(net, "edges")),
+     col = "grey", lty = 2, lwd = 2, add = TRUE)
+plot(st_nearest_points(pois[2, ], activate(net, "edges")),
+     col = "grey", lty = 2, lwd = 2, add = TRUE)
 plot(blended, cex = 2, lwd = 4)
 ```
 
@@ -247,8 +255,8 @@ plot(blended, cex = 2, lwd = 4)
 In the examples above it was all about joining information from external features into a network. But how about joining two networks? This is what the `st_network_join()` function is for. It takes two sfnetworks as input and makes a spatial full join on the geometries of the nodes data, based on the *equals* spatial predicate. That means, all nodes from network x *and* all nodes from network y are present in the joined network, but if there were nodes in x with equal geometries to nodes in y, these nodes become a *single node* in the joined network. Edge data are combined using a `dplyr::bind_rows()` semantic, meaning that data are matched by column name and values are filled with `NA` if missing in either of the networks. The *from* and *to* columns in the edge data are updated automatically such that they correctly match the new node indices of the joined network. There is no spatial join performed on the edges. Hence, if there is an edge in x with an equal geometry to an edge in y, they remain separate edges in the joined network.
 
 ```{r, fig.show='hold', out.width = '50%'}
-node3 = st_point(c(1,1))
-node4 = st_point(c(0,1))
+node3 = st_point(c(1, 1))
+node4 = st_point(c(0, 1))
 edge2 = st_sfc(st_linestring(c(node2, node3)))
 edge3 = st_sfc(st_linestring(c(node3, node4)))
 
