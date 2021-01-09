@@ -39,9 +39,9 @@ of each morpher for details.}
 
 \item{remove_loops}{Should loops be remove. Defaults to \code{TRUE}.}
 
-\item{store_orig_data}{Whenever multiple features (i.e. nodes and/or edges) 
-are merged into a single feature during morphing, should the data of the 
-original features be stored as an attribute of the new feature, in a column 
+\item{store_orig_data}{Whenever multiple features (i.e. nodes and/or edges)
+are merged into a single feature during morphing, should the data of the
+original features be stored as an attribute of the new feature, in a column
 named \code{.orig_data}. This is in line with the design principles of
 \code{tidygraph}. Defaults to \code{FALSE}.}
 
@@ -132,7 +132,7 @@ Returns a \code{morphed_sfnetwork} containing a single element of class
 \code{\link[tidygraph]{to_subgraph}}.
 
 \item \code{to_spatial_transformed}: Transform the geospatial coordinates of the
-network into a different coordinate reference system. \code{...} is 
+network into a different coordinate reference system. \code{...} is
 evaluated in the same manner as \code{\link[sf]{st_transform}}.
 Returns a \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}.
