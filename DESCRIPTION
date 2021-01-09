@@ -1,7 +1,7 @@
 Package: sfnetworks
 Version: 0.4.0
-Title: Tidy Geospatial Networks in R
-Description: The sfnetworks package provides a tidy approach to spatial network
+Title: Tidy Geospatial Networks
+Description: Provides a tidy approach to spatial network
     analysis, in the form of classes and functions that enable a seamless 
     interaction between the network analysis package 'tidygraph' and the spatial 
     analysis package 'sf'.
