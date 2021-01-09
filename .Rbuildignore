@@ -11,3 +11,4 @@
 ^bench$
 ^logo\.png$
 ^hexlogo\.R$
+^cran-comments\.md$
