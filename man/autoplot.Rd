@@ -5,7 +5,7 @@
 \alias{autoplot.sfnetwork}
 \title{Plot sfnetwork geometries with ggplot2}
 \usage{
-autoplot.sfnetwork(object, ...)
+\method{autoplot}{sfnetwork}(object, ...)
 }
 \arguments{
 \item{object}{An object of class \code{\link{sfnetwork}}.}
