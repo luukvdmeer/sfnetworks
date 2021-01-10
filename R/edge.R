@@ -48,6 +48,11 @@ edge_azimuth = function() {
 #' \href{https://journals.sagepub.com/doi/10.1068/b130131p}{Giacomin & 
 #' Levinson, 2015}.
 #'
+#' @param Inf_as_NaN Should the circuity values of loop edges (which are
+#' infinite since the straight-line distance between the boundary nodes of
+#' loop edges is 0) be stored as \code{NaN} instead of \code{Inf}? Defaults to
+#' \code{TRUE}.
+#'
 #' @examples
 #' net %>%
 #'   activate("edges") %>%
@@ -56,10 +61,12 @@ edge_azimuth = function() {
 #' @importFrom sf st_length
 #' @importFrom tidygraph .G
 #' @export
-edge_circuity = function() {
+edge_circuity = function(Inf_as_NaN = TRUE) {
   x = .G()
   require_spatially_explicit_edges(x)
-  st_length(edge_geom(x)) / straight_line_distance(x)
+  values = st_length(edge_geom(x)) / straight_line_distance(x)
+  if (Inf_as_NaN) values[values == Inf] = NaN
+  values
 }
 
 #' @describeIn spatial_edge_measures The length of an edge linestring geometry

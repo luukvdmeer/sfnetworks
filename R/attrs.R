@@ -30,21 +30,6 @@ sf_attr = function(x, name, active = NULL) {
   )
 }
 
-#' Preserve the value of the 'active' attribute of the original network
-#'
-#' @param new An object of class \code{\link{sfnetwork}}.
-#'
-#' @param orig An object of class \code{\link{sfnetwork}}.
-#'
-#' @noRd
-`%preserve_active%` = function(new, orig) {
-  switch(
-    attr(orig, "active"),
-    nodes = activate(new, "nodes"),
-    edges = activate(new, "edges")
-  )
-}
-
 #' Preserve the attributes of the original network and its elements
 #'
 #' @param new An object of class \code{\link{sfnetwork}}.
