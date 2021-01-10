@@ -64,8 +64,13 @@ edge_azimuth = function() {
 edge_circuity = function(Inf_as_NaN = TRUE) {
   x = .G()
   require_spatially_explicit_edges(x)
+  # Calculate circuity.
   values = st_length(edge_geom(x)) / straight_line_distance(x)
-  if (Inf_as_NaN) values[values == Inf] = NaN
+  # Replace Inf values by NaN if requested.
+  if (Inf_as_NaN) {
+    inf_values = drop_units(values) == Inf
+    values[inf_values] = NaN
+  }
   values
 }
 
