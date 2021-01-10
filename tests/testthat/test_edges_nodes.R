@@ -33,9 +33,14 @@ square = st_sfc(st_cast(st_multipoint(c(p6, p7, p12, p11)), "POLYGON"))
 net = as_sfnetwork(lines)
 
 ## Edge measures
-circuity = net %>%
+circuity_with_nan = net %>%
   activate("edges") %>%
   mutate(circuity = edge_circuity()) %>%
+  pull(circuity)
+
+circuity_with_inf = net %>%
+  activate("edges") %>%
+  mutate(circuity = edge_circuity(Inf_as_NaN = FALSE)) %>%
   pull(circuity)
 
 length = net %>%
@@ -50,7 +55,11 @@ displacement = net %>%
 
 test_that("spatial_edge_measures return correct (known) values", {
   expect_setequal(
-    round(circuity, 6),
+    round(circuity_with_nan, 6),
+    c(1.000000, 1.000000, 1.000000, 2.414214, 1.000000, 1.000000, NaN)
+  )
+  expect_setequal(
+    round(circuity_with_inf, 6),
     c(1.000000, 1.000000, 1.000000, 2.414214, 1.000000, 1.000000, Inf)
   )
   expect_setequal(
