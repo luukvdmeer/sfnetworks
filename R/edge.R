@@ -60,6 +60,7 @@ edge_azimuth = function() {
 #'
 #' @importFrom sf st_length
 #' @importFrom tidygraph .G
+#' @importFrom units drop_units
 #' @export
 edge_circuity = function(Inf_as_NaN = TRUE) {
   x = .G()
@@ -68,7 +69,9 @@ edge_circuity = function(Inf_as_NaN = TRUE) {
   values = st_length(edge_geom(x)) / straight_line_distance(x)
   # Replace Inf values by NaN if requested.
   if (Inf_as_NaN) {
-    inf_values = drop_units(values) == Inf
+    # Units need to be dropped to run comparison '== Inf'.
+    raw_values = if (inherits(values, "units")) drop_units(values) else values
+    inf_values = raw_values == Inf
     values[inf_values] = NaN
   }
   values
