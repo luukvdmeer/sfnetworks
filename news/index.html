@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
       </span>
     </div>
 
@@ -146,6 +146,38 @@
       <small>Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="sfnetworks-v041" class="section level1">
+<h1 class="page-header" data-toc-text="0.4.1">
+<a href="#sfnetworks-v041" class="anchor"></a>sfnetworks v0.4.1</h1>
+<ul>
+<li>Addition of an edge measure function <code><a href="../reference/spatial_edge_measures.html">edge_azimuth()</a></code>, to calculate the azimuth (i.e. bearing) of edges. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/107"><a href='https://github.com/luukvdmeer/sfnetworks/issues/107'>#107</a></a>
+</li>
+<li>Addition of a <code><a href="../reference/spatial_morphers.html">to_spatial_transformed()</a></code> morpher, to temporarily transform a sfnetwork into a different CRS.</li>
+<li>Addition of a sfnetwork methods for <code>linnet</code> objects, to enhance interoperability between <code>sfnetwork</code> and the <code>spatstat</code> package for spatial point patterns on linear networks.</li>
+<li>Addition of an <code>Inf_as_NaN</code> argument to the <code>edge_circuity</code> function, to store circuity values of loop edges as <code>NaN</code> instead of <code>Inf</code>. The default value of this argument is <code>TRUE</code>.</li>
+<li>Changes to <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code>:
+<ul>
+<li>Addition of a new argument <code>type</code>, which lets you set the type of paths calculation that should be performed.</li>
+<li>To calculate all shortest paths between nodes, now set <code>type = 'all_shortest'</code> instead of <code>all = TRUE</code>. The latter argument is deprecated.</li>
+<li>Besides shortest paths, there is now also the possibility to calculate all simple paths between nodes, by setting <code>type = 'all_simple'</code>. Be aware that computation time gets high when providing a lot of ‘to’ nodes, or when the network is large and dense. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/105"><a href='https://github.com/luukvdmeer/sfnetworks/issues/105'>#105</a></a>
+</li>
+<li>Whenever <code>weights = NULL</code> <em>and</em> there is no column named ‘weight’ in the edges table, geographic edge length will be calculated internally and used as weights in shortest path calculation. Before, paths would be calculated without edge weights in this case. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/106"><a href='https://github.com/luukvdmeer/sfnetworks/issues/106'>#106</a></a>
+</li>
+<li>Whenever the given ‘from’ and/or ‘to’ nodes contain NA values and/or empty point geometries, igraph behaviour is now replicated by throwing an error. Before, these values would simply be ignored.</li>
+</ul>
+</li>
+<li>Performance improvement of the <code><a href="../reference/spatial_morphers.html">to_spatial_smooth()</a></code> morpher. As a result of this it does not store the original edge data anymore in a ‘.orig_data’ column. Instead, non-merged edges keep their attributes, while merged edges loose their attributes. The ‘.orig_data’ column can still be added by setting <code>store_orig_data = TRUE</code>, but this is not the default.</li>
+<li>Bug fixes:
+<ul>
+<li>
+<code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> now correctly handles cases where an unexisting column is passed to the <code>weights</code> argument, by throwing an error. Fixes <a href="https://github.com/luukvdmeer/sfnetworks/issues/99"><a href='https://github.com/luukvdmeer/sfnetworks/issues/99'>#99</a></a>
+</li>
+<li>The sfnetwork method for <code><a href="https://r-spatial.github.io/sf/reference/st_join.html">sf::st_join()</a></code> now correctly handles inner joins (i.e. joins where <code>left = FALSE</code>).</li>
+</ul>
+</li>
+<li>Addition of extra examples to the <a href="https://luukvdmeer.github.io/sfnetworks/articles/routing.html">routing</a> and <a href="https://luukvdmeer.github.io/sfnetworks/articles/morphers.html">spatial morphers</a> vignettes.</li>
+</ul>
+</div>
     <div id="sfnetworks-v040-hiltrup" class="section level1">
 <h1 class="page-header" data-toc-text="0.4.0">
 <a href="#sfnetworks-v040-hiltrup" class="anchor"></a>sfnetworks v0.4.0 “Hiltrup”</h1>

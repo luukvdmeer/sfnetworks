@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
       </span>
     </div>
 
@@ -103,7 +103,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>5. Spatial morphers</h1>
             
-            <h4 class="date">2020-12-16</h4>
+            <h4 class="date">2021-01-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/morphers.Rmd"><code>vignettes/morphers.Rmd</code></a></small>
       <div class="hidden name"><code>morphers.Rmd</code></div>
@@ -116,6 +116,12 @@
 PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 </style>
 <p>In some of the previous vignettes they were already mentioned here and there: spatial morpher functions. This vignette describes in more detail what they are and how to use them.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://luukvdmeer.github.io/sfnetworks/">sfnetworks</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidygraph.data-imaginist.com">tidygraph</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://igraph.org">igraph</a></span><span class="op">)</span></code></pre></div>
 <div id="morphing-and-unmorphing" class="section level2">
 <h2 class="hasAnchor">
 <a href="#morphing-and-unmorphing" class="anchor"></a>Morphing and unmorphing</h2>
@@ -123,11 +129,6 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>You can choose between a wide range of available <em>morpher functions</em> in <code>tidygraph</code>. The names of these functions all start with <code>to_</code>. The <code>sfnetworks</code> package adds a set of dedicated <em>spatial morphers</em>, having names starting with <code>to_spatial_</code>. They will be presented later in this vignette. Lets first show a practical example to get a better idea of how morphing can be useful.</p>
 <p>In network analysis, community detection algorithms allow you to discover cohesive groups in networks, based on specific network properties. There is a large offer of (wrappers around) such algorithms in <code>tidygraph</code>, see <a href="https://tidygraph.data-imaginist.com/reference/group_graph.html">here</a>. Most of them are intended for and can only be applied to the nodes. For example, the often used <a href="https://en.wikipedia.org/wiki/Louvain_method">Louvain algorithm</a>, that seeks to optimize <a href="https://en.wikipedia.org/wiki/Modularity_(networks)">modularity</a> of the partition.</p>
 <p>But what if we want to detect communities within <em>edges</em>? Then, the <code><a href="https://tidygraph.data-imaginist.com/reference/morphers.html">tidygraph::to_linegraph()</a></code> morpher comes in handy. It converts a network into its linegraph, where nodes become edges and edges become nodes. That is, we can morph the network into its linegraph, run the community detection algorithm on the <em>nodes</em> of the morphed state, attach to each node information about the group it is assigned to, and automatically merge those changes back into the <em>edges</em> of the original network.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://luukvdmeer.github.io/sfnetworks/">sfnetworks</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidygraph.data-imaginist.com">tidygraph</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">roxel</span>, directed <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="fl">3035</span><span class="op">)</span>
@@ -188,8 +189,31 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">group</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">11</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span>lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="morphers_files/figure-html/unnamed-chunk-3-1.png" width="480"></p>
-<p>Internally, a morphed state of a network is a list, in which each element is a network on its own. Some morphers create a list with only a single element, like the linegraph example above, while others create a list with multiple elements. For example, the <code><a href="https://tidygraph.data-imaginist.com/reference/morphers.html">tidygraph::to_components()</a></code> morpher splits the original network into its unconnected components, storing each component as a separate network in the list, with the first element being the largest component.</p>
+<p>Another application of the <code><a href="https://tidygraph.data-imaginist.com/reference/morphers.html">tidygraph::to_linegraph()</a></code> morpher is to find “cut edges” in the network. These are edges that break the connectivity of a connected component when they are removed. Hence, they have a crucial function in preserving the connectivity of a network.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">new_net</span> <span class="op">=</span> <span class="va">net</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>is_cut <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/node_types.html">node_is_cut</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">morph</a></span><span class="op">(</span><span class="va">to_linegraph</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>is_cut <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/node_types.html">node_is_cut</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">unmorph</a></span><span class="op">(</span><span class="op">)</span>
+
+<span class="va">cut_nodes</span> <span class="op">=</span> <span class="va">new_net</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">is_cut</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="op">)</span>
+
+<span class="va">cut_edges</span> <span class="op">=</span> <span class="va">new_net</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">is_cut</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="op">)</span>
+
+<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">net</span>, main <span class="op">=</span> <span class="st">"Cut nodes"</span><span class="op">)</span>
+<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">cut_nodes</span>, col <span class="op">=</span> <span class="st">"red"</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">net</span>, main <span class="op">=</span> <span class="st">"Cut edges"</span><span class="op">)</span>
+<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">cut_edges</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<p><img src="morphers_files/figure-html/unnamed-chunk-4-1.png" width="50%"><img src="morphers_files/figure-html/unnamed-chunk-4-2.png" width="50%"></p>
+<p>Internally, a morphed state of a network is a list, in which each element is a network on its own. Some morphers create a list with only a single element, like the linegraph example above, while others create a list with multiple elements. For example, the <code><a href="https://tidygraph.data-imaginist.com/reference/morphers.html">tidygraph::to_components()</a></code> morpher splits the original network into its unconnected components, storing each component as a separate network in the list.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">morphed_net</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">morph</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">to_components</span><span class="op">)</span>
 
 <span class="va">morphed_net</span></code></pre></div>
@@ -200,7 +224,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; # with CRS EPSG:3035 
 #&gt; </span><span>
 </span></code></pre>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">morphed_net</span><span class="op">)</span>
 <span class="co">#&gt; [1] "morphed_sfnetwork" "morphed_tbl_graph" "list"</span>
 
@@ -212,17 +236,16 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div id="converting" class="section level2">
 <h2 class="hasAnchor">
 <a href="#converting" class="anchor"></a>Converting</h2>
-<p>Morphing is meant to make <em>temporary</em> changes to your network. However, what if you want to make <em>lasting</em> changes? Good news! The <em>same</em> morpher functions that are used for temporary conversions during morphing can be used for lasting conversions when you provide them to the <code><a href="https://tidygraph.data-imaginist.com/reference/morph.html">tidygraph::convert()</a></code> verb instead. In that case, the morphed state of the original network will be returned as a new network itself. This is mainly meant for those morpher functions that produce a morphed state with a <em>single</em> element. Whenever the morphed state consists of <em>multiple</em> elements, only one of them is returned as the new network. By default that is the first one, but you can pick an element yourself by setting the <code>.select</code> argument.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Converting the network into its largest component.</span>
-<span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">convert</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">to_components</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">675</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">838</span><span> </span><span style="color: #555555;">edges
+<p>Morphing is meant to make <em>temporary</em> changes to your network. However, what if you want to make <em>lasting</em> changes? Good news! The <em>same</em> morpher functions that are used for temporary conversions during morphing can be used for lasting conversions when you provide them to the <code><a href="https://tidygraph.data-imaginist.com/reference/morph.html">tidygraph::convert()</a></code> verb instead. In that case, the morphed state of the original network will be returned as a new network itself. This is mainly meant for those morpher functions that produce a morphed state with a <em>single</em> element. For example converting the network into its complement, where nodes are connected only if they were not connected in the original graph.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">convert</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">to_complement</span><span class="op">)</span></code></pre></div>
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">244503</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
 #&gt; #
-#&gt; # An undirected multigraph with 1 component with spatially explicit edges
+#&gt; # An undirected simple graph with 1 component with spatially implicit edges
 #&gt; #
-#&gt; # Node Data:     675 x 2 (active)</span><span>
+#&gt; # Node Data:     701 x 2 (active)</span><span>
 #&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
 #&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
 #&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
@@ -234,46 +257,18 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;">4</span><span> (4151370 3207673)                     4
 #&gt; </span><span style="color: #555555;">5</span><span> (4151408 3207539)                     5
 #&gt; </span><span style="color: #555555;">6</span><span> (4151421 3207592)                     6
-#&gt; </span><span style="color: #555555;"># … with 669 more rows</span><span>
+#&gt; </span><span style="color: #555555;"># … with 695 more rows</span><span>
 #&gt; </span><span style="color: #555555;">#
-#&gt; # Edge Data:     838 x 6</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
-#&gt;    from    to name      type                          geometry .tidygraph_edge_…
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>     </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                 </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>             </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbec… reside… (4151491 3207923, 4151474 320…                 1
-#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersa… second… (4151398 3207777, 4151390 320…                 2
-#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-… reside… (4151408 3207539, 4151417 320…                 3
-#&gt; </span><span style="color: #555555;"># … with 835 more rows</span><span>
+#&gt; # Edge Data: 244,503 x 2</span><span>
+#&gt;    from    to
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     1   701
+#&gt; </span><span style="color: #555555;">2</span><span>     1   700
+#&gt; </span><span style="color: #555555;">3</span><span>     1   699
+#&gt; </span><span style="color: #555555;"># … with 244,500 more rows</span><span>
 </span></code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Converting the network into its smallest component.</span>
-<span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">convert</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">to_components</span>, .select <span class="op">=</span> <span class="fl">14</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">2</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">1</span><span> </span><span style="color: #555555;">edges
-#&gt; #
-#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
-#&gt; #
-#&gt; # An unrooted tree with spatially explicit edges
-#&gt; #
-#&gt; # Node Data:     2 x 2 (active)</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4151344 ymin: 3207931 xmax: 4151358 ymax: 3207979</span><span>
-#&gt;            geometry .tidygraph_node_index
-#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span>                 </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span> (4151344 3207979)                   455
-#&gt; </span><span style="color: #555555;">2</span><span> (4151358 3207931)                   456
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Edge Data:     1 x 6</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4151344 ymin: 3207931 xmax: 4151358 ymax: 3207979</span><span>
-#&gt;    from    to name  type                              geometry .tidygraph_edge_…
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                     </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>             </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2 </span><span style="color: #BB0000;">NA</span><span>    servi… (4151344 3207979, 4151348 3207964,…               262
-</span></code></pre>
-<p>As can be seen, the <em>.tidygraph_node_index</em> and <em>.tidygraph_edge_index</em> columns are present in the network returned by <code><a href="https://tidygraph.data-imaginist.com/reference/morph.html">tidygraph::convert()</a></code>. If you rather don’t have that, set <code>.clean = TRUE</code>.</p>
+<p>The internally created <em>.tidygraph_node_index</em> and/or <em>.tidygraph_edge_index</em> columns are present in the network returned by <code><a href="https://tidygraph.data-imaginist.com/reference/morph.html">tidygraph::convert()</a></code>. If you rather don’t have that, set <code>.clean = TRUE</code>.</p>
+<p>Whenever the morphed state consists of <em>multiple</em> elements, only one of them is returned as the new network. By default that is the first one, but you can pick an element yourself by setting the <code>.select</code> argument, e.g. <code>.select = 2</code>.</p>
 </div>
 <div id="spatial-morphers" class="section level2">
 <h2 class="hasAnchor">
@@ -334,7 +329,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">implicit_net</span>, draw_lines <span class="op">=</span> <span class="cn">FALSE</span>, main <span class="op">=</span> <span class="st">"Implicit edges"</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">explicit_net</span>, main <span class="op">=</span> <span class="st">"Explicit edges"</span><span class="op">)</span></code></pre></div>
-<p><img src="morphers_files/figure-html/unnamed-chunk-7-1.png" width="50%"><img src="morphers_files/figure-html/unnamed-chunk-7-2.png" width="50%"></p>
+<p><img src="morphers_files/figure-html/unnamed-chunk-8-1.png" width="50%"><img src="morphers_files/figure-html/unnamed-chunk-8-2.png" width="50%"></p>
 </div>
 <div id="to_spatial_shortest_paths" class="section level3">
 <h3 class="hasAnchor">
@@ -344,7 +339,11 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">net</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">convert</a></span><span class="op">(</span><span class="va">to_spatial_shortest_paths</span>, from <span class="op">=</span> <span class="fl">1</span>, to <span class="op">=</span> <span class="fl">100</span>, weights <span class="op">=</span> <span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">convert</a></span><span class="op">(</span>
+    <span class="va">to_spatial_shortest_paths</span>,
+    from <span class="op">=</span> <span class="fl">1</span>, to <span class="op">=</span> <span class="fl">100</span>,
+    weights <span class="op">=</span> <span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span>
+  <span class="op">)</span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">26</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">25</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
@@ -379,7 +378,11 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">new_net</span> <span class="op">=</span> <span class="va">net</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">morph</a></span><span class="op">(</span><span class="va">to_spatial_shortest_paths</span>, from <span class="op">=</span> <span class="fl">1</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">100</span>, <span class="fl">10</span><span class="op">)</span>, weights <span class="op">=</span> <span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">morph</a></span><span class="op">(</span>
+    <span class="va">to_spatial_shortest_paths</span>,
+    from <span class="op">=</span> <span class="fl">1</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">100</span>, <span class="fl">10</span><span class="op">)</span>,
+    weights <span class="op">=</span> <span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>in_paths <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">unmorph</a></span><span class="op">(</span><span class="op">)</span>
 
@@ -391,7 +394,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">in_paths</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="morphers_files/figure-html/unnamed-chunk-9-1.png" width="480"></p>
+<p><img src="morphers_files/figure-html/unnamed-chunk-10-1.png" width="480"></p>
 </div>
 <div id="to_spatial_simple" class="section level3">
 <h3 class="hasAnchor">
@@ -402,7 +405,6 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <h3 class="hasAnchor">
 <a href="#to_spatial_smooth" class="anchor"></a>to_spatial_smooth</h3>
 <p>The <code><a href="../reference/spatial_morphers.html">to_spatial_smooth()</a></code> morpher creates a smoothed version of the original network by iteratively removing pseudo nodes. In the case of directed networks, pseudo nodes are those nodes that have only one incoming and one outgoing edge. In undirected networks, pseudo nodes are those nodes that have two incident edges. Connectivity of the network is preserved by concatenating the incident edges of each removed pseudo node. The morphed state contains a single sfnetwork. See the <a href="https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html#smooth-pseudo-nodes">Network pre-processing and cleaning</a> vignette for more details.</p>
-<p><em>NOTE: This function is still experimental. It needs more testing and may be slow on large networks</em></p>
 </div>
 <div id="to_spatial_subdivision" class="section level3">
 <h3 class="hasAnchor">
@@ -462,7 +464,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">net</span> <span class="op">=</span> <span class="va">net</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>building <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">TRUE</span>,<span class="cn">FALSE</span><span class="op">)</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>building <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">net</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">morph</a></span><span class="op">(</span><span class="va">to_subgraph</span>, <span class="va">building</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -483,10 +485,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;lgl&gt;</span><span>        </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span>
 #&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923) TRUE          </span><span style="text-decoration: underline;">1</span><span>020
 #&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946) TRUE          </span><span style="text-decoration: underline;">1</span><span>020
-#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777) FALSE           </span><span style="color: #BB0000;">NA</span><span>
-#&gt; </span><span style="color: #555555;">4</span><span> (4151370 3207673) FALSE           </span><span style="color: #BB0000;">NA</span><span>
-#&gt; </span><span style="color: #555555;">5</span><span> (4151408 3207539) TRUE          </span><span style="text-decoration: underline;">1</span><span>020
-#&gt; </span><span style="color: #555555;">6</span><span> (4151421 3207592) FALSE           </span><span style="color: #BB0000;">NA</span><span>
+#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777) TRUE          </span><span style="text-decoration: underline;">1</span><span>020
+#&gt; </span><span style="color: #555555;">4</span><span> (4151370 3207673) TRUE          </span><span style="text-decoration: underline;">1</span><span>020
+#&gt; </span><span style="color: #555555;">5</span><span> (4151408 3207539) FALSE           </span><span style="color: #BB0000;">NA</span><span>
+#&gt; </span><span style="color: #555555;">6</span><span> (4151421 3207592) TRUE          </span><span style="text-decoration: underline;">1</span><span>020
 #&gt; </span><span style="color: #555555;"># … with 695 more rows</span><span>
 #&gt; </span><span style="color: #555555;">#
 #&gt; # Edge Data:     851 x 5</span><span>
@@ -499,6 +501,59 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersallee    secondary (4151398 3207777, 4151390 3207727, 4151…
 #&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-Bernd-… resident… (4151408 3207539, 4151417 3207573, 4151…
 #&gt; </span><span style="color: #555555;"># … with 848 more rows</span><span>
+</span></code></pre>
+</div>
+<div id="to_spatial_transformed" class="section level3">
+<h3 class="hasAnchor">
+<a href="#to_spatial_transformed" class="anchor"></a>to_spatial_transformed</h3>
+<p>The <code><a href="../reference/spatial_morphers.html">to_spatial_transformed()</a></code> morpher temporarily transforms the network into a different coordinate reference system. An example of a situation in which this can be helpful, is the usage of the spatial edge measure function <code><a href="../reference/spatial_edge_measures.html">edge_azimuth()</a></code>. This function calculates the azimuth (or <em>bearing</em>) of edge linestrings, but requires a geographic CRS for that.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Azimuth calculation fails with our projected CRS.</span>
+<span class="co"># The function complains the coordinates are not longitude/latitude.</span>
+<span class="va">net</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>azimuth <span class="op">=</span> <span class="fu"><a href="../reference/spatial_edge_measures.html">edge_azimuth</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre class="fansi fansi-error"><code>#&gt; Error: Problem with `mutate()` input `azimuth`.
+#&gt; <span style="color: #BB0000;">✖</span><span> st_is_longlat(x) is not TRUE
+#&gt; </span><span style="color: #0000BB;">ℹ</span><span> Input `azimuth` is `edge_azimuth()`.
+</span></code></pre>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># We make it work by temporarily transforming to a different CRS.</span>
+<span class="va">net</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">morph</a></span><span class="op">(</span><span class="va">to_spatial_transformed</span>, <span class="fl">4326</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>azimuth <span class="op">=</span> <span class="fu"><a href="../reference/spatial_edge_measures.html">edge_azimuth</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">unmorph</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
+#&gt; #
+#&gt; # An undirected multigraph with 14 components with spatially explicit edges
+#&gt; #
+#&gt; # Edge Data:     851 x 6 (active)</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;    from    to name       type                                  geometry  azimuth
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>      </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                         </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>    </span><span style="color: #555555;">[rad]</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbeck… reside…     (4151491 3207923, 4151474 3207946) -0.6700…
+#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersal… second… (4151398 3207777, 4151390 3207727, 41… -2.9135…
+#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-B… reside… (4151408 3207539, 4151417 3207573, 41…  0.2032…
+#&gt; </span><span style="color: #555555;">4</span><span>     7     8 </span><span style="color: #BB0000;">NA</span><span>         path    (4151885 3206698, 4151861 3206711, 41… -0.9676…
+#&gt; </span><span style="color: #555555;">5</span><span>     9    10 Welsinghe… reside…     (4151732 3207017, 4151721 3206809) -3.1221…
+#&gt; </span><span style="color: #555555;">6</span><span>    11    12 </span><span style="color: #BB0000;">NA</span><span>         footway (4152152 3206984, 4152143 3206932, 41… -3.0971…
+#&gt; </span><span style="color: #555555;"># … with 845 more rows</span><span>
+#&gt; </span><span style="color: #555555;">#
+#&gt; # Node Data:     701 x 2</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;            geometry building
+#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;lgl&gt;</span><span>   
+#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923) TRUE    
+#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946) TRUE    
+#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777) TRUE    
+#&gt; </span><span style="color: #555555;"># … with 698 more rows</span><span>
 </span></code></pre>
 </div>
 </div>

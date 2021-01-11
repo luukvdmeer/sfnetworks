@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
       </span>
     </div>
 
@@ -103,7 +103,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>4. Routing</h1>
             
-            <h4 class="date">2020-12-16</h4>
+            <h4 class="date">2021-01-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/routing.Rmd"><code>vignettes/routing.Rmd</code></a></small>
       <div class="hidden name"><code>routing.Rmd</code></div>
@@ -115,23 +115,23 @@
 <style type="text/css" scoped>
 PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 </style>
-<p>Calculating shortest paths between pairs of nodes is a core task in network analysis. The <code>sfnetworks</code> package offers wrappers around shortest paths calculation function from <code>igraph</code> that makes it easier to use them when working with spatial data and tidyverse packages. This vignette will present their functionality.</p>
-<p>In this regard it is important to remember that <code>sfnetworks</code> is a general-purpose package for spatial network analysis, not specifically optimized for a single task. If your <em>only</em> purpose is many-to-many routing in large networks, there might be other packages out there that are faster and fit better to your needs. For example, <a href="https://github.com/ATFutures/dodgr">dodgr</a> is a package that is designed for many-to-many routing on large dual-weighted graphs, with its main focus on OpenStreetMap road network data. For these data, it is also possible to use the R-bridges to external OpenStreetMap routing engines such as <a href="https://github.com/crazycapivara/graphhopper-r">graphhopper</a>, <a href="https://github.com/rCarto/osrm">osrm</a> and <a href="https://github.com/ropensci/opentripplanner">opentripplanner</a>. The <a href="https://github.com/ropensci/stplanr">stplanr</a> package for sustainable transport planning lets you connect to such engines from within a single interface. Finally, there is <a href="https://github.com/vlarmet/cppRouting">cppRouting</a> that contains functions to calculate shortest paths and isochrones/isodistances on weighted graphs. Of course, all these packages can be happily used <em>alongside</em> <code>sfnetworks</code>.</p>
-<div id="setting-edge-weights" class="section level2">
-<h2 class="hasAnchor">
-<a href="#setting-edge-weights" class="anchor"></a>Setting edge weights</h2>
-<p>The route of the shortest path between two nodes in a network is influenced by the <em>weights</em> or <em>impedance</em> of the edges. If you don’t provide these weights explicitly, shortest paths calculation functions in <code>igraph</code> (as well as their spatial wrappers in <code>sfnetworks</code>) proceed as follows:</p>
-<ul>
-<li>If there is a column in the edges table named <em>weight</em>, the values in these column are automatically used as edge weights. These values should be numeric, otherwise an error will be thrown.</li>
-<li>If there is no <em>weight</em> column, shortest paths are calculated without edge weights. In practice that means that the weight of all edges is equal to 1. That is, the shortest path between node A and node B is the path with the fewest <em>number</em> of edges.</li>
-</ul>
-<p>Every function that is about the calculation of shortest paths also accepts a <code>weights</code> argument which allows you to provide edge weights explicitly. In <code>sfnetworks</code>, this argument can be a numeric vector of the same length as the number of edges in the network, but also the name of a column in the edges table. The <code>weights</code> argument will always overrule the default behavior of using the <em>weight</em> column for edge weights. If you have a <em>weight</em> column but want to calculate paths <em>without</em> using weights, set the <code>weights</code> argument to <code>NA</code>.</p>
-<p>The <code><a href="../reference/spatial_edge_measures.html">edge_length()</a></code> function can be used to calculate the geographic length of each edge, such that you can use those as weights in shortest paths calculations. The function is meant to be used inside a <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">dplyr::mutate()</a></code> verb, as follows:</p>
+<p>Calculating shortest paths between pairs of nodes is a core task in network analysis. The <code>sfnetworks</code> package offers wrappers around the path calculation functions of <code>igraph</code>, making it easier to use them when working with spatial data and tidyverse packages. This vignette demonstrates their functionality.</p>
+<p>In this regard it is important to remember that <code>sfnetworks</code> is a general-purpose package for spatial network analysis, not specifically optimized for a single task. If your <em>only</em> purpose is many-to-many routing in large networks, there might be other approaches that are faster and fit better to your needs. For example, the <a href="https://github.com/ATFutures/dodgr">dodgr</a> package was designed for many-to-many routing on large dual-weighted graphs, with its main focus on OpenStreetMap road network data. The <a href="https://github.com/vlarmet/cppRouting">cppRouting</a> package contains functions to calculate shortest paths and isochrones/isodistances on weighted graphs. When working with OpenStreetMap data, it is also possible to use the interfaces to external routing engines such as <a href="https://github.com/crazycapivara/graphhopper-r">graphhopper</a>, <a href="https://github.com/rCarto/osrm">osrm</a> and <a href="https://github.com/ropensci/opentripplanner">opentripplanner</a>. The <a href="https://github.com/ropensci/stplanr">stplanr</a> package for sustainable transport planning lets you use many routing engines from a single interface, through <code>stplanr::route()</code>, including routing using local R objects. Of course, all these packages can be happily used <em>alongside</em> <code>sfnetworks</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://luukvdmeer.github.io/sfnetworks/">sfnetworks</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidygraph.data-imaginist.com">tidygraph</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></code></pre></div>
+<div id="setting-edge-weights" class="section level2">
+<h2 class="hasAnchor">
+<a href="#setting-edge-weights" class="anchor"></a>Setting edge weights</h2>
+<p>The route of the shortest path between two nodes in a network is influenced by the <em>weights</em> or <em>impedance</em> of the edges. If you don’t provide these weights explicitly, shortest paths calculation functions in <code>sfnetworks</code> proceed as follows:</p>
+<ul>
+<li>If there is a column in the edges table named <em>weight</em>, the values in this column are automatically used as edge weights. These values are meant to be numeric. If they are not, <code>igraph</code> will silently try to convert them with <code><a href="https://rdrr.io/r/base/numeric.html">as.numeric()</a></code>.</li>
+<li>If there is no <em>weight</em> column, <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> internally calculates the geographic lengths of the edges and uses those as weights.</li>
+</ul>
+<p>Every function that is about the calculation of shortest paths also accepts a <code>weights</code> argument which allows you to provide edge weights explicitly. In <code>sfnetworks</code>, this argument can be a numeric vector of the same length as the number of edges in the network, but also the name of a column in the edges table. The <code>weights</code> argument will always overrule the default behavior of using the <em>weight</em> column for edge weights. If you have a <em>weight</em> column but want to calculate paths <em>without</em> using weights, set <code>weights = NA</code>. In practice that means that the weight of all edges is equal to 1. Hence, the shortest path between node A and node B is the path with the fewest <em>number</em> of edges.</p>
+<p>The <code><a href="../reference/spatial_edge_measures.html">edge_length()</a></code> function can be used to calculate the length of each edge in geographic space, such that you can use those as weights in shortest paths calculations. The function is meant to be used inside a <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">dplyr::mutate()</a></code> verb, as follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">roxel</span>, directed <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="fl">3035</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -174,13 +174,14 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div id="calculating-shortest-paths" class="section level2">
 <h2 class="hasAnchor">
 <a href="#calculating-shortest-paths" class="anchor"></a>Calculating shortest paths</h2>
-<p>The function <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> is a wrapper around the igraph function <code><a href="https://rdrr.io/pkg/igraph/man/distances.html">igraph::shortest_paths()</a></code>. There are two main differences:</p>
+<p>The function <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> is a wrapper around the igraph function <code><a href="https://rdrr.io/pkg/igraph/man/distances.html">igraph::shortest_paths()</a></code>. There are three main differences:</p>
 <ul>
 <li>Besides node indices and node names, <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> gives the additional option to provide any (set of) geospatial point(s) as <em>from</em> and <em>to</em> location(s) of the shortest paths, either as sf or sfc object. Provided points that do not equal any node in the network will be snapped to their nearest node before calculating the paths.</li>
 <li>To allow smooth integration with the tidyverse, the output of <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> is a tibble, with one row per returned path. The column <em>node_paths</em> contains the ordered list of node indices in the path, and the column <em>edge_paths</em> contains the ordered list of edge indices in the path.</li>
+<li>Whenever <code>weights = NULL</code> <em>and</em> there is no column in the edges table named <em>weight</em>, <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> by default uses the geographic edge length as weight.</li>
 </ul>
 <p>Just as <code><a href="https://rdrr.io/pkg/igraph/man/distances.html">igraph::shortest_paths()</a></code>, the <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> function is meant for one-to-one and one-to-many routing. Hence, it is only possible to provide a single <em>from</em> location, while the <em>to</em> locations can be more than one.</p>
-<p>Lets start with the most basic example of providing node indices as <em>from</em> and <em>to</em> locations. Remember that a node index in a sfnetwork refers to the position of the node in the nodes table of the network (i.e. its rownumber). There is also the possibility to use character encoded node names instead of numeric node indices. This requires the nodes table to have a column <em>name</em> with a unique name for each node.</p>
+<p>Lets start with the most basic example of providing node indices as <em>from</em> and <em>to</em> locations. Remember that a node index in a sfnetwork refers to the position of the node in the nodes table of the network (i.e. its row number). There is also the possibility to use character encoded node names instead of numeric node indices. This requires the nodes table to have a column <em>name</em> with a unique name for each node.</p>
 <p>Since we have created a <em>weight</em> column in the previous section, these weights (i.e. the length of the edge geometries) will be used automatically in the shortest paths calculation.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">paths</span> <span class="op">=</span> <span class="fu"><a href="../reference/st_network_paths.html">st_network_paths</a></span><span class="op">(</span><span class="va">net</span>, from <span class="op">=</span> <span class="fl">495</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">458</span>, <span class="fl">121</span><span class="op">)</span><span class="op">)</span>
@@ -225,7 +226,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">495</span>, <span class="fl">121</span>, <span class="fl">458</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">colors</span>, pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="routing_files/figure-html/unnamed-chunk-3-1.png" width="480"></p>
-<p>Now we will create some geospatial points that do not intersect with any node in the network. Providing them to <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> will first find the nearest node to each of them, and then calculate the shortest paths accordingly.</p>
+<p>Next we will create some geospatial points that do not intersect with any node in the network. Providing them to <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> will first find the nearest node to each of them, and then calculate the shortest paths accordingly.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span><span class="op">[</span><span class="fl">495</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="op">-</span><span class="fl">50</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span>
@@ -259,7 +260,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div id="retrieving-a-cost-matrix" class="section level2">
 <h2 class="hasAnchor">
 <a href="#retrieving-a-cost-matrix" class="anchor"></a>Retrieving a cost matrix</h2>
-<p>The shortest paths calculation as described above is only supported for one-to-one and one-to-many routing. The alternative for many-to-many routing is the calculation of a cost matrix. Instead of providing the individual paths, it returns a matrix in which entry <span class="math inline">\(i,j\)</span> is the total cost (i.e. sum of weights) of the shortest path from node <span class="math inline">\(i\)</span> to node <span class="math inline">\(j\)</span>. The igraph function for this purpose is <code><a href="https://rdrr.io/pkg/igraph/man/distances.html">igraph::distances()</a></code>, which in <code>sfnetworks</code> is wrapped by <code><a href="../reference/st_network_cost.html">st_network_cost()</a></code>, allowing again to provide sets of geospatial points as <em>from</em> and <em>to</em> locations. Note that the calculated costs refer to the paths between the <em>nearest nodes</em> of the input points.</p>
+<p>The shortest paths calculation as described above is only supported for one-to-one and one-to-many routing. The alternative for many-to-many routing is the calculation of a cost matrix. Instead of providing the individual paths, it returns a matrix in which entry <span class="math inline">\(i,j\)</span> is the total cost (i.e. sum of weights) of the shortest path from node <span class="math inline">\(i\)</span> to node <span class="math inline">\(j\)</span>. The igraph function for this purpose is <code><a href="https://rdrr.io/pkg/igraph/man/distances.html">igraph::distances()</a></code>, which in <code>sfnetworks</code> is wrapped by <code><a href="../reference/st_network_cost.html">st_network_cost()</a></code>, allowing again to provide sets of geospatial points as <em>from</em> and <em>to</em> locations. Note that the calculated costs refer to the paths between the <em>nearest nodes</em> of the input points. Their units are the same as the units of weights used in the calculation, in this case meters.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/st_network_cost.html">st_network_cost</a></span><span class="op">(</span><span class="va">net</span>, from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;          [,1]     [,2]     [,3]</span>
@@ -293,9 +294,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="co">#&gt; [6] unclassified pedestrian   service      cycleway    </span>
 <span class="co">#&gt; 9 Levels: cycleway footway path pedestrian residential secondary ... unclassified</span>
 
-<span class="co"># Randomly define a walking speed in m/s for each type.</span>
+<span class="co"># Randomly define a walking speed in m/s for each type,</span>
+<span class="co"># with values between 3 and 7 km/hr.</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
-<span class="va">speeds</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">types</span><span class="op">)</span>, <span class="fl">3</span><span class="op">*</span><span class="fl">1000</span><span class="op">/</span><span class="fl">60</span><span class="op">/</span><span class="fl">60</span>, <span class="fl">7</span><span class="op">*</span><span class="fl">1000</span><span class="op">/</span><span class="fl">60</span><span class="op">/</span><span class="fl">60</span><span class="op">)</span>
+<span class="va">speeds</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">types</span><span class="op">)</span>, <span class="fl">3</span> <span class="op">*</span> <span class="fl">1000</span> <span class="op">/</span> <span class="fl">60</span> <span class="op">/</span> <span class="fl">60</span>, <span class="fl">7</span> <span class="op">*</span> <span class="fl">1000</span> <span class="op">/</span> <span class="fl">60</span> <span class="op">/</span> <span class="fl">60</span><span class="op">)</span>
 
 <span class="co"># Assign a speed to each edge based on its type.</span>
 <span class="co"># Calculate travel time for each edge based on that.</span>
@@ -356,10 +358,80 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_convex_hull</a></span><span class="op">(</span><span class="op">)</span>
 
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">iso_poly</span>, col <span class="op">=</span> <span class="cn">NA</span>, border <span class="op">=</span> <span class="st">'black'</span>, lwd <span class="op">=</span> <span class="fl">3</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">iso_poly</span>, col <span class="op">=</span> <span class="cn">NA</span>, border <span class="op">=</span> <span class="st">"black"</span>, lwd <span class="op">=</span> <span class="fl">3</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">iso</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">p</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p><img src="routing_files/figure-html/unnamed-chunk-9-1.png" width="480"></p>
+</div>
+<div id="custom-routing-profiles" class="section level2">
+<h2 class="hasAnchor">
+<a href="#custom-routing-profiles" class="anchor"></a>Custom routing profiles</h2>
+<p>In many cases the shortest path based geographical distances or travel time is not necessarily the optimal path. The most appropriate route may depend on many factors, for example staying away from large and potentially unpleasant highways for motor traffic. All networks have different characteristics. In OpenStreetMap networks the ‘highway’ type is often a good (albeit crude) approximation of the network. The <code>roxel</code> demo dataset is derived from OpenStreetMap and represents a largely residential network:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">roxel</span><span class="op">$</span><span class="va">type</span><span class="op">)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     cycleway      footway         path   pedestrian  residential    secondary </span>
+<span class="co">#&gt;           42           67           95            1          394           62 </span>
+<span class="co">#&gt;      service        track unclassified </span>
+<span class="co">#&gt;          160            5           25</span></code></pre></div>
+<p>Building on the shortest paths calculated in a previous section we can try an alternative routing profile. Let’s take a look at these paths to see what type of ways they travel on:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">paths_sf</span> <span class="op">=</span> <span class="va">net</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="va">paths</span><span class="op">$</span><span class="va">edge_paths</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">paths_sf</span><span class="op">$</span><span class="va">type</span><span class="op">)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     cycleway      footway         path   pedestrian  residential    secondary </span>
+<span class="co">#&gt;            2            0            6            0           38            1 </span>
+<span class="co">#&gt;      service        track unclassified </span>
+<span class="co">#&gt;            2            0            6</span>
+
+<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">paths_sf</span><span class="op">[</span><span class="st">"type"</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></code></pre></div>
+<p><img src="routing_files/figure-html/unnamed-chunk-11-1.png" width="480"></p>
+<p>As with the overall network, the paths we calculated are dominated by residential streets. For the purposes of illustration, lets imagine we’re routing for a vehicle that we want to keep away from residential roads, and which has a much lower cost per unit distance on secondary roads:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">weighting_profile</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
+  cycleway <span class="op">=</span> <span class="cn">Inf</span>,
+  footway <span class="op">=</span> <span class="cn">Inf</span>,
+  path <span class="op">=</span> <span class="cn">Inf</span>,
+  pedestrian <span class="op">=</span> <span class="cn">Inf</span>,
+  residential <span class="op">=</span> <span class="fl">3</span>,
+  secondary <span class="op">=</span> <span class="fl">1</span>,
+  service <span class="op">=</span> <span class="fl">1</span>,
+  track <span class="op">=</span> <span class="fl">10</span>,
+  unclassified <span class="op">=</span> <span class="fl">1</span>
+<span class="op">)</span>
+
+<span class="va">weighted_net</span> <span class="op">=</span> <span class="va">net</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>multiplier <span class="op">=</span> <span class="va">weighting_profile</span><span class="op">[</span><span class="va">type</span><span class="op">]</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>weight <span class="op">=</span> <span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span> <span class="op">*</span> <span class="va">multiplier</span><span class="op">)</span></code></pre></div>
+<p>We can now recalculate the routes. The result show routes that avoid residential networks.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">weighted_paths</span> <span class="op">=</span> <span class="fu"><a href="../reference/st_network_paths.html">st_network_paths</a></span><span class="op">(</span><span class="va">weighted_net</span>, from <span class="op">=</span> <span class="fl">495</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">458</span>, <span class="fl">121</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">weighted_paths_sf</span> <span class="op">=</span> <span class="va">weighted_net</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="va">weighted_paths</span><span class="op">$</span><span class="va">edge_paths</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">weighted_paths_sf</span><span class="op">$</span><span class="va">type</span><span class="op">)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt;     cycleway      footway         path   pedestrian  residential    secondary </span>
+<span class="co">#&gt;            0            0            0            0            9           43 </span>
+<span class="co">#&gt;      service        track unclassified </span>
+<span class="co">#&gt;            3            0            0</span>
+
+<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span><span class="op">[</span><span class="st">"type"</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">4</span>,
+     key.pos <span class="op">=</span> <span class="cn">NULL</span>, reset <span class="op">=</span> <span class="cn">FALSE</span>, main <span class="op">=</span> <span class="st">"Distance weights"</span><span class="op">)</span>
+<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">paths_sf</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span><span class="op">[</span><span class="st">"type"</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">4</span>,
+     key.pos <span class="op">=</span> <span class="cn">NULL</span>, reset <span class="op">=</span> <span class="cn">FALSE</span>, main <span class="op">=</span> <span class="st">"Custom weights"</span><span class="op">)</span>
+<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">weighted_paths_sf</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<p><img src="routing_files/figure-html/unnamed-chunk-13-1.png" width="50%"><img src="routing_files/figure-html/unnamed-chunk-13-2.png" width="50%"></p>
+<p><em>NOTE: Developing more sophisticated routing profiles is beyond the scope of this package. If you need complex mode-specific routing profiles, we recommend looking at routing profiles associated with open source routing engines, such as <a href="https://github.com/fossgis-routing-server/cbf-routing-profiles/blob/master/bike.lua">bike.lua</a> in the OSRM project. Another direction of travel could be to extend on the approach illustrated here, but this work could be well-suited to a separate package that builds on <code>sfnetworks</code> (remembering that sophisticated routing profiles account for nodes and edges). If you’d like to work on such a project to improve mode-specific routing in R by building on this package, please let us know in the <a href="https://github.com/luukvdmeer/sfnetworks/discussions">discussion room</a>!</em></p>
 </div>
   </div>
 

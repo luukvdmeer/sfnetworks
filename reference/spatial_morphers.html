@@ -55,9 +55,9 @@ representation of the input network. Such an alternative representation is a
 list of one or more network objects. Single elements of that list can be
 extracted directly as a new network by passing the morpher to
 convert instead, to make the changes lasting rather
-than temporary. Alternatively, if the morphed state contains multiple 
-elements, all of them can be extracted together inside a 
-tbl_df by passing the morpher to 
+than temporary. Alternatively, if the morphed state contains multiple
+elements, all of them can be extracted together inside a
+tbl_df by passing the morpher to
 crystallise." />
 <meta property="og:image" content="/logo.png" />
 
@@ -91,7 +91,7 @@ crystallise." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
       </span>
     </div>
 
@@ -168,9 +168,9 @@ representation of the input network. Such an alternative representation is a
 list of one or more network objects. Single elements of that list can be
 extracted directly as a new network by passing the morpher to
 <code><a href='https://tidygraph.data-imaginist.com/reference/morph.html'>convert</a></code> instead, to make the changes lasting rather
-than temporary. Alternatively, if the morphed state contains multiple 
-elements, all of them can be extracted together inside a 
-<code><a href='https://tibble.tidyverse.org/reference/tbl_df-class.html'>tbl_df</a></code> by passing the morpher to 
+than temporary. Alternatively, if the morphed state contains multiple
+elements, all of them can be extracted together inside a
+<code><a href='https://tibble.tidyverse.org/reference/tbl_df-class.html'>tbl_df</a></code> by passing the morpher to
 <code><a href='https://tidygraph.data-imaginist.com/reference/morph.html'>crystallise</a></code>.</p>
     </div>
 
@@ -182,11 +182,13 @@ elements, all of them can be extracted together inside a
 
 <span class='fu'>to_spatial_simple</span><span class='op'>(</span><span class='va'>x</span>, remove_parallels <span class='op'>=</span> <span class='cn'>TRUE</span>, remove_loops <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 
-<span class='fu'>to_spatial_smooth</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
+<span class='fu'>to_spatial_smooth</span><span class='op'>(</span><span class='va'>x</span>, store_orig_data <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 
 <span class='fu'>to_spatial_subdivision</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
 
-<span class='fu'>to_spatial_subset</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span>, subset_by <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+<span class='fu'>to_spatial_subset</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span>, subset_by <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+
+<span class='fu'>to_spatial_transformed</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -210,6 +212,14 @@ of each morpher for details.</p></td>
       <td><p>Should loops be remove. Defaults to <code>TRUE</code>.</p></td>
     </tr>
     <tr>
+      <th>store_orig_data</th>
+      <td><p>Whenever multiple features (i.e. nodes and/or edges)
+are merged into a single feature during morphing, should the data of the
+original features be stored as an attribute of the new feature, in a column
+named <code>.orig_data</code>. This is in line with the design principles of
+<code>tidygraph</code>. Defaults to <code>FALSE</code>.</p></td>
+    </tr>
+    <tr>
       <th>subset_by</th>
       <td><p>Whether to create subgraphs based on nodes or edges.</p></td>
     </tr>
@@ -224,8 +234,7 @@ description of each morpher for details.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>It also possible to create your own morphers. See the documentation
-of <code><a href='https://tidygraph.data-imaginist.com/reference/morph.html'>morph</a></code> for the requirements for custom morphers.
-'</p>
+of <code><a href='https://tidygraph.data-imaginist.com/reference/morph.html'>morph</a></code> for the requirements for custom morphers.</p>
     <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
 
     
@@ -238,21 +247,22 @@ undirected networks these indices may not correspond with the endpoints of
 the linestring geometries. Returns a <code>morphed_sfnetwork</code> containing a
 single element of class <code><a href='sfnetwork.html'>sfnetwork</a></code>. This morpher requires edges
 to be spatially explicit. If not, use <code><a href='https://tidygraph.data-imaginist.com/reference/morphers.html'>to_directed</a></code>.</p></li>
-<li><p><code>to_spatial_explicit</code>: Create linestring geometries between source 
-and target nodes of edges. If the edges data can be directly converted to 
-an object of class <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a></code> using <code><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></code>, 
-extra arguments can be provided as <code>...</code> and will be forwarded to 
-<code><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></code> internally. Otherwise, straight lines will be 
+<li><p><code>to_spatial_explicit</code>: Create linestring geometries between source
+and target nodes of edges. If the edges data can be directly converted to
+an object of class <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a></code> using <code><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></code>,
+extra arguments can be provided as <code>...</code> and will be forwarded to
+<code><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></code> internally. Otherwise, straight lines will be
 drawn between the source and target node of each edge. Returns a
 <code>morphed_sfnetwork</code> containing a single element of class
 <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></li>
 <li><p><code>to_spatial_shortest_paths</code>: Limit a network to those nodes and edges that
 are part of the shortest path between two nodes. <code>...</code> is evaluated in
-the same manner as <code><a href='st_network_paths.html'>st_network_paths</a></code>. Returns a
-<code>morphed_sfnetwork</code> that may contain multiple elements of class
-<code><a href='sfnetwork.html'>sfnetwork</a></code>, depending on the number of requested paths. When
-unmorphing only the first instance of both the node and edge data will be
-used, as the the same node and/or edge can be present in multiple paths.</p></li>
+the same manner as <code><a href='st_network_paths.html'>st_network_paths</a></code> with
+<code>type = 'shortest'</code>. Returns a <code>morphed_sfnetwork</code> that may
+contain multiple elements of class <code><a href='sfnetwork.html'>sfnetwork</a></code>, depending on
+the number of requested paths. When unmorphing only the first instance of
+both the node and edge data will be used, as the the same node and/or edge
+can be present in multiple paths.</p></li>
 <li><p><code>to_spatial_simple</code>: Remove loops and parallel edges. Returns a
 <code>morphed_sfnetwork</code> containing a single element of class
 <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></li>
@@ -267,7 +277,7 @@ of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></li>
 <li><p><code>to_spatial_subdivision</code>: Construct a subdivision of the network by
 subdividing edges at each interior point that is equal to any
 other interior or boundary point in the edges table. Interior points in this
-sense are those points that are included in their linestring geometry 
+sense are those points that are included in their linestring geometry
 feature but are not endpoints of it, while boundary points are the endpoints
 of the linestrings. The network is reconstructed after subdivision such that
 edges are connected at the points of subdivision. Returns a
@@ -280,12 +290,16 @@ filter, i.e. a filter on the geometry column based on a spatial predicate.
 Returns a <code>morphed_sfnetwork</code> containing a single element of class
 <code><a href='sfnetwork.html'>sfnetwork</a></code>. For filters on an attribute column, use
 <code><a href='https://tidygraph.data-imaginist.com/reference/morphers.html'>to_subgraph</a></code>.</p></li>
+<li><p><code>to_spatial_transformed</code>: Transform the geospatial coordinates of the
+network into a different coordinate reference system. <code>...</code> is
+evaluated in the same manner as <code><a href='https://r-spatial.github.io/sf/reference/st_transform.html'>st_transform</a></code>.
+Returns a <code>morphed_sfnetwork</code> containing a single element of class
+<code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></li>
 </ul>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>The vignette on 
-<a href='https://luukvdmeer.github.io/sfnetworks/articles/morphers.html'>spatial 
-morphers</a>.</p></div>
+    <div class='dont-index'><p>The vignette on
+<a href='https://luukvdmeer.github.io/sfnetworks/articles/morphers.html'>spatial morphers</a>.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>

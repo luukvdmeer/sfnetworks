@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
       </span>
     </div>
 
@@ -103,7 +103,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>2. Network pre-processing and cleaning</h1>
             
-            <h4 class="date">2020-12-16</h4>
+            <h4 class="date">2021-01-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/preprocess_and_clean.Rmd"><code>vignettes/preprocess_and_clean.Rmd</code></a></small>
       <div class="hidden name"><code>preprocess_and_clean.Rmd</code></div>
@@ -116,6 +116,12 @@
 PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 </style>
 <p>Unfortunately real-world datasets are not always as friendly as those used in tutorials. Pre-processing of the data will often be needed, as well as cleaning the network after construction. This vignette presents some examples that may be of use when going through this phase.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://luukvdmeer.github.io/sfnetworks/">sfnetworks</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidygraph.data-imaginist.com">tidygraph</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://igraph.org">igraph</a></span><span class="op">)</span></code></pre></div>
 <div id="common-pre-processing-tasks" class="section level2">
 <h2 class="hasAnchor">
 <a href="#common-pre-processing-tasks" class="anchor"></a>Common pre-processing tasks</h2>
@@ -124,12 +130,6 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <a href="#rounding-coordinates" class="anchor"></a>Rounding coordinates</h3>
 <p>You might have a set of lines in which some endpoints are <em>almost</em> shared between two lines. However, the coordinates are stored with so much precision that there is a minor difference between the two points. When constructing a sfnetwork these lines will <em>not</em> be connected because the points are not <em>exactly</em> equal.</p>
 <p>We can pre-process the lines by reducing the precision of the coordinates such that the points become <em>exactly</em> equal. A tiny example:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://luukvdmeer.github.io/sfnetworks/">sfnetworks</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidygraph.data-imaginist.com">tidygraph</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://igraph.org">igraph</a></span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">51</span><span class="op">)</span><span class="op">)</span>
 <span class="va">p2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span>
@@ -354,7 +354,6 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>A network may contain nodes that have only one incoming and one outgoing edge. For tasks like calculating shortest paths, such nodes are redundant, because they don’t represent a point where different directions can possibly be taken. Sometimes, these type of nodes are referred to as <em>pseudo nodes</em>. Note that their equivalent in undirected networks is any node with only two incident edges, since <em>incoming</em> and <em>outgoing</em> does not have a meaning there. To reduce complexity of subsequent operations, we might want to get rid of these pseudo nodes.</p>
 <p>In graph theory terms this process is the opposite of subdivision and also called <em>smoothing</em>: smoothing a node <span class="math inline">\(b\)</span> with incident edges <span class="math inline">\(o = \{a, b\}\)</span> and <span class="math inline">\(p = \{b, c\}\)</span> removes <span class="math inline">\(b\)</span>, <span class="math inline">\(o\)</span> and <span class="math inline">\(p\)</span> and creates the new edge <span class="math inline">\(q = \{a, c\}\)</span>.</p>
 <p>The function <code><a href="../reference/spatial_morphers.html">to_spatial_smooth()</a></code> iteratively smooths pseudo nodes, and after each removal concatenates the linestring geometries of the two affected edges together into a new, single linestring geometry.</p>
-<p><em>NOTE: This function is still experimental. It needs more testing and may be slow on large networks</em></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">smoothed</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">convert</a></span><span class="op">(</span><span class="va">subdivision</span>, <span class="va">to_spatial_smooth</span><span class="op">)</span>
 

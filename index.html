@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tidy Geospatial Networks in R • sfnetworks</title>
+<title>Tidy Geospatial Networks • sfnetworks</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
@@ -17,11 +17,11 @@
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Tidy Geospatial Networks in R">
-<meta property="og:description" content="The sfnetworks package provides a tidy approach to spatial network
-    analysis, in the form of classes and functions that enable a seamless 
-    interaction between the network analysis package tidygraph and the spatial 
-    analysis package sf.">
+<script src="pkgdown.js"></script><meta property="og:title" content="Tidy Geospatial Networks">
+<meta property="og:description" content="Provides a tidy approach to spatial network
+    analysis, in the form of classes and functions that enable a seamless
+    interaction between the network analysis package tidygraph and the
+    spatial analysis package sf.">
 <meta property="og:image" content="/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -41,7 +41,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
       </span>
     </div>
 
@@ -113,11 +113,16 @@
 <!-- Plan: add badge showing documents build on pkgdown (RL) -->
 <!-- ![R-CMD-check-develop](https://github.com/luukvdmeer/sfnetworks/workflows/R-CMD-check/badge.svg?branch=develop) -->
 <!-- badges: end -->
+<p><code>sfnetworks</code> is an R package for analysis of geospatial networks. It connects the functionalities of the <code>tidygraph</code> package for network analysis and the <code>sf</code> package for spatial data science.</p>
+<div id="background" class="section level2">
+<h2 class="hasAnchor">
+<a href="#background" class="anchor"></a>Background</h2>
 <p>Thanks to active developer and user communities, R is becoming an increasingly popular language for interactive geospatial data analysis. A large step forward was the release of the <a href="https://r-spatial.github.io/sf/">sf package</a>, which provides classes and functions to represent and manipulate spatial vector data. Unlike its predecessors, <code>sf</code> is compatible with the popular data science oriented packages that form the <a href="https://www.tidyverse.org/">tidyverse</a>, most notably the data manipulation toolbox <a href="https://dplyr.tidyverse.org/">dplyr</a>, and more generally with the concept of <a href="https://vita.had.co.nz/papers/tidy-data.pdf">tidy data</a>.</p>
 <p>R is also well-suited for network analysis, thanks to the R interface of the <a href="https://igraph.org/">igraph library</a>. The <a href="https://tidygraph.data-imaginist.com/index.html">tidygraph package</a> extends <code>igraph</code> into the domain of the tidyverse, enabling compatibility with <code>dplyr</code> by treating a graph as a collection of two tidy data frames describing respectively the nodes and edges.</p>
 <p>Given the strength of R in spatial <em>and</em> network analysis, one would expect it to be an ideal language for analysis of geospatial networks. Geospatial networks are simultaneously graph and spatial objects, with nodes and edges embedded in geographic space. Well known examples include transport networks, river basins, power grids, ecological networks and geolocated social networks.</p>
 <p>Although several R packages exist that address geospatial networks, they often focus on a specific application within the broader domain of geospatial network analysis, or complicate tidyverse compatibility. At present, no general purpose, tidyverse compatible classes exist for geospatial network data, representing a gap in R’s spatial and network analysis ecosystems (see the <a href="https://cran.r-project.org/view=gR">gRaphical Models</a> and <a href="https://cran.r-project.org/view=Spatial">Spatial</a> task views). <code>sfnetworks</code> is created to fill this gap, and form a connecting edge between the two worlds.</p>
 <p>The core of the package is a data structure that can be provided as input to both graph analytical functions of <code>tidygraph</code> and to spatial analytical functions of <code>sf</code>, without the need for conversion. On top of that, it contains a set of spatial network specific functions that can be used alongside the offer of the two ‘parent packages’.</p>
+</div>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
@@ -181,7 +186,7 @@
 <div class="license">
 <h2>License</h2>
 <ul class="list-unstyled">
-<li>file <a href="LICENSE-text.html">LICENSE</a>
+<li>Apache License (&gt;= 2) | file <a href="LICENSE-text.html">LICENSE</a>
 </li>
 </ul>
 </div>

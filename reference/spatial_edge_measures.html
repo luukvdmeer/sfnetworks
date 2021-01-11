@@ -82,7 +82,7 @@ tidygraph." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
       </span>
     </div>
 
@@ -156,12 +156,25 @@ form a spatial extension to edge measures in
 <code><a href='https://tidygraph.data-imaginist.com/reference/tidygraph-package.html'>tidygraph</a></code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>edge_circuity</span><span class='op'>(</span><span class='op'>)</span>
+    <pre class="usage"><span class='fu'>edge_azimuth</span><span class='op'>(</span><span class='op'>)</span>
+
+<span class='fu'>edge_circuity</span><span class='op'>(</span>Inf_as_NaN <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 
 <span class='fu'>edge_length</span><span class='op'>(</span><span class='op'>)</span>
 
 <span class='fu'>edge_displacement</span><span class='op'>(</span><span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>Inf_as_NaN</th>
+      <td><p>Should the circuity values of loop edges (which are
+infinite since the straight-line distance between the boundary nodes of
+loop edges is 0) be stored as <code>NaN</code> instead of <code>Inf</code>? Defaults to
+<code>TRUE</code>.</p></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
@@ -180,11 +193,15 @@ set the context temporarily while the algorithm is being evaluated.</p>
 
     
 <ul>
+<li><p><code>edge_azimuth</code>: The angle in radians between a straight
+line from the edge startpoint pointing north, and the straight line from
+the edge startpoint and the edge endpoint. Calculated with
+<code><a href='https://rdrr.io/pkg/lwgeom/man/st_geod_azimuth.html'>st_geod_azimuth</a></code>. Requires a geographic CRS.</p></li>
 <li><p><code>edge_circuity</code>: The ratio of the length of an edge
 linestring geometry versus the straight-line distance between its boundary
 nodes, as described in
-<a href='https://journals.sagepub.com/doi/10.1068/b130131p'>Giacomin &amp; Levinson,
-2015</a>.</p></li>
+<a href='https://journals.sagepub.com/doi/10.1068/b130131p'>Giacomin &amp; 
+Levinson, 2015</a>.</p></li>
 <li><p><code>edge_length</code>: The length of an edge linestring geometry
 as calculated by <code><a href='https://r-spatial.github.io/sf/reference/geos_measures.html'>st_length</a></code>.</p></li>
 <li><p><code>edge_displacement</code>: The straight-line distance between the two
@@ -195,107 +212,139 @@ boundary nodes of an edge, as calculated by <code><a href='https://r-spatial.git
     <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidygraph.data-imaginist.com'>tidygraph</a></span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 
-<span class='va'>net</span> <span class='op'>=</span> <span class='fu'><a href='as_sfnetwork.html'>as_sfnetwork</a></span><span class='op'>(</span><span class='va'>roxel</span>, directed <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_transform.html'>st_transform</a></span><span class='op'>(</span><span class='fl'>3035</span><span class='op'>)</span>
+<span class='va'>net</span> <span class='op'>=</span> <span class='fu'><a href='as_sfnetwork.html'>as_sfnetwork</a></span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span>
 
 <span class='va'>net</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://tidygraph.data-imaginist.com/reference/activate.html'>activate</a></span><span class='op'>(</span><span class='st'>"edges"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>circuity <span class='op'>=</span> <span class='fu'>edge_circuity</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>azimuth <span class='op'>=</span> <span class='fu'>edge_azimuth</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>701</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>851</span><span> </span><span style='color: #555555;'>edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style='color: #555555;'>EPSG:3035</span><span> </span><span style='color: #555555;'>
+#&gt; # CRS: </span><span> </span><span style='color: #555555;'>EPSG:4326</span><span> </span><span style='color: #555555;'>
 #&gt; #
-#&gt; # An undirected multigraph with 14 components with spatially explicit edges
+#&gt; # A directed multigraph with 14 components with spatially explicit edges
 #&gt; #
 #&gt; # Edge Data:     851 x 6 (active)</span><span>
 #&gt; </span><span style='color: #555555;'># Geometry type: LINESTRING</span><span>
 #&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
-#&gt;    from    to name       type                                  geometry circuity
-#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>                         </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [m]&gt;</span><span>      </span><span style='color: #555555;'>[1]</span><span>
-#&gt; </span><span style='color: #555555;'>1</span><span>     1     2 Havixbeck… resid…      (4151491 3207923, 4151474 3207946) 1.000000
-#&gt; </span><span style='color: #555555;'>2</span><span>     3     4 Pienersal… secon… (4151398 3207777, 4151390 3207727, 415… 1.005894
-#&gt; </span><span style='color: #555555;'>3</span><span>     5     6 Schulte-B… resid… (4151408 3207539, 4151417 3207573, 415… 1.000471
-#&gt; </span><span style='color: #555555;'>4</span><span>     7     8 </span><span style='color: #BB0000;'>NA</span><span>         path   (4151885 3206698, 4151861 3206711, 415… 1.008540
-#&gt; </span><span style='color: #555555;'>5</span><span>     9    10 Welsinghe… resid…      (4151732 3207017, 4151721 3206809) 1.000000
-#&gt; </span><span style='color: #555555;'>6</span><span>    11    12 </span><span style='color: #BB0000;'>NA</span><span>         footw… (4152152 3206984, 4152143 3206932, 415… 1.021397
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
+#&gt;    from    to name       type                                  geometry  azimuth
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>                         </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [°]&gt;</span><span>    </span><span style='color: #555555;'>[rad]</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>     1     2 Havixbeck… reside… (7.533722 51.95556, 7.533461 51.95576) -0.6700…
+#&gt; </span><span style='color: #555555;'>2</span><span>     3     4 Pienersal… second… (7.532442 51.95422, 7.53236 51.95377,… -2.9135…
+#&gt; </span><span style='color: #555555;'>3</span><span>     5     6 Schulte-B… reside… (7.532709 51.95209, 7.532823 51.95239…  0.2032…
+#&gt; </span><span style='color: #555555;'>4</span><span>     7     8 </span><span style='color: #BB0000;'>NA</span><span>         path    (7.540063 51.94468, 7.539696 51.94479… -0.9676…
+#&gt; </span><span style='color: #555555;'>5</span><span>     9    10 Welsinghe… reside…  (7.537673 51.9475, 7.537614 51.94562) -3.1221…
+#&gt; </span><span style='color: #555555;'>6</span><span>    11    12 </span><span style='color: #BB0000;'>NA</span><span>         footway (7.543791 51.94733, 7.54369 51.94686,… -3.0971…
 #&gt; </span><span style='color: #555555;'># … with 845 more rows</span><span>
 #&gt; </span><span style='color: #555555;'>#
 #&gt; # Node Data:     701 x 1</span><span>
 #&gt; </span><span style='color: #555555;'># Geometry type: POINT</span><span>
 #&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
-#&gt;            geometry
-#&gt;         </span><span style='color: #555555;font-style: italic;'>&lt;POINT [m]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'>1</span><span> (4151491 3207923)
-#&gt; </span><span style='color: #555555;'>2</span><span> (4151474 3207946)
-#&gt; </span><span style='color: #555555;'>3</span><span> (4151398 3207777)
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
+#&gt;              geometry
+#&gt;           </span><span style='color: #555555;font-style: italic;'>&lt;POINT [°]&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span> (7.533722 51.95556)
+#&gt; </span><span style='color: #555555;'>2</span><span> (7.533461 51.95576)
+#&gt; </span><span style='color: #555555;'>3</span><span> (7.532442 51.95422)
+#&gt; </span><span style='color: #555555;'># … with 698 more rows</span><span></div><div class='input'>
+<span class='va'>net</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://tidygraph.data-imaginist.com/reference/activate.html'>activate</a></span><span class='op'>(</span><span class='st'>"edges"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>circuity <span class='op'>=</span> <span class='fu'>edge_circuity</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>701</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>851</span><span> </span><span style='color: #555555;'>edges
+#&gt; #
+#&gt; # CRS: </span><span> </span><span style='color: #555555;'>EPSG:4326</span><span> </span><span style='color: #555555;'>
+#&gt; #
+#&gt; # A directed multigraph with 14 components with spatially explicit edges
+#&gt; #
+#&gt; # Edge Data:     851 x 6 (active)</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
+#&gt;    from    to name       type                                  geometry circuity
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>                         </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [°]&gt;</span><span>      </span><span style='color: #555555;'>[1]</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>     1     2 Havixbeck… resid…  (7.533722 51.95556, 7.533461 51.95576) 1.000000
+#&gt; </span><span style='color: #555555;'>2</span><span>     3     4 Pienersal… secon… (7.532442 51.95422, 7.53236 51.95377, … 1.005896
+#&gt; </span><span style='color: #555555;'>3</span><span>     5     6 Schulte-B… resid… (7.532709 51.95209, 7.532823 51.95239,… 1.000472
+#&gt; </span><span style='color: #555555;'>4</span><span>     7     8 </span><span style='color: #BB0000;'>NA</span><span>         path   (7.540063 51.94468, 7.539696 51.94479,… 1.008539
+#&gt; </span><span style='color: #555555;'>5</span><span>     9    10 Welsinghe… resid…   (7.537673 51.9475, 7.537614 51.94562) 1.000000
+#&gt; </span><span style='color: #555555;'>6</span><span>    11    12 </span><span style='color: #BB0000;'>NA</span><span>         footw… (7.543791 51.94733, 7.54369 51.94686, … 1.021405
+#&gt; </span><span style='color: #555555;'># … with 845 more rows</span><span>
+#&gt; </span><span style='color: #555555;'>#
+#&gt; # Node Data:     701 x 1</span><span>
+#&gt; </span><span style='color: #555555;'># Geometry type: POINT</span><span>
+#&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
+#&gt;              geometry
+#&gt;           </span><span style='color: #555555;font-style: italic;'>&lt;POINT [°]&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span> (7.533722 51.95556)
+#&gt; </span><span style='color: #555555;'>2</span><span> (7.533461 51.95576)
+#&gt; </span><span style='color: #555555;'>3</span><span> (7.532442 51.95422)
 #&gt; </span><span style='color: #555555;'># … with 698 more rows</span><span></div><div class='input'>
 <span class='va'>net</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://tidygraph.data-imaginist.com/reference/activate.html'>activate</a></span><span class='op'>(</span><span class='st'>"edges"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>length <span class='op'>=</span> <span class='fu'>edge_length</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>701</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>851</span><span> </span><span style='color: #555555;'>edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style='color: #555555;'>EPSG:3035</span><span> </span><span style='color: #555555;'>
+#&gt; # CRS: </span><span> </span><span style='color: #555555;'>EPSG:4326</span><span> </span><span style='color: #555555;'>
 #&gt; #
-#&gt; # An undirected multigraph with 14 components with spatially explicit edges
+#&gt; # A directed multigraph with 14 components with spatially explicit edges
 #&gt; #
 #&gt; # Edge Data:     851 x 6 (active)</span><span>
 #&gt; </span><span style='color: #555555;'># Geometry type: LINESTRING</span><span>
 #&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
 #&gt;    from    to name       type                                  geometry   length
-#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>                         </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [m]&gt;</span><span>      </span><span style='color: #555555;'>[m]</span><span>
-#&gt; </span><span style='color: #555555;'>1</span><span>     1     2 Havixbeck… reside…     (4151491 3207923, 4151474 3207946)  28.859…
-#&gt; </span><span style='color: #555555;'>2</span><span>     3     4 Pienersal… second… (4151398 3207777, 4151390 3207727, 41… 107.714…
-#&gt; </span><span style='color: #555555;'>3</span><span>     5     6 Schulte-B… reside… (4151408 3207539, 4151417 3207573, 41…  54.367…
-#&gt; </span><span style='color: #555555;'>4</span><span>     7     8 </span><span style='color: #BB0000;'>NA</span><span>         path    (4151885 3206698, 4151861 3206711, 41… 155.223…
-#&gt; </span><span style='color: #555555;'>5</span><span>     9    10 Welsinghe… reside…     (4151732 3207017, 4151721 3206809) 208.682…
-#&gt; </span><span style='color: #555555;'>6</span><span>    11    12 </span><span style='color: #BB0000;'>NA</span><span>         footway (4152152 3206984, 4152143 3206932, 41…  63.028…
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>                         </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [°]&gt;</span><span>      </span><span style='color: #555555;'>[m]</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>     1     2 Havixbeck… reside… (7.533722 51.95556, 7.533461 51.95576)  28.859…
+#&gt; </span><span style='color: #555555;'>2</span><span>     3     4 Pienersal… second… (7.532442 51.95422, 7.53236 51.95377,… 107.704…
+#&gt; </span><span style='color: #555555;'>3</span><span>     5     6 Schulte-B… reside… (7.532709 51.95209, 7.532823 51.95239…  54.362…
+#&gt; </span><span style='color: #555555;'>4</span><span>     7     8 </span><span style='color: #BB0000;'>NA</span><span>         path    (7.540063 51.94468, 7.539696 51.94479… 155.230…
+#&gt; </span><span style='color: #555555;'>5</span><span>     9    10 Welsinghe… reside…  (7.537673 51.9475, 7.537614 51.94562) 208.663…
+#&gt; </span><span style='color: #555555;'>6</span><span>    11    12 </span><span style='color: #BB0000;'>NA</span><span>         footway (7.543791 51.94733, 7.54369 51.94686,…  63.023…
 #&gt; </span><span style='color: #555555;'># … with 845 more rows</span><span>
 #&gt; </span><span style='color: #555555;'>#
 #&gt; # Node Data:     701 x 1</span><span>
 #&gt; </span><span style='color: #555555;'># Geometry type: POINT</span><span>
 #&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
-#&gt;            geometry
-#&gt;         </span><span style='color: #555555;font-style: italic;'>&lt;POINT [m]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'>1</span><span> (4151491 3207923)
-#&gt; </span><span style='color: #555555;'>2</span><span> (4151474 3207946)
-#&gt; </span><span style='color: #555555;'>3</span><span> (4151398 3207777)
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
+#&gt;              geometry
+#&gt;           </span><span style='color: #555555;font-style: italic;'>&lt;POINT [°]&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span> (7.533722 51.95556)
+#&gt; </span><span style='color: #555555;'>2</span><span> (7.533461 51.95576)
+#&gt; </span><span style='color: #555555;'>3</span><span> (7.532442 51.95422)
 #&gt; </span><span style='color: #555555;'># … with 698 more rows</span><span></div><div class='input'>
 <span class='va'>net</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://tidygraph.data-imaginist.com/reference/activate.html'>activate</a></span><span class='op'>(</span><span class='st'>"edges"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>displacement <span class='op'>=</span> <span class='fu'>edge_displacement</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>701</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>851</span><span> </span><span style='color: #555555;'>edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style='color: #555555;'>EPSG:3035</span><span> </span><span style='color: #555555;'>
+#&gt; # CRS: </span><span> </span><span style='color: #555555;'>EPSG:4326</span><span> </span><span style='color: #555555;'>
 #&gt; #
-#&gt; # An undirected multigraph with 14 components with spatially explicit edges
+#&gt; # A directed multigraph with 14 components with spatially explicit edges
 #&gt; #
 #&gt; # Edge Data:     851 x 6 (active)</span><span>
 #&gt; </span><span style='color: #555555;'># Geometry type: LINESTRING</span><span>
 #&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
 #&gt;    from    to name      type                               geometry displacement
-#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>                      </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [m]&gt;</span><span>          </span><span style='color: #555555;'>[m]</span><span>
-#&gt; </span><span style='color: #555555;'>1</span><span>     1     2 Havixbec… resid…   (4151491 3207923, 4151474 3207946)     28.85977
-#&gt; </span><span style='color: #555555;'>2</span><span>     3     4 Pienersa… secon… (4151398 3207777, 4151390 3207727, …    107.08291
-#&gt; </span><span style='color: #555555;'>3</span><span>     5     6 Schulte-… resid… (4151408 3207539, 4151417 3207573, …     54.34168
-#&gt; </span><span style='color: #555555;'>4</span><span>     7     8 </span><span style='color: #BB0000;'>NA</span><span>        path   (4151885 3206698, 4151861 3206711, …    153.90859
-#&gt; </span><span style='color: #555555;'>5</span><span>     9    10 Welsingh… resid…   (4151732 3207017, 4151721 3206809)    208.68255
-#&gt; </span><span style='color: #555555;'>6</span><span>    11    12 </span><span style='color: #BB0000;'>NA</span><span>        footw… (4152152 3206984, 4152143 3206932, …     61.70817
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>                      </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [°]&gt;</span><span>          </span><span style='color: #555555;'>[m]</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>     1     2 Havixbec… resid… (7.533722 51.95556, 7.533461 51.955…     28.85976
+#&gt; </span><span style='color: #555555;'>2</span><span>     3     4 Pienersa… secon… (7.532442 51.95422, 7.53236 51.9537…    107.07330
+#&gt; </span><span style='color: #555555;'>3</span><span>     5     6 Schulte-… resid… (7.532709 51.95209, 7.532823 51.952…     54.33675
+#&gt; </span><span style='color: #555555;'>4</span><span>     7     8 </span><span style='color: #BB0000;'>NA</span><span>        path   (7.540063 51.94468, 7.539696 51.944…    153.91629
+#&gt; </span><span style='color: #555555;'>5</span><span>     9    10 Welsingh… resid… (7.537673 51.9475, 7.537614 51.9456…    208.66369
+#&gt; </span><span style='color: #555555;'>6</span><span>    11    12 </span><span style='color: #BB0000;'>NA</span><span>        footw… (7.543791 51.94733, 7.54369 51.9468…     61.70258
 #&gt; </span><span style='color: #555555;'># … with 845 more rows</span><span>
 #&gt; </span><span style='color: #555555;'>#
 #&gt; # Node Data:     701 x 1</span><span>
 #&gt; </span><span style='color: #555555;'># Geometry type: POINT</span><span>
 #&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
-#&gt;            geometry
-#&gt;         </span><span style='color: #555555;font-style: italic;'>&lt;POINT [m]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'>1</span><span> (4151491 3207923)
-#&gt; </span><span style='color: #555555;'>2</span><span> (4151474 3207946)
-#&gt; </span><span style='color: #555555;'>3</span><span> (4151398 3207777)
+#&gt; </span><span style='color: #555555;'># Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
+#&gt;              geometry
+#&gt;           </span><span style='color: #555555;font-style: italic;'>&lt;POINT [°]&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span> (7.533722 51.95556)
+#&gt; </span><span style='color: #555555;'>2</span><span> (7.533461 51.95576)
+#&gt; </span><span style='color: #555555;'>3</span><span> (7.532442 51.95422)
 #&gt; </span><span style='color: #555555;'># … with 698 more rows</span><span></div><div class='input'>
 </div></span></pre>
   </div>
