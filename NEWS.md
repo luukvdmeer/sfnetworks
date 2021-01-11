@@ -15,6 +15,7 @@
   - `st_network_paths()` now correctly handles cases where an unexisting column is passed to the `weights` argument, by throwing an error. Fixes [#99](https://github.com/luukvdmeer/sfnetworks/issues/99)
   - The sfnetwork method for `sf::st_join()` now correctly handles inner joins (i.e. joins where `left = FALSE`).
 * Addition of extra examples to the [routing](https://luukvdmeer.github.io/sfnetworks/articles/routing.html) and [spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html) vignettes.
+* Test coverage increased to +/- 86%.
 
 # sfnetworks v0.4.0 "Hiltrup"
 
