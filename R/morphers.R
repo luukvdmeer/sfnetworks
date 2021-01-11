@@ -193,7 +193,7 @@ to_spatial_smooth = function(x, store_orig_data = FALSE) {
   # Retrieve nodes and edges from the network.
   nodes = nodes_as_sf(x)
   edges = edges_as_table(x)
-  # Check wether:
+  # Check whether:
   # --> x is directed.
   # --> x has spatially explicit edges.
   directed = is_directed(x)
@@ -315,6 +315,7 @@ to_spatial_smooth = function(x, store_orig_data = FALSE) {
     list(from = src_node, to = trg_node, .tidygraph_edge_index = edge_idxs)
   }
   new_edge_list = lapply(x_pseudo, find_edges)
+  new_edge_list = new_edge_list[lengths(new_edge_list) != 0] # Remove NULLs.
   # Create a data frame with the merged edges.
   new_edges = data.frame(do.call("rbind", new_edge_list))
   new_edges$from = as.integer(new_edges$from)
