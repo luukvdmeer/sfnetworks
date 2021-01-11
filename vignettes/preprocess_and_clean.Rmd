@@ -181,8 +181,6 @@ In graph theory terms this process is the opposite of subdivision and also calle
 
 The function `to_spatial_smooth()` iteratively smooths pseudo nodes, and after each removal concatenates the linestring geometries of the two affected edges together into a new, single linestring geometry.
 
-*NOTE: This function is still experimental. It needs more testing and may be slow on large networks*
-
 ```{r, message=FALSE, fig.show='hold', out.width = '50%'}
 smoothed = convert(subdivision, to_spatial_smooth)
 
