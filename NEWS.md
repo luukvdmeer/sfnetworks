@@ -1,4 +1,4 @@
-# development
+# sfnetworks v0.4.1
 
 * Addition of an edge measure function `edge_azimuth()`, to calculate the azimuth (i.e. bearing) of edges. Refs [#107](https://github.com/luukvdmeer/sfnetworks/issues/107)
 * Addition of a `to_spatial_transformed()` morpher, to temporarily transform a sfnetwork into a different CRS.
