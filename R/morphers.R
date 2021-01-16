@@ -345,7 +345,7 @@ to_spatial_smooth = function(x, store_orig_data = FALSE) {
       # Hence, we manually need to reorder the points in the merged line.
       src = E$from
       trg = E$to
-      if (src == trg & length(orig_edges) > 1) {
+      if (src == trg && length(orig_edges) > 1) {
         pts = st_cast(new_geom, "POINT")
         src_idx = st_equals(node_geoms[src], pts)[[1]]
         if (length(src_idx) == 1) {
