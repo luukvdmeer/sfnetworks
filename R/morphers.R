@@ -614,3 +614,26 @@ to_spatial_transformed = function(x, ...) {
     transformed = st_transform(x, ...)
   )
 }
+
+#' @describeIn spatial_morphers For a given \code{node}, it subsets only the
+#'   vertices which are closer than a given \code{distance}. The edges' lengths
+#'   are determined using the \code{weight} attribute from edges' table. If no
+#'   \code{weight} attribute is present, then the geographic edge lengths will
+#'   be calculated internally and used as weights. This morpher can be used to
+#'   estimate isochrones and isodistances.
+#' @param node The starting node that must be used for estimating the spatial local
+#'   neighborhood
+#' @param distance The threshold spatial distance
+#' @importFrom tidygraph activate with_graph filter node_distance_from
+#' @importFrom igraph edge_attr
+#' @export
+to_spatial_local_neighborhood = function(x, node, distance) {
+  if (is.null(edge_attr(x, "weight"))) {
+    weights = with_graph(activate(x, "edges"), edge_length())
+  }
+
+  filter(
+    x,
+    node_distance_from(node, weights = weights) <= distance
+  )
+}

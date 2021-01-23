@@ -10,6 +10,7 @@
 \alias{to_spatial_subdivision}
 \alias{to_spatial_subset}
 \alias{to_spatial_transformed}
+\alias{to_spatial_local_neighborhood}
 \title{Spatial morphers for sfnetworks}
 \usage{
 to_spatial_directed(x)
@@ -27,6 +28,8 @@ to_spatial_subdivision(x)
 to_spatial_subset(x, ..., subset_by = NULL)
 
 to_spatial_transformed(x, ...)
+
+to_spatial_local_neighborhood(x, node, distance)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
@@ -46,6 +49,11 @@ named \code{.orig_data}. This is in line with the design principles of
 \code{tidygraph}. Defaults to \code{FALSE}.}
 
 \item{subset_by}{Whether to create subgraphs based on nodes or edges.}
+
+\item{node}{The starting node that must be used for estimating the spatial local
+neighborhood}
+
+\item{distance}{The threshold spatial distance}
 }
 \value{
 Either a \code{morphed_sfnetwork}, which is a list of one or more
@@ -136,6 +144,13 @@ network into a different coordinate reference system. \code{...} is
 evaluated in the same manner as \code{\link[sf]{st_transform}}.
 Returns a \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}.
+
+\item \code{to_spatial_local_neighborhood}: For a given \code{node}, it subsets only the
+vertices which are closer than a given \code{distance}. The edges' lengths
+are determined using the \code{weight} attribute from edges' table. If no
+\code{weight} attribute is present, then the geographic edge lengths will
+be calculated internally and used as weights. This morpher can be used to
+estimate isochrones and isodistances.
 }}
 
 \examples{
