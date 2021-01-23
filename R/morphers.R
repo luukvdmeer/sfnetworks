@@ -636,7 +636,7 @@ to_spatial_local_neighborhood = function(x, node, distance) {
   # weight column is called weight and its values are determined using NSE (i.e.
   # eval_tidy)
   filter(
-    x,
+    x %>% activate("nodes"), # nodes must be active
     node_distance_from(node, weights = weight) <= distance
   )
 }
