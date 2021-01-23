@@ -629,11 +629,14 @@ to_spatial_transformed = function(x, ...) {
 #' @export
 to_spatial_local_neighborhood = function(x, node, distance) {
   if (is.null(edge_attr(x, "weight"))) {
-    weights = with_graph(activate(x, "edges"), edge_length())
+    weight = with_graph(activate(x, "edges"), edge_length())
   }
 
+  # I need to specify weights = weight instead of weights = weights since the
+  # weight column is called weight and its values are determined using NSE (i.e.
+  # eval_tidy)
   filter(
     x,
-    node_distance_from(node, weights = weights) <= distance
+    node_distance_from(node, weights = weight) <= distance
   )
 }
