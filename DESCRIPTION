@@ -53,7 +53,8 @@ Suggests:
     rmarkdown,
     spatstat,
     testthat,
-    tidyverse
+    tidyverse,
+    TSP
 VignetteBuilder: 
     knitr
 ByteCompile: true

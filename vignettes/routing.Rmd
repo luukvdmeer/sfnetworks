@@ -159,6 +159,80 @@ cost_matrix = st_network_cost(net)
 dim(cost_matrix)
 ```
 
+## Traveling salesman problem
+
+The traveling salesman problem aims to find the shortest tour that visits a set of locations exactly ones and then returns to the starting locations. The [`TSP`](https://cran.r-project.org/web/packages/TSP/vignettes/TSP.pdf) package has implemented a way to solving this problem through R. The input needed for the `TSP` package is a distance or costs matrix. When combining `TSP` and `sfnetworks`, we can get a solution to the traveling salesman problem in geographical space. 
+
+First we can generate a set of random points within our network bounding box that will represent the locations we want to visit. 
+
+```{r}
+set.seed(428)
+rdm = st_sample(st_as_sfc(st_bbox(roxel)), 10, type = "random") %>%
+  st_transform(3035)
+```
+
+We can then compute a cost matrix using `st_network_cost()`, which will automatically use the `weight` columns for the calculation. We can name the rows and columns with the corresponding node indices in the network to easily interact with the output of the `TSP` package functions later on. 
+
+```{r}
+net = activate(net, "nodes")
+cm = st_network_cost(net, from = rdm, to = rdm)
+# Assign node indices as row and column names
+rdm_on_net = st_nearest_feature(rdm, net)
+row.names(cm) = rdm_on_net
+colnames(cm) = rdm_on_net
+```
+
+Now, we can pass our `cm` object to the `TSP::TSP()` function to convert the cost matrix into a `TSP` object. 
+
+```{r}
+library(TSP)
+(tsp = TSP(cm))
+```
+
+Then, we can pass this object to the tour solver `TSP::solve_TSP()`, where we will obtain an object of class `TOUR`. This object contains internally a named vector with the order of visit for each of the locations.
+
+```{r}
+(tour = solve_TSP(tsp))
+(idx_tour = as.numeric(names(tour)))
+```
+
+Now that we know the order at which each location will be visited, we can compute the shortest path between each location and its subsequent one, until we reach the starting point again. We can do this by using a for loop and the `st_network_paths()` function.
+
+```{r}
+l = list()
+for(i in 1:length(idx_tour)-1){
+  l[i] = st_network_paths(
+    net,
+    from = idx_tour[i],
+    to = idx_tour[i+1]
+  )$node_paths
+}
+# Add the path from the last location on the Tour list to the first location.
+l = append(
+  l,
+  st_network_paths(
+    net,
+    from = idx_tour[length(idx_tour)],
+    to = idx_tour[1]
+  )$node_paths
+)
+```
+
+And finally we can visualize the solution of the traveling salesman problem in geographical space:
+
+```{r, fig.height=5, fig.width=5}
+plot(net, col = "grey")
+plot(rdm, pch = 20, col = "red", add = TRUE)
+# We can reuse the function for plotting multiple node_paths from the 
+# Calculating short paths section:
+walk(l, plot_path)
+plot(st_as_sf(slice(net, rdm_on_net)), pch = 20, col = "cyan", add = TRUE)
+text(
+  st_coordinates(st_as_sf(slice(net, idx_tour[1]))) - c(200, 90),
+  labels = "start/end\npoint"
+) 
+```
+
 ## Creating isochrones
 
 With respect to a given point $p$ and a given travel time $t$, an isochrone is the line for which it holds that the travel time from any point on the line to or from $p$ is equal to $t$. When using distances instead of time, it is called an isodistance.
