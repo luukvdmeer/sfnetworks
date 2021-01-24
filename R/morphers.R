@@ -18,11 +18,16 @@
 #' @param ... Arguments to be passed on to other functions. See the description
 #' of each morpher for details.
 #'
-#' @param store_orig_data Whenever multiple features (i.e. nodes and/or edges)
-#' are merged into a single feature during morphing, should the data of the
-#' original features be stored as an attribute of the new feature, in a column
-#' named \code{.orig_data}. This is in line with the design principles of
-#' \code{tidygraph}. Defaults to \code{FALSE}.
+#' @param store_original_data Whenever multiple features (i.e. nodes and/or 
+#' edges) are merged into a single feature during morphing, should the data of 
+#' the original features be stored as an attribute of the new feature, in a 
+#' column named \code{.orig_data}. This is in line with the design principles 
+#' of \code{tidygraph}. Defaults to \code{FALSE}.
+#'
+#' @param summarise_attributes Whenever multiple features (i.e. nodes and/or 
+#' edges) are merged into a single feature during morphing, how should their
+#' attributes be combined? Several options are possible, see
+#' \code{\link[igraph]{igraph-attribute-combination}} for details.
 #'
 #' @return Either a \code{morphed_sfnetwork}, which is a list of one or more
 #' \code{\link{sfnetwork}} objects, or a \code{morphed_tbl_graph}, which is a
@@ -58,6 +63,219 @@
 #'
 #' @name spatial_morphers
 NULL
+
+#' @describeIn spatial_morphers Combine groups of nodes into a single node per
+#' group. \code{...} will be forwarded to \code{\link[dplyr]{group_by}} to
+#' create the groups. The centroid of the group of nodes will be used as
+#' geometry of the contracted node. If edge are spatially explicit, edge 
+#' geometries are updated accordingly such that the valid spatial network 
+#' structure is preserved. Returns a \code{morphed_sfnetwork} containing a
+#' single element of class \code{\link{sfnetwork}}. 
+#' @importFrom dplyr group_by group_indices group_split
+#' @importFrom igraph contract delete_vertex_attr edge_attr<- vertex_attr<-
+#' @importFrom sf st_as_sf st_cast st_centroid st_combine st_geometry 
+#' st_intersects
+#' @importFrom tibble as_tibble
+#' @importFrom tidygraph as_tbl_graph
+#' @export
+to_spatial_contracted = function(x, ..., 
+                                 summarise_attributes = "ignore",
+                                 store_original_data = FALSE) {
+  # Retrieve nodes from the network.
+  nodes = nodes_as_sf(x)
+  geom_colname = attr(nodes, "sf_column")
+  ## =======================
+  # STEP I: GROUP THE NODES
+  # Group the nodes table by forwarding ... to dplyr::group_by.
+  # Each group of nodes will later be contracted into a single node.
+  ## =======================
+  nodes = group_by(nodes, ...)
+  ## =======================
+  # STEP II: EXTRACT GROUPS
+  # Split the nodes table into the created groups.
+  # Store the indices that map each node to their respective group.
+  # Subset the groups that contain more than one node.
+  # --> These are the groups that are going to be contracted.
+  ## =======================
+  all_group_idxs = group_indices(nodes)
+  all_groups = group_split(nodes)
+  cnt_group_idxs = which(as.numeric(table(all_group_idxs)) > 1)  
+  cnt_groups = all_groups[cnt_group_idxs]
+  ## ===========================
+  # STEP III: CONTRACT THE NODES
+  # Contract the nodes in the network using igraph::contract.
+  # Use the extracted group indices as mapping.
+  # Only include real attribute columns, because igraph will summarise them.
+  # That is, do not include:
+  # --> The geometry list column.
+  # --> The node indices column added by tidygraph::morph.
+  ## ===========================
+  x_tmp = delete_vertex_attr(x, geom_colname)
+  x_tmp = delete_vertex_attr(x, ".tidygraph_node_index")
+  x_new = as_tbl_graph(contract(x_tmp, all_group_idxs, summarise_attributes))
+  ## ==================================================
+  # STEP IV: UPDATE THE NODES OF THE CONTRACTED NETWORK
+  # Add the following information to the nodes table:
+  # --> The geometries of the new nodes.
+  # --> The original node indices mapping the new nodes to the original ones.
+  # --> If requested the original node data in tibble format.
+  ## ==================================================
+  # Extract the nodes from the contracted network.
+  new_nodes = as_tibble(x_new, "nodes")
+  # Add geometries to the new nodes.
+  # For each node that was not contracted:
+  # --> Use its original geometry.
+  # For each node that was contracted:
+  # --> Use the centroid of the geometries of the group members.
+  new_node_geoms = st_geometry(nodes)[!duplicated(all_group_idxs)]
+  get_centroid = function(i) st_centroid(st_combine(st_geometry(i)))
+  cnt_node_geoms = do.call("c", lapply(cnt_groups, get_centroid))
+  new_node_geoms[cnt_group_idxs] = cnt_node_geoms
+  new_nodes[geom_colname] = list(new_node_geoms)
+  # Add original node indices to the new nodes.
+  # For each node that was not contracted:
+  # --> Use its original row number.
+  # For each node that was contracted:
+  # --> Use the vector of original row numbers of the group members.
+  new_node_idxs = as.list(c(1:vcount(x))[!duplicated(all_group_idxs)])
+  cnt_node_idxs = lapply(cnt_groups, `[[`, ".tidygraph_node_index")
+  new_node_idxs[cnt_group_idxs] = cnt_node_idxs
+  new_nodes$.tidygraph_node_index = new_node_idxs
+  # If requested, store original node data in a .orig_data column.
+  if (store_original_data) {
+    drop_index = function(i) { i$.tidygraph_node_index = NULL; i }
+    new_nodes$.orig_data = lapply(cnt_groups, drop_index)
+  }
+  # Update the nodes table of the contracted network.
+  new_nodes = st_as_sf(new_nodes, sf_column_name = geom_colname)
+  vertex_attr(x_new) = as.list(new_nodes)
+  # Convert in a sfnetwork.
+  x_new = tbg_to_sfn(x_new)
+  ## ===============================================================
+  # STEP V: RECONNECT THE EDGE GEOMETRIES OF THE CONTRACTED NETWORK
+  # The geometries of the contracted nodes are updated.
+  # This means the edge geometries of their incidents also need an update.
+  # Otherwise the valid spatial network structure is not preserved.
+  ## ===============================================================
+  if (has_spatially_explicit_edges(x)) {
+    # Extract the edges and their geometries from the contracted network.
+    new_edges = edges_as_sf(x_new)
+    new_edge_geoms = st_geometry(new_edges)
+    # Define functions to:
+    # --> Append a point at the start of an edge linestring.
+    # --> Append a point at the end of an edge linestring.
+    # --> Append the same point at both ends of an edge linestring.
+    append_source = function(i, j) {            
+      l = new_edge_geoms[i]  
+      p = new_node_geoms[j]    
+      l_pts = st_cast(l, "POINT")
+      st_cast(st_combine(c(p, l_pts)), "LINESTRING")        
+    }
+    append_target = function(i, j) {
+      l = new_edge_geoms[i]
+      p = new_node_geoms[j]
+      l_pts = st_cast(l, "POINT")
+      st_cast(st_combine(c(l_pts, p)), "LINESTRING")
+    }
+    append_boundaries = function(j, i) {
+      l = new_edge_geoms[j]  
+      p = new_node_geoms[i]    
+      l_pts = st_cast(l, "POINT")
+      st_cast(st_combine(c(p, l_pts, p)), "LINESTRING")
+    }
+    # Find the indices of the nodes at the boundaries of each edge.
+    bounds = edge_boundary_node_indices(x_new, matrix = TRUE)
+    # Mask out those indices of nodes that were not contracted.
+    # Only edge boundaries at contracted nodes have to be updated.
+    bounds[!(bounds %in% cnt_group_idxs)] = NA
+    from = bounds[, 1]
+    to = bounds[, 2]
+    # Define for each edge if it:
+    # --> Starts and ends at the same contracted node, i.e. is a loop.
+    # --> Comes from a contracted node.
+    # --> Goes to a contracted node.
+    is_loop = (!is.na(from) & !is.na(to)) & (from == to)
+    is_from = !is_loop & !is.na(from)
+    is_to = !is_loop & !is.na(to)
+    # Find the indices of:
+    # --> Each loop edge.
+    # --> The node at the start and end of each loop edge.
+    E1 = which(is_loop)
+    N1 = from[is_loop]
+    # For from and to edges directed and undirected networks are different.
+    # In directed networks:
+    # --> The from node geometry is always the start of the edge linestring.
+    # --> The to node geometry is always at the end of the edge linestring.
+    # In undirected networks, this is not always the case.
+    # We first need to define which node is at the start and end of the edge.
+    if (is_directed(x_new)) {
+      # Find the indices of:
+      # --> Each from edge.
+      # --> The node at the start of each from edge.
+      E2 = which(is_from)
+      N2 = from[is_from]
+      # Find the indices of:
+      # --> Each to edge.
+      # --> The node at the end of each to edge.
+      E3 = which(is_to)
+      N3 = to[is_to]
+    } else {
+      # The edges defined before as from/to are incident to contracted nodes.
+      # However, we don't know yet if the come from or go to it.
+      is_incident = is_from | is_to
+      if (any(is_incident)) {
+        # Combine the original node geometries for each group.
+        # This gives us a set of all original node geometries in each group.
+        combine_geoms = function(i) st_combine(st_geometry(i))
+        all_group_geoms = do.call("c", lapply(all_groups, combine_geoms))
+        # For each indicent edge, find:
+        # --> The geometries of its startpoint.
+        # --> The group index corresponding to that startpoint geometry.
+        # --> The index of the contracted node at its boundary.
+        bnd_geoms = linestring_boundary_points(new_edge_geoms[is_incident])
+        src_geoms = bnd_geoms[seq(1, length(bnd_geoms) - 1, 2)]
+        src_idxs = st_intersects(src_geoms, all_group_geoms)
+        bnd_idxs = bounds[is_incident, ]
+        bnd_idxs = lapply(seq_len(nrow(bnd_idxs)), function(i) bnd_idxs[i, ])
+        # Initially, assume that:
+        # --> All incident edges are 'to' edges.
+        is_to = matrix(c(is_from, is_to), ncol = 2)
+        is_from = matrix(rep(FALSE, length(bounds)), nrow = nrow(bounds))
+        # Update the initial phase such that edges are changed to 'from' if:
+        # --> The contracted node index equals the startpoint group index.
+        is_from[is_incident, ] = t(mapply(`%in%`, bnd_idxs, src_idxs))
+        is_to[is_from] = FALSE
+        # Now we have updated the 'from' and 'to' information.
+        # Find the indices of:
+        # --> Each from edge.
+        # --> The node at the start of each from edge.
+        E2 = which(apply(is_from, 1, any))
+        N2 = t(bounds)[t(is_from)]
+        # Find the indices of:
+        # --> Each to edge.
+        # --> The node at the end of each to edge.
+        E3 = which(apply(is_to, 1, any))
+        N3 = t(bounds)[t(is_to)]
+      }
+    }
+    # Update the geometries of the loop edges.
+    geoms = do.call("c", mapply(append_boundaries, E1, N1, SIMPLIFY = FALSE))
+    new_edge_geoms[E1] = geoms
+    # Update the geometries of the from edges.
+    geoms = do.call("c", mapply(append_source, E2, N2, SIMPLIFY = FALSE))
+    new_edge_geoms[E2] = geoms
+    # Update the geometries of the to edges.
+    geoms = do.call("c", mapply(append_target, E3, N3, SIMPLIFY = FALSE))
+    new_edge_geoms[E3] = geoms
+    # Update the edges table of the contracted network.
+    st_geometry(new_edges) = new_edge_geoms
+    edge_attr(x_new) = as.list(new_edges[, !names(new_edges) %in% c("from", "to")])
+  }
+  # Return in a list.
+  list(
+    contracted = x_new %preserve_graph_attrs% x
+  )
+}
 
 #' @describeIn spatial_morphers Make a network directed in the direction given
 #' by the linestring geometries of the edges. Differs from
@@ -189,7 +407,7 @@ to_spatial_simple = function(x, remove_parallels = TRUE, remove_loops = TRUE) {
 #' edge_attr edge_attr<- get.edge.ids induced_subgraph is_directed vertex_attr
 #' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_line_merge
 #' @export
-to_spatial_smooth = function(x, store_orig_data = FALSE) {
+to_spatial_smooth = function(x, store_original_data = FALSE) {
   # Retrieve nodes and edges from the network.
   nodes = nodes_as_sf(x)
   edges = edges_as_table(x)
@@ -392,9 +610,10 @@ to_spatial_smooth = function(x, store_orig_data = FALSE) {
   # The value in this column is for each edge a tibble containing:
   # --> The data of the original edges that were merged into the new edge.
   ## =============================================
-  if (store_orig_data) {
+  if (store_original_data) {
     # Store the original edge data in a .orig_data column.
     orig_edge_idxs = edge_attr(x_new, ".tidygraph_edge_index")
+    edges$.tidygraph_edge_index = NULL
     copy_orig_data = function(i) edges[i, , drop = FALSE]
     edge_attr(x_new, ".orig_data") = lapply(orig_edge_idxs, copy_orig_data)
     edge_agr(x_new) = valid_agr(edge_agr(x_new))
