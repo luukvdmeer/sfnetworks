@@ -72,7 +72,7 @@ NULL
 #' structure is preserved. Returns a \code{morphed_sfnetwork} containing a
 #' single element of class \code{\link{sfnetwork}}. 
 #' @importFrom dplyr group_by group_indices group_split
-#' @importFrom igraph contract delete_vertex_attr edge_attr<- vertex_attr<-
+#' @importFrom igraph contract delete_vertex_attr
 #' @importFrom sf st_as_sf st_cast st_centroid st_combine st_geometry 
 #' st_intersects
 #' @importFrom tibble as_tibble
@@ -148,7 +148,7 @@ to_spatial_contracted = function(x, ...,
   }
   # Update the nodes table of the contracted network.
   new_nodes = st_as_sf(new_nodes, sf_column_name = geom_colname)
-  vertex_attr(x_new) = as.list(new_nodes)
+  node_graph_attributes(x_new) = new_nodes
   # Convert in a sfnetwork.
   x_new = tbg_to_sfn(x_new)
   ## ===============================================================
@@ -269,7 +269,7 @@ to_spatial_contracted = function(x, ...,
     new_edge_geoms[E3] = geoms
     # Update the edges table of the contracted network.
     st_geometry(new_edges) = new_edge_geoms
-    edge_attr(x_new) = as.list(new_edges[, !names(new_edges) %in% c("from", "to")])
+    edge_graph_attributes(x_new) = new_edges
   }
   # Return in a list.
   list(
@@ -315,7 +315,6 @@ to_spatial_directed = function(x) {
 #' drawn between the source and target node of each edge. Returns a
 #' \code{morphed_sfnetwork} containing a single element of class
 #' \code{\link{sfnetwork}}.
-#' @importFrom igraph edge_attr<-
 #' @importFrom sf st_as_sf
 #' @export
 to_spatial_explicit = function(x, ...) {
@@ -326,8 +325,8 @@ to_spatial_explicit = function(x, ...) {
   if (length(args) > 0) {
     edges = edges_as_table(x)
     new_edges = st_as_sf(edges, ...)
-    edge_attr(x) = as.list(new_edges[, !names(new_edges) %in% c("from", "to")])
     x_new = x
+    edge_graph_attributes(x_new) = new_edges
   } else {
     x_new = explicitize_edges(x)
   }
@@ -404,7 +403,7 @@ to_spatial_simple = function(x, remove_parallels = TRUE, remove_loops = TRUE) {
 #' of class \code{\link{sfnetwork}}.
 #' @importFrom dplyr bind_rows
 #' @importFrom igraph adjacent_vertices decompose degree delete_vertices
-#' edge_attr edge_attr<- get.edge.ids induced_subgraph is_directed vertex_attr
+#' edge_attr get.edge.ids induced_subgraph is_directed vertex_attr
 #' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_line_merge
 #' @export
 to_spatial_smooth = function(x, store_original_data = FALSE) {
@@ -577,13 +576,9 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
     new_geoms = do.call("c", lapply(new_edge_list, merge_geoms))
     # Add the geometries to the new edges data frame.
     # Use the same geometry column name as in the original edges data frame.
-    new_edges$geometry = new_geoms
-    new_edges = st_as_sf(new_edges)
     geom_colname = attr(edges, "sf_column")
-    if (geom_colname != "geometry") {
-      names(new_edges)[4] = geom_colname
-      attr(new_edges, "sf_column") = geom_colname
-    }
+    new_edges[geom_colname] = list(new_geoms)
+    new_edges = st_as_sf(new_edges, sf_column_name = geom_colname)
   }
   ## ========================================
   # STEP IV: ADD MERGED EDGES TO THE NETWORK
@@ -612,11 +607,11 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
   ## =============================================
   if (store_original_data) {
     # Store the original edge data in a .orig_data column.
-    orig_edge_idxs = edge_attr(x_new, ".tidygraph_edge_index")
+    new_edges = edges_as_sf(x_new)
     edges$.tidygraph_edge_index = NULL
-    copy_orig_data = function(i) edges[i, , drop = FALSE]
-    edge_attr(x_new, ".orig_data") = lapply(orig_edge_idxs, copy_orig_data)
-    edge_agr(x_new) = valid_agr(edge_agr(x_new))
+    copy_data = function(i) edges[i, , drop = FALSE]
+    new_edges$.orig_data = lapply(new_edges$.tidygraph_edge_index, copy_data)
+    edge_graph_attributes(x_new) = new_edges
   }
   # Return in a list.
   list(
@@ -791,7 +786,7 @@ to_spatial_subdivision = function(x) {
   x_new = sfnetwork_(new_nodes, new_edges, directed = is_directed(x))
   # Return in a list.
   list(
-    subdivision = x_new %preserve_all_attrs% x
+    subdivision = x_new %preserve_graph_attrs% x
   )
 }
 

@@ -183,8 +183,51 @@ edge_boundary_node_indices = function(x, matrix = FALSE) {
 #' @importFrom sf st_as_sf
 #' @noRd
 edge_boundary_points = function(x) {
-  edges = edges_as_sf(x)
+  edges = edge_geom(x)
   linestring_boundary_points(edges)
+}
+
+#' Get the node indices of the boundary points of edges in an sfnetwork
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param matrix Should te result be returned as a two-column matrix? Defaults
+#' to \code{FALSE}.
+#'
+#' @return If matrix is \code{FALSE}, a numeric vector of length equal to twice
+#' the number of edges in x, and ordered as
+#' [start of edge 1, end of edge 1, start of edge 2, end of edge 2, ...]. If
+#' matrix is \code{TRUE}, a two-column matrix, with the number of rows equal to
+#' the number of edges in the network. The first column contains the node 
+#' indices of the start points of the edges, the seconds column contains the 
+#' node indices of the end points of the edges.
+#'
+#' @importFrom igraph ecount
+#' @importFrom sf st_equals
+#' @noRd
+edge_boundary_point_indices = function(x, matrix = FALSE) {
+    nodes = node_geom(x)
+    edges = edges_as_sf(x)
+    idxs_lst = st_equals(linestring_boundary_points(edges), nodes)
+    idxs_vct = do.call("c", idxs_lst)
+    # In most networks the location of a node will be unique.
+    # However, this is not a requirement.
+    # There may be cases where multiple nodes share the same geometry.
+    # Then some more processing is needed to find the correct indices.
+    if (length(idxs_vct) != ecount(x) * 2) {
+      n = length(idxs_lst)
+      from = idxs_lst[seq(1, n - 1, 2)]
+      to = idxs_lst[seq(2, n, 2)]
+      p_idxs = mapply(c, from, to, SIMPLIFY = FALSE)
+      n_idxs = mapply(c, edges$from, edges$to, SIMPLIFY = FALSE)
+      find_indices = function(a, b) {
+        idxs = a[a %in% b]
+        if (length(idxs) > 2) b else idxs
+      }
+      idxs_lst = mapply(find_indices, p_idxs, n_idxs, SIMPLIFY = FALSE)
+      idxs_vct = do.call("c", idxs_lst)
+    }
+    if (matrix) t(matrix(idxs_vct, nrow = 2)) else idxs_vct
 }
 
 #' Make edges spatially explicit

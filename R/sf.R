@@ -448,7 +448,7 @@ spatial_join_nodes = function(x, y, ...) {
   }
   # Create a new network with the updated data.
   n_new$.sfnetwork_index = NULL
-  vertex_attr(x) = as.list(n_new)
+  node_graph_attributes(x) = n_new
   x
 }
 
