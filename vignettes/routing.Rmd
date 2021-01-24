@@ -166,9 +166,11 @@ The traveling salesman problem aims to find the shortest tour that visits a set 
 First we can generate a set of random points within our network bounding box that will represent the locations we want to visit. 
 
 ```{r}
-set.seed(428)
-rdm = st_sample(st_as_sfc(st_bbox(roxel)), 10, type = "random") %>%
-  st_transform(3035)
+set.seed(403)
+rdm = net %>%
+  st_bbox() %>%
+  st_as_sfc() %>%
+  st_sample(10, type = "random")
 ```
 
 We can then compute a cost matrix using `st_network_cost()`, which will automatically use the `weight` columns for the calculation. We can name the rows and columns with the corresponding node indices in the network to easily interact with the output of the `TSP` package functions later on. 
@@ -186,51 +188,53 @@ Now, we can pass our `cm` object to the `TSP::TSP()` function to convert the cos
 
 ```{r}
 library(TSP)
-(tsp = TSP(cm))
+tsp = TSP(cm)
+tsp
 ```
 
-Then, we can pass this object to the tour solver `TSP::solve_TSP()`, where we will obtain an object of class `TOUR`. This object contains internally a named vector with the order of visit for each of the locations.
+Then, we can pass this object to the tour solver `TSP::solve_TSP()`, where we will obtain an object of class `TOUR`. This object contains internally a named vector with the order of visit for each of the locations. 
 
 ```{r}
-(tour = solve_TSP(tsp))
-(idx_tour = as.numeric(names(tour)))
+tour = solve_TSP(tsp)
+tour
+idx_tour = as.numeric(names(tour))
+idx_tour
 ```
 
-Now that we know the order at which each location will be visited, we can compute the shortest path between each location and its subsequent one, until we reach the starting point again. We can do this by using a for loop and the `st_network_paths()` function.
+Although TSP does not recognize the units, our tour has a length of `r round(tour_length(tour), 2)` **m**, which corresponds to the CRS unit of our network. Now that we know the order at which each location will be visited, we can compute the shortest path between each location and its subsequent one, until we reach the starting point again. We can do this by using `mapply()` and the `st_network_paths()` functions.
 
 ```{r}
-l = list()
-for(i in 1:length(idx_tour)-1){
-  l[i] = st_network_paths(
-    net,
-    from = idx_tour[i],
-    to = idx_tour[i+1]
-  )$node_paths
-}
-# Add the path from the last location on the Tour list to the first location.
-l = append(
-  l,
-  st_network_paths(
-    net,
-    from = idx_tour[length(idx_tour)],
-    to = idx_tour[1]
-  )$node_paths
-)
+from_idx = idx_tour
+to_idx = c(idx_tour[2:length(idx_tour)], idx_tour[1])
+l = mapply(
+    st_network_paths, 
+    from = from_idx, 
+    to = to_idx, 
+    MoreArgs = list(x = net)
+  )["node_paths", ] %>%
+  unlist(recursive = FALSE)
 ```
 
 And finally we can visualize the solution of the traveling salesman problem in geographical space:
 
 ```{r, fig.height=5, fig.width=5}
 plot(net, col = "grey")
-plot(rdm, pch = 20, col = "red", add = TRUE)
-# We can reuse the function for plotting multiple node_paths from the 
+plot(rdm, pch = 20, col = colors[2], add = TRUE)
+# We can reuse the function for plotting multiple node_paths from the
 # Calculating short paths section:
 walk(l, plot_path)
-plot(st_as_sf(slice(net, rdm_on_net)), pch = 20, col = "cyan", add = TRUE)
+plot(
+  st_as_sf(slice(net, rdm_on_net)),
+  pch = 20, col = colors[3], add = TRUE
+)
+plot(
+  st_as_sf(slice(net, idx_tour[1])),
+  pch = 8, cex = 2, lwd = 2, col = colors[3], add = TRUE
+)
 text(
   st_coordinates(st_as_sf(slice(net, idx_tour[1]))) - c(200, 90),
   labels = "start/end\npoint"
-) 
+)
 ```
 
 ## Creating isochrones
@@ -307,7 +311,7 @@ paths_sf = net %>%
 
 table(paths_sf$type)
 
-plot(paths_sf["type"], lwd = 4)
+plot(paths_sf["type"], lwd = 4, key.pos = 4, key.width = lcm(4))
 ```
 
 As with the overall network, the paths we calculated are dominated by residential streets.
