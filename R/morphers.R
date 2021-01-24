@@ -286,21 +286,24 @@ to_spatial_contracted = function(x, ...,
 #' single element of class \code{\link{sfnetwork}}. This morpher requires edges
 #' to be spatially explicit. If not, use \code{\link[tidygraph]{to_directed}}.
 #' @importFrom igraph is_directed
-#' @importFrom sf st_equals
 #' @export
 to_spatial_directed = function(x) {
   require_spatially_explicit_edges(x)
   if (is_directed(x)) return (x)
-  # Retrieve the edges from the network, without the to and from columns.
+  # Retrieve the nodes and edges from the network.
+  nodes = nodes_as_sf(x)
   edges = edges_as_sf(x)
-  edges[, c("from", "to")] = NULL
+  # Get the node indices that correspond to the geometries of the edge bounds.
+  idxs = edge_boundary_point_indices(x, matrix = TRUE)
+  from = idxs[, 1]
+  to = idxs[, 2]
+  # Update the from and to columns of the edges such that:
+  # --> The from node matches the startpoint of the edge.
+  # --> The to node matches the endpoint of the edge.
+  edges$from = from
+  edges$to = to
   # Recreate the network as a directed one.
-  x_new = as_sfnetwork(edges, directed = TRUE)
-  # Spatial left join between nodes of x_new and original nodes of x.
-  # This is needed since node attributes got lost when constructing x_new.
-  if (length(node_spatial_attribute_names(x)) > 0) {
-    x_new = spatial_join_nodes(x_new, nodes_as_sf(x), join = st_equals)
-  }
+  x_new = sfnetwork_(nodes, edges, directed = TRUE)
   # Return in a list.
   list(
     directed = x_new %preserve_graph_attrs% x
