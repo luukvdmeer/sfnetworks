@@ -369,30 +369,75 @@ to_spatial_shortest_paths = function(x, ...) {
   lapply(seq_len(nrow(paths)), get_single_path)
 }
 
-#' @describeIn spatial_morphers Remove loops and parallel edges. Returns a
-#' \code{morphed_sfnetwork} containing a single element of class
+#' @describeIn spatial_morphers Remove loop edges and/or merges multiple edges
+#' into a single edge. Multiple edges are edges that have the same source and
+#' target nodes (in directed networks) or edges that are incident to the same
+#' nodes (in undirected networks). When merging them into a single edge, the
+#' geometry of the first edge is preserved. The order of the edges can be
+#' influenced by calling \code{\link[dplyr]{arrange}} before simplifying. 
+#' Returns a \code{morphed_sfnetwork} containing a single element of class
 #' \code{\link{sfnetwork}}.
 #'
-#' @param remove_parallels Should parallel edges be removed. Defaults to
-#' \code{TRUE}.
+#' @param remove_multiple Should multiple edges be merged into one. Defaults 
+#' to \code{TRUE}.
 #'
-#' @param remove_loops Should loops be remove. Defaults to \code{TRUE}.
+#' @param remove_loops Should loop edges be removed. Defaults to \code{TRUE}.
 #'
-#' @importFrom igraph delete_edges which_loop which_multiple
+#' @importFrom igraph simplify
+#' @importFrom sf st_as_sf st_crs st_sfc
+#' @importFrom tibble as_tibble
+#' @importFrom tidygraph as_tbl_graph
 #' @export
-to_spatial_simple = function(x, remove_parallels = TRUE, remove_loops = TRUE) {
-  x_new = x
-  # Remove parallels if requested.
-  if (remove_parallels) {
-    x_new = delete_edges(x_new, which(which_multiple(x_new)))
+to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
+                             summarise_attributes = "first",
+                             store_original_data = FALSE) {
+  # Define if the network has spatially explicit edges.
+  # This influences some of the processes to come.
+  if (has_spatially_explicit_edges(x)) spatial = TRUE
+  # Update the attribute summary instructions.
+  # In the summarise attributes only real attribute columns were referenced.
+  # On top of those, we need to include:
+  # --> The geometry column, if present.
+  # --> The tidygraph edge index column added by tidygraph::morph.
+  if (! inherits(summarise_attributes, "list")) {
+    summarise_attributes = list(summarise_attributes)
   }
-  # Remove loops if requested.
-  if (remove_loops) {
-    x_new = delete_edges(x_new, which(which_loop(x_new)))
+  if (spatial) {
+    # We always take the first geometry.
+    geom_colname = edge_geom_colname(x)
+    summarise_attributes[geom_colname] = "first"
+  }
+  # The edge indices should be concatenated into a vector.
+  summarise_attributes[".tidygraph_edge_index"] = "concat"
+  # Simplify the network.
+  x_new = simplify(
+    x,
+    remove.multiple = remove_multiple,
+    remove.loops = remove_loops,
+    edge.attr.comb = summarise_attributes
+  ) %preserve_graph_attrs% x
+  # Igraph does not know about geometry list columns.
+  # Summarizing them results in a list of sfg objects.
+  # We should reconstruct the sfc geometry list column out of that.
+  if (spatial) {
+    new_edges = as_tibble(as_tbl_graph(x_new), "edges")
+    new_edges[geom_colname] = list(st_sfc(new_edges[[geom_colname]]))
+    new_edges = st_as_sf(new_edges, sf_column_name = geom_colname)
+    st_crs(new_edges) = st_crs(x)
+    edge_graph_attributes(x_new) = new_edges
+  }
+  # If requested, original edge data should be stored in a .orig_data column.
+  if (store_original_data) {
+    edges = edges_as_table(x)
+    edges$.tidygraph_edge_index = NULL
+    new_edges = edges_as_table(x_new)
+    copy_data = function(i) edges[i, , drop = FALSE]
+    new_edges$.orig_data = lapply(new_edges$.tidygraph_edge_index, copy_data)
+    edge_graph_attributes(x_new) = new_edges
   }
   # Return in a list.
   list(
-    simple = x_new %preserve_all_attrs% x
+    simple = x_new
   )
 }
 
