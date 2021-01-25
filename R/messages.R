@@ -17,13 +17,6 @@ raise_assume_planar = function(caller) {
   )
 }
 
-raise_multiple_matches = function() {
-  stop(
-    "One or more nodes have multiple matches",
-    call. = FALSE
-  )
-}
-
 raise_overwrite = function(value) {
   warning(
     "Overwriting column(s): ",

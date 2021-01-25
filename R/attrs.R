@@ -148,3 +148,47 @@ edge_spatial_attribute_names = function(x) {
     c("from", "to", g_attrs[g_attrs != geom_colname])
   }
 }
+
+#' Set the attributes of the active element of a sfnetwork
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently
+#' active element of x will be used.
+#'
+#' @param value A table in which each column is an attribute to be set. If the
+#' nodes are active, this table has to be of class \code{\link[sf]{sf}}. For
+#' the edges, it can also be a \code{data.frame} or 
+#' \code{\link[tibble]{tibble}}.
+#'
+#' @return An object of class \code{\link{sfnetwork}} with updated attributes.
+#'
+#' @details From the graph point of view, the geometry is considered an
+#' attribute of a node or edge, and the indices of the start and end nodes
+#' of an edge are not considered attributes of that edge.
+#'
+#' @name graph_attributes
+#' @noRd
+`graph_attributes<-` = function(x, active = NULL, value) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  switch(
+    active,
+    nodes = `node_graph_attributes<-`(x, value),
+    edges = `edge_graph_attributes<-`(x, value),
+    raise_unknown_input(active)
+  )
+}
+
+#' @importFrom igraph vertex_attr<-
+`node_graph_attributes<-` = function(x, value) {
+  vertex_attr(x) = as.list(value)
+  x
+}
+
+#' @importFrom igraph edge_attr<-
+`edge_graph_attributes<-` = function(x, value) {
+  edge_attr(x) = as.list(value[, !names(value) %in% c("from", "to")])
+  x
+}

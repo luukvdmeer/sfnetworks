@@ -103,7 +103,7 @@ mutate_geom = function(x, y, active = NULL) {
 mutate_node_geom = function(x, y) {
   nodes = nodes_as_sf(x)
   st_geometry(nodes) = y
-  vertex_attr(x) = as.list(nodes)
+  node_graph_attributes(x) = nodes
   x
 }
 
@@ -112,7 +112,7 @@ mutate_node_geom = function(x, y) {
 mutate_edge_geom = function(x, y) {
   edges = edges_as_table(x)
   st_geometry(edges) = y
-  edge_attr(x) = as.list(edges[, !names(edges) %in% c("from", "to")])
+  edge_graph_attributes(x) = edges
   x
 }
 

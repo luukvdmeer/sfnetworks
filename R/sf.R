@@ -431,11 +431,17 @@ spatial_join_nodes = function(x, y, ...) {
   # Join with st_join.
   n_new = st_join(x_sf, y_sf, ...)
   # If there were multiple matches:
-  # --> Raise an error.
   # --> Allowing multiple matches for nodes breaks the valid network structure.
+  # --> We will only include the first match and raise a warning.
   # --> See the package vignettes for more info.
-  if (has_duplicates(n_new$.sfnetwork_index)) {
-    raise_multiple_matches()
+  duplicated_match = duplicated(n_new$.sfnetwork_index)
+  if (any(duplicated_match)) {
+    n_new = n_new[!duplicated_match, ]
+    warning(
+      "Multiple matches were detected from some nodes. ",
+      "Only the first match is considered",
+      call. = FALSE
+    )
   }
   # If an inner join was requested instead of a left join:
   # --> This means only nodes in x that had a match in y are preserved.
@@ -448,7 +454,7 @@ spatial_join_nodes = function(x, y, ...) {
   }
   # Create a new network with the updated data.
   n_new$.sfnetwork_index = NULL
-  vertex_attr(x) = as.list(n_new)
+  node_graph_attributes(x) = n_new
   x
 }
 
@@ -473,8 +479,8 @@ st_crop.sfnetwork = function(x, y, ...) {
   active = attr(x, "active")
   switch(
     active,
-    nodes = spatial_filter_nodes(x, y, ..., .operator = st_crop),
-    edges = spatial_filter_edges(x, y, ..., .operator = st_crop),
+    nodes = spatial_crop_nodes(x, y, ...),
+    edges = spatial_crop_edges(x, y, ...),
     raise_unknown_input(active)
   )
 }
@@ -485,6 +491,87 @@ st_crop.sfnetwork = function(x, y, ...) {
 st_crop.morphed_sfnetwork = function(x, y, ...) {
   x[] = lapply(x, st_crop, y = y, ...)
   x
+}
+
+#' @importFrom sf st_crop
+spatial_crop_nodes = function(x, y, ...) {
+  spatial_filter_nodes(x, y, ..., .operator = st_crop)
+}
+
+#' @importFrom dplyr bind_rows
+#' @importFrom igraph is_directed
+#' @importFrom sf st_as_sfc st_bbox st_crop st_disjoint st_sf
+spatial_crop_edges = function(x, y, ...) {
+  expect_spatially_explicit_edges(x)
+  # Define if x is a directed network.
+  # This influences some of the processes to come.
+  directed = is_directed(x)
+  # Convert the edges of x to sf.
+  x_sf = edges_as_sf(x)
+  # Crop edges with st_crop.
+  e_new = st_crop(x_sf, y, ...)
+  # A few issues need to be resolved before moving on.
+  # 1) An edge shares a single point with the cropping box:
+  # --> st_crop includes them point in the cropped object.
+  # --> We don't want to include this edge in the cropped network.
+  # 2) An edge intersects with the cropping box in separate segments:
+  # --> st_crop includes them as multilinestring in the cropped object.
+  # --> We want it as a single linestring if segments share a point.
+  # --> We want it as multiple individual linestrings otherwise.
+  # First we select those cropped edges that are already valid.
+  # These are the edges that are still a single linestring after cropping.
+  e_new_1 = e_new[st_is(e_new, "LINESTRING"), ]
+  # Then we process the multilinestrings.
+  # We run st_line_merge on them to merge the segments that share a point.
+  e_new_2 = st_line_merge(e_new[st_is(e_new, "MULTILINESTRING"), ])
+  # We select those edges that became a single linestring after merging.
+  e_new_2a = e_new_2[st_is(e_new_2, "LINESTRING"), ]
+  # We 'unpack' those edges that remained a multilinestring after merging.
+  e_new_2b = st_cast(e_new_2[st_is(e_new_2, "MULTILINESTRING"), ], "LINESTRING")
+  # We bind together all retrieved linestrings.
+  # This automatically exludes the point objects.
+  e_new = rbind(e_new_1, e_new_2a, e_new_2b)
+  # Just as with any filtering operation on the edges:
+  # --> All nodes of the original network will remain in the new network.
+  n_new = nodes_as_sf(x)
+  # Create a new network with the cropped edges.
+  x_tmp = sfnetwork_(n_new, e_new, directed = directed)
+  # The additional processing required is because of the following:
+  # --> Edge geometries that cross the border of the cropping box are cut.
+  # --> Their boundaries don't match their corresponding nodes anymore.
+  # --> We need to add new nodes at the affected boundaries.
+  # --> Otherwise the valid spatial network structure is broken.
+  # We proceed as follows:
+  # Find which nodes are outside the cropping box.
+  n_out = st_disjoint(st_as_sfc(st_bbox(e_new)), n_new)
+  # Retrieve the node indices of the cropped edges boundaries.
+  bound_idxs = if (directed) {
+    edge_boundary_node_indices(x_tmp)
+  } else {
+    edge_boundary_point_indices(x_tmp)
+  }
+  # Define the following for the cropped edge boundaries:
+  # --> Which of them refer to a node outside the cropping box.
+  # --> What should the geometry of the new node at that boundary be.
+  out_idxs = which(bound_idxs %in% n_out[[1]])
+  n_add_geoms = linestring_boundary_points(e_new)[out_idxs]
+  # Create an sf object out of these new node geometries.
+  n_add = list()
+  n_add[attr(n_new, "sf_column")] = list(n_add_geoms)
+  n_add = st_sf(n_add)
+  # Define the node indices of these new nodes.
+  orig_node_count = nrow(n_new)
+  n_add_idxs = c((orig_node_count + 1):(orig_node_count + nrow(n_add)))
+  # Add the new nodes to the original node table.
+  n_new = bind_rows(n_new, n_add)
+  # Update the node indices of the cropped edge boundaries.
+  bound_idxs[out_idxs] = n_add_idxs
+  # Update the from and to columns of the edges accordingly.
+  bound_count = length(bound_idxs)
+  e_new$from = bound_idxs[seq(1, bound_count - 1, 2)]
+  e_new$to = bound_idxs[seq(2, bound_count, 2)]
+  # Create a new network with the updated nodes and edges.
+  sfnetwork_(n_new, e_new) %preserve_graph_attrs% x
 }
 
 #' @name sf

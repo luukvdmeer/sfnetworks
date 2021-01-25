@@ -1,15 +1,3 @@
-#' Check if a given vector contains duplicates
-#'
-#' @param x A vector.
-#'
-#' @return \code{TRUE} when the vector contains duplicated values,
-#' \code{FALSE} otherwise.
-#'
-#' @noRd
-has_duplicates = function(x) {
-  any(duplicated(x))
-}
-
 #' Check if a table has spatial information stored in a geometry list column
 #'
 #' @param x A flat table, such as an sf object, data.frame or tibble.
@@ -90,9 +78,13 @@ have_equal_crs = function(x, y) {
 #'
 #' @noRd
 have_equal_edge_type = function(x, y) {
-  both_ex = has_spatially_explicit_edges(x) & has_spatially_explicit_edges(y)
-  both_im = !has_spatially_explicit_edges(x) & !has_spatially_explicit_edges(y)
-  both_ex | both_im
+  both_explicit = function(x, y) {
+    has_spatially_explicit_edges(x) && has_spatially_explicit_edges(y)
+  }
+  both_implicit = function(x, y) {
+    !has_spatially_explicit_edges(x) && !has_spatially_explicit_edges(y)
+  }
+  both_explicit(x, y) || both_implicit(x, y)
 }
 
 #' Check if two sf objects have the same geometries

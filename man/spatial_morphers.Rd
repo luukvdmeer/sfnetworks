@@ -2,8 +2,10 @@
 % Please edit documentation in R/morphers.R
 \name{spatial_morphers}
 \alias{spatial_morphers}
+\alias{to_spatial_contracted}
 \alias{to_spatial_directed}
 \alias{to_spatial_explicit}
+\alias{to_spatial_neighborhood}
 \alias{to_spatial_shortest_paths}
 \alias{to_spatial_simple}
 \alias{to_spatial_smooth}
@@ -12,15 +14,30 @@
 \alias{to_spatial_transformed}
 \title{Spatial morphers for sfnetworks}
 \usage{
+to_spatial_contracted(
+  x,
+  ...,
+  summarise_attributes = "ignore",
+  store_original_data = FALSE
+)
+
 to_spatial_directed(x)
 
 to_spatial_explicit(x, ...)
 
+to_spatial_neighborhood(x, node, threshold, weights = NULL, from = TRUE, ...)
+
 to_spatial_shortest_paths(x, ...)
 
-to_spatial_simple(x, remove_parallels = TRUE, remove_loops = TRUE)
+to_spatial_simple(
+  x,
+  remove_multiple = TRUE,
+  remove_loops = TRUE,
+  summarise_attributes = "first",
+  store_original_data = FALSE
+)
 
-to_spatial_smooth(x, store_orig_data = FALSE)
+to_spatial_smooth(x, store_original_data = FALSE)
 
 to_spatial_subdivision(x)
 
@@ -34,16 +51,44 @@ to_spatial_transformed(x, ...)
 \item{...}{Arguments to be passed on to other functions. See the description
 of each morpher for details.}
 
-\item{remove_parallels}{Should parallel edges be removed. Defaults to
-\code{TRUE}.}
+\item{summarise_attributes}{Whenever multiple features (i.e. nodes and/or 
+edges) are merged into a single feature during morphing, how should their
+attributes be combined? Several options are possible, see
+\code{\link[igraph]{igraph-attribute-combination}} for details.}
 
-\item{remove_loops}{Should loops be remove. Defaults to \code{TRUE}.}
+\item{store_original_data}{Whenever multiple features (i.e. nodes and/or 
+edges) are merged into a single feature during morphing, should the data of 
+the original features be stored as an attribute of the new feature, in a 
+column named \code{.orig_data}. This is in line with the design principles 
+of \code{tidygraph}. Defaults to \code{FALSE}.}
 
-\item{store_orig_data}{Whenever multiple features (i.e. nodes and/or edges)
-are merged into a single feature during morphing, should the data of the
-original features be stored as an attribute of the new feature, in a column
-named \code{.orig_data}. This is in line with the design principles of
-\code{tidygraph}. Defaults to \code{FALSE}.}
+\item{node}{The geospatial point for which the neighborhood will be
+calculated. Can be an integer, referring to the index of the node for which
+the neighborhood will be calculated. Can also be an object of class 
+\code{\link[sf]{sf}} or \code{\link[sf]{sfc}}, containing a single feature. 
+In that case, this point will be snapped to its nearest node before
+calculating the neighborhood.}
+
+\item{threshold}{The threshold distance to be used. Only nodes within the
+threshold distance from the reference node will be included in the
+neighborhood. Should be a numeric value in the same units as the weight 
+values used for distance calculation.}
+
+\item{weights}{The edge weights used to calculate distances on the network.
+Can be a numeric vector giving edge weights, or a column name referring to
+an attribute column in the edges table containing those weights. If set to
+\code{NULL}, the values of a column named \code{weight} in the edges table
+will be used automatically, as long as this column is present. If not, the
+geographic edge lengths will be calculated internally and used as weights.}
+
+\item{from}{Should distances be calculated from the reference node towards
+the other nodes? Defaults to \code{TRUE}. If set to \code{FALSE}, distances
+will be calculated from the other nodes towards the reference node instead.}
+
+\item{remove_multiple}{Should multiple edges be merged into one. Defaults 
+to \code{TRUE}.}
+
+\item{remove_loops}{Should loop edges be removed. Defaults to \code{TRUE}.}
 
 \item{subset_by}{Whether to create subgraphs based on nodes or edges.}
 }
@@ -73,6 +118,14 @@ of \code{\link[tidygraph]{morph}} for the requirements for custom morphers.
 }
 \section{Functions}{
 \itemize{
+\item \code{to_spatial_contracted}: Combine groups of nodes into a single node per
+group. \code{...} is forwarded to \code{\link[dplyr]{group_by}} to
+create the groups. The centroid of the group of nodes will be used as
+geometry of the contracted node. If edge are spatially explicit, edge 
+geometries are updated accordingly such that the valid spatial network 
+structure is preserved. Returns a \code{morphed_sfnetwork} containing a
+single element of class \code{\link{sfnetwork}}.
+
 \item \code{to_spatial_directed}: Make a network directed in the direction given
 by the linestring geometries of the edges. Differs from
 \code{\link[tidygraph]{to_directed}}, which makes a network directed based
@@ -91,6 +144,13 @@ drawn between the source and target node of each edge. Returns a
 \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}.
 
+\item \code{to_spatial_neighborhood}: Limit a network to the spatial neighborhood of 
+a specific node. \code{...} is forwarded to
+\code{\link[tidygraph]{node_distance_from}} (if \code{from} is \code{TRUE}) 
+or \code{\link[tidygraph]{node_distance_to}} (if \code{from} is 
+\code{FALSE}). Returns a \code{morphed_sfnetwork} containing a single 
+element of class \code{\link{sfnetwork}}.
+
 \item \code{to_spatial_shortest_paths}: Limit a network to those nodes and edges that
 are part of the shortest path between two nodes. \code{...} is evaluated in
 the same manner as \code{\link{st_network_paths}} with
@@ -100,8 +160,13 @@ the number of requested paths. When unmorphing only the first instance of
 both the node and edge data will be used, as the the same node and/or edge
 can be present in multiple paths.
 
-\item \code{to_spatial_simple}: Remove loops and parallel edges. Returns a
-\code{morphed_sfnetwork} containing a single element of class
+\item \code{to_spatial_simple}: Remove loop edges and/or merges multiple edges
+into a single edge. Multiple edges are edges that have the same source and
+target nodes (in directed networks) or edges that are incident to the same
+nodes (in undirected networks). When merging them into a single edge, the
+geometry of the first edge is preserved. The order of the edges can be
+influenced by calling \code{\link[dplyr]{arrange}} before simplifying. 
+Returns a \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}.
 
 \item \code{to_spatial_smooth}: Construct a smoothed version of the network by
