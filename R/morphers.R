@@ -105,21 +105,29 @@ to_spatial_contracted = function(x, ...,
   # STEP III: CONTRACT THE NODES
   # Contract the nodes in the network using igraph::contract.
   # Use the extracted group indices as mapping.
-  # Only include real attribute columns, because igraph will summarise them.
-  # That is, do not include:
-  # --> The geometry list column.
-  # --> The node indices column added by tidygraph::morph.
+  # Attributes will be summarised as defined by argument summarise_attributes.
+  # Igraph does not know the geometry column is not an attribute:
+  # --> We should temporarily remove the geometry column before contracting.
   ## ===========================
+  # Remove the geometry list column for the time being.
   x_tmp = delete_vertex_attr(x, geom_colname)
-  x_tmp = delete_vertex_attr(x, ".tidygraph_node_index")
+  # Update the attribute summary instructions.
+  # During morphing tidygraph add the tidygraph node index column.
+  # Since it is added internally it is not referenced in summarise_attributes.
+  # We need to include it manually.
+  # They should be concatenated into a vector.
+  if (! inherits(summarise_attributes, "list")) {
+    summarise_attributes = list(summarise_attributes)
+  }
+  summarise_attributes[".tidygraph_node_index"] = "concat"
+  # Contract with igraph::contract.
   x_new = as_tbl_graph(contract(x_tmp, all_group_idxs, summarise_attributes))
-  ## ==================================================
-  # STEP IV: UPDATE THE NODES OF THE CONTRACTED NETWORK
+  ## ======================================================
+  # STEP IV: UPDATE THE NODE DATA OF THE CONTRACTED NETWORK
   # Add the following information to the nodes table:
   # --> The geometries of the new nodes.
-  # --> The original node indices mapping the new nodes to the original ones.
   # --> If requested the original node data in tibble format.
-  ## ==================================================
+  ## ======================================================
   # Extract the nodes from the contracted network.
   new_nodes = as_tibble(x_new, "nodes")
   # Add geometries to the new nodes.
@@ -132,15 +140,6 @@ to_spatial_contracted = function(x, ...,
   cnt_node_geoms = do.call("c", lapply(cnt_groups, get_centroid))
   new_node_geoms[cnt_group_idxs] = cnt_node_geoms
   new_nodes[geom_colname] = list(new_node_geoms)
-  # Add original node indices to the new nodes.
-  # For each node that was not contracted:
-  # --> Use its original row number.
-  # For each node that was contracted:
-  # --> Use the vector of original row numbers of the group members.
-  new_node_idxs = as.list(c(1:vcount(x))[!duplicated(all_group_idxs)])
-  cnt_node_idxs = lapply(cnt_groups, `[[`, ".tidygraph_node_index")
-  new_node_idxs[cnt_group_idxs] = cnt_node_idxs
-  new_nodes$.tidygraph_node_index = new_node_idxs
   # If requested, store original node data in a .orig_data column.
   if (store_original_data) {
     drop_index = function(i) { i$.tidygraph_node_index = NULL; i }
