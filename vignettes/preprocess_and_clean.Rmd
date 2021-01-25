@@ -37,6 +37,7 @@ library(sf)
 library(tidygraph)
 library(tidyverse)
 library(igraph)
+library(dbscan)
 ```
 
 ## Common pre-processing tasks
@@ -120,6 +121,13 @@ p10 = st_point(c(4, 0))
 p11 = st_point(c(5, 2))
 p12 = st_point(c(5, 0))
 p13 = st_point(c(5, -1))
+p14 = st_point(c(5.8, 1))
+p15 = st_point(c(6, 1.2))
+p16 = st_point(c(6.2, 1))
+p17 = st_point(c(6, 0.8))
+p18 = st_point(c(6, 2))
+p19 = st_point(c(6, -1))
+p20 = st_point(c(7, 1))
 
 l1 = st_sfc(st_linestring(c(p1, p2, p3)))
 l2 = st_sfc(st_linestring(c(p3, p4, p5)))
@@ -128,12 +136,25 @@ l4 = st_sfc(st_linestring(c(p8, p11, p9)))
 l5 = st_sfc(st_linestring(c(p9, p5, p10)))
 l6 = st_sfc(st_linestring(c(p8, p9)))
 l7 = st_sfc(st_linestring(c(p10, p12, p13, p10)))
+l8 = st_sfc(st_linestring(c(p5, p14)))
+l9 = st_sfc(st_linestring(c(p15, p14)))
+l10 = st_sfc(st_linestring(c(p16, p15)))
+l11 = st_sfc(st_linestring(c(p14, p17)))
+l12 = st_sfc(st_linestring(c(p17, p16)))
+l13 = st_sfc(st_linestring(c(p15, p18)))
+l14 = st_sfc(st_linestring(c(p17, p19)))
+l15 = st_sfc(st_linestring(c(p16, p20)))
 
-points = c(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13) %>%
+points = c(
+  p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
+  p12, p13, p14, p15, p16, p17, p18, p19, p20
+)
+
+points = points %>%
   st_multipoint() %>%
   st_sfc()
 
-lines = c(l1, l2, l3, l4, l5, l6, l7)
+lines = c(l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15)
 
 edge_colors = function(x) sf.colors(ecount(x), categorical = TRUE)
 
@@ -167,11 +188,11 @@ For our example network, this means:
 subdivision = convert(net, to_spatial_subdivision)
 
 plot(st_geometry(net, "edges"), col = edge_colors(net), lwd = 4)
-plot(points, pch = 4, add = TRUE)
-plot(st_geometry(net, "nodes"), pch = 20, cex = 2, add = TRUE)
+plot(points, pch = 4, cex = 0.5, add = TRUE)
+plot(st_geometry(net, "nodes"), pch = 20, add = TRUE)
 plot(st_geometry(subdivision, "edges"), col = edge_colors(subdivision), lwd = 4)
-plot(points, pch = 4, add = TRUE)
-plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 2, add = TRUE)
+plot(points, pch = 4, cex = 0.5, add = TRUE)
+plot(st_geometry(subdivision, "nodes"), pch = 20, add = TRUE)
 ```
 
 ### Smooth pseudo nodes
@@ -185,35 +206,98 @@ The function `to_spatial_smooth()` iteratively smooths pseudo nodes, and after e
 smoothed = convert(subdivision, to_spatial_smooth)
 
 plot(st_geometry(subdivision, "edges"), col = edge_colors(subdivision), lwd = 4)
-plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 2, add = TRUE)
+plot(st_geometry(subdivision, "nodes"), pch = 20, add = TRUE)
 plot(st_geometry(smoothed, "edges"), col = edge_colors(smoothed), lwd = 4)
-plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 2, add = TRUE)
+plot(st_geometry(smoothed, "nodes"), pch = 20, add = TRUE)
 ```
 
 ### Simplify network
-A network may contain an edge that connects two nodes that were already connected by another edge in the network. Such an edge can be called a *parallel edge*. Also, it may contain an edge that starts and ends at the same node. Such an edge can be called a *loop edge*. In graph theory, a *simple graph* is a graph that does *not* contain parallel and loop edges.
+A network may contain sets of edges that connect the same pair of nodes. Such edges can be called *multiple edges*. Also, it may contain an edge that starts and ends at the same node. Such an edge can be called a *loop edge*. 
 
-The function `to_spatial_simple()` simplifies a network by removing parallel and loop edges.
-
-```{r, fig.show='hold', out.width = '50%'}
-simple = convert(smoothed, to_spatial_simple)
-
-plot(st_geometry(smoothed, "edges"), col = edge_colors(smoothed), lwd = 4)
-plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 2, add = TRUE)
-plot(st_geometry(simple, "edges"), col = edge_colors(simple), lwd = 4)
-plot(st_geometry(simple, "nodes"), pch = 20, cex = 2, add = TRUE)
-```
-
-When there are multiple edges connecting the same pair of nodes, which edge is marked as the 'original' and which as parallel edges depends on the order of the edges in the edges table. That is, by re-arranging the edges table before calling `to_spatial_simple()` you can influence which edge is kept whenever parallel edges are detected. For example, you might want to always keep the edge with the shortest distance.
+In graph theory, a *simple graph* is defined as a graph that does *not* contain multiple edges nor loop edges. To obtain a simple version of our network, we can remove multiple edges and loop edges by calling tidygraphs edge filter functions `tidygraph::edge_is_multiple()` and `tidygraph::edge_is_loop()`.
 
 ```{r, fig.show='hold', out.width = '50%'}
 simple = smoothed %>%
   activate("edges") %>%
-  arrange(st_length(.)) %>%
-  convert(to_spatial_simple)
+  filter(!edge_is_multiple()) %>%
+  filter(!edge_is_loop())
 
 plot(st_geometry(smoothed, "edges"), col = edge_colors(smoothed), lwd = 4)
-plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 2, add = TRUE)
+plot(st_geometry(smoothed, "nodes"), pch = 20, add = TRUE)
 plot(st_geometry(simple, "edges"), col = edge_colors(simple), lwd = 4)
-plot(st_geometry(simple, "nodes"), pch = 20, cex = 2, add = TRUE)
+plot(st_geometry(simple, "nodes"), pch = 20, add = TRUE)
 ```
+
+Note that removing multiple edges in that way always *keeps* the *first*edge in each set of multiple edges, and drops all the other members of the set. Hence, the resulting network does not contain multiple edges anymore, but the connections between the nodes are preserved. Which of the multiple edges is the first one in a set depends on the order of the edges in the edges table. That is, by re-arranging the edges table before applying the filter you can influence which edges are kept whenever sets of multiple edges are detected. For example, you might want to always keep the edge with the shortest distance in the set.
+
+```{r, fig.show='hold', out.width = '50%'}
+simple = smoothed %>%
+  activate("edges") %>%
+  arrange(edge_length()) %>%
+  filter(!edge_is_multiple()) %>%
+  filter(!edge_is_loop())
+
+plot(st_geometry(smoothed, "edges"), col = edge_colors(smoothed), lwd = 4)
+plot(st_geometry(smoothed, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(simple, "edges"), col = edge_colors(simple), lwd = 4)
+plot(st_geometry(simple, "nodes"), pch = 20, add = TRUE)
+```
+
+The process of simplifying a network is also implemented in a spatial morpher function `to_spatial_simple()`. The added value of this function is that it not simply keeps the first edge in each set of multiple edges and removes the other ones. Instead it allows you to combine attributes of all edges in a set. How to combine them can be specified on a per-attribute basis, e.g. by summing the attribute values, concatenating them, etc. For more details, see the vignette on [spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html).
+
+### Simplify intersections
+
+Especially in road networks you might find that intersections between edges are not modelled by a single node. Instead, each leg of the intersection has a dedicated edge. To simplify the topology of your network, you may want to reduce such complex intersection structures into a single node. Hence, we want to reduce a group of nodes into a single node, while maintaining the connectivity of the network.
+
+In graph theory terms this process is called *contraction*: the contraction of a set of nodes $P = \{p_{1}, p_{2}, ..., p_{n}\}$ is the replacement of $S$ and all its incident edges by a *single* node $p^{*}$ and a set of edges that connect $p^{*}$ to all nodes that were adjacent to any node $p_{i} \in P$.
+
+The function `to_spatial_contracted()` contract groups of nodes based on a given grouping variable. The geometry of each contracted node is the *centroid* of the original group members' geometries. Moreover, the geometries of the edges that start or end at a contracted node are updated such that their boundaries match the new node geometries.
+
+Grouping variables are internally forwarded to `dplyr::group_by()`. That means you can group the nodes based on any (combination of) attribute(s). However, in this case, we want to group the nodes spatially, such that nodes that are very close to each other in space will get contracted. To do so, we can use any spatial clustering algorithm. In this example, we will use the DBSCAN algorithm as implemented in the package `dbscan`.
+
+```{r}
+# Retrieve the coordinates of the nodes.
+node_coords = simple %>%
+  activate("nodes") %>%
+  st_coordinates()
+
+# We set eps = 0.5 such that:
+# Nodes within a distance of 0.5 from each other will be in the same cluster.
+# We set minPts = 1 such that:
+# A node is assigned a cluster even if it is the only member of that cluster.
+clusters = dbscan(node_coords, eps = 0.5, minPts = 1)$cluster 
+
+# Add the cluster information to the nodes of the network.
+clustered = simple %>%
+  activate("nodes") %>%
+  mutate(cls = clusters)
+```
+
+Now we have assigned each node to a spatial cluster. However, we forgot one important point. When simplifying intersections, it is not only important that the contracted nodes are close to each other in space. They should also be *connected*. Two nodes that are close to each other but *not* connected, can never be part of the same intersection. Hence, a group of nodes to be contracted should in this case be located in the same *component* of the network. We can use `tidygraph::group_components()` to assign a component index to each node. Note that in our example network this is not so much of use, since the whole network forms a single connected component. But for the sake of completeness, we will still show it:
+
+```{r}
+clustered = clustered %>%
+  mutate(cmp = group_components())
+
+select(clustered, cls, cmp)
+```
+
+The combination of the cluster index and the component index can now be used to define the groups of nodes to be contracted. Nodes that form a group on their own will remain unchanged.
+
+As final point of attention is that contraction introduces new multiple edges and/or loop edges. Multiple edges are introduced by contraction when there are several connections between the same groups of nodes. Loop edges are introduced by contraction when there are connections within a group. Setting `simplify = TRUE` will remove the multiple and loop edges after contraction. However, note that this also removes multiple and loop edges that already existed before contraction.
+
+```{r, fig.show='hold', out.width = '50%'}
+contracted = convert(clustered, to_spatial_contracted, cls, cmp, simplify = TRUE)
+
+plot(st_geometry(simple, "edges"), col = edge_colors(simple), lwd = 4)
+plot(st_geometry(simple, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(contracted, "edges"), col = edge_colors(contracted), lwd = 4)
+plot(st_geometry(contracted, "nodes"), pch = 20, add = TRUE)
+```
+
+
+
+
+
+
+
