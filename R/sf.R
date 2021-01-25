@@ -431,11 +431,17 @@ spatial_join_nodes = function(x, y, ...) {
   # Join with st_join.
   n_new = st_join(x_sf, y_sf, ...)
   # If there were multiple matches:
-  # --> Raise an error.
   # --> Allowing multiple matches for nodes breaks the valid network structure.
+  # --> We will only include the first match and raise a warning.
   # --> See the package vignettes for more info.
-  if (has_duplicates(n_new$.sfnetwork_index)) {
-    raise_multiple_matches()
+  duplicated_match = duplicated(n_new$.sfnetwork_index)
+  if (any(duplicated_match)) {
+    n_new = n_new[!duplicated_match, ]
+    warning(
+      "Multiple matches were detected from some nodes. ",
+      "Only the first match is considered"
+      call. = FALSE
+    )
   }
   # If an inner join was requested instead of a left join:
   # --> This means only nodes in x that had a match in y are preserved.

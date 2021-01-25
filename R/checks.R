@@ -1,15 +1,3 @@
-#' Check if a given vector contains duplicates
-#'
-#' @param x A vector.
-#'
-#' @return \code{TRUE} when the vector contains duplicated values,
-#' \code{FALSE} otherwise.
-#'
-#' @noRd
-has_duplicates = function(x) {
-  any(duplicated(x))
-}
-
 #' Check if a table has spatial information stored in a geometry list column
 #'
 #' @param x A flat table, such as an sf object, data.frame or tibble.
