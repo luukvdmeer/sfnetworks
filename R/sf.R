@@ -439,7 +439,7 @@ spatial_join_nodes = function(x, y, ...) {
     n_new = n_new[!duplicated_match, ]
     warning(
       "Multiple matches were detected from some nodes. ",
-      "Only the first match is considered"
+      "Only the first match is considered",
       call. = FALSE
     )
   }

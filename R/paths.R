@@ -350,7 +350,7 @@ set_path_weights = function(x, weights) {
   } else if (is.null(weights) & is.null(edge_attr(x, "weight"))) {
     # Case 2: Weights is NULL and there is no 'weight' column in the edges table.
     # --> Use the length of the edge linestrings as weights.
-    with_graph(activate(x, "edges"), edge_length())
+    with_graph(x, edge_length())
   } else {
     # All other cases: igraph will handle the given weights.
     # No need for pre-processing.
