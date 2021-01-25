@@ -70,7 +70,16 @@ NULL
 #' geometry of the contracted node. If edge are spatially explicit, edge 
 #' geometries are updated accordingly such that the valid spatial network 
 #' structure is preserved. Returns a \code{morphed_sfnetwork} containing a
-#' single element of class \code{\link{sfnetwork}}. 
+#' single element of class \code{\link{sfnetwork}}.
+#'
+#' @param simplify Should the network be simplified after contraction? This
+#' means that multiple edges and loop edges will be removed. Multiple edges 
+#' are introduced by contraction when there are several connections between 
+#' the same groups of nodes. Loop edges are introduced by contraction when 
+#' there are connections within a group. Note however that setting this to
+#' \code{TRUE} also removes multiple edges and loop edges that already
+#' existed before contraction. Defaults to \code{FALSE}.
+#' 
 #' @importFrom dplyr group_by group_indices group_split
 #' @importFrom igraph contract delete_vertex_attr
 #' @importFrom sf st_as_sf st_cast st_centroid st_combine st_geometry 
@@ -78,7 +87,7 @@ NULL
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph
 #' @export
-to_spatial_contracted = function(x, ..., 
+to_spatial_contracted = function(x, ..., simplify = FALSE,
                                  summarise_attributes = "ignore",
                                  store_original_data = FALSE) {
   # Retrieve nodes from the network.
@@ -156,6 +165,15 @@ to_spatial_contracted = function(x, ...,
   # This means the edge geometries of their incidents also need an update.
   # Otherwise the valid spatial network structure is not preserved.
   ## ===============================================================
+  # First we will remove multiple edges and loop edges if this was requested.
+  # Multiple edges occur when there are several connections between groups.
+  # Loop edges occur when there are connections within groups.
+  # Note however that original multiple and loop edges are also removed.
+  if (simplify) {
+    x_new = delete_edges(x_new, which(which_multiple(x_new)))
+    x_new = delete_edges(x_new, which(which_loop(x_new)))
+    x_new = x_new %preserve_all_attrs% x_new
+  }
   if (has_spatially_explicit_edges(x)) {
     # Extract the edges and their geometries from the contracted network.
     new_edges = edges_as_sf(x_new)
