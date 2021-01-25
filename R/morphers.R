@@ -65,7 +65,7 @@
 NULL
 
 #' @describeIn spatial_morphers Combine groups of nodes into a single node per
-#' group. \code{...} will be forwarded to \code{\link[dplyr]{group_by}} to
+#' group. \code{...} is forwarded to \code{\link[dplyr]{group_by}} to
 #' create the groups. The centroid of the group of nodes will be used as
 #' geometry of the contracted node. If edge are spatially explicit, edge 
 #' geometries are updated accordingly such that the valid spatial network 
@@ -335,6 +335,65 @@ to_spatial_explicit = function(x, ...) {
   # Return in a list.
   list(
     explicit = x_new
+  )
+}
+
+#' @describeIn spatial_morphers Limit a network to the spatial neighborhood of 
+#' a specific node. \code{...} is forwarded to
+#' \code{\link[tidygraph]{node_distance_from}} (if \code{from} is \code{TRUE}) 
+#' or \code{\link[tidygraph]{node_distance_to}} (if \code{from} is 
+#' \code{FALSE}). Returns a \code{morphed_sfnetwork} containing a single 
+#' element of class \code{\link{sfnetwork}}.
+#'
+#' @param node The geospatial point for which the neighborhood will be
+#' calculated. Can be an integer, referring to the index of the node for which
+#' the neighborhood will be calculated. Can also be an object of class 
+#' \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}, containing a single feature. 
+#' In that case, this point will be snapped to its nearest node before
+#' calculating the neighborhood.
+#'
+#' @param threshold The threshold distance to be used. Only nodes within the
+#' threshold distance from the reference node will be included in the
+#' neighborhood. Should be a numeric value in the same units as the weight 
+#' values used for distance calculation.
+#'
+#' @param weights The edge weights used to calculate distances on the network.
+#' Can be a numeric vector giving edge weights, or a column name referring to
+#' an attribute column in the edges table containing those weights. If set to
+#' \code{NULL}, the values of a column named \code{weight} in the edges table
+#' will be used automatically, as long as this column is present. If not, the
+#' geographic edge lengths will be calculated internally and used as weights.
+#'
+#' @param from Should distances be calculated from the reference node towards
+#' the other nodes? Defaults to \code{TRUE}. If set to \code{FALSE}, distances
+#' will be calculated from the other nodes towards the reference node instead.
+#'
+#' @importFrom igraph induced_subgraph
+#' @importFrom tidygraph node_distance_from node_distance_to with_graph
+#' @export
+to_spatial_neighborhood = function(x, node, threshold, weights = NULL, 
+                                   from = TRUE, ...) {
+  # Parse node argument.
+  # If 'node' is given as simple feature geometry, convert it to a node index.
+  # This can be done equal to setting endpoints of path calculations.
+  if (is.sf(node) | is.sfc(node)) node = set_path_endpoints(x, node)
+  # Parse weights argument.
+  # This can be done equal to setting weights for path calculations.
+  weights = set_path_weights(x, weights)
+  # Calculate the distances from/to the reference node to/from all other nodes.
+  # Use the provided weights as edge weights in the distance calculation.
+  dist = if (from) {
+    with_graph(x, node_distance_from(node, weights = weights, ...))
+  } else {
+    with_graph(x, node_distance_to(node, weights = weights, ...))
+  }
+  # Use the given threshold to define which nodes are in the neighborhood.
+  in_neighborhood = dist <= threshold
+  # Subset the network to keep only the nodes in the neighborhood.
+  x_new = induced_subgraph(x, in_neighborhood)
+  # Return in a list.
+  list(
+    neighborhood = x_new %preserve_all_attrs% x
   )
 }
 
