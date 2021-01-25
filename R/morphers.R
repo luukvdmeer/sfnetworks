@@ -81,7 +81,8 @@ NULL
 #' existed before contraction. Defaults to \code{FALSE}.
 #' 
 #' @importFrom dplyr group_by group_indices group_split
-#' @importFrom igraph contract delete_vertex_attr
+#' @importFrom igraph contract delete_edges delete_vertex_attr which_loop
+#' which_multiple
 #' @importFrom sf st_as_sf st_cast st_centroid st_combine st_geometry 
 #' st_intersects
 #' @importFrom tibble as_tibble
