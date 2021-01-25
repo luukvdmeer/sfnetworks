@@ -338,19 +338,27 @@ set_path_endpoints = function(x, p) {
 set_path_weights = function(x, weights) {
   if (is.character(weights) & length(weights) == 1) {
     # Case 1: Weights is a character pointing to a column in the edges table.
-    # --> Return the values in that column, if it exists.
+    # --> Use the values of that column as weight values (if it exsists).
     values = edge_attr(x, weights)
     if (is.null(values)) {
       stop(
         "Edge attribute '", weights, "' not found",
         call. = FALSE
       )
+    } else {
+      values
     }
-    values
-  } else if (is.null(weights) & is.null(edge_attr(x, "weight"))) {
-    # Case 2: Weights is NULL and there is no 'weight' column in the edges table.
-    # --> Use the length of the edge linestrings as weights.
-    with_graph(x, edge_length())
+  } else if (is.null(weights)) {
+    values = edge_attr(x, "weight")
+    if (is.null(values)) {
+      # Case 2: Weights is NULL and the edges don't have a weight attribute.
+      # --> Use the length of the edge linestrings as weight values.
+      with_graph(x, edge_length())
+    } else {
+      # Case 3: Weights is NULL and the edges have a weight attribute.
+      # --> Use the values of the weight attribute as weight values
+      values
+    }
   } else {
     # All other cases: igraph will handle the given weights.
     # No need for pre-processing.
