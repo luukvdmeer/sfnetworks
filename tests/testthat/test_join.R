@@ -25,10 +25,12 @@ rdm = net %>%
   st_sample(4, type = "random")
 
 ## st_join
-test_that("network breaks when there are multiple
-          node matches given to st_join", {
+test_that("st_join gives a warning when there are multiple node matches", {
   ptsdup = rbind(pts, pts)
-  expect_error(st_join(net, ptsdup), "One or more nodes have multiple matches")
+  expect_warning(
+    st_join(net, ptsdup), 
+    "Multiple matches were detected from some nodes. "
+  )
 })
 
 # Find indices of nearest nodes.
