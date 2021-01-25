@@ -17,6 +17,7 @@
 to_spatial_contracted(
   x,
   ...,
+  simplify = FALSE,
   summarise_attributes = "ignore",
   store_original_data = FALSE
 )
@@ -50,6 +51,14 @@ to_spatial_transformed(x, ...)
 
 \item{...}{Arguments to be passed on to other functions. See the description
 of each morpher for details.}
+
+\item{simplify}{Should the network be simplified after contraction? This
+means that multiple edges and loop edges will be removed. Multiple edges 
+are introduced by contraction when there are several connections between 
+the same groups of nodes. Loop edges are introduced by contraction when 
+there are connections within a group. Note however that setting this to
+\code{TRUE} also removes multiple edges and loop edges that already
+existed before contraction. Defaults to \code{FALSE}.}
 
 \item{summarise_attributes}{Whenever multiple features (i.e. nodes and/or 
 edges) are merged into a single feature during morphing, how should their
