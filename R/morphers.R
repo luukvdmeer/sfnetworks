@@ -18,13 +18,13 @@
 #' @param ... Arguments to be passed on to other functions. See the description
 #' of each morpher for details.
 #'
-#' @param store_original_data Whenever multiple features (i.e. nodes and/or 
-#' edges) are merged into a single feature during morphing, should the data of 
-#' the original features be stored as an attribute of the new feature, in a 
-#' column named \code{.orig_data}. This is in line with the design principles 
+#' @param store_original_data Whenever multiple features (i.e. nodes and/or
+#' edges) are merged into a single feature during morphing, should the data of
+#' the original features be stored as an attribute of the new feature, in a
+#' column named \code{.orig_data}. This is in line with the design principles
 #' of \code{tidygraph}. Defaults to \code{FALSE}.
 #'
-#' @param summarise_attributes Whenever multiple features (i.e. nodes and/or 
+#' @param summarise_attributes Whenever multiple features (i.e. nodes and/or
 #' edges) are merged into a single feature during morphing, how should their
 #' attributes be combined? Several options are possible, see
 #' \code{\link[igraph]{igraph-attribute-combination}} for details.
@@ -67,18 +67,18 @@ NULL
 #' @describeIn spatial_morphers Combine groups of nodes into a single node per
 #' group. \code{...} is forwarded to \code{\link[dplyr]{group_by}} to
 #' create the groups. The centroid of the group of nodes will be used as
-#' geometry of the contracted node. If edge are spatially explicit, edge 
-#' geometries are updated accordingly such that the valid spatial network 
+#' geometry of the contracted node. If edge are spatially explicit, edge
+#' geometries are updated accordingly such that the valid spatial network
 #' structure is preserved. Returns a \code{morphed_sfnetwork} containing a
-#' single element of class \code{\link{sfnetwork}}. 
+#' single element of class \code{\link{sfnetwork}}.
 #' @importFrom dplyr group_by group_indices group_split
 #' @importFrom igraph contract delete_vertex_attr
-#' @importFrom sf st_as_sf st_cast st_centroid st_combine st_geometry 
+#' @importFrom sf st_as_sf st_cast st_centroid st_combine st_geometry
 #' st_intersects
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph
 #' @export
-to_spatial_contracted = function(x, ..., 
+to_spatial_contracted = function(x, ...,
                                  summarise_attributes = "ignore",
                                  store_original_data = FALSE) {
   # Retrieve nodes from the network.
@@ -99,7 +99,7 @@ to_spatial_contracted = function(x, ...,
   ## =======================
   all_group_idxs = group_indices(nodes)
   all_groups = group_split(nodes)
-  cnt_group_idxs = which(as.numeric(table(all_group_idxs)) > 1)  
+  cnt_group_idxs = which(as.numeric(table(all_group_idxs)) > 1)
   cnt_groups = all_groups[cnt_group_idxs]
   ## ===========================
   # STEP III: CONTRACT THE NODES
@@ -164,11 +164,11 @@ to_spatial_contracted = function(x, ...,
     # --> Append a point at the start of an edge linestring.
     # --> Append a point at the end of an edge linestring.
     # --> Append the same point at both ends of an edge linestring.
-    append_source = function(i, j) {            
-      l = new_edge_geoms[i]  
-      p = new_node_geoms[j]    
+    append_source = function(i, j) {
+      l = new_edge_geoms[i]
+      p = new_node_geoms[j]
       l_pts = st_cast(l, "POINT")
-      st_cast(st_combine(c(p, l_pts)), "LINESTRING")        
+      st_cast(st_combine(c(p, l_pts)), "LINESTRING")
     }
     append_target = function(i, j) {
       l = new_edge_geoms[i]
@@ -177,8 +177,8 @@ to_spatial_contracted = function(x, ...,
       st_cast(st_combine(c(l_pts, p)), "LINESTRING")
     }
     append_boundaries = function(j, i) {
-      l = new_edge_geoms[j]  
-      p = new_node_geoms[i]    
+      l = new_edge_geoms[j]
+      p = new_node_geoms[i]
       l_pts = st_cast(l, "POINT")
       st_cast(st_combine(c(p, l_pts, p)), "LINESTRING")
     }
@@ -338,23 +338,23 @@ to_spatial_explicit = function(x, ...) {
   )
 }
 
-#' @describeIn spatial_morphers Limit a network to the spatial neighborhood of 
+#' @describeIn spatial_morphers Limit a network to the spatial neighborhood of
 #' a specific node. \code{...} is forwarded to
-#' \code{\link[tidygraph]{node_distance_from}} (if \code{from} is \code{TRUE}) 
-#' or \code{\link[tidygraph]{node_distance_to}} (if \code{from} is 
-#' \code{FALSE}). Returns a \code{morphed_sfnetwork} containing a single 
+#' \code{\link[tidygraph]{node_distance_from}} (if \code{from} is \code{TRUE})
+#' or \code{\link[tidygraph]{node_distance_to}} (if \code{from} is
+#' \code{FALSE}). Returns a \code{morphed_sfnetwork} containing a single
 #' element of class \code{\link{sfnetwork}}.
 #'
 #' @param node The geospatial point for which the neighborhood will be
 #' calculated. Can be an integer, referring to the index of the node for which
-#' the neighborhood will be calculated. Can also be an object of class 
-#' \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}, containing a single feature. 
+#' the neighborhood will be calculated. Can also be an object of class
+#' \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}, containing a single feature.
 #' In that case, this point will be snapped to its nearest node before
 #' calculating the neighborhood.
 #'
 #' @param threshold The threshold distance to be used. Only nodes within the
 #' threshold distance from the reference node will be included in the
-#' neighborhood. Should be a numeric value in the same units as the weight 
+#' neighborhood. Should be a numeric value in the same units as the weight
 #' values used for distance calculation.
 #'
 #' @param weights The edge weights used to calculate distances on the network.
@@ -371,7 +371,7 @@ to_spatial_explicit = function(x, ...) {
 #' @importFrom igraph induced_subgraph
 #' @importFrom tidygraph node_distance_from node_distance_to with_graph
 #' @export
-to_spatial_neighborhood = function(x, node, threshold, weights = NULL, 
+to_spatial_neighborhood = function(x, node, threshold, weights = NULL,
                                    from = TRUE, ...) {
   # Parse node argument.
   # If 'node' is given as simple feature geometry, convert it to a node index.
@@ -432,11 +432,11 @@ to_spatial_shortest_paths = function(x, ...) {
 #' target nodes (in directed networks) or edges that are incident to the same
 #' nodes (in undirected networks). When merging them into a single edge, the
 #' geometry of the first edge is preserved. The order of the edges can be
-#' influenced by calling \code{\link[dplyr]{arrange}} before simplifying. 
+#' influenced by calling \code{\link[dplyr]{arrange}} before simplifying.
 #' Returns a \code{morphed_sfnetwork} containing a single element of class
 #' \code{\link{sfnetwork}}.
 #'
-#' @param remove_multiple Should multiple edges be merged into one. Defaults 
+#' @param remove_multiple Should multiple edges be merged into one. Defaults
 #' to \code{TRUE}.
 #'
 #' @param remove_loops Should loop edges be removed. Defaults to \code{TRUE}.
@@ -451,7 +451,7 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
                              store_original_data = FALSE) {
   # Define if the network has spatially explicit edges.
   # This influences some of the processes to come.
-  if (has_spatially_explicit_edges(x)) spatial = TRUE
+  spatial = if (has_spatially_explicit_edges(x)) TRUE else FALSE
   # Update the attribute summary instructions.
   # In the summarise attributes only real attribute columns were referenced.
   # On top of those, we need to include:
