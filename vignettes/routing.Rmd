@@ -146,7 +146,9 @@ Another way to calculate shortest paths, which fits nicely in the tidygraph styl
 
 ## Retrieving an OD cost matrix
 
-The shortest paths calculation as described above is only supported for one-to-one and one-to-many routing. The alternative for many-to-many routing is the calculation of an origin-destination cost matrix. Instead of providing the individual paths, it returns a matrix in which entry $i,j$ is the total cost (i.e. sum of weights) of the shortest path from node $i$ to node $j$. The igraph function for this purpose is `igraph::distances()`, which in `sfnetworks` is wrapped by `st_network_cost()`, allowing again to provide sets of geospatial points as *from* and *to* locations. Note that the calculated costs refer to the paths between the *nearest nodes* of the input points. Their units are the same as the units of weights used in the calculation, in this case meters.
+The shortest paths calculation as described above is only supported for one-to-one and one-to-many routing. The alternative for many-to-many routing is the calculation of an origin-destination cost matrix. Instead of providing the individual paths, it returns a matrix in which entry $i,j$ is the total cost (i.e. sum of weights) of the shortest path from node $i$ to node $j$. The origin-destination cost matrix is usually an important starting point for further analysis. For example, it can serve as input to route optimization algorithms, spatial clustering algorithms and the calculation of statistical measures based on spatial proximity.
+
+The igraph function for this purpose is `igraph::distances()`, which in `sfnetworks` is wrapped by `st_network_cost()`, allowing again to provide sets of geospatial points as *from* and *to* locations. Note that the calculated costs refer to the paths between the *nearest nodes* of the input points. Their units are the same as the units of weights used in the calculation, in this case meters.
 
 ```{r}
 st_network_cost(net, from = c(p1, p2, p3), to = c(p1, p2, p3))
@@ -164,7 +166,7 @@ dim(cost_matrix)
 
 All `...` arguments are forwarded internally to `igraph::distances()`. Among other options, this means that you can define which algorithm is used for the paths calculation. By default, `igraph` will choose the most suitable algorithm based on characteristics of the request, such as the type of weights (e.g. only positive or also negative) and the number of given from locations. For details, see the [igraph documentation](https://igraph.org/r/doc/distances.html).
 
-The origin-destination cost matrix is usually an important starting point for further analysis. For example, it can serve as input to route optimization algorithms, spatial clustering algorithms and the calculation of statistical measures based on spatial proximity.
+In directed networks, it also gives you the possibility to define if you want to allow travel only over outbound edges (by setting `mode = "out"`), only over inbound edges (by setting `mode = "in"`), or both (by setting `mode = "all"`, i.e. assume an undirected network). It is important to note that even in directed networks the latter is the default! 
 
 ## Applications
 
