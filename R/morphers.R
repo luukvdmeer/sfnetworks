@@ -553,6 +553,7 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
   } else {
     pseudo = degree(x) == 2
   }
+  if (! any(pseudo)) return (x)
   ## ===============================
   # STEP II: FIND EDGES TO BE MERGED
   # The connectivity of the network should be preserved.
@@ -796,6 +797,7 @@ to_spatial_subdivision = function(x) {
   # --> 1) They have at least one duplicate among the other edge points.
   # --> 2) They are not edge boundary points themselves.
   is_split = has_duplicate & !is_boundary
+  if (! any(is_split)) return (x)
   ## ================================
   # STEP III: DUPLICATE SPLIT POINTS
   # The split points are currently a single interior point in an edge.
