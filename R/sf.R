@@ -521,16 +521,29 @@ spatial_crop_edges = function(x, y, ...) {
   # First we select those cropped edges that are already valid.
   # These are the edges that are still a single linestring after cropping.
   e_new_1 = e_new[st_is(e_new, "LINESTRING"), ]
-  # Then we process the multilinestrings.
-  # We run st_line_merge on them to merge the segments that share a point.
-  e_new_2 = st_line_merge(e_new[st_is(e_new, "MULTILINESTRING"), ])
-  # We select those edges that became a single linestring after merging.
-  e_new_2a = e_new_2[st_is(e_new_2, "LINESTRING"), ]
-  # We 'unpack' those edges that remained a multilinestring after merging.
-  e_new_2b = st_cast(e_new_2[st_is(e_new_2, "MULTILINESTRING"), ], "LINESTRING")
+  # Then we select the multilinestrings.
+  e_new_2 = e_new[st_is(e_new, "MULTILINESTRING"), ]
+  # If there are any multilinestrings, we go on processing them.
+  if (nrow(e_new_2) > 0) {
+    # We run st_line_merge on them to merge the segments that share a point.
+    e_new_2 = st_line_merge(e_new_2)
+    # We select those edges that became a single linestring after merging.
+    e_new_2a = e_new_2[st_is(e_new_2, "LINESTRING"), ]
+    # We 'unpack' those edges that remained a multilinestring after merging.
+    e_new_2b = e_new_2[st_is(e_new_2, "MULTILINESTRING"), ]
+    if (nrow(e_new_2b) > 0) {
+      e_new_2b = st_cast(e_new_2b, "LINESTRING")
+    } else {
+      e_new_2b = NULL
+    }
+    # Bind together the retrieved linestrings.
+    e_new_2 = rbind(e_new_2a, e_new_2b)
+  } else {
+    e_new_2 = NULL
+  }
   # We bind together all retrieved linestrings.
   # This automatically exludes the point objects.
-  e_new = rbind(e_new_1, e_new_2a, e_new_2b)
+  e_new = rbind(e_new_1, e_new_2)
   # Just as with any filtering operation on the edges:
   # --> All nodes of the original network will remain in the new network.
   n_new = nodes_as_sf(x)
