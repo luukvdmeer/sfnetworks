@@ -369,7 +369,8 @@ to_spatial_explicit = function(x, ...) {
 #' the neighborhood will be calculated. Can also be an object of class 
 #' \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}, containing a single feature. 
 #' In that case, this point will be snapped to its nearest node before
-#' calculating the neighborhood.
+#' calculating the neighborhood. When multiple indices or features are given, 
+#' only the first one is taken.
 #'
 #' @param threshold The threshold distance to be used. Only nodes within the
 #' threshold distance from the reference node will be included in the
@@ -395,16 +396,18 @@ to_spatial_neighborhood = function(x, node, threshold, weights = NULL,
   # Parse node argument.
   # If 'node' is given as simple feature geometry, convert it to a node index.
   # This can be done equal to setting endpoints of path calculations.
+  # When multiple nodes are given only the first one is taken.
   if (is.sf(node) | is.sfc(node)) node = set_path_endpoints(x, node)
+  if (length(node) > 1) raise_multiple_elements("node")
   # Parse weights argument.
   # This can be done equal to setting weights for path calculations.
   weights = set_path_weights(x, weights)
   # Calculate the distances from/to the reference node to/from all other nodes.
   # Use the provided weights as edge weights in the distance calculation.
-  dist = if (from) {
-    with_graph(x, node_distance_from(node, weights = weights, ...))
+  if (from) {
+    dist = with_graph(x, node_distance_from(node, weights = weights, ...))
   } else {
-    with_graph(x, node_distance_to(node, weights = weights, ...))
+    dist = with_graph(x, node_distance_to(node, weights = weights, ...))
   }
   # Use the given threshold to define which nodes are in the neighborhood.
   in_neighborhood = dist <= threshold

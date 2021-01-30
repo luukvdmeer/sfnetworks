@@ -141,29 +141,14 @@ st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
                                       ...) {
   # If 'from' points are given as simple feature geometries:
   # --> Convert them to node indices.
-  if (is.sf(from) | is.sfc(from)) {
-    from = set_path_endpoints(x, from)
-  }
+  if (is.sf(from) | is.sfc(from)) from = set_path_endpoints(x, from)
   # If 'to' points are given as simple feature geometries:
   # --> Convert them to node indices.
-  if (is.sf(to) | is.sfc(to)) {
-    to = set_path_endpoints(x, to)
-  }
+  if (is.sf(to) | is.sfc(to)) to = set_path_endpoints(x, to)
   # Igraph does not support multiple 'from' nodes.
-  if (length(from) > 1) {
-    warning(
-      "Although argument 'from' has length > 1, ",
-      "only the first element is used",
-      call. = FALSE
-    )
-  }
+  if (length(from) > 1) raise_multiple_elements("from")
   # Igraph does not support NA values in 'from' and 'to' nodes.
-  if (any(is.na(c(from, to)))) {
-    stop(
-      "NA values present in argument 'from' and/or 'to'",
-      call. = FALSE
-    )
-  }
+  if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
   # Call paths calculation function according to type argument.
   switch(
     type,
@@ -256,6 +241,13 @@ get_all_simple_paths = function(x, from, to, ...) {
 #'
 #' @seealso \code{\link{st_network_paths}}
 #'
+#' @note By default, \code{\link[igraph]{distances}} calculates costs by
+#' by allowing to travel each edge in both directions, hence by assuming an
+#' undirected network. This is the default even when the input network is
+#' directed! For directed networks, the behaviour can be changed by setting
+#' \code{mode = "out"} to considere only outbound edges, or \code{mode = "in"}
+#' to consider only inbound edges. 
+#'
 #' @return An n times m numeric matrix where n is the length of the \code{from}
 #' argument, and m is the length of the \code{to} argument.
 #'
@@ -309,12 +301,7 @@ st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
   if (is.sf(from) | is.sfc(from)) from = set_path_endpoints(x, from)
   if (is.sf(to) | is.sfc(to)) to = set_path_endpoints(x, to)
   # Igraph does not support NA values in 'from' and 'to' nodes.
-  if (any(is.na(c(from, to)))) {
-    stop(
-      "NA values present in argument 'from' and/or 'to'",
-      call. = FALSE
-    )
-  }
+  if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
   # Igraph does not support duplicated 'to' nodes.
   # This can happen without the user knowing when POINT geometries
   # are given to the 'to' argument that happen to snap to a same node.

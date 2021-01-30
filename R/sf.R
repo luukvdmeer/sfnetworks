@@ -648,7 +648,7 @@ spatial_filter_nodes = function(x, y, ..., .operator = sf::st_filter) {
 
 #' @importFrom igraph delete_edges
 #' @importFrom sf st_as_sf
-spatial_filter_edges = function(x, y, ..., .operator = sf::st_filter) {
+spatial_filter_edges = function(x, y, ...) {
   expect_spatially_explicit_edges(x)
   # Convert x and y to sf.
   x_sf = edges_as_sf(x)
@@ -659,8 +659,8 @@ spatial_filter_edges = function(x, y, ..., .operator = sf::st_filter) {
   }
   orig_idxs = seq_len(nrow(x_sf))
   x_sf$.sfnetwork_index = orig_idxs
-  # Filter with the given operator.
-  d_tmp = do.call(match.fun(.operator), list(x_sf, y_sf, ...))
+  # Filter with st_filter.
+  d_tmp = st_filter(x_sf, y_sf, ...)
   # Subset the original network based on the result of the filter operation.
   keep_idxs = d_tmp$.sfnetwork_index
   remove_idxs = find_indices_to_remove(orig_idxs, keep_idxs)
