@@ -247,6 +247,9 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' If set to \code{NA}, no weights are used, even if the edges have a
 #' \code{weight} column.
 #'
+#' @param Inf_as_NaN Should the cost values of unconnected nodes be stored as 
+#' \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.
+#'
 #' @param ... Arguments passed on to \code{\link[igraph]{distances}}.
 #'
 #' @details See the \code{\link[igraph:distances]{igraph}} documentation.
@@ -293,14 +296,14 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' @importFrom igraph V
 #' @export
 st_network_cost = function(x, from = igraph::V(x), to = igraph::V(x),
-                               weights = NULL, ...) {
+                           weights = NULL, Inf_as_NaN = FALSE, ...) {
   UseMethod("st_network_cost")
 }
 
 #' @importFrom igraph distances V
 #' @export
 st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
-                                         weights = NULL, ...) {
+                                     weights = NULL, Inf_as_NaN = FALSE, ...) {
   # If 'from' and/or 'to' points are given as simple feature geometries:
   # --> Convert them to node indices.
   if (is.sf(from) | is.sfc(from)) from = set_path_endpoints(x, from)
@@ -325,7 +328,11 @@ st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
   # Set weights.
   weights = set_path_weights(x, weights)
   # Call igraph function.
-  distances(x, from, to, weights = weights, ...)
+  matrix = distances(x, from, to, weights = weights, ...)
+  # Convert Inf to NaN if requested.
+  if (Inf_as_NaN) matrix[matrix == Inf] = NaN
+  # Return the matrix.
+  matrix
 }
 
 #' @importFrom sf st_geometry st_nearest_feature
