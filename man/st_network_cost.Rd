@@ -4,7 +4,14 @@
 \alias{st_network_cost}
 \title{Compute a cost matrix of a spatial network}
 \usage{
-st_network_cost(x, from = igraph::V(x), to = igraph::V(x), weights = NULL, ...)
+st_network_cost(
+  x,
+  from = igraph::V(x),
+  to = igraph::V(x),
+  weights = NULL,
+  Inf_as_NaN = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
@@ -34,6 +41,9 @@ geographic edge lengths will be calculated internally and used as weights.
 If set to \code{NA}, no weights are used, even if the edges have a
 \code{weight} column.}
 
+\item{Inf_as_NaN}{Should the cost values of unconnected nodes be stored as 
+\code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.}
+
 \item{...}{Arguments passed on to \code{\link[igraph]{distances}}.}
 }
 \value{
@@ -49,6 +59,14 @@ be snapped to its nearest node before calculating costs.
 }
 \details{
 See the \code{\link[igraph:distances]{igraph}} documentation.
+}
+\note{
+By default, \code{\link[igraph]{distances}} calculates costs by
+by allowing to travel each edge in both directions, hence by assuming an
+undirected network. This is the default even when the input network is
+directed! For directed networks, the behaviour can be changed by setting
+\code{mode = "out"} to considere only outbound edges, or \code{mode = "in"}
+to consider only inbound edges.
 }
 \examples{
 library(sf, quietly = TRUE)

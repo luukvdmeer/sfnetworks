@@ -10,17 +10,15 @@
 \usage{
 edge_azimuth()
 
-edge_circuity(Inf_as_NaN = TRUE)
+edge_circuity(Inf_as_NaN = FALSE)
 
 edge_length()
 
 edge_displacement()
 }
 \arguments{
-\item{Inf_as_NaN}{Should the circuity values of loop edges (which are
-infinite since the straight-line distance between the boundary nodes of
-loop edges is 0) be stored as \code{NaN} instead of \code{Inf}? Defaults to
-\code{TRUE}.}
+\item{Inf_as_NaN}{Should the circuity values of loop edges be stored as 
+\code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.}
 }
 \value{
 A numeric vector of the same length as the number of edges in the

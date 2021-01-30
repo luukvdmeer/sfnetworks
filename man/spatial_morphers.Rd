@@ -76,7 +76,8 @@ calculated. Can be an integer, referring to the index of the node for which
 the neighborhood will be calculated. Can also be an object of class 
 \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}, containing a single feature. 
 In that case, this point will be snapped to its nearest node before
-calculating the neighborhood.}
+calculating the neighborhood. When multiple indices or features are given, 
+only the first one is taken.}
 
 \item{threshold}{The threshold distance to be used. Only nodes within the
 threshold distance from the reference node will be included in the
