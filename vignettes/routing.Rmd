@@ -73,7 +73,7 @@ Just as `igraph::shortest_paths()`, the `st_network_paths()` function is meant f
 
 Lets start with the most basic example of providing node indices as *from* and *to* locations. Remember that a node index in a sfnetwork refers to the position of the node in the nodes table of the network (i.e. its row number). There is also the possibility to use character encoded node names instead of numeric node indices. This requires the nodes table to have a column *name* with a unique name for each node. 
 
-Since we have created a *weight* column in the previous section, these weights (i.e. the length of the edge geometries) will be used automatically in the shortest paths calculation.
+Since we have created a *weight* column in the previous section, these weights (i.e. the length of the edge geometries) will be used automatically in the shortest paths calculation. In weighted networks, `igraph::shortest_paths()` applies the Dijkstra algorithm to find the shortests paths. In the case of unweighted networks, it uses breadth-first search instead.
 
 ```{r, fig.height=5, fig.width=5}
 paths = st_network_paths(net, from = 495, to = c(458, 121))
@@ -126,7 +126,9 @@ paths %>%
 plot(c(p1, p2, p3), col = colors, pch = 8, cex = 2, lwd = 2, add = TRUE)
 ```
 
-When your network consists of multiple components that are not connected to each other, it is possible that the nearest node to a provided point is located in a tiny component and only a few other nodes can be reached from it. In such cases it might be good to first reduce the network to its largest (or *n* largest) component(s) before calculating shortest paths. The tidygraph function `tidygraph::group_components()` can help with this. It assigns an integer to each node identifying the component it is in, with `1` being the largest component in the network, `2` the second largest, and so on.
+Simply finding the nearest node to given points is not always the best way to go. For example: when a provided point is close to a location on an edge linestring, but relatively far from any node, it gives better results when the routing does not start at its nearest node, but at that nearby location on the edge linestring. To accomodate this, you can first *blend* your input points into the network, and then proceed as normal. Blending is the name we gave to the combined process of snapping a point to its nearest point on its nearest edge, splitting the edge there, and adding the snapped point as node to the network. It is implement in the function `st_network_blend()`. See the vignette on [spatial joins and filters](https://luukvdmeer.github.io/sfnetworks/articles/join_filter.html#blending-points-into-a-network) for more details.
+
+Another issue may arise wen your network consists of multiple components that are not connected to each other. In that case, it is possible that the nearest node to a provided point is located in a tiny component and only a few other nodes can be reached from it. In such cases it might be good to first reduce the network to its largest (or *n* largest) component(s) before calculating shortest paths. The tidygraph function `tidygraph::group_components()` can help with this. It assigns an integer to each node identifying the component it is in, with `1` being the largest component in the network, `2` the second largest, and so on.
 
 ```{r, fig.height=5, fig.width=5}
 # Our network consists of several unconnected components.
@@ -140,11 +142,11 @@ plot(net, col = colors[2])
 plot(connected_net, cex = 1.1, lwd = 1.1, add = TRUE)
 ```
 
-Another way to calculate shortest paths, which fits nicely in the tidygraph style of working, is by using the `to_spatial_shortest_paths()` morpher function. This will subset the original network to only contain those nodes and edges that appear in a shortest path between two nodes. See the [Spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html) vignette for details.
+Another way to calculate shortest paths, which fits nicely in the tidygraph style of working, is by using the `to_spatial_shortest_paths()` morpher function. This will subset the original network to only contain those nodes and edges that appear in a shortest path between two nodes. See the vignette on [Spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html#to_spatial_shortest_paths) for details.
 
-## Retrieving a cost matrix
+## Retrieving an OD cost matrix
 
-The shortest paths calculation as described above is only supported for one-to-one and one-to-many routing. The alternative for many-to-many routing is the calculation of a cost matrix. Instead of providing the individual paths, it returns a matrix in which entry $i,j$ is the total cost (i.e. sum of weights) of the shortest path from node $i$ to node $j$. The igraph function for this purpose is `igraph::distances()`, which in `sfnetworks` is wrapped by `st_network_cost()`, allowing again to provide sets of geospatial points as *from* and *to* locations. Note that the calculated costs refer to the paths between the *nearest nodes* of the input points. Their units are the same as the units of weights used in the calculation, in this case meters.
+The shortest paths calculation as described above is only supported for one-to-one and one-to-many routing. The alternative for many-to-many routing is the calculation of an origin-destination cost matrix. Instead of providing the individual paths, it returns a matrix in which entry $i,j$ is the total cost (i.e. sum of weights) of the shortest path from node $i$ to node $j$. The igraph function for this purpose is `igraph::distances()`, which in `sfnetworks` is wrapped by `st_network_cost()`, allowing again to provide sets of geospatial points as *from* and *to* locations. Note that the calculated costs refer to the paths between the *nearest nodes* of the input points. Their units are the same as the units of weights used in the calculation, in this case meters.
 
 ```{r}
 st_network_cost(net, from = c(p1, p2, p3), to = c(p1, p2, p3))
@@ -160,7 +162,69 @@ cost_matrix = st_network_cost(net)
 dim(cost_matrix)
 ```
 
-## Solving the traveling salesman problem
+All `...` arguments are forwarded internally to `igraph::distances()`. Among other options, this means that you can define which algorithm is used for the paths calculation. By default, `igraph` will choose the most suitable algorithm based on characteristics of the request, such as the type of weights (e.g. only positive or also negative) and the number of given from locations. For details, see the [igraph documentation](https://igraph.org/r/doc/distances.html).
+
+The origin-destination cost matrix is usually an important starting point for further analysis. For example, it can serve as input to route optimization algorithms, spatial clustering algorithms and the calculation of statistical measures based on spatial proximity.
+
+## Applications
+
+In this section, we will show a small set of applications of the routing related functions. It is definitely not meant to be an overview that covers everything! Also, remember again that `sfnetworks` is a general-purpose spatial network analysis package not optimized for a specific application. However, especially in combination with other packages it can address a wide variety of use-cases.
+
+### Closest facility analysis
+
+The purpose of closest facility analysis is, given a set of destination locations (als refered to as the *facilities*) and origin locations (also refered to as the *sites*), to find the closest *n* facilities to each site. For example, you might want to find the nearest transit hub for each address in a city, or the nearest hospital to high-risk road intersections. 
+
+To solve this problem, you can calculate the OD cost matrix with the sites as *from* points, and the facilities as *to* points. Then, for each row (i.e. each site) you find the column(s) with the lowest cost value. 
+
+```{r, fig.height=5, fig.width=5}
+# Select a random set of sites and facilities.
+# We select random locations within the bounding box of the nodes.
+set.seed(128)
+hull = net %>%
+  activate("nodes") %>%
+  st_geometry() %>%
+  st_combine() %>%
+  st_convex_hull()
+
+sites = st_sample(hull, 50, type = "random")
+facilities = st_sample(hull, 5, type = "random")
+
+# Blend the sites and facilities into the network to get better results.
+# Also select only the largest connected component.
+new_net = net %>%
+  activate("nodes") %>%
+  filter(group_components() == 1) %>%
+  st_network_blend(c(sites, facilities))
+
+# Calculate the cost matrix.
+# By default the weight column is used for edge weights.
+# In our case this column contains the geographic lengths of the edges.
+cost_matrix = st_network_cost(new_net, from = sites, to = facilities)
+
+# Find for each site which facility is closest.
+closest = facilities[apply(cost_matrix, 1, function(x) which(x == min(x))[1])]
+
+# Create a line between each site and its closest facility, for visualization.
+draw_lines = function(sources, targets) {
+  lines = mapply(
+    function(a, b) st_sfc(st_cast(c(a, b), "LINESTRING"), crs = st_crs(net)), 
+    sources, 
+    targets, 
+    SIMPLIFY = FALSE
+  )
+  do.call("c", lines)
+}
+
+connections = draw_lines(sites, closest)
+
+# Plot the results.
+plot(new_net, col = "grey")
+plot(connections, col = colors[2], lwd = 2, add = TRUE)
+plot(facilities, pch = 8, cex = 2, lwd = 2, col = colors[3], add = TRUE)
+plot(sites, pch = 20, cex = 2, col = colors[2], add = TRUE)
+```
+
+### Route optimization
 
 The traveling salesman problem aims to find the shortest tour that visits a set of locations exactly once and then returns to the starting location. In `sfnetworks`, there are no dedicated functions to solve this. However, we can bring in other packages here to assist us. Probably the best known R package for solving traveling salesman problems is [TSP](https://cran.r-project.org/web/packages/TSP/vignettes/TSP.pdf). To do so, it requires a matrix that specifies the travel cost between each pair of locations. As shown above, we can use `sfnetworks` to calculate such a cost matrix for our network.
 
@@ -239,7 +303,7 @@ text(
 )
 ```
 
-## Creating isochrones and isodistances
+### Isochrones and isodistances
 
 With respect to a given point $p$ and a given travel time $t$, an isochrone is the line for which it holds that the travel time from any point on the line to or from $p$ is equal to $t$. When using distances instead of time, it is called an isodistance.
 
@@ -278,7 +342,7 @@ net = activate(net, "nodes")
 
 p = net %>%
   st_geometry() %>%
-  st_union() %>%
+  st_combine() %>%
   st_centroid()
 
 iso = net %>%
@@ -286,7 +350,7 @@ iso = net %>%
 
 iso_poly = iso %>%
   st_geometry() %>%
-  st_union() %>%
+  st_combine() %>%
   st_convex_hull()
 
 plot(net, col = "grey")
@@ -295,25 +359,9 @@ plot(iso, col = colors[2], add = TRUE)
 plot(p, col = colors[1], pch = 8, cex = 2, lwd = 2, add = TRUE)
 ```
 
-The workflow presented above is implemented in a spatial morpher function `to_spatial_neighborhood()`, which can be used inside the `tidygraph::convert()` verb to filter only those nodes that can be reached within a given travel cost from the given origin node. It accepts any geospatial point (provided as sf or sfc object) as origin, and will snap that point to its nearest node before calculating the neighborhood. Of course it is also possible to directly provide an existing node index. The edge weights to be used for defining proximity can be provided in the same manner as with the shortest path calculation functions.
+The workflow presented above is generalized in a spatial morpher function `to_spatial_neighborhood()`, which can be used inside the `tidygraph::convert()` verb to filter only those nodes that can be reached within a given travel cost from the given origin node. See the vignette on [Spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html#to_spatial_neighborhood) for details.
 
-In the example below we calculate neighborhoods of point $p$ with different thresholds. Since we don't specify the `weights` argument explicitly, the *weight* column containing the geographic edge lengths is used automatically for distance calculations.
-
-```{r, fig.height=5, fig.width=5}
-palette = sf.colors(n = 10)
-thresholds = rev(seq(100, 1000, 100))
-
-plot(net, col = "grey")
-
-for (i in c(1:10)) {
-  iso = convert(net, to_spatial_neighborhood, p, thresholds[i])
-  plot(iso, col = palette[i], add = TRUE)
-}
-
-plot(p, pch = 8, cex = 2, lwd = 2, add = TRUE)
-```
-
-## Including custom routing profiles
+### Custom routing
 
 In many cases the shortest path based geographical distances or travel time is not necessarily the optimal path. The most appropriate route may depend on many factors, for example staying away from large and potentially unpleasant highways for motor traffic. All networks have different characteristics. In OpenStreetMap networks the 'highway' type is often a good (albeit crude) approximation of the network. The `roxel` demo dataset is derived from OpenStreetMap and represents a largely residential network:
 
@@ -376,5 +424,5 @@ plot(st_as_sf(net, "edges")["type"], lwd = 4,
 plot(st_geometry(weighted_paths_sf), add = TRUE)
 ```
 
-*NOTE: Developing more sophisticated routing profiles is beyond the scope of this package.
-If you need complex mode-specific routing profiles, we recommend looking at routing profiles associated with open source routing engines, such as [bike.lua](https://github.com/fossgis-routing-server/cbf-routing-profiles/blob/master/bike.lua) in the OSRM project. Another direction of travel could be to extend on the approach illustrated here, but this work could be well-suited to a separate package that builds on `sfnetworks` (remembering that sophisticated routing profiles account for nodes and edges). If you'd like to work on such a project to improve mode-specific routing in R by building on this package, please let us know in the [discussion room](https://github.com/luukvdmeer/sfnetworks/discussions)!*
+Note that eveloping more sophisticated routing profiles is beyond the scope of this package.
+If you need complex mode-specific routing profiles, we recommend looking at routing profiles associated with open source routing engines, such as [bike.lua](https://github.com/fossgis-routing-server/cbf-routing-profiles/blob/master/bike.lua) in the OSRM project. Another direction of travel could be to extend on the approach illustrated here, but this work could be well-suited to a separate package that builds on `sfnetworks` (remembering that sophisticated routing profiles account for nodes and edges). If you'd like to work on such a project to improve mode-specific routing in R by building on this package, please let us know in the [discussion room](https://github.com/luukvdmeer/sfnetworks/discussions)!

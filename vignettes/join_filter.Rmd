@@ -138,14 +138,34 @@ Besides predicate query functions, you can also use the [coordinate query functi
 v = 4152000
 l = st_linestring(rbind(c(v, st_bbox(net)["ymin"]), c(v, st_bbox(net)["ymax"])))
 
-filtered = net %>%
+filtered_by_coords = net %>%
   activate("nodes") %>%
   filter(node_X() > v)
 
 plot(net, col = "grey")
 plot(l, col = "red", lty = 4, lwd = 4, add = TRUE)
 plot(net, col = "grey")
-plot(filtered, col = "red", add = TRUE)
+plot(filtered_by_coords, col = "red", add = TRUE)
+```
+
+### Cropping
+
+Another way to spatially filter features is by using the sf function `sf::st_crop()`, which works as follows: the function is applied to a set of geometries A with respect to another set of geometries B. It removes features from A that do not *intersect* with the *bounding box* of B. On top of that, the geometries of those features from A that remain are updated such that only their intersection with the bounding box of B is kept. 
+
+In the case of the nodes, this is equal to a filter using the bounding box of B and the predicate *intersects*. However, in the case of the edges, there is a difference. The linestring geometries of the edges that intersect with the bounding box of B are cut such that only those parts that are really inside the bounding box of B remain. To preserve a valid spatial network structure, `sfnetworks` adds new nodes at these cut locations.
+
+```{r, fig.show='hold', out.width = '50%'}
+cropped = net %>%
+  activate("edges") %>%
+  st_crop(poly) %>%
+  activate("nodes") %>%
+  filter(!node_is_isolated())
+
+plot(net, col = "grey")
+plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
+plot(filtered, col = "grey")
+plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
+plot(cropped, add = TRUE)
 ```
 
 ## Spatial joins
@@ -173,7 +193,7 @@ plot(st_geometry(joined, "edges"))
 plot(st_as_sf(joined, "nodes"), pch = 20, add = TRUE)
 ```
 
-In the example above, the polygons are spatially distinct. Hence, each node can only intersect with a single polygon. But what would happen if we do a join with polygons that overlap? The attributes from which polygon will then be attached to a node that intersects with multiple polygons at once? In `sf` this issue is solved by duplicating such a point as much times as the number of polygons it intersects with, and attaching attributes of each intersecting polygon to one of these duplicates. This approach does not fit the network case, however. An edge can only have a single node at each of its endpoints, and thus, the duplicated nodes will be isolated an be redundant in the network structure. There are for sure other ways possible to deal with the issue, but currently `sfnetworks` simply requires a *single* match per node and throws an error whenever this is not the case.
+In the example above, the polygons are spatially distinct. Hence, each node can only intersect with a single polygon. But what would happen if we do a join with polygons that overlap? The attributes from which polygon will then be attached to a node that intersects with multiple polygons at once? In `sf` this issue is solved by duplicating such a point as much times as the number of polygons it intersects with, and attaching attributes of each intersecting polygon to one of these duplicates. This approach does not fit the network case, however. An edge can only have a single node at each of its endpoints, and thus, the duplicated nodes will be isolated an be redundant in the network structure. Therefore, `sfnetworks` will only join the information from the first match whenever there are multiple matches for a single node. A warning is given in that case such that you are aware of the fact that not all information was joined into the network.
 
 Note that in the case of joining on the edges, multiple matches per edge are not a problem for the network structure. It will simply duplicate the edge (i.e. creating a set of parallel edges) whenever this occurs.
 
@@ -181,10 +201,10 @@ Note that in the case of joining on the edges, multiple matches per edge are not
 two_equal_polys = st_as_sf(c(poly, poly)) %>%
   mutate(foo = c("a", "b"))
 
-# Join on nodes gives an error.
+# Join on nodes gives a warning that only the first match per node is joined.
 st_join(net, two_equal_polys, join = st_intersects)
 
-# Join on edges duplicates edges.
+# Join on edges duplicates edges that have multiple matches.
 net %>%
   activate("edges") %>%
   st_join(two_equal_polys, join = st_intersects)
