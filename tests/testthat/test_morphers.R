@@ -195,7 +195,7 @@ test_that("to_spatial_subdivision morphs the sfnetwork into a new network
   expect_equal(vcount(subd_l), 9)
   expect_equal(ecount(subd_l), 10)
   expect_equal(count_components(subd_l), 1)
-  expect_equal(vcount(subd_p), 13)
+  expect_equal(vcount(subd_p), 17)
   expect_equal(ecount(subd_p), 16)
   expect_equal(count_components(subd_p), 1)
   expect_equal(vcount(subd_d), 701)
