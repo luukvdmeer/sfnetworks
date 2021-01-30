@@ -11,6 +11,7 @@
 * Bug fixes:
   - `sf::st_crop()` now correctly updates the nodes table after cropping the edges. Fixes [#109](https://github.com/luukvdmeer/sfnetworks/issues/109)
   - `to_spatial_smooth()` now returns the original network when no pseudo nodes are present. Fixes [#112](https://github.com/luukvdmeer/sfnetworks/issues/112)
+  - `to_spatial_subdivision()` now returns the original network when there are no locations for subdivision.
 * Several new examples and applications added to the vignettes.
 
 # sfnetworks v0.4.1
