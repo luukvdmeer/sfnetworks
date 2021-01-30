@@ -48,10 +48,8 @@ edge_azimuth = function() {
 #' \href{https://journals.sagepub.com/doi/10.1068/b130131p}{Giacomin & 
 #' Levinson, 2015}.
 #'
-#' @param Inf_as_NaN Should the circuity values of loop edges (which are
-#' infinite since the straight-line distance between the boundary nodes of
-#' loop edges is 0) be stored as \code{NaN} instead of \code{Inf}? Defaults to
-#' \code{TRUE}.
+#' @param Inf_as_NaN Should the circuity values of loop edges be stored as 
+#' \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.
 #'
 #' @examples
 #' net %>%
@@ -62,7 +60,7 @@ edge_azimuth = function() {
 #' @importFrom tidygraph .G
 #' @importFrom units drop_units
 #' @export
-edge_circuity = function(Inf_as_NaN = TRUE) {
+edge_circuity = function(Inf_as_NaN = FALSE) {
   x = .G()
   require_spatially_explicit_edges(x)
   # Calculate circuity.

@@ -35,7 +35,7 @@ net = as_sfnetwork(lines)
 ## Edge measures
 circuity_with_nan = net %>%
   activate("edges") %>%
-  mutate(circuity = edge_circuity()) %>%
+  mutate(circuity = edge_circuity(Inf_as_NaN = TRUE)) %>%
   pull(circuity)
 
 circuity_with_inf = net %>%

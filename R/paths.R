@@ -141,29 +141,14 @@ st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
                                       ...) {
   # If 'from' points are given as simple feature geometries:
   # --> Convert them to node indices.
-  if (is.sf(from) | is.sfc(from)) {
-    from = set_path_endpoints(x, from)
-  }
+  if (is.sf(from) | is.sfc(from)) from = set_path_endpoints(x, from)
   # If 'to' points are given as simple feature geometries:
   # --> Convert them to node indices.
-  if (is.sf(to) | is.sfc(to)) {
-    to = set_path_endpoints(x, to)
-  }
+  if (is.sf(to) | is.sfc(to)) to = set_path_endpoints(x, to)
   # Igraph does not support multiple 'from' nodes.
-  if (length(from) > 1) {
-    warning(
-      "Although argument 'from' has length > 1, ",
-      "only the first element is used",
-      call. = FALSE
-    )
-  }
+  if (length(from) > 1) raise_multiple_elements("from")
   # Igraph does not support NA values in 'from' and 'to' nodes.
-  if (any(is.na(c(from, to)))) {
-    stop(
-      "NA values present in argument 'from' and/or 'to'",
-      call. = FALSE
-    )
-  }
+  if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
   # Call paths calculation function according to type argument.
   switch(
     type,
@@ -247,11 +232,21 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' If set to \code{NA}, no weights are used, even if the edges have a
 #' \code{weight} column.
 #'
+#' @param Inf_as_NaN Should the cost values of unconnected nodes be stored as 
+#' \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.
+#'
 #' @param ... Arguments passed on to \code{\link[igraph]{distances}}.
 #'
 #' @details See the \code{\link[igraph:distances]{igraph}} documentation.
 #'
 #' @seealso \code{\link{st_network_paths}}
+#'
+#' @note By default, \code{\link[igraph]{distances}} calculates costs by
+#' by allowing to travel each edge in both directions, hence by assuming an
+#' undirected network. This is the default even when the input network is
+#' directed! For directed networks, the behaviour can be changed by setting
+#' \code{mode = "out"} to considere only outbound edges, or \code{mode = "in"}
+#' to consider only inbound edges. 
 #'
 #' @return An n times m numeric matrix where n is the length of the \code{from}
 #' argument, and m is the length of the \code{to} argument.
@@ -293,25 +288,20 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' @importFrom igraph V
 #' @export
 st_network_cost = function(x, from = igraph::V(x), to = igraph::V(x),
-                               weights = NULL, ...) {
+                           weights = NULL, Inf_as_NaN = FALSE, ...) {
   UseMethod("st_network_cost")
 }
 
 #' @importFrom igraph distances V
 #' @export
 st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
-                                         weights = NULL, ...) {
+                                     weights = NULL, Inf_as_NaN = FALSE, ...) {
   # If 'from' and/or 'to' points are given as simple feature geometries:
   # --> Convert them to node indices.
   if (is.sf(from) | is.sfc(from)) from = set_path_endpoints(x, from)
   if (is.sf(to) | is.sfc(to)) to = set_path_endpoints(x, to)
   # Igraph does not support NA values in 'from' and 'to' nodes.
-  if (any(is.na(c(from, to)))) {
-    stop(
-      "NA values present in argument 'from' and/or 'to'",
-      call. = FALSE
-    )
-  }
+  if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
   # Igraph does not support duplicated 'to' nodes.
   # This can happen without the user knowing when POINT geometries
   # are given to the 'to' argument that happen to snap to a same node.
@@ -325,7 +315,11 @@ st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
   # Set weights.
   weights = set_path_weights(x, weights)
   # Call igraph function.
-  distances(x, from, to, weights = weights, ...)
+  matrix = distances(x, from, to, weights = weights, ...)
+  # Convert Inf to NaN if requested.
+  if (Inf_as_NaN) matrix[matrix == Inf] = NaN
+  # Return the matrix.
+  matrix
 }
 
 #' @importFrom sf st_geometry st_nearest_feature

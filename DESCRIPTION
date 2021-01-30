@@ -47,6 +47,7 @@ Imports:
     units,
     utils
 Suggests:
+    dbscan,
     fansi,
     ggplot2 (>= 3.0.0),
     knitr,

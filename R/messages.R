@@ -17,6 +17,23 @@ raise_assume_planar = function(caller) {
   )
 }
 
+raise_multiple_elements = function(arg) {
+  warning(
+    "Although argument ",
+    arg,
+    " has length > 1, only the first element is used",
+    call. = FALSE
+  )
+}
+
+raise_na_values = function(arg) {
+  stop(
+    "NA values present in argument ",
+    arg,
+    call. = FALSE
+  )
+}
+
 raise_overwrite = function(value) {
   warning(
     "Overwriting column(s): ",

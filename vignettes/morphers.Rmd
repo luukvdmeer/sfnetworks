@@ -98,9 +98,9 @@ cut_edges = new_net %>%
   filter(is_cut) %>%
   st_geometry()
 
-plot(net, main = "Cut nodes")
+plot(net, col = "grey", main = "Cut nodes")
 plot(cut_nodes, col = "red", pch = 20, cex = 2, add = TRUE)
-plot(net, main = "Cut edges")
+plot(net, col = "grey", main = "Cut edges")
 plot(cut_edges, col = "red", lwd = 4, add = TRUE)
 ```
 
@@ -135,6 +135,43 @@ Whenever the morphed state consists of *multiple* elements, only one of them is 
 
 A lot of morpher functions are offered by `tidygraph`. See the overview of them [here](https://tidygraph.data-imaginist.com/reference/morphers.html). Most of them should work without problems on sfnetworks, and can be useful for spatial network analysis. On top of that offer, `sfnetworks` adds some additional *spatial morphers* that fit use-cases for which `tidygraph` does not have an implemented morpher function. See the overview of them [here](https://luukvdmeer.github.io/sfnetworks/reference/spatial_morphers.html). Below they will all be shortly introduced.
 
+### to_spatial_contracted
+
+The `to_spatial_contracted()` morpher groups nodes based on given grouping variables, and merges each group of nodes into a single, new node. The geometry of this new node will be the centroid of the geometries of all group members. Edges that were incidents to any of the group members are updated such that they are now incident to the new node. Their boundaries are updated accordingly to preserve the valid spatial network structure. The morphed state contains a single sfnetwork.
+
+To create the groups of nodes, the morpher accepts grouping variables as `...` argument. These will be evaluated in the same way as arguments to `dplyr::group_by()`. That means you can group the nodes based on any (combination of) attribute(s). For an example of grouping based on a spatial clustering algorithm, see the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html#simplify-intersections) vignette.
+
+A point of attention is that contraction introduces new *multiple edges* and/or *loop edges*. Multiple edges are introduced by contraction when there are several connections between the same groups of nodes. Loop edges are introduced by contraction when there are connections within a group. Setting `simplify = TRUE` will remove the multiple and loop edges after contraction. However, note that this also removes multiple and loop edges that already existed before contraction.
+
+The `to_spatial_contracted()` morpher gives the options to summarise attributes of nodes in a group. By setting the `summarise_attributes` argument you can specify on a per-attribute basis how the attributes of the new node should be inferred from the attributes of the group members. There are two ways to specify the combination technique for an attribute:
+
+- As a character, refering to the name of a pre-defined combination technique in `igraph`. Examples include `mean`, `sum`, `first` and `last`. See [here](https://igraph.org/r/doc/igraph-attribute-combination.html) for an overview of all implemented techniques.
+- As a function, taking a vector of attribute values as input and returning a single value. This is helpful when you want to combine attributes in a way that is not pre-defined in `igraph`.
+
+Providing a single character or a single function (e.g. `summarise_attributes = "sum"`) will apply the same technique to each attribute. Instead, you can provide a named list with a different technique for each attribute. This list can also include one unnamed element containing the technique that should be applied to all attributes that were not referenced in any of the other elements.
+
+```{r, fig.show='hold', out.width = '50%'}
+new_net = net %>%
+  activate("nodes") %>%
+  filter(group_components() == 1) %>%
+  mutate(foo = sample(c(1:10), graph_order(), replace = TRUE)) %>%
+  mutate(bar = sample(c(TRUE, FALSE), graph_order(), replace = TRUE)) %>%
+  mutate(louvain = as.factor(group_louvain()))
+
+contracted_net = convert(
+  new_net, 
+  to_spatial_contracted, 
+  louvain, 
+  simplify = TRUE,
+  summarise_attributes = list(foo = "sum", bar = function(x) any(x), louvain = "first")
+)
+
+plot(st_geometry(new_net, "edges"), main = "Grouped nodes")
+plot(st_as_sf(new_net)["louvain"], key.pos = NULL, pch = 20, add = TRUE)
+plot(st_geometry(contracted_net, "edges"), main = "Contracted network")
+plot(st_as_sf(contracted_net)["louvain"], cex = 2, key.pos = NULL, pch = 20, add = TRUE)
+```
+
 ### to_spatial_directed
 
 The `to_spatial_directed()` morpher turns an undirected network into a directed one based on the direction given by the linestring geometries of the edges. Hence, from the node corresponding to the first point of the linestring, to the node corresponding to the last point of the linestring. This in contradiction to `tidygraph::to_directed()`, which bases the direction on the node indices given in the *to* and *from* columns of the edges. In undirected networks the lowest node index is always used as *from* index, no matter the order of endpoints in the edges' linestring geometry. Therefore, the *from* and *to* node indices of an edge may not always correspond to the first and last endpoint of the linestring geometry, and `to_spatial_directed()` gives different results as `tidygraph::to_directed()`.
@@ -162,9 +199,44 @@ plot(implicit_net, draw_lines = FALSE, main = "Implicit edges")
 plot(explicit_net, main = "Explicit edges")
 ```
 
+### to_spatial_neighborhood
+
+The `to_spatial_neighborhood()` morpher limits the original network to those nodes that are part of the neighborhood of a specified *origin* node. This origin node can be specified by a node index, but also by any geospatial point (as sf or sfc object). Internally, such a point will be snapped to its nearest node before calculating the neigborhood. A neighborhood contains all nodes that can be reached within a certain cost threshold from the origin node. The morphed state contains a single sfnetwork.
+
+```{r, fig.width=5, fig.height=5}
+# As an example we will calculate multiple neighborhoods with different thresholds.
+# First we set the geographic lengths of the edges as the edge weights.
+# These weights will automatically be used when calculating travel costs.
+# Just as in the shortest paths calculation functions.
+new_net = net %>%
+  activate("edges") %>%
+  mutate(weight = edge_length())
+
+# Define the origin location.
+p = net %>%
+  st_geometry() %>%
+  st_combine() %>%
+  st_centroid()
+
+# Define the threshold values (in meters).
+# Define also the colors to plot the neighborhoods in.
+thresholds = rev(seq(100, 1000, 100))
+palette = sf.colors(n = 10)
+
+# Plot the results.
+plot(net, col = "grey")
+
+for (i in c(1:10)) {
+  nbh = convert(net, to_spatial_neighborhood, p, thresholds[i])
+  plot(nbh, col = palette[i], add = TRUE)
+}
+
+plot(p, pch = 8, cex = 2, lwd = 2, add = TRUE)
+```
+
 ### to_spatial_shortest_paths
 
-The `to_spatial_shortest_paths` morpher limits the original network to those nodes and edges that are part of the shortest path between two nodes. Just as with the other shortest path calculation functionalities presented in the [Routing](https://luukvdmeer.github.io/sfnetworks/articles/routing.html) vignette, besides node indices or names, any geospatial point (as sf or sfc object) can be provided as *from* and *to* node. Internally, such points will be snapped to their nearest node before calculating the shortest path.
+The `to_spatial_shortest_paths()` morpher limits the original network to those nodes and edges that are part of the shortest path between two nodes. Just as with the other shortest path calculation functionalities presented in the [Routing](https://luukvdmeer.github.io/sfnetworks/articles/routing.html) vignette, besides node indices or names, any geospatial point (as sf or sfc object) can be provided as *from* and *to* node. Internally, such points will be snapped to their nearest node before calculating the shortest path.
 
 The morpher only accepts a single *from* node. If also a single *to* node is provided, the morphed state of the network contains a single sfnetwork. However, it is also possible to provide multiple *to* nodes. Then, the morphed state of the network contains multiple sfnetworks, one for each from-to combination.
 
@@ -191,7 +263,7 @@ new_net = net %>%
 
 new_net %>%
   st_geometry() %>%
-  plot()
+  plot(col = "grey", lwd = 2)
 
 new_net %>%
   filter(in_paths) %>%
@@ -201,16 +273,68 @@ new_net %>%
 
 ### to_spatial_simple
 
-The `to_spatial_simple()` morpher removes loop edges and parallel edges from the original network. The morphed state contains a single sfnetwork. See the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html#simplify-network) vignette for more details.
+The `to_spatial_simple()` morpher removes loop edges from the network and merges multiple edges into one. Loop edges are edges that start and end at the same node. Multiple edges are sets of edges that connect the same pair of nodes. The morphed state contains a single sfnetwork. See the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html#simplify-network) vignette for more details and examples.
+
+In the same way as `to_spatial_contracted()`, the `to_spatial_simple()` morpher gives the option to specify how attributes from merged edges should be inferred from the attributes of the set members. The geometry of a merged edge however is always equal to the geometry of the first set member.
+
+```{r, fig.show='hold', out.width = '50%'}
+# Add a flow attribute to the edges.
+# When merging multiple edges, we want the flow of the new edge to be:
+# --> The sum of the flows of the merged edges.
+new_net = net %>%
+  activate("edges") %>%
+  mutate(flow = sample(c(1:100), ecount(net), replace = TRUE))
+
+# Select a set of multiple edges to inspect before simplifying.
+a_multiple = new_net %>%
+  filter(edge_is_multiple()) %>% 
+  slice(1)
+
+new_net %>%
+  filter(edge_is_between(pull(a_multiple, from), pull(a_multiple, to))) %>%
+  st_as_sf()
+# Simplify the network.
+# We summarise the flow attribute by taking the sum of the merged edge flows.
+# For all the other attributes we simply take the first value in the set.
+simple_net = new_net %>%
+  convert(to_spatial_simple, summarise_attributes = list(flow = "sum", "first"))
+
+# The multiple edges are merged into one.
+# The flow is summarised by taking the sum of the merged edge flows.
+simple_net %>%
+  filter(edge_is_between(pull(a_multiple, from), pull(a_multiple, to))) %>%
+  st_as_sf()
+```
 
 ### to_spatial_smooth
 
 The `to_spatial_smooth()` morpher creates a smoothed version of the original network by iteratively removing pseudo nodes. In the case of directed networks, pseudo nodes are those nodes that have only one incoming and one outgoing edge. In undirected networks, pseudo nodes are those nodes that have two incident edges. Connectivity of the
-network is preserved by concatenating the incident edges of each removed pseudo node. The morphed state contains a single sfnetwork. See the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html#smooth-pseudo-nodes) vignette for more details.
+network is preserved by concatenating the incident edges of each removed pseudo node. The morphed state contains a single sfnetwork. See the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html#smooth-pseudo-nodes) vignette for more details and examples.
+
+```{r, fig.show='hold', out.width = '50%'}
+smoothed_net = convert(net, to_spatial_smooth)
+
+plot(net, main = "Original network")
+plot(net, col = "red", cex = 0.8, lwd = 0.1, main = "Smoothed network")
+plot(smoothed_net, col = "grey", add = TRUE)
+```
 
 ### to_spatial_subdivision
 
-The `to_spatial_subdivision()` morpher creates a subdivision of the original network by subdividing edges at each interior point that is equal to any other interior or boundary point of other edges. Interior points in this sense are those points that are included in a linestring geometry feature but are not endpoints of it, while boundary points are the endpoints of the linestrings. The network is reconstructed after subdivision such that connections are created at the points of subdivision. The morphed state contains a single sfnetwork. See the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html#subdivide-edges) vignette for more details.
+The `to_spatial_subdivision()` morpher creates a subdivision of the original network by subdividing edges at each interior point that is equal to any other interior or boundary point of other edges. Interior points in this sense are those points that are included in a linestring geometry feature but are not endpoints of it, while boundary points are the endpoints of the linestrings. The network is reconstructed after subdivision such that connections are created at the points of subdivision. The morphed state contains a single sfnetwork. See the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html#subdivide-edges) vignette for more details and examples.
+
+```{r}
+subdivided_net = convert(net, to_spatial_subdivision)
+
+# Original network.
+paste("Number of edges: ", ecount(net))
+paste("Number of components: ", count_components(net))
+
+# Subdivided network.
+# The whole network is now a single connected component!
+paste("Number of edges: ", ecount(subdivided_net))
+paste("Number of components: ", count_components(subdivided_net))
+```
 
 ### to_spatial_subset
 

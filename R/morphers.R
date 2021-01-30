@@ -71,14 +71,24 @@ NULL
 #' geometries are updated accordingly such that the valid spatial network
 #' structure is preserved. Returns a \code{morphed_sfnetwork} containing a
 #' single element of class \code{\link{sfnetwork}}.
+#'
+#' @param simplify Should the network be simplified after contraction? This
+#' means that multiple edges and loop edges will be removed. Multiple edges
+#' are introduced by contraction when there are several connections between
+#' the same groups of nodes. Loop edges are introduced by contraction when
+#' there are connections within a group. Note however that setting this to
+#' \code{TRUE} also removes multiple edges and loop edges that already
+#' existed before contraction. Defaults to \code{FALSE}.
+#'
 #' @importFrom dplyr group_by group_indices group_split
-#' @importFrom igraph contract delete_vertex_attr
+#' @importFrom igraph contract delete_edges delete_vertex_attr which_loop
+#' which_multiple
 #' @importFrom sf st_as_sf st_cast st_centroid st_combine st_geometry
 #' st_intersects
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph
 #' @export
-to_spatial_contracted = function(x, ...,
+to_spatial_contracted = function(x, ..., simplify = FALSE,
                                  summarise_attributes = "ignore",
                                  store_original_data = FALSE) {
   # Retrieve nodes from the network.
@@ -156,6 +166,15 @@ to_spatial_contracted = function(x, ...,
   # This means the edge geometries of their incidents also need an update.
   # Otherwise the valid spatial network structure is not preserved.
   ## ===============================================================
+  # First we will remove multiple edges and loop edges if this was requested.
+  # Multiple edges occur when there are several connections between groups.
+  # Loop edges occur when there are connections within groups.
+  # Note however that original multiple and loop edges are also removed.
+  if (simplify) {
+    x_new = delete_edges(x_new, which(which_multiple(x_new)))
+    x_new = delete_edges(x_new, which(which_loop(x_new)))
+    x_new = x_new %preserve_all_attrs% x_new
+  }
   if (has_spatially_explicit_edges(x)) {
     # Extract the edges and their geometries from the contracted network.
     new_edges = edges_as_sf(x_new)
@@ -350,7 +369,8 @@ to_spatial_explicit = function(x, ...) {
 #' the neighborhood will be calculated. Can also be an object of class
 #' \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}, containing a single feature.
 #' In that case, this point will be snapped to its nearest node before
-#' calculating the neighborhood.
+#' calculating the neighborhood. When multiple indices or features are given,
+#' only the first one is taken.
 #'
 #' @param threshold The threshold distance to be used. Only nodes within the
 #' threshold distance from the reference node will be included in the
@@ -376,16 +396,18 @@ to_spatial_neighborhood = function(x, node, threshold, weights = NULL,
   # Parse node argument.
   # If 'node' is given as simple feature geometry, convert it to a node index.
   # This can be done equal to setting endpoints of path calculations.
+  # When multiple nodes are given only the first one is taken.
   if (is.sf(node) | is.sfc(node)) node = set_path_endpoints(x, node)
+  if (length(node) > 1) raise_multiple_elements("node")
   # Parse weights argument.
   # This can be done equal to setting weights for path calculations.
   weights = set_path_weights(x, weights)
   # Calculate the distances from/to the reference node to/from all other nodes.
   # Use the provided weights as edge weights in the distance calculation.
-  dist = if (from) {
-    with_graph(x, node_distance_from(node, weights = weights, ...))
+  if (from) {
+    dist = with_graph(x, node_distance_from(node, weights = weights, ...))
   } else {
-    with_graph(x, node_distance_to(node, weights = weights, ...))
+    dist = with_graph(x, node_distance_to(node, weights = weights, ...))
   }
   # Use the given threshold to define which nodes are in the neighborhood.
   in_neighborhood = dist <= threshold
@@ -534,6 +556,7 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
   } else {
     pseudo = degree(x) == 2
   }
+  if (! any(pseudo)) return (x)
   ## ===============================
   # STEP II: FIND EDGES TO BE MERGED
   # The connectivity of the network should be preserved.
@@ -777,6 +800,7 @@ to_spatial_subdivision = function(x) {
   # --> 1) They have at least one duplicate among the other edge points.
   # --> 2) They are not edge boundary points themselves.
   is_split = has_duplicate & !is_boundary
+  if (! any(is_split)) return (x)
   ## ================================
   # STEP III: DUPLICATE SPLIT POINTS
   # The split points are currently a single interior point in an edge.
