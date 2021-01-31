@@ -53,35 +53,35 @@ to_spatial_transformed(x, ...)
 of each morpher for details.}
 
 \item{simplify}{Should the network be simplified after contraction? This
-means that multiple edges and loop edges will be removed. Multiple edges 
-are introduced by contraction when there are several connections between 
-the same groups of nodes. Loop edges are introduced by contraction when 
+means that multiple edges and loop edges will be removed. Multiple edges
+are introduced by contraction when there are several connections between
+the same groups of nodes. Loop edges are introduced by contraction when
 there are connections within a group. Note however that setting this to
 \code{TRUE} also removes multiple edges and loop edges that already
 existed before contraction. Defaults to \code{FALSE}.}
 
-\item{summarise_attributes}{Whenever multiple features (i.e. nodes and/or 
+\item{summarise_attributes}{Whenever multiple features (i.e. nodes and/or
 edges) are merged into a single feature during morphing, how should their
 attributes be combined? Several options are possible, see
 \code{\link[igraph]{igraph-attribute-combination}} for details.}
 
-\item{store_original_data}{Whenever multiple features (i.e. nodes and/or 
-edges) are merged into a single feature during morphing, should the data of 
-the original features be stored as an attribute of the new feature, in a 
-column named \code{.orig_data}. This is in line with the design principles 
+\item{store_original_data}{Whenever multiple features (i.e. nodes and/or
+edges) are merged into a single feature during morphing, should the data of
+the original features be stored as an attribute of the new feature, in a
+column named \code{.orig_data}. This is in line with the design principles
 of \code{tidygraph}. Defaults to \code{FALSE}.}
 
 \item{node}{The geospatial point for which the neighborhood will be
 calculated. Can be an integer, referring to the index of the node for which
-the neighborhood will be calculated. Can also be an object of class 
-\code{\link[sf]{sf}} or \code{\link[sf]{sfc}}, containing a single feature. 
+the neighborhood will be calculated. Can also be an object of class
+\code{\link[sf]{sf}} or \code{\link[sf]{sfc}}, containing a single feature.
 In that case, this point will be snapped to its nearest node before
-calculating the neighborhood. When multiple indices or features are given, 
+calculating the neighborhood. When multiple indices or features are given,
 only the first one is taken.}
 
 \item{threshold}{The threshold distance to be used. Only nodes within the
 threshold distance from the reference node will be included in the
-neighborhood. Should be a numeric value in the same units as the weight 
+neighborhood. Should be a numeric value in the same units as the weight
 values used for distance calculation.}
 
 \item{weights}{The edge weights used to calculate distances on the network.
@@ -95,7 +95,7 @@ geographic edge lengths will be calculated internally and used as weights.}
 the other nodes? Defaults to \code{TRUE}. If set to \code{FALSE}, distances
 will be calculated from the other nodes towards the reference node instead.}
 
-\item{remove_multiple}{Should multiple edges be merged into one. Defaults 
+\item{remove_multiple}{Should multiple edges be merged into one. Defaults
 to \code{TRUE}.}
 
 \item{remove_loops}{Should loop edges be removed. Defaults to \code{TRUE}.}
@@ -131,8 +131,8 @@ of \code{\link[tidygraph]{morph}} for the requirements for custom morphers.
 \item \code{to_spatial_contracted}: Combine groups of nodes into a single node per
 group. \code{...} is forwarded to \code{\link[dplyr]{group_by}} to
 create the groups. The centroid of the group of nodes will be used as
-geometry of the contracted node. If edge are spatially explicit, edge 
-geometries are updated accordingly such that the valid spatial network 
+geometry of the contracted node. If edge are spatially explicit, edge
+geometries are updated accordingly such that the valid spatial network
 structure is preserved. Returns a \code{morphed_sfnetwork} containing a
 single element of class \code{\link{sfnetwork}}.
 
@@ -154,11 +154,11 @@ drawn between the source and target node of each edge. Returns a
 \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}.
 
-\item \code{to_spatial_neighborhood}: Limit a network to the spatial neighborhood of 
+\item \code{to_spatial_neighborhood}: Limit a network to the spatial neighborhood of
 a specific node. \code{...} is forwarded to
-\code{\link[tidygraph]{node_distance_from}} (if \code{from} is \code{TRUE}) 
-or \code{\link[tidygraph]{node_distance_to}} (if \code{from} is 
-\code{FALSE}). Returns a \code{morphed_sfnetwork} containing a single 
+\code{\link[tidygraph]{node_distance_from}} (if \code{from} is \code{TRUE})
+or \code{\link[tidygraph]{node_distance_to}} (if \code{from} is
+\code{FALSE}). Returns a \code{morphed_sfnetwork} containing a single
 element of class \code{\link{sfnetwork}}.
 
 \item \code{to_spatial_shortest_paths}: Limit a network to those nodes and edges that
@@ -175,7 +175,7 @@ into a single edge. Multiple edges are edges that have the same source and
 target nodes (in directed networks) or edges that are incident to the same
 nodes (in undirected networks). When merging them into a single edge, the
 geometry of the first edge is preserved. The order of the edges can be
-influenced by calling \code{\link[dplyr]{arrange}} before simplifying. 
+influenced by calling \code{\link[dplyr]{arrange}} before simplifying.
 Returns a \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}.
 
