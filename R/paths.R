@@ -232,7 +232,7 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' If set to \code{NA}, no weights are used, even if the edges have a
 #' \code{weight} column.
 #'
-#' @param Inf_as_NaN Should the cost values of unconnected nodes be stored as 
+#' @param Inf_as_NaN Should the cost values of unconnected nodes be stored as
 #' \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.
 #'
 #' @param ... Arguments passed on to \code{\link[igraph]{distances}}.
@@ -245,8 +245,8 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' by allowing to travel each edge in both directions, hence by assuming an
 #' undirected network. This is the default even when the input network is
 #' directed! For directed networks, the behaviour can be changed by setting
-#' \code{mode = "out"} to considere only outbound edges, or \code{mode = "in"}
-#' to consider only inbound edges. 
+#' \code{mode = "out"} to consider only outbound edges, or \code{mode = "in"}
+#' to consider only inbound edges.
 #'
 #' @return An n times m numeric matrix where n is the length of the \code{from}
 #' argument, and m is the length of the \code{to} argument.
