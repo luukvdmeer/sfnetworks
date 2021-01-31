@@ -41,7 +41,7 @@ geographic edge lengths will be calculated internally and used as weights.
 If set to \code{NA}, no weights are used, even if the edges have a
 \code{weight} column.}
 
-\item{Inf_as_NaN}{Should the cost values of unconnected nodes be stored as 
+\item{Inf_as_NaN}{Should the cost values of unconnected nodes be stored as
 \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.}
 
 \item{...}{Arguments passed on to \code{\link[igraph]{distances}}.}
@@ -65,7 +65,7 @@ By default, \code{\link[igraph]{distances}} calculates costs by
 by allowing to travel each edge in both directions, hence by assuming an
 undirected network. This is the default even when the input network is
 directed! For directed networks, the behaviour can be changed by setting
-\code{mode = "out"} to considere only outbound edges, or \code{mode = "in"}
+\code{mode = "out"} to consider only outbound edges, or \code{mode = "in"}
 to consider only inbound edges.
 }
 \examples{

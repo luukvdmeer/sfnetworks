@@ -364,7 +364,7 @@ clustered %>%
 # For the others, which were used as grouping variables:
 # --> Drop these attributes.
 combinations = list(
-  is_priority = any,
+  is_priority = function(x) any(x),
   "ignore"
 )
 

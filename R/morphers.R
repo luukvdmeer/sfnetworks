@@ -623,7 +623,7 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
         # --> There are two pseudo nodes that form the boundary of the set.
         # --> These are the ones connected to only one other pseudo node.
         N_b = N[degree(G) == 1]
-        # If these boundaries do not exists:
+        # If these boundaries do not exist:
         # --> We are dealing with a loop of connected pseudo nodes.
         # --> The loop is by definition not connected to the rest of the network.
         # --> Hence, there is no need to create a new edge.
