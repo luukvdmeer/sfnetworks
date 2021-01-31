@@ -25,10 +25,9 @@ l5 = st_sfc(st_linestring(c(p9, p5, p10)))
 l6 = st_sfc(st_linestring(c(p8, p9)))
 l7 = st_sfc(st_linestring(c(p10, p12, p13, p10)))
 
-points = st_sfc(st_multipoint(c(p1, p2, p3, p4, p5, p6, p7,
-                                p8, p9, p10, p11, p12, p13)))
 lines = c(l1, l2, l3, l4, l5, l6, l7)
 square = st_sfc(st_cast(st_multipoint(c(p6, p7, p12, p11)), "POLYGON"))
+point = st_sfc(st_point(c(2, 0)))
 
 net = as_sfnetwork(lines)
 
@@ -53,6 +52,12 @@ displacement = net %>%
   mutate(disp = edge_displacement()) %>%
   pull(disp)
 
+implicit_length = lines %>%
+  as_sfnetwork(edges_as_lines = F) %>%
+  activate("edges") %>%
+  mutate(length = edge_length()) %>%
+  pull(length)
+
 test_that("spatial_edge_measures return correct (known) values", {
   expect_setequal(
     round(circuity_with_nan, 6),
@@ -72,23 +77,32 @@ test_that("spatial_edge_measures return correct (known) values", {
   )
 })
 
+test_that("edge_length returns same output as edge_displacement with
+          spatially implocit edges", {
+  expect_setequal(
+    displacement,
+    implicit_length
+  )
+})
+
 ## spatial predicates
 # Edge predicates
+net = net %>%
+  activate("edges")
 edgeint = net %>%
-  activate("edges") %>%
   filter(edge_intersects(square))
 edgecross = net %>%
-  activate("edges") %>%
   filter(edge_crosses(square))
 edgecov = net %>%
-  activate("edges") %>%
   filter(edge_is_covered_by(square))
 edgedisj = net %>%
-  activate("edges") %>%
   filter(edge_is_disjoint(square))
 edgetouch = net %>%
-  activate("edges") %>%
   filter(edge_touches(square))
+edgewithin = net %>%
+  filter(edge_is_within(square))
+edgewithindist = net %>%
+  filter(edge_is_within_distance(point, 1))
 
 test_that("spatial edge predicates return correct edges", {
   expect_true(
@@ -117,6 +131,16 @@ test_that("spatial edge predicates return correct edges", {
         st_equals(c(l3, l4, l6, l7), sparse = FALSE)
     ))
   )
+  expect_true(
+    st_geometry(st_as_sf(edgewithin, "edges")) %>%
+      st_equals(l5, sparse = FALSE)
+  )
+  expect_true(
+    all(diag(
+      st_geometry(st_as_sf(edgewithindist, "edges")) %>%
+        st_equals(c(l1, l2, l3), sparse = FALSE)
+    ))
+  )
 })
 
 test_that("spatial edge predicates always return the total number of nodes", {
@@ -128,6 +152,8 @@ test_that("spatial edge predicates always return the total number of nodes", {
 })
 
 # Node predicates
+net = net %>%
+  activate("nodes")
 nodeint = net %>%
   filter(node_intersects(square))
 nodewithin = net %>%
@@ -138,6 +164,8 @@ nodedisj = net %>%
   filter(node_is_disjoint(square))
 nodetouch = net %>%
   filter(node_touches(square))
+nodewithindist = net %>%
+  filter(node_is_within_distance(point, 1))
 
 test_that("spatial node predicates return correct nodes and edges", {
   expect_true(
@@ -188,6 +216,12 @@ test_that("spatial node predicates return correct nodes and edges", {
     all(diag(
       st_geometry(st_as_sf(nodetouch, "edges")) %>%
         st_equals(c(l3, l5, l7), sparse = FALSE)
+    ))
+  )
+  expect_true(
+    all(diag(
+      st_geometry(st_as_sf(nodewithindist, "nodes")) %>%
+        st_equals(st_sfc(p3, p7), sparse = FALSE)
     ))
   )
 })

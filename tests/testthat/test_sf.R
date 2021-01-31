@@ -31,6 +31,15 @@ test_that("sf functions for sfnetworks with spatially implicit edges,
   expect_error(st_filter(net, rect), "Edges are spatially implicit")
 })
 
+### st_crop
+test_that("st_crop gives a warning and returns a valid network", {
+  net <- as_sfnetwork(roxel, directed = F)
+  expect_warning(
+    crop <- st_crop(net, rect),
+    "assumed to be spatially constant"
+  )
+  expect_null(sfnetworks:::require_valid_network_structure(crop))
+})
 
 ### st_reverse
 node1 = st_point(c(0, 0))
@@ -39,6 +48,13 @@ edge = st_sfc(st_linestring(c(node1, node2)))
 
 dirnet = as_sfnetwork(edge)
 undirnet = as_sfnetwork(edge, directed = FALSE)
+
+test_that("st_reverse returns valid networks", {
+  reversed_D <- suppressWarnings(st_reverse(activate(dirnet, "edges")))
+  reversed_U <- st_reverse(activate(undirnet, "edges"))
+  expect_null(sfnetworks:::require_valid_network_structure(reversed_D))
+  expect_null(sfnetworks:::require_valid_network_structure(reversed_U))
+})
 
 test_that("st_reverse gives a warning when nodes are active, keeping the same
           coordinates order and from/to columns", {
@@ -102,5 +118,3 @@ test_that("st_reverse reverses the order of the coordinates for
    pull(activate(undirnet, "edges"), to)
  )
 })
-
-# test_that("st_crop...")

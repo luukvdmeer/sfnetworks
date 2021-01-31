@@ -4,6 +4,13 @@ library(igraph)
 library(tidygraph)
 net = as_sfnetwork(roxel, directed = FALSE) %>%
   st_transform(3035)
+sub1 = net %>%
+  convert(to_spatial_neighborhood, 15, 150) %>%
+  activate("edges") %>%
+  st_set_geometry(NULL)
+
+sub2 = net %>%
+  slice(1:5)
 
 # Create random points inside network bbox
 rdm = net %>%
@@ -137,4 +144,24 @@ test_that("All simple paths wrapper gives a known number of paths", {
       nrow(),
     6
   )
+})
+
+sub1_c1 = c(0, 2, 3, 1, 2, 2, 0, 1, 1, 2, 3, 1, 0, 2, 3, 1, 1, 2, 0, 1,
+           2, 2, 3, 1, 0)
+sub2_c1 = c(0, 1, Inf, Inf, Inf, 1, 0, Inf, Inf, Inf, Inf, Inf, 0, 1, Inf,
+           Inf, Inf, 1, 0, Inf, Inf, Inf, Inf, Inf, 0)
+sub2_c2 = c(0, 1, NaN, NaN, NaN, 1, 0, NaN, NaN, NaN, NaN, NaN, 0, 1, NaN,
+            NaN, NaN, 1, 0, NaN, NaN, NaN, NaN, NaN, 0)
+
+cost1.1 = st_network_cost(sub1, weights = NA)
+cost2.1 = st_network_cost(sub2, weights = NA)
+cost2.2 = st_network_cost(sub2, weights = NA, Inf_as_NaN = T)
+
+test_that("st_network_cost outputs matrix with known values", {
+  expect_setequal(as.vector(cost1.1), sub1_c1)
+  expect_setequal(as.vector(cost2.1), sub2_c1)
+  expect_setequal(as.vector(cost2.2), sub2_c2)
+  expect_equal(sum(cost1.1, na.rm = T), 36)
+  expect_equal(sum(cost2.1, na.rm = T), Inf)
+  expect_equal(sum(cost2.2, na.rm = T), 4)
 })
