@@ -145,15 +145,6 @@ l13 = st_sfc(st_linestring(c(p15, p18)))
 l14 = st_sfc(st_linestring(c(p17, p19)))
 l15 = st_sfc(st_linestring(c(p16, p20)))
 
-points = c(
-  p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, 
-  p12, p13, p14, p15, p16, p17, p18, p19, p20
-)
-
-points = points %>%
-  st_multipoint() %>%
-  st_sfc()
-
 lines = c(l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15)
 
 edge_colors = function(x) sf.colors(ecount(x), categorical = TRUE)
@@ -199,7 +190,7 @@ By arranging the edges table first, you can influence *which* edge in a set of m
 
 How attributes should be combined is of course dependent on the type and purpose of each attribute. Therefore, the combination technique can be specified on a per-attribute basis. There are two ways to specify the combination technique for an attribute:
 
-- As a character, refering to the name of a pre-defined combination technique in `igraph`. Examples include `mean`, `sum`, `first` and `last`. See [here](https://igraph.org/r/doc/igraph-attribute-combination.html) for an overview of all implemented techniques.
+- As a character, referring to the name of a pre-defined combination technique in `igraph`. Examples include `mean`, `sum`, `first` and `last`. See [here](https://igraph.org/r/doc/igraph-attribute-combination.html) for an overview of all implemented techniques.
 - As a function, taking a vector of attribute values as input and returning a single value. This is helpful when you want to combine attributes in a way that is not pre-defined in `igraph`.
 
 Providing a single character or a single function (e.g. `summarise_attributes = "sum"`) will apply the same technique to each attribute. Instead, you can provide a named list with a different technique for each attribute. This list can also include one unnamed element containing the technique that should be applied to all attributes that were not referenced in any of the other elements. Note that the geometry-list column as well as the *from* and *to* columns are not attributes!

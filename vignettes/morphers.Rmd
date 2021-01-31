@@ -145,7 +145,7 @@ A point of attention is that contraction introduces new *multiple edges* and/or 
 
 The `to_spatial_contracted()` morpher gives the options to summarise attributes of nodes in a group. By setting the `summarise_attributes` argument you can specify on a per-attribute basis how the attributes of the new node should be inferred from the attributes of the group members. There are two ways to specify the combination technique for an attribute:
 
-- As a character, refering to the name of a pre-defined combination technique in `igraph`. Examples include `mean`, `sum`, `first` and `last`. See [here](https://igraph.org/r/doc/igraph-attribute-combination.html) for an overview of all implemented techniques.
+- As a character, referring to the name of a pre-defined combination technique in `igraph`. Examples include `mean`, `sum`, `first` and `last`. See [here](https://igraph.org/r/doc/igraph-attribute-combination.html) for an overview of all implemented techniques.
 - As a function, taking a vector of attribute values as input and returning a single value. This is helpful when you want to combine attributes in a way that is not pre-defined in `igraph`.
 
 Providing a single character or a single function (e.g. `summarise_attributes = "sum"`) will apply the same technique to each attribute. Instead, you can provide a named list with a different technique for each attribute. This list can also include one unnamed element containing the technique that should be applied to all attributes that were not referenced in any of the other elements.
@@ -201,7 +201,7 @@ plot(explicit_net, main = "Explicit edges")
 
 ### to_spatial_neighborhood
 
-The `to_spatial_neighborhood()` morpher limits the original network to those nodes that are part of the neighborhood of a specified *origin* node. This origin node can be specified by a node index, but also by any geospatial point (as sf or sfc object). Internally, such a point will be snapped to its nearest node before calculating the neigborhood. A neighborhood contains all nodes that can be reached within a certain cost threshold from the origin node. The morphed state contains a single sfnetwork.
+The `to_spatial_neighborhood()` morpher limits the original network to those nodes that are part of the neighborhood of a specified *origin* node. This origin node can be specified by a node index, but also by any geospatial point (as sf or sfc object). Internally, such a point will be snapped to its nearest node before calculating the neighborhood. A neighborhood contains all nodes that can be reached within a certain cost threshold from the origin node. The morphed state contains a single sfnetwork.
 
 ```{r, fig.width=5, fig.height=5}
 # As an example we will calculate multiple neighborhoods with different thresholds.

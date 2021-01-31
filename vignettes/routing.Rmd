@@ -73,7 +73,7 @@ Just as `igraph::shortest_paths()`, the `st_network_paths()` function is meant f
 
 Lets start with the most basic example of providing node indices as *from* and *to* locations. Remember that a node index in a sfnetwork refers to the position of the node in the nodes table of the network (i.e. its row number). There is also the possibility to use character encoded node names instead of numeric node indices. This requires the nodes table to have a column *name* with a unique name for each node. 
 
-Since we have created a *weight* column in the previous section, these weights (i.e. the length of the edge geometries) will be used automatically in the shortest paths calculation. In weighted networks, `igraph::shortest_paths()` applies the Dijkstra algorithm to find the shortests paths. In the case of unweighted networks, it uses breadth-first search instead.
+Since we have created a *weight* column in the previous section, these weights (i.e. the length of the edge geometries) will be used automatically in the shortest paths calculation. In weighted networks, `igraph::shortest_paths()` applies the Dijkstra algorithm to find the shortest paths. In the case of unweighted networks, it uses breadth-first search instead.
 
 ```{r, fig.height=5, fig.width=5}
 paths = st_network_paths(net, from = 495, to = c(458, 121))
@@ -126,7 +126,7 @@ paths %>%
 plot(c(p1, p2, p3), col = colors, pch = 8, cex = 2, lwd = 2, add = TRUE)
 ```
 
-Simply finding the nearest node to given points is not always the best way to go. For example: when a provided point is close to a location on an edge linestring, but relatively far from any node, it gives better results when the routing does not start at its nearest node, but at that nearby location on the edge linestring. To accomodate this, you can first *blend* your input points into the network, and then proceed as normal. Blending is the name we gave to the combined process of snapping a point to its nearest point on its nearest edge, splitting the edge there, and adding the snapped point as node to the network. It is implement in the function `st_network_blend()`. See the vignette on [spatial joins and filters](https://luukvdmeer.github.io/sfnetworks/articles/join_filter.html#blending-points-into-a-network) for more details.
+Simply finding the nearest node to given points is not always the best way to go. For example: when a provided point is close to a location on an edge linestring, but relatively far from any node, it gives better results when the routing does not start at its nearest node, but at that nearby location on the edge linestring. To accommodate this, you can first *blend* your input points into the network, and then proceed as normal. Blending is the name we gave to the combined process of snapping a point to its nearest point on its nearest edge, splitting the edge there, and adding the snapped point as node to the network. It is implement in the function `st_network_blend()`. See the vignette on [spatial joins and filters](https://luukvdmeer.github.io/sfnetworks/articles/join_filter.html#blending-points-into-a-network) for more details.
 
 Another issue may arise wen your network consists of multiple components that are not connected to each other. In that case, it is possible that the nearest node to a provided point is located in a tiny component and only a few other nodes can be reached from it. In such cases it might be good to first reduce the network to its largest (or *n* largest) component(s) before calculating shortest paths. The tidygraph function `tidygraph::group_components()` can help with this. It assigns an integer to each node identifying the component it is in, with `1` being the largest component in the network, `2` the second largest, and so on.
 
@@ -174,7 +174,7 @@ In this section, we will show a small set of applications of the routing related
 
 ### Closest facility analysis
 
-The purpose of closest facility analysis is, given a set of destination locations (als refered to as the *facilities*) and origin locations (also refered to as the *sites*), to find the closest *n* facilities to each site. For example, you might want to find the nearest transit hub for each address in a city, or the nearest hospital to high-risk road intersections. 
+The purpose of closest facility analysis is, given a set of destination locations (also referred to as the *facilities*) and origin locations (also referred to as the *sites*), to find the closest *n* facilities to each site. For example, you might want to find the nearest transit hub for each address in a city, or the nearest hospital to high-risk road intersections. 
 
 To solve this problem, you can calculate the OD cost matrix with the sites as *from* points, and the facilities as *to* points. Then, for each row (i.e. each site) you find the column(s) with the lowest cost value. 
 
@@ -426,5 +426,5 @@ plot(st_as_sf(net, "edges")["type"], lwd = 4,
 plot(st_geometry(weighted_paths_sf), add = TRUE)
 ```
 
-Note that eveloping more sophisticated routing profiles is beyond the scope of this package.
+Note that developing more sophisticated routing profiles is beyond the scope of this package.
 If you need complex mode-specific routing profiles, we recommend looking at routing profiles associated with open source routing engines, such as [bike.lua](https://github.com/fossgis-routing-server/cbf-routing-profiles/blob/master/bike.lua) in the OSRM project. Another direction of travel could be to extend on the approach illustrated here, but this work could be well-suited to a separate package that builds on `sfnetworks` (remembering that sophisticated routing profiles account for nodes and edges). If you'd like to work on such a project to improve mode-specific routing in R by building on this package, please let us know in the [discussion room](https://github.com/luukvdmeer/sfnetworks/discussions)!
