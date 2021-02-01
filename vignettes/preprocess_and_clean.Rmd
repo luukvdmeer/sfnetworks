@@ -344,7 +344,7 @@ plot(st_geometry(contracted, "edges"), col = edge_colors(contracted), lwd = 4)
 plot(st_geometry(contracted, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
-One thing we did not mention yet: in the same way as `to_spatial_simple()` allowed you to combine attributes of multiple edges, `to_spatial_contracted()` allows you to combine attributes of contracted nodes. It works exactly the same: on a per-attribute basis you can specify how the attribute values of the new node should be inferred from those of the orginal nodes in the group. An example:
+One thing we did not mention yet: in the same way as `to_spatial_simple()` allowed you to combine attributes of multiple edges, `to_spatial_contracted()` allows you to combine attributes of contracted nodes. It works exactly the same: on a per-attribute basis you can specify how the attribute values of the new node should be inferred from those of the original nodes in the group. An example:
 
 ```{r}
 # Add some additional attribute columns to the nodes table.
