@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
       </span>
     </div>
 
@@ -351,6 +351,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>foo <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># Join on nodes gives a warning that only the first match per node is joined.</span>
+<span class="co"># The number of nodes in the resulting network remains the same.</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_join</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">two_equal_polys</span>, join <span class="op">=</span> <span class="va">st_intersects</span><span class="op">)</span>
 <span class="co">#&gt; Warning: Multiple matches were detected from some nodes. Only the first match is</span>
 <span class="co">#&gt; considered</span></code></pre></div>
@@ -386,8 +387,8 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># … with 848 more rows</span><span>
 </span></code></pre>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="co"># Join on edges duplicates edges that have multiple matches.</span>
+<code class="sourceCode R"><span class="co"># Join on edges duplicates edges that have multiple matches.</span>
+<span class="co"># The number of edges in the resulting network is higher than in the original.</span>
 <span class="va">net</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_join</a></span><span class="op">(</span><span class="va">two_equal_polys</span>, join <span class="op">=</span> <span class="va">st_intersects</span><span class="op">)</span></code></pre></div>
