@@ -73,9 +73,9 @@ There are currently five vignettes that guide you through the functionalities of
 
 ## Contribution
 
-We look very much forward to contributions to the package. See the [contributing guide](CONTRIBUTING.md) for further details. 
+We look very much forward to contributions to the package. See the [contributing guide](https://github.com/luukvdmeer/sfnetworks/blob/master/CONTRIBUTING.md) for further details. 
 
-This project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.  
+This project is released with a [Contributor Code of Conduct](https://github.com/luukvdmeer/sfnetworks/blob/master/CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.  
 
 ## Acknowledgment
 
