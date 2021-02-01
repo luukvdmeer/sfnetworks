@@ -674,7 +674,7 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
   ## ====================================
   if (spatial) {
     # For each new edge:
-    # --> Merge all original edge geometries in the path into a single geometry.
+    # --> Merge all original edge geometries into a single geometry.
     edge_geoms = st_geometry(edges)
     node_geoms = st_geometry(nodes)
     merge_geoms = function(E) {

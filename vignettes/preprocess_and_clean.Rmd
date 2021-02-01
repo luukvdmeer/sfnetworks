@@ -147,7 +147,7 @@ l15 = st_sfc(st_linestring(c(p16, p20)))
 
 lines = c(l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15)
 
-edge_colors = function(x) sf.colors(ecount(x), categorical = TRUE)
+edge_colors = function(x) rep(sf.colors(12, categorical = TRUE)[-2], 2)[c(1:ecount(x))]
 
 net = as_sfnetwork(lines)
 plot(st_geometry(net, "edges"), col = edge_colors(net), lwd = 4)
@@ -166,9 +166,9 @@ simple = net %>%
   filter(!edge_is_loop())
 
 plot(st_geometry(net, "edges"), col = edge_colors(net), lwd = 4)
-plot(st_geometry(net, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(net, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(simple, "edges"), col = edge_colors(simple), lwd = 4)
-plot(st_geometry(simple, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(simple, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
 Note that removing multiple edges in that way always *keeps* the *first* edge in each set of multiple edges, and drops all the other members of the set. Hence, the resulting network does not contain multiple edges anymore, but the connections between the nodes are preserved. Which of the multiple edges is the first one in a set depends on the order of the edges in the edges table. That is, by re-arranging the edges table before applying the filter you can influence which edges are kept whenever sets of multiple edges are detected. For example, you might want to always keep the edge with the shortest distance in the set.
@@ -181,9 +181,9 @@ simple = net %>%
   filter(!edge_is_loop())
 
 plot(st_geometry(net, "edges"), col = edge_colors(net), lwd = 4)
-plot(st_geometry(net, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(net, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(simple, "edges"), col = edge_colors(simple), lwd = 4)
-plot(st_geometry(simple, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(simple, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
 By arranging the edges table first, you can influence *which* edge in a set of multiple edges is kept. However, this way of simplifying still selects a single edge from the set, and drops all the others. When your edges have attributes, you might prefer to *merge* the edges in a set into a single new edge. This new edge has the geometry of the first edge in the set, but its attribute values are a combination of the attributes of all the edges in the set. This is exactly what the function `to_spatial_simple()` does. It has an argument `summarise_attributes` that lets you specify exactly how you want to merge the attributes of each set of multiple edges.
@@ -240,9 +240,9 @@ simple %>%
   filter(edge_is_between(6, 7)) %>%
   st_as_sf()
 plot(st_geometry(net, "edges"), col = edge_colors(net), lwd = 4)
-plot(st_geometry(net, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(net, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(simple, "edges"), col = edge_colors(simple), lwd = 4)
-plot(st_geometry(simple, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(simple, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
 When the edges table does not have attribute columns, using `to_spatial_simple` does not have advantages and applying the filter functions as shown before is faster.
@@ -272,9 +272,9 @@ For our example network, this means:
 subdivision = convert(simple, to_spatial_subdivision)
 
 plot(st_geometry(simple, "edges"), col = edge_colors(simple), lwd = 4)
-plot(st_geometry(simple, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(simple, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(subdivision, "edges"), col = edge_colors(subdivision), lwd = 4)
-plot(st_geometry(subdivision, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
 ### Smooth pseudo nodes
@@ -288,9 +288,9 @@ The function `to_spatial_smooth()` iteratively smooths pseudo nodes, and after e
 smoothed = convert(subdivision, to_spatial_smooth)
 
 plot(st_geometry(subdivision, "edges"), col = edge_colors(subdivision), lwd = 4)
-plot(st_geometry(subdivision, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(smoothed, "edges"), col = edge_colors(smoothed), lwd = 4)
-plot(st_geometry(smoothed, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
 ### Simplify intersections
@@ -339,9 +339,9 @@ A point of attention is that contraction introduces new *multiple edges* and/or 
 contracted = convert(clustered, to_spatial_contracted, cls, cmp, simplify = TRUE)
 
 plot(st_geometry(smoothed, "edges"), col = edge_colors(smoothed), lwd = 4)
-plot(st_geometry(smoothed, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(contracted, "edges"), col = edge_colors(contracted), lwd = 4)
-plot(st_geometry(contracted, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(contracted, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
 One thing we did not mention yet: in the same way as `to_spatial_simple()` allowed you to combine attributes of multiple edges, `to_spatial_contracted()` allows you to combine attributes of contracted nodes. It works exactly the same: on a per-attribute basis you can specify how the attribute values of the new node should be inferred from those of the orginal nodes in the group. An example:
@@ -390,9 +390,9 @@ After applying all the network cleaning functions described in the previous sect
 
 ```{r, fig.show='hold', out.width = '50%'}
 plot(st_geometry(net, "edges"), col = edge_colors(net), lwd = 4)
-plot(st_geometry(net, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(net, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(contracted, "edges"), col = edge_colors(contracted), lwd = 4)
-plot(st_geometry(contracted, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(contracted, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
 

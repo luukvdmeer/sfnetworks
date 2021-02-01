@@ -197,14 +197,15 @@ In the example above, the polygons are spatially distinct. Hence, each node can 
 
 Note that in the case of joining on the edges, multiple matches per edge are not a problem for the network structure. It will simply duplicate the edge (i.e. creating a set of parallel edges) whenever this occurs.
 
-```{r, error=TRUE}
+```{r}
 two_equal_polys = st_as_sf(c(poly, poly)) %>%
   mutate(foo = c("a", "b"))
 
 # Join on nodes gives a warning that only the first match per node is joined.
+# The number of nodes in the resulting network remains the same.
 st_join(net, two_equal_polys, join = st_intersects)
-
 # Join on edges duplicates edges that have multiple matches.
+# The number of edges in the resulting network is higher than in the original.
 net %>%
   activate("edges") %>%
   st_join(two_equal_polys, join = st_intersects)
