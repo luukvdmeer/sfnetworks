@@ -32,7 +32,7 @@ gg = ggplot() +
   geom_sf(data = waterz, fill = "grey30", color = NA) +
   theme_void() + theme_transparent()
 
-## Loading Google fonts (http://www.google.com/fonts)
+## Loading Google fonts (https://www.google.com/fonts)
 font_add_google("Orbitron",  "orbitron")
 ## Automatically use showtext to render text for future devices
 showtext_auto()

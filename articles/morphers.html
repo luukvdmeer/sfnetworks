@@ -494,8 +494,8 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; <span style="color: #555555;"># A tibble: 2 x 6</span><span>
 #&gt;    from    to name      type                                      geometry  flow
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>     </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                             </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>   118   119 </span><span style="color: #BB0000;">NA</span><span>        serv… (4150716 3207080, 4150715 3207108, 4150751 …    80
-#&gt; </span><span style="color: #555555;">2</span><span>   118   119 Pienersa… serv…           (4150716 3207080, 4150752 3207067)    18
+#&gt; </span><span style="color: #555555;">1</span><span>   118   119 </span><span style="color: #BB0000;">NA</span><span>        serv… (4150716 3207080, 4150715 3207108, 4150751 …    62
+#&gt; </span><span style="color: #555555;">2</span><span>   118   119 Pienersa… serv…           (4150716 3207080, 4150752 3207067)    88
 </span></code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Simplify the network.</span>
@@ -517,7 +517,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; <span style="color: #555555;"># A tibble: 1 x 7</span><span>
 #&gt;    from    to name  type                         geometry  flow .tidygraph_edge…
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;list&gt;</span><span>          
-#&gt; </span><span style="color: #555555;">1</span><span>   118   119 </span><span style="color: #BB0000;">NA</span><span>    servi… (4150716 3207080, 4150715 320…    98 </span><span style="color: #555555;">&lt;int [2]&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>   118   119 </span><span style="color: #BB0000;">NA</span><span>    servi… (4150716 3207080, 4150715 320…   150 </span><span style="color: #555555;">&lt;int [2]&gt;</span><span>
 </span></code></pre>
 </div>
 <div id="to_spatial_smooth" class="section level3">
@@ -625,12 +625,12 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
 #&gt;            geometry building post_code
 #&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;lgl&gt;</span><span>        </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923) TRUE          </span><span style="text-decoration: underline;">1</span><span>020
-#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946) FALSE           </span><span style="color: #BB0000;">NA</span><span>
-#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777) TRUE          </span><span style="text-decoration: underline;">1</span><span>020
-#&gt; </span><span style="color: #555555;">4</span><span> (4151370 3207673) TRUE          </span><span style="text-decoration: underline;">1</span><span>020
-#&gt; </span><span style="color: #555555;">5</span><span> (4151408 3207539) FALSE           </span><span style="color: #BB0000;">NA</span><span>
-#&gt; </span><span style="color: #555555;">6</span><span> (4151421 3207592) FALSE           </span><span style="color: #BB0000;">NA</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923) FALSE           </span><span style="color: #BB0000;">NA</span><span>
+#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946) TRUE          </span><span style="text-decoration: underline;">1</span><span>020
+#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777) FALSE           </span><span style="color: #BB0000;">NA</span><span>
+#&gt; </span><span style="color: #555555;">4</span><span> (4151370 3207673) FALSE           </span><span style="color: #BB0000;">NA</span><span>
+#&gt; </span><span style="color: #555555;">5</span><span> (4151408 3207539) TRUE          </span><span style="text-decoration: underline;">1</span><span>020
+#&gt; </span><span style="color: #555555;">6</span><span> (4151421 3207592) TRUE          </span><span style="text-decoration: underline;">1</span><span>020
 #&gt; </span><span style="color: #555555;"># … with 695 more rows</span><span>
 #&gt; </span><span style="color: #555555;">#
 #&gt; # Edge Data:     851 x 5</span><span>
@@ -692,9 +692,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
 #&gt;            geometry building
 #&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;lgl&gt;</span><span>   
-#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923) TRUE    
-#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946) FALSE   
-#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777) TRUE    
+#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923) FALSE   
+#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946) TRUE    
+#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777) FALSE   
 #&gt; </span><span style="color: #555555;"># … with 698 more rows</span><span>
 </span></code></pre>
 </div>
