@@ -174,15 +174,31 @@ elements, all of them can be extracted together inside a
 <code><a href='https://tidygraph.data-imaginist.com/reference/morph.html'>crystallise</a></code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>to_spatial_directed</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
+    <pre class="usage"><span class='fu'>to_spatial_contracted</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  <span class='va'>...</span>,
+  simplify <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  summarise_attributes <span class='op'>=</span> <span class='st'>"ignore"</span>,
+  store_original_data <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
+
+<span class='fu'>to_spatial_directed</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
 
 <span class='fu'>to_spatial_explicit</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
+<span class='fu'>to_spatial_neighborhood</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>node</span>, <span class='va'>threshold</span>, weights <span class='op'>=</span> <span class='cn'>NULL</span>, from <span class='op'>=</span> <span class='cn'>TRUE</span>, <span class='va'>...</span><span class='op'>)</span>
+
 <span class='fu'>to_spatial_shortest_paths</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
-<span class='fu'>to_spatial_simple</span><span class='op'>(</span><span class='va'>x</span>, remove_parallels <span class='op'>=</span> <span class='cn'>TRUE</span>, remove_loops <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='fu'>to_spatial_simple</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  remove_multiple <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  remove_loops <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  summarise_attributes <span class='op'>=</span> <span class='st'>"first"</span>,
+  store_original_data <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
 
-<span class='fu'>to_spatial_smooth</span><span class='op'>(</span><span class='va'>x</span>, store_orig_data <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='fu'>to_spatial_smooth</span><span class='op'>(</span><span class='va'>x</span>, store_original_data <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 
 <span class='fu'>to_spatial_subdivision</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
 
@@ -203,21 +219,70 @@ elements, all of them can be extracted together inside a
 of each morpher for details.</p></td>
     </tr>
     <tr>
-      <th>remove_parallels</th>
-      <td><p>Should parallel edges be removed. Defaults to
-<code>TRUE</code>.</p></td>
+      <th>simplify</th>
+      <td><p>Should the network be simplified after contraction? This
+means that multiple edges and loop edges will be removed. Multiple edges
+are introduced by contraction when there are several connections between
+the same groups of nodes. Loop edges are introduced by contraction when
+there are connections within a group. Note however that setting this to
+<code>TRUE</code> also removes multiple edges and loop edges that already
+existed before contraction. Defaults to <code>FALSE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>summarise_attributes</th>
+      <td><p>Whenever multiple features (i.e. nodes and/or
+edges) are merged into a single feature during morphing, how should their
+attributes be combined? Several options are possible, see
+<code><a href='https://rdrr.io/pkg/igraph/man/igraph-attribute-combination.html'>igraph-attribute-combination</a></code> for details.</p></td>
+    </tr>
+    <tr>
+      <th>store_original_data</th>
+      <td><p>Whenever multiple features (i.e. nodes and/or
+edges) are merged into a single feature during morphing, should the data of
+the original features be stored as an attribute of the new feature, in a
+column named <code>.orig_data</code>. This is in line with the design principles
+of <code>tidygraph</code>. Defaults to <code>FALSE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>node</th>
+      <td><p>The geospatial point for which the neighborhood will be
+calculated. Can be an integer, referring to the index of the node for which
+the neighborhood will be calculated. Can also be an object of class
+<code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a></code> or <code><a href='https://r-spatial.github.io/sf/reference/sfc.html'>sfc</a></code>, containing a single feature.
+In that case, this point will be snapped to its nearest node before
+calculating the neighborhood. When multiple indices or features are given,
+only the first one is taken.</p></td>
+    </tr>
+    <tr>
+      <th>threshold</th>
+      <td><p>The threshold distance to be used. Only nodes within the
+threshold distance from the reference node will be included in the
+neighborhood. Should be a numeric value in the same units as the weight
+values used for distance calculation.</p></td>
+    </tr>
+    <tr>
+      <th>weights</th>
+      <td><p>The edge weights used to calculate distances on the network.
+Can be a numeric vector giving edge weights, or a column name referring to
+an attribute column in the edges table containing those weights. If set to
+<code>NULL</code>, the values of a column named <code>weight</code> in the edges table
+will be used automatically, as long as this column is present. If not, the
+geographic edge lengths will be calculated internally and used as weights.</p></td>
+    </tr>
+    <tr>
+      <th>from</th>
+      <td><p>Should distances be calculated from the reference node towards
+the other nodes? Defaults to <code>TRUE</code>. If set to <code>FALSE</code>, distances
+will be calculated from the other nodes towards the reference node instead.</p></td>
+    </tr>
+    <tr>
+      <th>remove_multiple</th>
+      <td><p>Should multiple edges be merged into one. Defaults
+to <code>TRUE</code>.</p></td>
     </tr>
     <tr>
       <th>remove_loops</th>
-      <td><p>Should loops be remove. Defaults to <code>TRUE</code>.</p></td>
-    </tr>
-    <tr>
-      <th>store_orig_data</th>
-      <td><p>Whenever multiple features (i.e. nodes and/or edges)
-are merged into a single feature during morphing, should the data of the
-original features be stored as an attribute of the new feature, in a column
-named <code>.orig_data</code>. This is in line with the design principles of
-<code>tidygraph</code>. Defaults to <code>FALSE</code>.</p></td>
+      <td><p>Should loop edges be removed. Defaults to <code>TRUE</code>.</p></td>
     </tr>
     <tr>
       <th>subset_by</th>
@@ -239,6 +304,13 @@ of <code><a href='https://tidygraph.data-imaginist.com/reference/morph.html'>mor
 
     
 <ul>
+<li><p><code>to_spatial_contracted</code>: Combine groups of nodes into a single node per
+group. <code>...</code> is forwarded to <code><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></code> to
+create the groups. The centroid of the group of nodes will be used as
+geometry of the contracted node. If edge are spatially explicit, edge
+geometries are updated accordingly such that the valid spatial network
+structure is preserved. Returns a <code>morphed_sfnetwork</code> containing a
+single element of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></li>
 <li><p><code>to_spatial_directed</code>: Make a network directed in the direction given
 by the linestring geometries of the edges. Differs from
 <code><a href='https://tidygraph.data-imaginist.com/reference/morphers.html'>to_directed</a></code>, which makes a network directed based
@@ -255,6 +327,12 @@ extra arguments can be provided as <code>...</code> and will be forwarded to
 drawn between the source and target node of each edge. Returns a
 <code>morphed_sfnetwork</code> containing a single element of class
 <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></li>
+<li><p><code>to_spatial_neighborhood</code>: Limit a network to the spatial neighborhood of
+a specific node. <code>...</code> is forwarded to
+<code><a href='https://tidygraph.data-imaginist.com/reference/pair_measures.html'>node_distance_from</a></code> (if <code>from</code> is <code>TRUE</code>)
+or <code><a href='https://tidygraph.data-imaginist.com/reference/pair_measures.html'>node_distance_to</a></code> (if <code>from</code> is
+<code>FALSE</code>). Returns a <code>morphed_sfnetwork</code> containing a single
+element of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></li>
 <li><p><code>to_spatial_shortest_paths</code>: Limit a network to those nodes and edges that
 are part of the shortest path between two nodes. <code>...</code> is evaluated in
 the same manner as <code><a href='st_network_paths.html'>st_network_paths</a></code> with
@@ -263,8 +341,13 @@ contain multiple elements of class <code><a href='sfnetwork.html'>sfnetwork</a><
 the number of requested paths. When unmorphing only the first instance of
 both the node and edge data will be used, as the the same node and/or edge
 can be present in multiple paths.</p></li>
-<li><p><code>to_spatial_simple</code>: Remove loops and parallel edges. Returns a
-<code>morphed_sfnetwork</code> containing a single element of class
+<li><p><code>to_spatial_simple</code>: Remove loop edges and/or merges multiple edges
+into a single edge. Multiple edges are edges that have the same source and
+target nodes (in directed networks) or edges that are incident to the same
+nodes (in undirected networks). When merging them into a single edge, the
+geometry of the first edge is preserved. The order of the edges can be
+influenced by calling <code><a href='https://dplyr.tidyverse.org/reference/arrange.html'>arrange</a></code> before simplifying.
+Returns a <code>morphed_sfnetwork</code> containing a single element of class
 <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></li>
 <li><p><code>to_spatial_smooth</code>: Construct a smoothed version of the network by
 iteratively removing pseudo nodes, while preserving the connectivity of the

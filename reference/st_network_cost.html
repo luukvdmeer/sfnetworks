@@ -160,7 +160,14 @@ If such a geospatial point is not equal to a node in the network, it will
 be snapped to its nearest node before calculating costs.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>st_network_cost</span><span class='op'>(</span><span class='va'>x</span>, from <span class='op'>=</span> <span class='fu'>igraph</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/igraph/man/V.html'>V</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>, to <span class='op'>=</span> <span class='fu'>igraph</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/igraph/man/V.html'>V</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>, weights <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>st_network_cost</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  from <span class='op'>=</span> <span class='fu'>igraph</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/igraph/man/V.html'>V</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>,
+  to <span class='op'>=</span> <span class='fu'>igraph</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/igraph/man/V.html'>V</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>,
+  weights <span class='op'>=</span> <span class='cn'>NULL</span>,
+  Inf_as_NaN <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -201,6 +208,11 @@ If set to <code>NA</code>, no weights are used, even if the edges have a
 <code>weight</code> column.</p></td>
     </tr>
     <tr>
+      <th>Inf_as_NaN</th>
+      <td><p>Should the cost values of unconnected nodes be stored as
+<code>NaN</code> instead of <code>Inf</code>? Defaults to <code>FALSE</code>.</p></td>
+    </tr>
+    <tr>
       <th>...</th>
       <td><p>Arguments passed on to <code><a href='https://rdrr.io/pkg/igraph/man/distances.html'>distances</a></code>.</p></td>
     </tr>
@@ -213,6 +225,14 @@ argument, and m is the length of the <code>to</code> argument.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>See the <code><a href='https://rdrr.io/pkg/igraph/man/distances.html'>igraph</a></code> documentation.</p>
+    <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
+
+    <p>By default, <code><a href='https://rdrr.io/pkg/igraph/man/distances.html'>distances</a></code> calculates costs by
+by allowing to travel each edge in both directions, hence by assuming an
+undirected network. This is the default even when the input network is
+directed! For directed networks, the behaviour can be changed by setting
+<code>mode = "out"</code> to consider only outbound edges, or <code>mode = "in"</code>
+to consider only inbound edges.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='st_network_paths.html'>st_network_paths</a></code></p></div>

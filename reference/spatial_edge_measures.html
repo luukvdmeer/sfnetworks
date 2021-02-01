@@ -158,7 +158,7 @@ form a spatial extension to edge measures in
 
     <pre class="usage"><span class='fu'>edge_azimuth</span><span class='op'>(</span><span class='op'>)</span>
 
-<span class='fu'>edge_circuity</span><span class='op'>(</span>Inf_as_NaN <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='fu'>edge_circuity</span><span class='op'>(</span>Inf_as_NaN <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 
 <span class='fu'>edge_length</span><span class='op'>(</span><span class='op'>)</span>
 
@@ -169,10 +169,8 @@ form a spatial extension to edge measures in
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>Inf_as_NaN</th>
-      <td><p>Should the circuity values of loop edges (which are
-infinite since the straight-line distance between the boundary nodes of
-loop edges is 0) be stored as <code>NaN</code> instead of <code>Inf</code>? Defaults to
-<code>TRUE</code>.</p></td>
+      <td><p>Should the circuity values of loop edges be stored as 
+<code>NaN</code> instead of <code>Inf</code>? Defaults to <code>FALSE</code>.</p></td>
     </tr>
     </table>
 
