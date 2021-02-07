@@ -7,7 +7,8 @@
 #'
 #' @param ... Arguments passed on to \code{\link[sf]{st_bbox}}.
 #'
-#' @return An object of class \code{\link[sf:st_bbox]{bbox}}.
+#' @return The bounding box of the network as an object of class 
+#' \code{\link[sf:st_bbox]{bbox}}.
 #'
 #' @details See \code{\link[sf]{st_bbox}} for details.
 #'

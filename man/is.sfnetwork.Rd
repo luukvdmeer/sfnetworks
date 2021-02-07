@@ -9,6 +9,10 @@ is.sfnetwork(x)
 \arguments{
 \item{x}{Object to be checked.}
 }
+\value{
+\code{TRUE} if the given object is an object of class
+\code{\link{sfnetwork}}, \code{FALSE} otherwise.
+}
 \description{
 Check if an object is a sfnetwork
 }

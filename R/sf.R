@@ -27,8 +27,17 @@ is.sfg = function(x) {
 #' extracting. If \code{NULL}, it will be set to the current active element of
 #' the given network. Defaults to \code{NULL}.
 #'
-#' @param value See \code{\link[sf]{st_crs}}, \code{\link[sf]{st_geometry}} or
-#' \code{\link[sf]{st_agr}}.
+#' @param value The value to be assigned. See the documentation of the
+#' corresponding sf function for details.
+#'
+#' @return The \code{sfnetwork} method for \code{\link[sf]{sf_as_sf}} returns
+#' the active element of the network as object of class \code{\link[sf]{sf}}.
+#' The \code{sfnetwork} and \code{morphed_sfnetwork} methods for 
+#' \code{\link[sf]{st_join}}, \code{\link[sf]{st_filter}} and 
+#' \code{\link[sf]{st_crop}} return an object of class \code{\link{sfnetwork}}
+#' and \code{\link[morphers]{morphed_sfnetwork}} respectively. All other 
+#' methods return the same type of objects as their corresponding sf function. 
+#' See the \code{\link[sf]{sf}} documentation for details.
 #'
 #' @details See the \code{\link[sf]{sf}} documentation.
 #'

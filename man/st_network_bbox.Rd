@@ -12,7 +12,8 @@ st_network_bbox(x, ...)
 \item{...}{Arguments passed on to \code{\link[sf]{st_bbox}}.}
 }
 \value{
-An object of class \code{\link[sf:st_bbox]{bbox}}.
+The bounding box of the network as an object of class 
+\code{\link[sf:st_bbox]{bbox}}.
 }
 \description{
 A spatial network specific bounding box extractor, returning the combined

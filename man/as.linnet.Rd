@@ -21,18 +21,6 @@ A method to convert an object of class \code{\link{sfnetwork}} into
 between \code{sfnetworks} and \code{spatstat}. Use this method without the
 .sfnetwork suffix and after loading the \code{spatstat} package.
 }
-\examples{
-if (require("spatstat", quietly = TRUE)) {
-  roxel_sfn = as_sfnetwork(roxel) \%>\%
-    sf::st_transform(3035)
-
-  roxel_linnet = as.linnet(roxel_sfn, sparse = TRUE)
-  roxel_linnet
-  par(mar = c(1,1,1,1))
-  plot(roxel_linnet)
-}
-
-}
 \seealso{
 \code{\link{as_sfnetwork}} to convert objects of class
 \code{\link[spatstat]{linnet}} into objects of class 

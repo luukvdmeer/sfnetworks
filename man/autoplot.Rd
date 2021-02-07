@@ -12,6 +12,9 @@ autoplot.sfnetwork(object, ...)
 
 \item{...}{Ignored.}
 }
+\value{
+An object of class \code{\link[ggplot2]{ggplot}}.
+}
 \description{
 Plot the geometries of an object of class \code{\link{sfnetwork}}
 automatically as a \code{\link[ggplot2]{ggplot}} object. Use this method
@@ -19,31 +22,4 @@ without the .sfnetwork suffix and after loading the \code{ggplot2} package.
 }
 \details{
 See \code{\link[ggplot2]{autoplot}}.
-}
-\examples{
-library(ggplot2, quietly = TRUE)
-library(sf, quietly = TRUE)
-
-net = as_sfnetwork(roxel) \%>\%
-  st_transform(3035)
-
-# Quick overview of the network in ggplot style.
-autoplot(net)
-
-# Other ggplot elements can be added.
-points = net \%>\%
-  st_bbox() \%>\%
-  st_as_sfc() \%>\%
-  st_sample(10, type = 'random') \%>\%
-  st_set_crs(3035) \%>\%
-  st_cast('POINT')
-
-autoplot(net) +
-  # The theme can be customized
-  theme_minimal() +
-  # Labels can be added
-  labs(title = 'Nice ggplot') +
-  # And extra sf layers can be included
-  geom_sf(data = points, color = 'red', size = 2)
-
 }

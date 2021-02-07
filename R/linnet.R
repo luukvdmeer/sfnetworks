@@ -15,17 +15,6 @@
 #' \code{\link[spatstat]{linnet}} into objects of class 
 #' \code{\link{sfnetwork}}.
 #'
-#' @examples
-#' if (require("spatstat", quietly = TRUE)) {
-#'   roxel_sfn = as_sfnetwork(roxel) %>%
-#'     sf::st_transform(3035)
-#'
-#'   roxel_linnet = as.linnet(roxel_sfn, sparse = TRUE)
-#'   roxel_linnet
-#'   par(mar = c(1,1,1,1))
-#'   plot(roxel_linnet)
-#' }
-#'
 #' @name as.linnet
 as.linnet.sfnetwork <- function(X, ...) {
   # Check the presence of spatstat.

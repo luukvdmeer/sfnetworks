@@ -25,7 +25,7 @@ order as those in \code{x}, followed by the new nodes blended in from
 changed.}
 }
 \value{
-An object of class \code{\link{sfnetwork}}.
+The blended network as an object of class \code{\link{sfnetwork}}.
 }
 \description{
 Blending a point into a network is the combined process of first snapping

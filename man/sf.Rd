@@ -91,13 +91,23 @@ the given network. Defaults to \code{NULL}.}
 
 \item{...}{Arguments passed on the corresponding \code{sf} function.}
 
-\item{value}{See \code{\link[sf]{st_crs}}, \code{\link[sf]{st_geometry}} or
-\code{\link[sf]{st_agr}}.}
+\item{value}{The value to be assigned. See the documentation of the
+corresponding sf function for details.}
 
 \item{y}{An object of class \code{\link[sf]{sf}}, or directly convertible to
 it using \code{\link[sf]{st_as_sf}}. In some cases, it can also be an object
 of \code{\link[sf:st]{sfg}} or \code{\link[sf:st_bbox]{bbox}}. Always look
 at the documentation of the corresponding \code{sf} function for details.}
+}
+\value{
+The \code{sfnetwork} method for \code{\link[sf]{sf_as_sf}} returns
+the active element of the network as object of class \code{\link[sf]{sf}}.
+The \code{sfnetwork} and \code{morphed_sfnetwork} methods for 
+\code{\link[sf]{st_join}}, \code{\link[sf]{st_filter}} and 
+\code{\link[sf]{st_crop}} return an object of class \code{\link{sfnetwork}}
+and \code{\link[morphers]{morphed_sfnetwork}} respectively. All other 
+methods return the same type of objects as their corresponding sf function. 
+See the \code{\link[sf]{sf}} documentation for details.
 }
 \description{
 \code{\link[sf]{sf}} methods for \code{\link{sfnetwork}} objects.

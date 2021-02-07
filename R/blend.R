@@ -24,7 +24,7 @@
 #' \code{y}? Defaults to \code{FALSE}, meaning that node order might be 
 #' changed.
 #'
-#' @return An object of class \code{\link{sfnetwork}}.
+#' @return The blended network as an object of class \code{\link{sfnetwork}}.
 #'
 #' @note Due to internal rounding of rational numbers, it may occur that the
 #' intersection point between a line and a point is not evaluated as 

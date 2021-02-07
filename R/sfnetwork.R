@@ -437,6 +437,9 @@ print.morphed_sfnetwork = function(x, ...) {
 #'
 #' @param x Object to be checked.
 #'
+#' @return \code{TRUE} if the given object is an object of class
+#' \code{\link{sfnetwork}}, \code{FALSE} otherwise.
+#'
 #' @examples
 #' library(tidygraph, quietly = TRUE, warn.conflicts = FALSE)
 #'

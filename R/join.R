@@ -15,7 +15,7 @@
 #'
 #' @param ... Arguments passed on to \code{\link[tidygraph]{graph_join}}.
 #'
-#' @return An object of class \code{\link{sfnetwork}}.
+#' @return The joined networks as an object of class \code{\link{sfnetwork}}.
 #'
 #' @examples
 #' library(sf, quietly = TRUE)

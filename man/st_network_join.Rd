@@ -15,7 +15,7 @@ to it using \code{\link{as_sfnetwork}}.}
 \item{...}{Arguments passed on to \code{\link[tidygraph]{graph_join}}.}
 }
 \value{
-An object of class \code{\link{sfnetwork}}.
+The joined networks as an object of class \code{\link{sfnetwork}}.
 }
 \description{
 A spatial network specific join function which makes a spatial full join on
