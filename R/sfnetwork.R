@@ -174,19 +174,6 @@ tbg_to_sfn = function(x) {
   x
 }
 
-# Fast function to convert from morphed_tbl_graph to morphed_sfnetwork.
-# Must be sure that each tbl_graph has already a valid sfnetwork structure.
-# ONLY FOR INTERNAL USE!
-
-morphed_tbg_to_morphed_sfn = function(x) {
-  structure(
-    lapply(x, tbg_to_sfn),
-    class = c("morphed_sfnetwork", class(x)),
-    .orig_graph = attr(x, ".orig_graph"),
-    .morpher = attr(x, ".morpher")
-  )
-}
-
 #' Convert a foreign object to a sfnetwork
 #'
 #' Convert a given object into an object of class \code{\link{sfnetwork}}.
