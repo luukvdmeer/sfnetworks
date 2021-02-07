@@ -8,6 +8,7 @@
 * Addition of a `Inf_as_NaN` argument to `st_network_cost()`, to store cost values of paths between unconnected edges as `NaN` instead of `Inf`. The default value of this argument is `FALSE`. Refs [#111](https://github.com/luukvdmeer/sfnetworks/issues/111)
 * The default of the `Inf_as_NaN` argument in `edge_circuity()` is changed from `TRUE` to `FALSE`, to better fit with the change mentioned above, and to make sure no changes to R defaults are made without the user explicity specifying them.
 * Whenever there are multiple matches when spatially joining information to the nodes of a network with `sf::st_join()`, only the information of the first match is now joined. Before, this used to throw an error. Refs [#108](https://github.com/luukvdmeer/sfnetworks/discussions/108)
+* Removal of the morphed_sfnetwork method for `sf::st_geometry<-`, since geometries should not be replaced in a morphed state.
 * Bug fixes:
   - `sf::st_crop()` now correctly updates the nodes table after cropping the edges. Fixes [#109](https://github.com/luukvdmeer/sfnetworks/issues/109)
   - `to_spatial_smooth()` now returns the original network when no pseudo nodes are present. Fixes [#112](https://github.com/luukvdmeer/sfnetworks/issues/112)
