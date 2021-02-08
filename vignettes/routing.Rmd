@@ -18,8 +18,10 @@ knitr::opts_knit$set(global.par = TRUE)
 
 ```{r plot, echo=FALSE, results='asis'}
 # plot margins
+oldpar = par(no.readonly = TRUE)
 par(mar = c(1, 1, 1, 1))
 # crayon needs to be explicitly activated in Rmd
+oldoptions = options()
 options(crayon.enabled = TRUE)
 # Hooks needs to be set to deal with outputs
 # thanks to fansi logic
@@ -428,3 +430,8 @@ plot(st_geometry(weighted_paths_sf), add = TRUE)
 
 Note that developing more sophisticated routing profiles is beyond the scope of this package.
 If you need complex mode-specific routing profiles, we recommend looking at routing profiles associated with open source routing engines, such as [bike.lua](https://github.com/fossgis-routing-server/cbf-routing-profiles/blob/master/bike.lua) in the OSRM project. Another direction of travel could be to extend on the approach illustrated here, but this work could be well-suited to a separate package that builds on `sfnetworks` (remembering that sophisticated routing profiles account for nodes and edges). If you'd like to work on such a project to improve mode-specific routing in R by building on this package, please let us know in the [discussion room](https://github.com/luukvdmeer/sfnetworks/discussions)!
+
+```{r, include = FALSE}
+par(oldpar)
+options(oldoptions)
+```

@@ -7,7 +7,7 @@
 #'
 #' @param ... Arguments passed on to \code{\link[sf]{st_bbox}}.
 #'
-#' @return The bounding box of the network as an object of class 
+#' @return The bounding box of the network as an object of class
 #' \code{\link[sf:st_bbox]{bbox}}.
 #'
 #' @details See \code{\link[sf]{st_bbox}} for details.
@@ -38,12 +38,14 @@
 #' net_bbox
 #'
 #' # Plot.
+#' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1), mfrow = c(1,2))
 #' plot(net, lwd = 2, cex = 4, main = "Element bounding boxes")
 #' plot(st_as_sfc(node_bbox), border = "red", lty = 2, lwd = 4, add = TRUE)
 #' plot(st_as_sfc(edge_bbox), border = "blue", lty = 2, lwd = 4, add = TRUE)
 #' plot(net, lwd = 2, cex = 4, main = "Network bounding box")
 #' plot(st_as_sfc(net_bbox), border = "red", lty = 2, lwd = 4, add = TRUE)
+#' par(oldpar)
 #'
 #' @export
 st_network_bbox = function(x, ...) {

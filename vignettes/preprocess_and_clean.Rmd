@@ -18,8 +18,10 @@ knitr::opts_knit$set(global.par = TRUE)
 
 ```{r plot, echo=FALSE, results='asis'}
 # plot margins
+oldpar = par(no.readonly = TRUE)
 par(mar = c(1, 1, 1, 1))
 # crayon needs to be explicitly activated in Rmd
+oldoptions = options()
 options(crayon.enabled = TRUE)
 # Hooks needs to be set to deal with outputs
 # thanks to fansi logic
@@ -395,9 +397,7 @@ plot(st_geometry(contracted, "edges"), col = edge_colors(contracted), lwd = 4)
 plot(st_geometry(contracted, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
-
-
-
-
-
-
+```{r, include = FALSE}
+par(oldpar)
+options(oldoptions)
+```

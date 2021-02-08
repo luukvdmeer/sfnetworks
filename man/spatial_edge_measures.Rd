@@ -17,7 +17,7 @@ edge_length()
 edge_displacement()
 }
 \arguments{
-\item{Inf_as_NaN}{Should the circuity values of loop edges be stored as 
+\item{Inf_as_NaN}{Should the circuity values of loop edges be stored as
 \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.}
 }
 \value{
@@ -48,7 +48,7 @@ the edge startpoint and the edge endpoint. Calculated with
 \item \code{edge_circuity}: The ratio of the length of an edge
 linestring geometry versus the straight-line distance between its boundary
 nodes, as described in
-\href{https://journals.sagepub.com/doi/10.1068/b130131p}{Giacomin & 
+\href{https://journals.sagepub.com/doi/10.1068/b130131p}{Giacomin &
 Levinson, 2015}.
 
 \item \code{edge_length}: The length of an edge linestring geometry

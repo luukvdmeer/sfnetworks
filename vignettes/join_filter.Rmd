@@ -18,8 +18,10 @@ knitr::opts_knit$set(global.par = TRUE)
 
 ```{r plot, echo=FALSE, results='asis'}
 # plot margins
+oldpar = par(no.readonly = TRUE)
 par(mar = c(1, 1, 1, 1))
 # crayon needs to be explicitly activated in Rmd
+oldoptions = options()
 options(crayon.enabled = TRUE)
 # Hooks needs to be set to deal with outputs
 # thanks to fansi logic
@@ -289,4 +291,9 @@ joined
 plot(net, pch = 15, cex = 2, lwd = 4)
 plot(other_net, col = "red", pch = 18, cex = 2, lty = 2, lwd = 4, add = TRUE)
 plot(joined, cex = 2, lwd = 4)
+```
+
+```{r, include = FALSE}
+par(oldpar)
+options(oldoptions)
 ```

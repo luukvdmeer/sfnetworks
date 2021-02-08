@@ -20,17 +20,17 @@
 #' \code{Inf}.
 #'
 #' @param sort Should the nodes in the resulting network be sorted in the same
-#' order as those in \code{x}, followed by the new nodes blended in from 
-#' \code{y}? Defaults to \code{FALSE}, meaning that node order might be 
+#' order as those in \code{x}, followed by the new nodes blended in from
+#' \code{y}? Defaults to \code{FALSE}, meaning that node order might be
 #' changed.
 #'
 #' @return The blended network as an object of class \code{\link{sfnetwork}}.
 #'
 #' @note Due to internal rounding of rational numbers, it may occur that the
-#' intersection point between a line and a point is not evaluated as 
+#' intersection point between a line and a point is not evaluated as
 #' actually intersecting that line by the designated algorithm. Instead, the
 #' intersection point lies a tiny-bit away from the edge. Therefore, it is
-#' recommended to set the tolerance to a very small number (for example 1e-5) 
+#' recommended to set the tolerance to a very small number (for example 1e-5)
 #' even if you only want to blend points that intersect the line.
 #'
 #' @examples
@@ -71,6 +71,7 @@
 #'
 #' ## Plot results.
 #' # Initial network and points.
+#' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1), mfrow = c(1,3))
 #' plot(net, cex = 2, main = "Network + set of points")
 #' plot(pts, cex = 2, col = "red", pch = 20, add = TRUE)
@@ -85,6 +86,7 @@
 #' plot(b2, cex = 2, main = "Blend with tolerance = 0.2 m")
 #' plot(pts, cex = 2, col = "grey", pch = 20, add = TRUE)
 #' plot(pts_within, cex = 2, col = "red", pch = 20, add = TRUE)
+#' par(oldpar)
 #'
 #' @export
 st_network_blend = function(x, y, tolerance = Inf, sort = FALSE) {

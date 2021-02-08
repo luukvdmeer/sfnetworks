@@ -32,11 +32,11 @@ is.sfg = function(x) {
 #'
 #' @return The \code{sfnetwork} method for \code{\link[sf]{st_as_sf}} returns
 #' the active element of the network as object of class \code{\link[sf]{sf}}.
-#' The \code{sfnetwork} and \code{morphed_sfnetwork} methods for 
-#' \code{\link[sf]{st_join}}, \code{\link[sf]{st_filter}} and 
+#' The \code{sfnetwork} and \code{morphed_sfnetwork} methods for
+#' \code{\link[sf]{st_join}}, \code{\link[sf]{st_filter}} and
 #' \code{\link[sf]{st_crop}} return an object of class \code{\link{sfnetwork}}
-#' and \code{morphed_sfnetwork} respectively. All other 
-#' methods return the same type of objects as their corresponding sf function. 
+#' and \code{morphed_sfnetwork} respectively. All other
+#' methods return the same type of objects as their corresponding sf function.
 #' See the \code{\link[sf]{sf}} documentation for details.
 #'
 #' @details See the \code{\link[sf]{sf}} documentation.
@@ -309,7 +309,7 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
 
 # Geometric binary predicates internally are applied to the geometry of the
 # given object. Since there is a st_geometry.sfnetwork method, they work
-# automatically on sfnetwork objects too. However, st_intersects is the only 
+# automatically on sfnetwork objects too. However, st_intersects is the only
 # generic, and thus an sfnetwork method needs to be created for it.
 
 #' @name sf
@@ -325,12 +325,12 @@ st_intersects.sfnetwork = function(x, y = x, ...) {
 # =============================================================================
 
 # Only those geometric unary operations y = f(x) are supported in which:
-# --> The geometry type of y is POINT when the geometry type of x is POINT and 
-# the POINT geometries in y have the same coordinates as their corresponding 
-# POINT geometries in x (this is basically useless but is what happens when 
+# --> The geometry type of y is POINT when the geometry type of x is POINT and
+# the POINT geometries in y have the same coordinates as their corresponding
+# POINT geometries in x (this is basically useless but is what happens when
 # you call for example st_reverse on POINT geometries).
-# --> The geometry type of y is LINESTRING when the geometry type of x is 
-# LINESTRING and the LINESTRING geometries in y have the same boundary points 
+# --> The geometry type of y is LINESTRING when the geometry type of x is
+# LINESTRING and the LINESTRING geometries in y have the same boundary points
 # as their corresponding LINESTRING geometries in x (source and target may be
 # switched).
 
@@ -387,16 +387,18 @@ geom_unary_ops = function(op, x, ...) {
 #' net = st_transform(net, 3035)
 #' codes = st_as_sf(st_make_grid(net, n = c(2, 2)))
 #' codes$post_code = as.character(seq(1000, 1000 + nrow(codes) * 10 - 10, 10))
-#' 
+#'
 #' joined = st_join(net, codes, join = st_intersects)
 #' joined
-#' 
+#'
+#' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1), mfrow = c(1,2))
 #' plot(net, col = "grey")
 #' plot(codes, col = NA, border = "red", lty = 4, lwd = 4, add = TRUE)
 #' text(st_coordinates(st_centroid(st_geometry(codes))), codes$post_code)
 #' plot(st_geometry(joined, "edges"))
 #' plot(st_as_sf(joined, "nodes"), pch = 20, add = TRUE)
+#' par(oldpar)
 #' @importFrom sf st_join
 #' @export
 st_join.sfnetwork = function(x, y, ...) {
@@ -596,17 +598,19 @@ spatial_crop_edges = function(x, y, ...) {
 #' p3 = st_point(c(4151756, 3207506))
 #' p4 = st_point(c(4151774, 3208031))
 #'
-#' poly = st_multipoint(c(p1, p2, p3, p4)) %>% 
-#'   st_cast('POLYGON') %>% 
+#' poly = st_multipoint(c(p1, p2, p3, p4)) %>%
+#'   st_cast('POLYGON') %>%
 #'   st_sfc(crs = 3035) %>%
 #'   st_as_sf()
 #'
 #' filtered = st_filter(net, poly, .pred = st_intersects)
 #'
+#' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1), mfrow = c(1,2))
 #' plot(net, col = "grey")
 #' plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 #' plot(filtered)
+#' par(oldpar)
 #' @importFrom sf st_filter
 #' @export
 st_filter.sfnetwork = function(x, y, ...) {

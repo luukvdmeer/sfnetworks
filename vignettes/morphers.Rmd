@@ -18,8 +18,10 @@ knitr::opts_knit$set(global.par = TRUE)
 
 ```{r plot, echo=FALSE, results='asis'}
 # plot margins
+oldpar = par(no.readonly = TRUE)
 par(mar = c(1, 1, 1, 1))
 # crayon needs to be explicitly activated in Rmd
+oldoptions = options()
 options(crayon.enabled = TRUE)
 # Hooks needs to be set to deal with outputs
 # thanks to fansi logic
@@ -387,4 +389,9 @@ net %>%
   morph(to_spatial_transformed, 4326) %>%
   mutate(azimuth = edge_azimuth()) %>%
   unmorph()
+```
+
+```{r, include = FALSE}
+par(oldpar)
+options(oldoptions)
 ```

@@ -49,9 +49,11 @@ filtered = net \%>\%
   activate("nodes") \%>\%
   filter(node_X() > 7.54)
 
+oldpar = par(no.readonly = TRUE)
 par(mar = c(1,1,1,1))
 plot(net, col = "grey")
 plot(filtered, col = "red", add = TRUE)
+par(oldpar)
 
 # Use query function in a mutate call.
 net \%>\%

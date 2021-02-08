@@ -83,9 +83,11 @@
 #'   unlist()
 #' node_path
 #'
+#' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1))
 #' plot(net, col = "grey")
 #' plot(slice(activate(net, "nodes"), node_path), col = "red", add = TRUE)
+#' par(oldpar)
 #'
 #' # Providing nodes as spatial points.
 #' # Points that don't equal a node will be snapped to their nearest node.
@@ -103,10 +105,12 @@
 #'   unlist()
 #' node_path
 #'
+#' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1))
 #' plot(net, col = "grey")
 #' plot(c(p1, p2), col = "black", pch = 8, add = TRUE)
 #' plot(slice(activate(net, "nodes"), node_path), col = "red", add = TRUE)
+#' par(oldpar)
 #'
 #' # Using another column for weights.
 #' net %>%

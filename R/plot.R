@@ -17,6 +17,7 @@
 #' and others.
 #'
 #' @examples
+#' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1), mfrow = c(1,1))
 #' net = as_sfnetwork(roxel)
 #' plot(net)
@@ -30,6 +31,7 @@
 #' # Changing default settings.
 #' par(mar = c(1,1,1,1), mfrow = c(1,1))
 #' plot(net, col = 'blue', pch = 18, lwd = 1, cex = 2)
+#' par(oldpar)
 #'
 #' @importFrom graphics plot
 #' @importFrom sf st_geometry

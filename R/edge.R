@@ -45,10 +45,10 @@ edge_azimuth = function() {
 #' @describeIn spatial_edge_measures The ratio of the length of an edge
 #' linestring geometry versus the straight-line distance between its boundary
 #' nodes, as described in
-#' \href{https://journals.sagepub.com/doi/10.1068/b130131p}{Giacomin & 
+#' \href{https://journals.sagepub.com/doi/10.1068/b130131p}{Giacomin &
 #' Levinson, 2015}.
 #'
-#' @param Inf_as_NaN Should the circuity values of loop edges be stored as 
+#' @param Inf_as_NaN Should the circuity values of loop edges be stored as
 #' \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.
 #'
 #' @examples
@@ -175,9 +175,11 @@ straight_line_distance = function(x) {
 #'   activate(edges) %>%
 #'   filter(edge_intersects(poly))
 #'
+#' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1))
 #' plot(st_geometry(net, "edges"))
 #' plot(st_geometry(intersects, "edges"), col = "red", lwd = 2, add = TRUE)
+#' par(oldpar)
 #'
 #' # Use predicate query function in a mutate call.
 #' net %>%

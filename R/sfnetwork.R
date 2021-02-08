@@ -30,9 +30,9 @@
 #' \code{to} and \code{from} are given as integers. Defaults to \code{'name'}.
 #'
 #' @param edges_as_lines Should the edges be spatially explicit, i.e. have
-#' \code{LINESTRING} geometries stored in a geometry list column? If 
-#' \code{NULL}, this will be automatically defined, by setting the argument to 
-#' \code{TRUE} when the edges are given as an object of class 
+#' \code{LINESTRING} geometries stored in a geometry list column? If
+#' \code{NULL}, this will be automatically defined, by setting the argument to
+#' \code{TRUE} when the edges are given as an object of class
 #' \code{\link[sf]{sf}}, and \code{FALSE} otherwise. Defaults to \code{NULL}.
 #'
 #' @param length_as_weight Should the length of the edges be stored in a column
@@ -107,8 +107,8 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
       st_as_sf(nodes, ...),
       error = function(e) {
         stop(
-          "Failed to convert nodes to sf object because: ", 
-          e, 
+          "Failed to convert nodes to sf object because: ",
+          e,
           call. = FALSE
         )
       }
@@ -214,9 +214,11 @@ as_sfnetwork.default = function(x, ...) {
 #' # With LINESTRING geometries.
 #' as_sfnetwork(roxel)
 #'
+#' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1), mfrow = c(1,2))
 #' plot(st_geometry(roxel))
 #' plot(as_sfnetwork(roxel))
+#' par(oldpar)
 #'
 #' # With POINT geometries.
 #' p1 = st_point(c(7, 51))
@@ -225,9 +227,11 @@ as_sfnetwork.default = function(x, ...) {
 #' points = st_as_sf(st_sfc(p1, p2, p3))
 #' as_sfnetwork(points)
 #'
+#' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1), mfrow = c(1,2))
 #' plot(st_geometry(points))
 #' plot(as_sfnetwork(points))
+#' par(oldpar)
 #'
 #' @export
 as_sfnetwork.sf = function(x, ...) {

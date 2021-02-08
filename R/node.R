@@ -29,9 +29,11 @@
 #'   activate("nodes") %>%
 #'   filter(node_X() > 7.54)
 #'
+#' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1))
 #' plot(net, col = "grey")
 #' plot(filtered, col = "red", add = TRUE)
+#' par(oldpar)
 #'
 #' # Use query function in a mutate call.
 #' net %>%
@@ -143,11 +145,12 @@ get_coords = function(x, value) {
 #' disjoint = net %>%
 #'   activate("nodes") %>%
 #'   filter(node_is_disjoint(poly))
-#'
+#' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1))
 #' plot(net)
 #' plot(within, col = "red", add = TRUE)
 #' plot(disjoint, col = "blue", add = TRUE)
+#' par(oldpar)
 #'
 #' # Use predicate query function in a mutate call.
 #' net %>%
