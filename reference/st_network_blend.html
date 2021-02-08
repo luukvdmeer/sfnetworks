@@ -196,7 +196,7 @@ changed.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p>
+    <p>The blended network as an object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p>
     <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
     <p>Due to internal rounding of rational numbers, it may occur that the
@@ -249,11 +249,11 @@ even if you only want to blend points that intersect the line.</p>
 #&gt;                       x
 #&gt;             </span><span style='color: #555555;font-style: italic;'>&lt;POINT [m]&gt;</span><span>
 #&gt; </span><span style='color: #555555;'>1</span><span>                 (0 0)
-#&gt; </span><span style='color: #555555;'>2</span><span> (0.2185961 0.2185961)
-#&gt; </span><span style='color: #555555;'>3</span><span> (0.4759297 0.4759297)
-#&gt; </span><span style='color: #555555;'>4</span><span>   (0.545887 0.545887)
-#&gt; </span><span style='color: #555555;'>5</span><span> (0.5471001 0.5471001)
-#&gt; </span><span style='color: #555555;'>6</span><span> (0.6232963 0.6232963)
+#&gt; </span><span style='color: #555555;'>2</span><span> (0.2129865 0.2129865)
+#&gt; </span><span style='color: #555555;'>3</span><span> (0.2825198 0.2825198)
+#&gt; </span><span style='color: #555555;'>4</span><span> (0.3112431 0.3112431)
+#&gt; </span><span style='color: #555555;'>5</span><span> (0.7320546 0.7320546)
+#&gt; </span><span style='color: #555555;'>6</span><span>                 (1 1)
 #&gt; </span><span style='color: #555555;'># … with 6 more rows</span><span>
 #&gt; </span><span style='color: #555555;'>#
 #&gt; # Edge Data:     11 x 3</span><span>
@@ -262,44 +262,43 @@ even if you only want to blend points that intersect the line.</p>
 #&gt; </span><span style='color: #555555;'># Bounding box:  xmin: -1 ymin: 0 xmax: 1 ymax: 2</span><span>
 #&gt;    from    to                                          x
 #&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span>                           </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [m]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'>1</span><span>     1     2                 (0 0, 0.2185961 0.2185961)
-#&gt; </span><span style='color: #555555;'>2</span><span>     2     3 (0.2185961 0.2185961, 0.4759297 0.4759297)
-#&gt; </span><span style='color: #555555;'>3</span><span>     3     4   (0.4759297 0.4759297, 0.545887 0.545887)
+#&gt; </span><span style='color: #555555;'>1</span><span>     1     2                 (0 0, 0.2129865 0.2129865)
+#&gt; </span><span style='color: #555555;'>2</span><span>     2     3 (0.2129865 0.2129865, 0.2825198 0.2825198)
+#&gt; </span><span style='color: #555555;'>3</span><span>     3     4 (0.2825198 0.2825198, 0.3112431 0.3112431)
 #&gt; </span><span style='color: #555555;'># … with 8 more rows</span><span></div><div class='input'>
 <span class='co'># Blend points with a tolerance.</span>
 <span class='va'>tol</span> <span class='op'>=</span> <span class='fu'>units</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/units/man/set_units.html'>set_units</a></span><span class='op'>(</span><span class='fl'>0.2</span>, <span class='st'>"m"</span><span class='op'>)</span>
 <span class='va'>b2</span> <span class='op'>=</span> <span class='fu'>st_network_blend</span><span class='op'>(</span><span class='va'>net</span>, <span class='va'>pts</span>, tolerance <span class='op'>=</span> <span class='va'>tol</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='warning'>Warning: st_network_blend assumes attributes are constant over geometries</span></div><div class='input'><span class='va'>b2</span>
-</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>8</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>7</span><span> </span><span style='color: #555555;'>edges
+</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>6</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>5</span><span> </span><span style='color: #555555;'>edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style='color: #555555;'>EPSG:3857</span><span> </span><span style='color: #555555;'>
 #&gt; #
 #&gt; # A rooted tree with spatially explicit edges
 #&gt; #
-#&gt; # Node Data:     8 x 1 (active)</span><span>
+#&gt; # Node Data:     6 x 1 (active)</span><span>
 #&gt; </span><span style='color: #555555;'># Geometry type: POINT</span><span>
 #&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
 #&gt; </span><span style='color: #555555;'># Bounding box:  xmin: -1 ymin: 0 xmax: 1 ymax: 2</span><span>
 #&gt;                       x
 #&gt;             </span><span style='color: #555555;font-style: italic;'>&lt;POINT [m]&gt;</span><span>
 #&gt; </span><span style='color: #555555;'>1</span><span>                 (0 0)
-#&gt; </span><span style='color: #555555;'>2</span><span> (0.2185961 0.2185961)
-#&gt; </span><span style='color: #555555;'>3</span><span> (0.4759297 0.4759297)
-#&gt; </span><span style='color: #555555;'>4</span><span> (0.7036484 0.7036484)
-#&gt; </span><span style='color: #555555;'>5</span><span>                 (1 1)
-#&gt; </span><span style='color: #555555;'>6</span><span>                 (0 2)
-#&gt; </span><span style='color: #555555;'># … with 2 more rows</span><span>
+#&gt; </span><span style='color: #555555;'>2</span><span> (0.3112431 0.3112431)
+#&gt; </span><span style='color: #555555;'>3</span><span>                 (1 1)
+#&gt; </span><span style='color: #555555;'>4</span><span>  (0.7104781 1.289522)
+#&gt; </span><span style='color: #555555;'>5</span><span>                 (0 2)
+#&gt; </span><span style='color: #555555;'>6</span><span>                (-1 1)
 #&gt; </span><span style='color: #555555;'>#
-#&gt; # Edge Data:     7 x 3</span><span>
+#&gt; # Edge Data:     5 x 3</span><span>
 #&gt; </span><span style='color: #555555;'># Geometry type: LINESTRING</span><span>
 #&gt; </span><span style='color: #555555;'># Dimension:     XY</span><span>
 #&gt; </span><span style='color: #555555;'># Bounding box:  xmin: -1 ymin: 0 xmax: 1 ymax: 2</span><span>
-#&gt;    from    to                                          x
-#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span>                           </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [m]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'>1</span><span>     1     2                 (0 0, 0.2185961 0.2185961)
-#&gt; </span><span style='color: #555555;'>2</span><span>     2     3 (0.2185961 0.2185961, 0.4759297 0.4759297)
-#&gt; </span><span style='color: #555555;'>3</span><span>     3     4 (0.4759297 0.4759297, 0.7036484 0.7036484)
-#&gt; </span><span style='color: #555555;'># … with 4 more rows</span><span></div><div class='input'>
+#&gt;    from    to                          x
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span>           </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [m]&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>     1     2 (0 0, 0.3112431 0.3112431)
+#&gt; </span><span style='color: #555555;'>2</span><span>     2     3 (0.3112431 0.3112431, 1 1)
+#&gt; </span><span style='color: #555555;'>3</span><span>     3     4  (1 1, 0.7104781 1.289522)
+#&gt; </span><span style='color: #555555;'># … with 2 more rows</span><span></div><div class='input'>
 <span class='co'>## Plot results.</span>
 <span class='co'># Initial network and points.</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, mfrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span>

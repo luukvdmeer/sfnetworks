@@ -161,9 +161,6 @@
 <span class='co'># S3 method for sfnetwork</span>
 <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>value</span>
 
-<span class='co'># S3 method for morphed_sfnetwork</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>value</span>
-
 <span class='co'># S3 method for sfnetwork</span>
 <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_bbox.html'>st_bbox</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>...</span><span class='op'>)</span>
 
@@ -249,8 +246,8 @@ the given network. Defaults to <code>NULL</code>.</p></td>
     </tr>
     <tr>
       <th>value</th>
-      <td><p>See <code><a href='https://r-spatial.github.io/sf/reference/st_crs.html'>st_crs</a></code>, <code><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></code> or
-<code><a href='https://r-spatial.github.io/sf/reference/st_agr.html'>st_agr</a></code>.</p></td>
+      <td><p>The value to be assigned. See the documentation of the
+corresponding sf function for details.</p></td>
     </tr>
     <tr>
       <th>y</th>
@@ -261,6 +258,16 @@ at the documentation of the corresponding <code>sf</code> function for details.<
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>The <code>sfnetwork</code> method for <code><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></code> returns
+the active element of the network as object of class <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a></code>.
+The <code>sfnetwork</code> and <code>morphed_sfnetwork</code> methods for 
+<code><a href='https://r-spatial.github.io/sf/reference/st_join.html'>st_join</a></code>, <code><a href='https://r-spatial.github.io/sf/reference/st_join.html'>st_filter</a></code> and 
+<code><a href='https://r-spatial.github.io/sf/reference/st_crop.html'>st_crop</a></code> return an object of class <code><a href='sfnetwork.html'>sfnetwork</a></code>
+and <code>morphed_sfnetwork</code> respectively. All other 
+methods return the same type of objects as their corresponding sf function. 
+See the <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a></code> documentation for details.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>See the <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a></code> documentation.</p>

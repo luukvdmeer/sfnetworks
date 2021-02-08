@@ -270,8 +270,8 @@ to consider only inbound edges.</p>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>foo <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span>, min <span class='op'>=</span> <span class='fl'>0</span>, max <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
   <span class='fu'>st_network_cost</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>p1</span>, <span class='va'>p2</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>p1</span>, <span class='va'>p2</span><span class='op'>)</span>, weights <span class='op'>=</span> <span class='st'>"foo"</span><span class='op'>)</span>
 </div><div class='output co'>#&gt;          [,1]     [,2]
-#&gt; [1,]  0.00000 11.44109
-#&gt; [2,] 11.44109  0.00000</div><div class='input'>
+#&gt; [1,]  0.00000 10.29983
+#&gt; [2,] 10.29983  0.00000</div><div class='input'>
 <span class='co'># Not providing any from or to points includes all nodes by default.</span>
 <span class='fu'><a href='https://tidygraph.data-imaginist.com/reference/with_graph.html'>with_graph</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='fu'><a href='https://tidygraph.data-imaginist.com/reference/graph_measures.html'>graph_order</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='co'># Our network has 701 nodes.</span>
 </div><div class='output co'>#&gt; [1] 701</div><div class='input'><span class='va'>cost_matrix</span> <span class='op'>=</span> <span class='fu'>st_network_cost</span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span>

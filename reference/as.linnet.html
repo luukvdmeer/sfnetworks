@@ -182,21 +182,6 @@ between <code>sfnetworks</code> and <code>spatstat</code>. Use this method witho
 <code><a href='https://rdrr.io/pkg/spatstat/man/linnet.html'>linnet</a></code> into objects of class 
 <code><a href='sfnetwork.html'>sfnetwork</a></code>.</p></div>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='st'><a href='http://www.spatstat.org'>"spatstat"</a></span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
-  <span class='va'>roxel_sfn</span> <span class='op'>=</span> <span class='fu'><a href='as_sfnetwork.html'>as_sfnetwork</a></span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-    <span class='fu'>sf</span><span class='fu'>::</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_transform.html'>st_transform</a></span><span class='op'>(</span><span class='fl'>3035</span><span class='op'>)</span>
-
-  <span class='va'>roxel_linnet</span> <span class='op'>=</span> <span class='fu'>as.linnet</span><span class='op'>(</span><span class='va'>roxel_sfn</span>, sparse <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-  <span class='va'>roxel_linnet</span>
-  <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
-  <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>roxel_linnet</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>spatstat 1.64-1       (nickname: ‘Help you I can, yes!’) </span>
-#&gt; <span class='message'>For an introduction to spatstat, type ‘beginner’ </span></div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Note: spatstat version 1.64-1 is out of date by more than 8 months; we recommend upgrading to the latest version.</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Duplicated segments were ignored</span></div><div class='img'><img src='as.linnet-1.png' alt='' width='700' height='433' /></div><div class='input'>
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

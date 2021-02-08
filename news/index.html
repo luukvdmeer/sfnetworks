@@ -162,6 +162,7 @@
 <li>The default of the <code>Inf_as_NaN</code> argument in <code><a href="../reference/spatial_edge_measures.html">edge_circuity()</a></code> is changed from <code>TRUE</code> to <code>FALSE</code>, to better fit with the change mentioned above, and to make sure no changes to R defaults are made without the user explicity specifying them.</li>
 <li>Whenever there are multiple matches when spatially joining information to the nodes of a network with <code><a href="https://r-spatial.github.io/sf/reference/st_join.html">sf::st_join()</a></code>, only the information of the first match is now joined. Before, this used to throw an error. Refs <a href="https://github.com/luukvdmeer/sfnetworks/discussions/108"><a href='https://github.com/luukvdmeer/sfnetworks/issues/108'>#108</a></a>
 </li>
+<li>Removal of the morphed_sfnetwork method for <code>sf::st_geometry&lt;-</code>, since geometries should not be replaced in a morphed state.</li>
 <li>Bug fixes:
 <ul>
 <li>

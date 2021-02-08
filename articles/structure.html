@@ -103,7 +103,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>1. The sfnetwork data structure</h1>
             
-            <h4 class="date">2021-02-01</h4>
+            <h4 class="date">2021-02-08</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/structure.Rmd"><code>vignettes/structure.Rmd</code></a></small>
       <div class="hidden name"><code>structure.Rmd</code></div>
@@ -579,7 +579,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p><img src="structure_files/figure-html/unnamed-chunk-15-1.png" width="480"></p>
 <p>If you have <code>ggplot2</code> installed, you can also use <code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html">ggplot2::autoplot()</a></code> to directly create a simple ggplot of the network.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/autoplot.html">autoplot</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"Road network of Münster Roxel"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="../reference/autoplot.html">autoplot</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggtitle</span><span class="op">(</span><span class="st">"Road network of Münster Roxel"</span><span class="op">)</span></code></pre></div>
 <p><img src="structure_files/figure-html/unnamed-chunk-16-1.png" width="480"></p>
 <p>For advanced visualization, we encourage to extract nodes and edges as <code>sf</code> objects, and use one of the many ways to map those in R, either statically or interactively. Think of sf’s default plot method, <code><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">ggplot2::geom_sf()</a></code>, <code>tmap</code>, <code>mapview</code>, et cetera.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
@@ -587,10 +587,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>bc <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/centrality.html">centrality_betweenness</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"grey50"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">bc</span>, size <span class="op">=</span> <span class="va">bc</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"Betweenness centrality in Münster Roxel"</span><span class="op">)</span></code></pre></div>
+<span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"grey50"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, <span class="fu">aes</span><span class="op">(</span>col <span class="op">=</span> <span class="va">bc</span>, size <span class="op">=</span> <span class="va">bc</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">ggtitle</span><span class="op">(</span><span class="st">"Betweenness centrality in Münster Roxel"</span><span class="op">)</span></code></pre></div>
 <p><img src="structure_files/figure-html/unnamed-chunk-17-1.png" width="480"></p>
 <p><em>Note: it would be great to see this change in the future, for example by good integration with <code>ggraph</code>. Contributions are very welcome regarding this!</em></p>
 </div>
@@ -743,9 +743,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <code class="sourceCode R"><span class="va">net</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_zm.html">st_zm</a></span><span class="op">(</span>drop <span class="op">=</span> <span class="cn">FALSE</span>, what <span class="op">=</span> <span class="st">"Z"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>X <span class="op">=</span> <span class="fu"><a href="../reference/node_coordinates.html">node_X</a></span><span class="op">(</span><span class="op">)</span>, Y <span class="op">=</span> <span class="fu"><a href="../reference/node_coordinates.html">node_Y</a></span><span class="op">(</span><span class="op">)</span>, Z <span class="op">=</span> <span class="fu"><a href="../reference/node_coordinates.html">node_Z</a></span><span class="op">(</span><span class="op">)</span>, M <span class="op">=</span> <span class="fu"><a href="../reference/node_coordinates.html">node_M</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; Warning: Problem with `mutate()` input `M`.</span>
-<span class="co">#&gt; [34mℹ[39m M coordinates are not available</span>
-<span class="co">#&gt; [34mℹ[39m Input `M` is `node_M()`.</span></code></pre></div>
+<span class="co">#&gt; Warning: M coordinates are not available</span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">
