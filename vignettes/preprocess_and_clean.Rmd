@@ -72,6 +72,14 @@ st_geometry(edges) = st_geometry(edges) %>%
 as_sfnetwork(edges)
 ```
 
+Rounding of coordinates can invalidate geometries within your set of lines and cause problems later. We can test whether each line is valid. E.g.:
+
+```{r}
+edges %>%
+  mutate(valid = purrr::map_lgl(x, st_is_valid)) %>%
+  filter(valid == FALSE)
+```
+
 ### Dealing with one-way edges
 In `sfnetworks` you can create directed and undirected networks. In directed ones, an edge can only be traveled from its start node to its end node. In undirected ones, an edge can be traveled both ways. However, in the real world there are networks where *some* edges can be traveled both ways and *some* edges only one way. For example, a road network in a city where there are one-way streets. 
 
