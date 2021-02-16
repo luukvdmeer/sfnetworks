@@ -24,6 +24,11 @@
 #' column named \code{.orig_data}. This is in line with the design principles
 #' of \code{tidygraph}. Defaults to \code{FALSE}.
 #'
+#' @param extra_fields Character vector specying the name(s) of one or more
+#'   fields in the edges' table. If not NULL, then the to_spatial_smooth morpher
+#'   removes only the peudo-nodes where the attributes of the two incident edges
+#'   are equal.
+#'
 #' @param summarise_attributes Whenever multiple features (i.e. nodes and/or
 #' edges) are merged into a single feature during morphing, how should their
 #' attributes be combined? Several options are possible, see
@@ -531,10 +536,14 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' of class \code{\link{sfnetwork}}.
 #' @importFrom dplyr bind_rows
 #' @importFrom igraph adjacent_vertices decompose degree delete_vertices
-#' edge_attr get.edge.ids induced_subgraph is_directed vertex_attr
+#'   edge_attr get.edge.ids induced_subgraph is_directed vertex_attr E incident
 #' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_line_merge
 #' @export
-to_spatial_smooth = function(x, store_original_data = FALSE) {
+to_spatial_smooth = function(
+  x,
+  store_original_data = FALSE,
+  extra_fields = NULL
+ ) {
   # Retrieve nodes and edges from the network.
   nodes = nodes_as_sf(x)
   edges = edges_as_table(x)
@@ -557,6 +566,52 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
     pseudo = degree(x) == 2
   }
   if (! any(pseudo)) return (x)
+
+  # The following code is run only if the user set one or more fields for the
+  # extra_fields argument. In that case, a node is a pseudo node if it has one
+  # incoming and one outgoing edge (or simply two incident edges in the case of
+  # undirected networks) and all the attributes of these two edges are equal.
+  # See also https://github.com/luukvdmeer/sfnetworks/issues/124
+
+  if (!is.null(extra_fields)) {
+    # Check if all fields in extra_fields are present in the edges table
+    if (!all(extra_fields %in% edge_graph_attribute_names(x))) {
+      stop(
+        "One or more fields in the extra_fields argument do not exist in the edges table",
+        call. = FALSE
+      )
+    }
+
+    # Now I want to determine the id of the pseudo nodes
+    id_pseudo <- which(pseudo)
+
+    # Then I want to loop over all pseudo nodes
+    for (id in id_pseudo) {
+      # Extract the attributes of the corresponding incident vertices.
+      incident_attributes <- lapply(
+        X = extra_fields,
+        FUN = edge_attr,
+        graph = x,
+        index = incident(x, id)
+      )
+      # I decided to use an lapply loop since edge_attr can extract only one
+      # attribute at a time.
+
+      # Convert incident_attributes to a matrix format to test if all the
+      # attributes in the two edges are identical
+      incident_attributes_matrix <- do.call(cbind, incident_attributes)
+
+      # If the two rows are not identical, then the corresponding node is not a
+      # psedo_node. In that case, remove that ID.
+      if (nrow(unique(incident_attributes_matrix)) > 1L) {
+        pseudo[id] <- FALSE
+      }
+    }
+  }
+
+  # Check again if there is at least one pseudo node
+  if (! any(pseudo)) return (x)
+
   ## ===============================
   # STEP II: FIND EDGES TO BE MERGED
   # The connectivity of the network should be preserved.

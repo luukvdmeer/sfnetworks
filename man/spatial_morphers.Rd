@@ -38,7 +38,7 @@ to_spatial_simple(
   store_original_data = FALSE
 )
 
-to_spatial_smooth(x, store_original_data = FALSE)
+to_spatial_smooth(x, store_original_data = FALSE, extra_fields = NULL)
 
 to_spatial_subdivision(x)
 
@@ -99,6 +99,11 @@ will be calculated from the other nodes towards the reference node instead.}
 to \code{TRUE}.}
 
 \item{remove_loops}{Should loop edges be removed. Defaults to \code{TRUE}.}
+
+\item{extra_fields}{Character vector specying the name(s) of one or more
+fields in the edges' table. If not NULL, then the to_spatial_smooth morpher
+removes only the peudo-nodes where the attributes of the two incident edges
+are equal.}
 
 \item{subset_by}{Whether to create subgraphs based on nodes or edges.}
 }
