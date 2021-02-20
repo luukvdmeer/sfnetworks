@@ -103,7 +103,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>2. Network pre-processing and cleaning</h1>
             
-            <h4 class="date">2021-02-08</h4>
+            <h4 class="date">2021-02-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/preprocess_and_clean.Rmd"><code>vignettes/preprocess_and_clean.Rmd</code></a></small>
       <div class="hidden name"><code>preprocess_and_clean.Rmd</code></div>
@@ -382,12 +382,12 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span><span>
 #&gt;    from    to              x  flow type    foo bar  
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>   </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>    10     9 (6 1.2, 5.8 1)     6 path      2 c    
-#&gt; </span><span style="color: #555555;">2</span><span>    11    10 (6.2 1, 6 1.2)     2 road     13 s    
-#&gt; </span><span style="color: #555555;">3</span><span>     9    12 (5.8 1, 6 0.8)     6 road      7 m    
-#&gt; </span><span style="color: #555555;">4</span><span>    12    11 (6 0.8, 6.2 1)     1 path     12 e    
-#&gt; </span><span style="color: #555555;">5</span><span>    11    15   (6.2 1, 7 1)     1 road      4 x    
-#&gt; </span><span style="color: #555555;">6</span><span>    10    13   (6 1.2, 6 2)     1 road      3 n    
+#&gt; </span><span style="color: #555555;">1</span><span>    10     9 (6 1.2, 5.8 1)     2 path     11 w    
+#&gt; </span><span style="color: #555555;">2</span><span>    11    10 (6.2 1, 6 1.2)     7 road      7 b    
+#&gt; </span><span style="color: #555555;">3</span><span>     9    12 (5.8 1, 6 0.8)     7 road      5 z    
+#&gt; </span><span style="color: #555555;">4</span><span>    12    11 (6 0.8, 6.2 1)    10 road      3 h    
+#&gt; </span><span style="color: #555555;">5</span><span>    11    15   (6.2 1, 7 1)    10 path     13 f    
+#&gt; </span><span style="color: #555555;">6</span><span>    10    13   (6 1.2, 6 2)    10 road      2 g    
 #&gt; </span><span style="color: #555555;"># … with 9 more rows</span><span>
 #&gt; </span><span style="color: #555555;">#
 #&gt; # Node Data:     15 x 1</span><span>
@@ -416,8 +416,8 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; <span style="color: #555555;"># A tibble: 2 x 7</span><span>
 #&gt;    from    to               x  flow type    foo bar  
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>    </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     6     7      (4 3, 4 2)     1 path      1 o    
-#&gt; </span><span style="color: #555555;">2</span><span>     6     7 (4 3, 5 2, 4 2)     6 road     11 l
+#&gt; </span><span style="color: #555555;">1</span><span>     6     7      (4 3, 4 2)    10 path     12 r    
+#&gt; </span><span style="color: #555555;">2</span><span>     6     7 (4 3, 5 2, 4 2)     9 road      4 k
 </span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Define how we want to combine the attributes.</span>
@@ -449,7 +449,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; <span style="color: #555555;"># A tibble: 1 x 6</span><span>
 #&gt;    from    to            x  flow type  .tidygraph_edge_index
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;list&gt;</span><span>               
-#&gt; </span><span style="color: #555555;">1</span><span>     6     7   (4 3, 4 2)     7 </span><span style="color: #BB0000;">NA</span><span>    </span><span style="color: #555555;">&lt;int [2]&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     6     7   (4 3, 4 2)    19 </span><span style="color: #BB0000;">NA</span><span>    </span><span style="color: #555555;">&lt;int [2]&gt;</span><span>
 </span></code></pre>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
@@ -569,9 +569,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span><span>
 #&gt;    from    to            x  flow type  .tidygraph_edge_index
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;list&gt;</span><span>               
-#&gt; </span><span style="color: #555555;">1</span><span>     2     3   (3 1, 4 1)     3 path  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
-#&gt; </span><span style="color: #555555;">2</span><span>     3     4 (4 1, 5.8 1)     4 road  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
-#&gt; </span><span style="color: #555555;">3</span><span>     5     2   (3 2, 3 1)     9 road  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
+#&gt; </span><span style="color: #555555;">1</span><span>     2     3   (3 1, 4 1)     1 road  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
+#&gt; </span><span style="color: #555555;">2</span><span>     3     4 (4 1, 5.8 1)     5 road  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
+#&gt; </span><span style="color: #555555;">3</span><span>     5     2   (3 2, 3 1)     2 path  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
 #&gt; </span><span style="color: #555555;"># … with 11 more rows</span><span>
 </span></code></pre>
 <p>The combination of the cluster index and the component index can now be used to define the groups of nodes to be contracted. Nodes that form a group on their own will remain unchanged.</p>
@@ -606,9 +606,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt;         x .tidygraph_node_index   cls   cmp is_priority
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;POINT&gt;</span><span>                 </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;lgl&gt;</span><span>      
 #&gt; </span><span style="color: #555555;">1</span><span> (5.8 1)                     5     4     1 TRUE       
-#&gt; </span><span style="color: #555555;">2</span><span> (6 0.8)                    11     4     1 TRUE       
+#&gt; </span><span style="color: #555555;">2</span><span> (6 0.8)                    11     4     1 FALSE      
 #&gt; </span><span style="color: #555555;">3</span><span> (6 1.2)                    12     4     1 TRUE       
-#&gt; </span><span style="color: #555555;">4</span><span> (6.2 1)                    14     4     1 FALSE
+#&gt; </span><span style="color: #555555;">4</span><span> (6.2 1)                    14     4     1 TRUE
 </span></code></pre>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Define how we want to combine the attributes.</span>
