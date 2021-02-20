@@ -2,7 +2,7 @@
 This is a resubmission. I have made the following changes:
 
 - License components with restrictions and base license
-  - 
+  - We omited "| file LICENSE" from the DESCRIPTION file
  
 - Please add \value to .Rd files regarding exported methods and explain
 the functions results in the documentation. Please write about the
@@ -18,7 +18,7 @@ function does not return a value, please document that too, e.g.
 examples/vignettes/tests in the user's home filespace (including the
 package directory and getwd()). This is not allowed by CRAN policies. In
 your examples/vignettes/tests you can write to tempdir().
-  - We have made sure functions fo not write in the user's filespace
+  - We have made sure functions do not write in the user's filespace
 
 - Please always make sure to reset to user's options(), working directory
 or par() after you changed it in examples and vignettes and demos.
