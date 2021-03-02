@@ -195,7 +195,7 @@ plot(st_geometry(joined, "edges"))
 plot(st_as_sf(joined, "nodes"), pch = 20, add = TRUE)
 ```
 
-In the example above, the polygons are spatially distinct. Hence, each node can only intersect with a single polygon. But what would happen if we do a join with polygons that overlap? The attributes from which polygon will then be attached to a node that intersects with multiple polygons at once? In `sf` this issue is solved by duplicating such a point as much times as the number of polygons it intersects with, and attaching attributes of each intersecting polygon to one of these duplicates. This approach does not fit the network case, however. An edge can only have a single node at each of its endpoints, and thus, the duplicated nodes will be isolated and will be redundant in the network structure. Therefore, `sfnetworks` will only join the information from the first match whenever there are multiple matches for a single node. A warning is given in that case such that you are aware of the fact that not all information was joined into the network.
+In the example above, the polygons are spatially distinct. Hence, each node can only intersect with a single polygon. But what would happen if we do a join with polygons that overlap? The attributes from which polygon will then be attached to a node that intersects with multiple polygons at once? In `sf` this issue is solved by duplicating such a point as much times as the number of polygons it intersects with, and attaching attributes of each intersecting polygon to one of these duplicates. This approach does not fit the network case, however. An edge can only have a single node at each of its endpoints, and thus, the duplicated nodes will be isolated and redundant in the network structure. Therefore, `sfnetworks` will only join the information from the first match whenever there are multiple matches for a single node. A warning is given in that case such that you are aware of the fact that not all information was joined into the network.
 
 Note that in the case of joining on the edges, multiple matches per edge are not a problem for the network structure. It will simply duplicate the edge (i.e. creating a set of parallel edges) whenever this occurs.
 
@@ -220,34 +220,41 @@ For non-spatial joins based on attribute columns, simply use a join function fro
 Another network specific use-case of spatial joins would be to join information from external points of interest (POIs) into the nodes of the network. However, to do so, such points need to have *exactly* equal coordinates to one of the nodes. Often this will not be the case. To solve such situations, you will first need to update the coordinates of the POIs to match those of their *nearest node*. This process is also called *snapping*. To find the nearest node in the network for each POI, you can use the sf function `sf::st_nearest_feature()`.
 
 ```{r, fig.show='hold', out.width = '50%'}
+# Create a network.
 node1 = st_point(c(0, 0))
 node2 = st_point(c(1, 0))
 edge = st_sfc(st_linestring(c(node1, node2)))
 
 net = as_sfnetwork(edge)
 
+# Create a set of POIs.
 pois = data.frame(poi_type = c("bakery", "butcher"),
-                  x = c(0, 0.6), y = c(0.1, 0.1)) %>%
+                  x = c(0, 0.6), y = c(0.3, 0.3)) %>%
   st_as_sf(coords = c("x", "y"))
 
 # Find indices of nearest nodes.
 nearest_nodes = st_nearest_feature(pois, net)
 
-# Replace geometries.
+# Snap geometries of POIs to the network.
 snapped_pois = pois %>%
   st_set_geometry(st_geometry(net)[nearest_nodes])
 
+# Plot.
+plot_connections = function(pois) {
+  for (i in seq_len(nrow(pois))) {
+    connection = st_nearest_points(pois[i, ], net)[nearest_nodes[i]]
+    plot(connection, col = "grey", lty = 2, lwd = 2, add = TRUE)
+  }
+}
+
 plot(net, cex = 2, lwd = 4)
+plot_connections(pois)
 plot(pois, pch = 8, cex = 2, lwd = 2, add = TRUE)
-plot(st_nearest_points(pois[1, ], net)[nearest_nodes[1]],
-     col = "grey", lty = 2, lwd = 2, add = TRUE)
-plot(st_nearest_points(pois[2, ], net)[nearest_nodes[2]],
-     col = "grey", lty = 2, lwd = 2, add = TRUE)
 plot(net, cex = 2, lwd = 4)
 plot(snapped_pois, pch = 8, cex = 2, lwd = 2, add = TRUE)
 ```
 
-After snapping the POIs, we can use `sf::st_join()` as expected.
+After snapping the POIs, we can use `sf::st_join()` as expected. Do remember that if multiple POIs are snapped to the same node, only the information of the first one is joined into the network.
 
 ```{r}
 st_join(net, snapped_pois)
@@ -259,18 +266,78 @@ In the example above, it makes sense to include the information from the first P
 
 The function `st_network_blend()` does exactly that. For each POI, it finds the nearest location $p$ on the nearest edge $e$. If $p$ is an already existing node (i.e. $p$ is an endpoint of $e$), it joins the information from the POI into that node. If $p$ is *not* an already existing node, it subdivides $e$ at $p$, adds $p$ as a *new node* to the network, and joins the information from the POI into that new node. For this process, it does *not* matter if $p$ is an interior point in the linestring geometry of $e$.
 
-*NOTE: This function is still experimental. It needs more testing and may be slow on large networks*
-
 ```{r, fig.show='hold', out.width = '50%'}
 blended = st_network_blend(net, pois)
 blended
+plot_connections = function(pois) {
+  for (i in seq_len(nrow(pois))) {
+    connection = st_nearest_points(pois[i, ], activate(net, "edges"))
+    plot(connection, col = "grey", lty = 2, lwd = 2, add = TRUE)
+  }
+}
+
 plot(net, cex = 2, lwd = 4)
+plot_connections(pois)
 plot(pois, pch = 8, cex = 2, lwd = 2, add = TRUE)
-plot(st_nearest_points(pois[1, ], activate(net, "edges")),
-     col = "grey", lty = 2, lwd = 2, add = TRUE)
-plot(st_nearest_points(pois[2, ], activate(net, "edges")),
-     col = "grey", lty = 2, lwd = 2, add = TRUE)
 plot(blended, cex = 2, lwd = 4)
+```
+
+The `st_network_blend()` function has a `tolerance` parameter, which defines the maximum distance a POI can be from the network in order to be blended in. Hence, only the POIs that are at least as close to the network as the tolerance distance will be blended, and all others will be ignored. The tolerance can be specified as a non-negative number. By default it is assumed its units are meters, but this behaviour can be changed by manually setting its units with `units::units()`.
+
+```{r, fig.show='hold', out.width = '50%'}
+pois = data.frame(poi_type = c("bakery", "butcher", "bar"),
+                  x = c(0, 0.6, 0.4), y = c(0.3, 0.3, 0.4)) %>%
+  st_as_sf(coords = c("x", "y"))
+
+blended = st_network_blend(net, pois)
+blended_with_tolerance = st_network_blend(net, pois, tolerance = 0.3)
+
+plot(blended, cex = 2, lwd = 4)
+plot_connections(pois)
+plot(pois, pch = 8, cex = 2, lwd = 2, add = TRUE)
+plot(blended_with_tolerance, cex = 2, lwd = 4)
+plot_connections(pois)
+plot(pois, pch = 8, cex = 2, lwd = 2, add = TRUE)
+```
+
+There are a few important details to be aware of when using `st_network_blend()`. Firstly: when multiple POIs have the same *nearest location on the nearest edge*, only the first of them is blended into the network. This is for the same reasons as explained before: in the network structure there is no clear approach for dealing with duplicated nodes. By arranging your table of POIs with `dplyr::arrange()` before blending you can influence which (type of) POI is given priority in such cases.
+
+Secondly: when a single POI has multiple nearest edges, it is only blended into the first of these edges. Therefore, it might be a good idea to run the `to_spatial_subdivision()` morpher after blending, such that intersecting but unconnected edges get connected. See the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html#subdivide-edges) vignette for more details.
+
+Lastly: it is important to be aware of *floating point precision*. See the discussion in [this GitHub issue](https://github.com/r-spatial/sf/issues/790) for more background. In short: due to internal rounding of rational numbers in R it is actually possible that even the intersection point between two lines is *not* evaluated as intersecting those lines themselves. Sounds confusing? It is! But see the example below:
+
+```{r}
+# Create two intersecting lines.
+p1 = st_point(c(0.53236, 1.95377))
+p2 = st_point(c(0.53209, 1.95328))
+l1 = st_sfc(st_linestring(c(p1, p2)))
+
+p3 = st_point(c(0.53209, 1.95345))
+p4 = st_point(c(0.53245, 1.95345))
+l2 = st_sfc(st_linestring(c(p3, p4)))
+
+# The two lines share an intersection point.
+st_intersection(l1, l2)
+
+# But this intersection point does not intersects the line itself!
+st_intersects(l1, st_intersection(l1, l2), sparse = FALSE)
+
+# The intersection point is instead located a tiny bit next to the line.
+st_distance(l1, st_intersection(l1, l2))
+```
+
+That is: you would expect an intersection with an edge to be blended into the network even if you set `tolerance = 0`, but in fact that will not always happen. To avoid having these problems, you can better set the tolerance to a very small number instead of zero.
+
+```{r, fig.show='hold', out.width = '50%'}
+net = as_sfnetwork(l1)
+p = st_intersection(l1, l2)
+
+plot(l1)
+plot(l2, col = "grey", add = TRUE)
+plot(st_network_blend(net, p, tolerance = 0), add = TRUE)
+plot(l1)
+plot(l2, col = "grey", add = TRUE)
+plot(st_network_blend(net, p, tolerance = 1e-10), add = TRUE)
 ```
 
 ### Joining two networks
