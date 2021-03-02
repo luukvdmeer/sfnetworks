@@ -25,10 +25,7 @@ test_that("st_network_blend with tolerance argument too large gives a
 
 test_that("st_network_blend splits edges with nodes on and/or close to
           the network", {
-  expect_warning(
-    blend2 <- st_network_blend(net, pois),
-    "attributes are constant over geometries"
-  )
+  blend2 <- st_network_blend(net, pois)
   expect_equal(vcount(blend2), 4)
   expect_equal(ecount(blend2), 3)
 })
