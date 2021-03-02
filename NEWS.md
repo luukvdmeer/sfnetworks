@@ -2,6 +2,7 @@
 
 * Addition of a `to_spatial_contracted()` morpher, to contract groups of nodes based on given grouping variables. Refs [#104](https://github.com/luukvdmeer/sfnetworks/issues/104)
 * Addition of a `to_spatial_neighborhood()` morpher, to limit a network to the neighborhood of a given node, based on a given cost threshold. Refs [#90](https://github.com/luukvdmeer/sfnetworks/issues/90)
+* New implementation of `st_network_blend()`, which is faster and more reliable. The `sort` argument is deprecated, since the returned network is now always sorted.
 * Addition of an `summarise_attributes` argument to the `to_spatial_simple()` morpher, allowing to specify on a per-attribute basis how attribute values of merged multiple edges should be inferred from the original ones. Refs [#113](https://github.com/luukvdmeer/sfnetworks/issues/113). The same argument is also part of the new `to_spatial_contracted()` morpher, where it can be used to specify on a per-attribute basis how attribute values of contracted groups of nodes should be inferred from the original ones.
 * The argument `remove_parallels` of the `to_spatial_simple()` morpher is renamed to `remove_multiples` to better fit naming conventions in `igraph`.
 * The argument `store_orig_data` of the `to_spatial_smooth()` morpher is renamed to `store_original_data` to be better interpretable. This argument is also added to the morphers `to_spatial_simple()` and `to_spatial_contracted()`, allowing to store original node or edge data in a `.orig_data` column, matching the design standards of `tidygraph`.
@@ -9,10 +10,16 @@
 * The default of the `Inf_as_NaN` argument in `edge_circuity()` is changed from `TRUE` to `FALSE`, to better fit with the change mentioned above, and to make sure no changes to R defaults are made without the user explicity specifying them.
 * Whenever there are multiple matches when spatially joining information to the nodes of a network with `sf::st_join()`, only the information of the first match is now joined. Before, this used to throw an error. Refs [#108](https://github.com/luukvdmeer/sfnetworks/discussions/108)
 * Removal of the morphed_sfnetwork method for `sf::st_geometry<-`, since geometries should not be replaced in a morphed state.
+* The warning '.. assumes attributes are constant over geometries' is now only raised when not all attribute-geometry relationships are set to 'constant'. Refs [#123](https://github.com/luukvdmeer/sfnetworks/discussions/123)
 * Bug fixes:
-  - `sf::st_crop()` now correctly updates the nodes table after cropping the edges. Fixes [#109](https://github.com/luukvdmeer/sfnetworks/issues/109)
+  - The attribute-geometry relationships of edge attributes are now preserved during network construction. Fixes [#123](https://github.com/luukvdmeer/sfnetworks/issues/123)
+  - `st_network_blend()` now correctly blends points that are very close to the network. Fixes [#98](https://github.com/luukvdmeer/sfnetworks/issues/98)
+  - `st_network_blend()` now preserves the directedness of the input network. Fixes [#127](https://github.com/luukvdmeer/sfnetworks/issues/127)
+  - `st_network_blend()` now runs even if the network contains edges of length 0. Fixes [#125](https://github.com/luukvdmeer/sfnetworks/issues/125)
+  - The sfnetwork method for `sf::st_crop()` now correctly updates the nodes table after cropping the edges. Fixes [#109](https://github.com/luukvdmeer/sfnetworks/issues/109)
   - `to_spatial_smooth()` now returns the original network when no pseudo nodes are present. Fixes [#112](https://github.com/luukvdmeer/sfnetworks/issues/112)
   - `to_spatial_subdivision()` now returns the original network when there are no locations for subdivision.
+  - `to_spatial_subdivision()` now returns correct node indices for undirected networks.
 * Several new examples and applications added to the vignettes.
 
 # sfnetworks v0.4.1
