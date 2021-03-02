@@ -213,20 +213,20 @@ column. Defaults to <code>TRUE</code>.</p></td>
 #&gt; dimension:      XY
 #&gt; bbox:           xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
 #&gt; geographic CRS: WGS 84
-#&gt; <span style='color: #555555;'># A tibble: 701 x 1</span><span>
+#&gt; <span style='color: #949494;'># A tibble: 701 x 1</span><span>
 #&gt;               geometry
-#&gt;            </span><span style='color: #555555;font-style: italic;'>&lt;POINT [°]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 1</span><span> (7.533722 51.95556)
-#&gt; </span><span style='color: #555555;'> 2</span><span> (7.533461 51.95576)
-#&gt; </span><span style='color: #555555;'> 3</span><span> (7.532442 51.95422)
-#&gt; </span><span style='color: #555555;'> 4</span><span>  (7.53209 51.95328)
-#&gt; </span><span style='color: #555555;'> 5</span><span> (7.532709 51.95209)
-#&gt; </span><span style='color: #555555;'> 6</span><span> (7.532869 51.95257)
-#&gt; </span><span style='color: #555555;'> 7</span><span> (7.540063 51.94468)
-#&gt; </span><span style='color: #555555;'> 8</span><span>  (7.53822 51.94546)
-#&gt; </span><span style='color: #555555;'> 9</span><span>  (7.537673 51.9475)
-#&gt; </span><span style='color: #555555;'>10</span><span> (7.537614 51.94562)
-#&gt; </span><span style='color: #555555;'># … with 691 more rows</span><span></div><div class='input'>
+#&gt;            </span><span style='color: #949494;font-style: italic;'>&lt;POINT [°]&gt;</span><span>
+#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> (7.533722 51.95556)
+#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> (7.533461 51.95576)
+#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> (7.532442 51.95422)
+#&gt; </span><span style='color: #BCBCBC;'> 4</span><span>  (7.53209 51.95328)
+#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> (7.532709 51.95209)
+#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> (7.532869 51.95257)
+#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> (7.540063 51.94468)
+#&gt; </span><span style='color: #BCBCBC;'> 8</span><span>  (7.53822 51.94546)
+#&gt; </span><span style='color: #BCBCBC;'> 9</span><span>  (7.537673 51.9475)
+#&gt; </span><span style='color: #BCBCBC;'>10</span><span> (7.537614 51.94562)
+#&gt; </span><span style='color: #949494;'># … with 691 more rows</span><span></div><div class='input'>
 <span class='co'># Extract any network element as a spatial tibble.</span>
 <span class='fu'>as_tibble</span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"edges"</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; Simple feature collection with 851 features and 4 fields
@@ -234,36 +234,36 @@ column. Defaults to <code>TRUE</code>.</p></td>
 #&gt; dimension:      XY
 #&gt; bbox:           xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
 #&gt; geographic CRS: WGS 84
-#&gt; </span><span style='color: #555555;'># A tibble: 851 x 5</span><span>
+#&gt; </span><span style='color: #949494;'># A tibble: 851 x 5</span><span>
 #&gt;     from    to name         type                                        geometry
-#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>        </span><span style='color: #555555;font-style: italic;'>&lt;fct&gt;</span><span>                               </span><span style='color: #555555;font-style: italic;'>&lt;LINESTRING [°]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 1</span><span>     1     2 Havixbecker… reside…       (7.533722 51.95556, 7.533461 51.95576)
-#&gt; </span><span style='color: #555555;'> 2</span><span>     3     4 Pienersallee second… (7.532442 51.95422, 7.53236 51.95377, 7.532…
-#&gt; </span><span style='color: #555555;'> 3</span><span>     5     6 Schulte-Ber… reside… (7.532709 51.95209, 7.532823 51.95239, 7.53…
-#&gt; </span><span style='color: #555555;'> 4</span><span>     7     8 </span><span style='color: #BB0000;'>NA</span><span>           path    (7.540063 51.94468, 7.539696 51.94479, 7.53…
-#&gt; </span><span style='color: #555555;'> 5</span><span>     9    10 Welsingheide reside…        (7.537673 51.9475, 7.537614 51.94562)
-#&gt; </span><span style='color: #555555;'> 6</span><span>    11    12 </span><span style='color: #BB0000;'>NA</span><span>           footway (7.543791 51.94733, 7.54369 51.94686, 7.543…
-#&gt; </span><span style='color: #555555;'> 7</span><span>    13    14 </span><span style='color: #BB0000;'>NA</span><span>           footway        (7.54012 51.94478, 7.539931 51.94514)
-#&gt; </span><span style='color: #555555;'> 8</span><span>     8    10 </span><span style='color: #BB0000;'>NA</span><span>           path    (7.53822 51.94546, 7.538131 51.94549, 7.538…
-#&gt; </span><span style='color: #555555;'> 9</span><span>     7    15 </span><span style='color: #BB0000;'>NA</span><span>           track   (7.540063 51.94468, 7.540338 51.94468, 7.54…
-#&gt; </span><span style='color: #555555;'>10</span><span>    16    17 </span><span style='color: #BB0000;'>NA</span><span>           track   (7.5424 51.94599, 7.54205 51.94629, 7.54196…
-#&gt; </span><span style='color: #555555;'># … with 841 more rows</span><span></div><div class='input'>
+#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>        </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>                               </span><span style='color: #949494;font-style: italic;'>&lt;LINESTRING [°]&gt;</span><span>
+#&gt; </span><span style='color: #BCBCBC;'> 1</span><span>     1     2 Havixbecker… reside…       (7.533722 51.95556, 7.533461 51.95576)
+#&gt; </span><span style='color: #BCBCBC;'> 2</span><span>     3     4 Pienersallee second… (7.532442 51.95422, 7.53236 51.95377, 7.532…
+#&gt; </span><span style='color: #BCBCBC;'> 3</span><span>     5     6 Schulte-Ber… reside… (7.532709 51.95209, 7.532823 51.95239, 7.53…
+#&gt; </span><span style='color: #BCBCBC;'> 4</span><span>     7     8 </span><span style='color: #BB0000;'>NA</span><span>           path    (7.540063 51.94468, 7.539696 51.94479, 7.53…
+#&gt; </span><span style='color: #BCBCBC;'> 5</span><span>     9    10 Welsingheide reside…        (7.537673 51.9475, 7.537614 51.94562)
+#&gt; </span><span style='color: #BCBCBC;'> 6</span><span>    11    12 </span><span style='color: #BB0000;'>NA</span><span>           footway (7.543791 51.94733, 7.54369 51.94686, 7.543…
+#&gt; </span><span style='color: #BCBCBC;'> 7</span><span>    13    14 </span><span style='color: #BB0000;'>NA</span><span>           footway        (7.54012 51.94478, 7.539931 51.94514)
+#&gt; </span><span style='color: #BCBCBC;'> 8</span><span>     8    10 </span><span style='color: #BB0000;'>NA</span><span>           path    (7.53822 51.94546, 7.538131 51.94549, 7.538…
+#&gt; </span><span style='color: #BCBCBC;'> 9</span><span>     7    15 </span><span style='color: #BB0000;'>NA</span><span>           track   (7.540063 51.94468, 7.540338 51.94468, 7.54…
+#&gt; </span><span style='color: #BCBCBC;'>10</span><span>    16    17 </span><span style='color: #BB0000;'>NA</span><span>           track   (7.5424 51.94599, 7.54205 51.94629, 7.54196…
+#&gt; </span><span style='color: #949494;'># … with 841 more rows</span><span></div><div class='input'>
 <span class='co'># Extract the active network element as a regular tibble.</span>
 <span class='fu'>as_tibble</span><span class='op'>(</span><span class='va'>net</span>, spatial <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A tibble: 701 x 1</span><span>
+</div><div class='output co'>#&gt; </span><span style='color: #949494;'># A tibble: 701 x 1</span><span>
 #&gt;               geometry
-#&gt;            </span><span style='color: #555555;font-style: italic;'>&lt;POINT [°]&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 1</span><span> (7.533722 51.95556)
-#&gt; </span><span style='color: #555555;'> 2</span><span> (7.533461 51.95576)
-#&gt; </span><span style='color: #555555;'> 3</span><span> (7.532442 51.95422)
-#&gt; </span><span style='color: #555555;'> 4</span><span>  (7.53209 51.95328)
-#&gt; </span><span style='color: #555555;'> 5</span><span> (7.532709 51.95209)
-#&gt; </span><span style='color: #555555;'> 6</span><span> (7.532869 51.95257)
-#&gt; </span><span style='color: #555555;'> 7</span><span> (7.540063 51.94468)
-#&gt; </span><span style='color: #555555;'> 8</span><span>  (7.53822 51.94546)
-#&gt; </span><span style='color: #555555;'> 9</span><span>  (7.537673 51.9475)
-#&gt; </span><span style='color: #555555;'>10</span><span> (7.537614 51.94562)
-#&gt; </span><span style='color: #555555;'># … with 691 more rows</span><span></div><div class='input'>
+#&gt;            </span><span style='color: #949494;font-style: italic;'>&lt;POINT [°]&gt;</span><span>
+#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> (7.533722 51.95556)
+#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> (7.533461 51.95576)
+#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> (7.532442 51.95422)
+#&gt; </span><span style='color: #BCBCBC;'> 4</span><span>  (7.53209 51.95328)
+#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> (7.532709 51.95209)
+#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> (7.532869 51.95257)
+#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> (7.540063 51.94468)
+#&gt; </span><span style='color: #BCBCBC;'> 8</span><span>  (7.53822 51.94546)
+#&gt; </span><span style='color: #BCBCBC;'> 9</span><span>  (7.537673 51.9475)
+#&gt; </span><span style='color: #BCBCBC;'>10</span><span> (7.537614 51.94562)
+#&gt; </span><span style='color: #949494;'># … with 691 more rows</span><span></div><div class='input'>
 </div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

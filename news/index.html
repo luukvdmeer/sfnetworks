@@ -154,6 +154,7 @@
 </li>
 <li>Addition of a <code><a href="../reference/spatial_morphers.html">to_spatial_neighborhood()</a></code> morpher, to limit a network to the neighborhood of a given node, based on a given cost threshold. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/90"><a href='https://github.com/luukvdmeer/sfnetworks/issues/90'>#90</a></a>
 </li>
+<li>New implementation of <code><a href="../reference/st_network_blend.html">st_network_blend()</a></code>, which is faster and more reliable. The <code>sort</code> argument is deprecated, since the returned network is now always sorted.</li>
 <li>Addition of an <code>summarise_attributes</code> argument to the <code><a href="../reference/spatial_morphers.html">to_spatial_simple()</a></code> morpher, allowing to specify on a per-attribute basis how attribute values of merged multiple edges should be inferred from the original ones. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/113"><a href='https://github.com/luukvdmeer/sfnetworks/issues/113'>#113</a></a>. The same argument is also part of the new <code><a href="../reference/spatial_morphers.html">to_spatial_contracted()</a></code> morpher, where it can be used to specify on a per-attribute basis how attribute values of contracted groups of nodes should be inferred from the original ones.</li>
 <li>The argument <code>remove_parallels</code> of the <code><a href="../reference/spatial_morphers.html">to_spatial_simple()</a></code> morpher is renamed to <code>remove_multiples</code> to better fit naming conventions in <code>igraph</code>.</li>
 <li>The argument <code>store_orig_data</code> of the <code><a href="../reference/spatial_morphers.html">to_spatial_smooth()</a></code> morpher is renamed to <code>store_original_data</code> to be better interpretable. This argument is also added to the morphers <code><a href="../reference/spatial_morphers.html">to_spatial_simple()</a></code> and <code><a href="../reference/spatial_morphers.html">to_spatial_contracted()</a></code>, allowing to store original node or edge data in a <code>.orig_data</code> column, matching the design standards of <code>tidygraph</code>.</li>
@@ -163,16 +164,30 @@
 <li>Whenever there are multiple matches when spatially joining information to the nodes of a network with <code><a href="https://r-spatial.github.io/sf/reference/st_join.html">sf::st_join()</a></code>, only the information of the first match is now joined. Before, this used to throw an error. Refs <a href="https://github.com/luukvdmeer/sfnetworks/discussions/108"><a href='https://github.com/luukvdmeer/sfnetworks/issues/108'>#108</a></a>
 </li>
 <li>Removal of the morphed_sfnetwork method for <code>sf::st_geometry&lt;-</code>, since geometries should not be replaced in a morphed state.</li>
+<li>The warning ‘.. assumes attributes are constant over geometries’ is now only raised when not all attribute-geometry relationships are set to ‘constant’. Refs <a href="https://github.com/luukvdmeer/sfnetworks/discussions/123"><a href='https://github.com/luukvdmeer/sfnetworks/issues/123'>#123</a></a>
+</li>
 <li>Bug fixes:
 <ul>
+<li>The attribute-geometry relationships of edge attributes are now preserved during network construction. Fixes <a href="https://github.com/luukvdmeer/sfnetworks/issues/123"><a href='https://github.com/luukvdmeer/sfnetworks/issues/123'>#123</a></a>
+</li>
 <li>
-<code><a href="https://r-spatial.github.io/sf/reference/st_crop.html">sf::st_crop()</a></code> now correctly updates the nodes table after cropping the edges. Fixes <a href="https://github.com/luukvdmeer/sfnetworks/issues/109"><a href='https://github.com/luukvdmeer/sfnetworks/issues/109'>#109</a></a>
+<code><a href="../reference/st_network_blend.html">st_network_blend()</a></code> now correctly blends points that are very close to the network. Fixes <a href="https://github.com/luukvdmeer/sfnetworks/issues/98"><a href='https://github.com/luukvdmeer/sfnetworks/issues/98'>#98</a></a>
+</li>
+<li>
+<code><a href="../reference/st_network_blend.html">st_network_blend()</a></code> now preserves the directedness of the input network. Fixes <a href="https://github.com/luukvdmeer/sfnetworks/issues/127"><a href='https://github.com/luukvdmeer/sfnetworks/issues/127'>#127</a></a>
+</li>
+<li>
+<code><a href="../reference/st_network_blend.html">st_network_blend()</a></code> now runs even if the network contains edges of length 0. Fixes <a href="https://github.com/luukvdmeer/sfnetworks/issues/125"><a href='https://github.com/luukvdmeer/sfnetworks/issues/125'>#125</a></a>
+</li>
+<li>The sfnetwork method for <code><a href="https://r-spatial.github.io/sf/reference/st_crop.html">sf::st_crop()</a></code> now correctly updates the nodes table after cropping the edges. Fixes <a href="https://github.com/luukvdmeer/sfnetworks/issues/109"><a href='https://github.com/luukvdmeer/sfnetworks/issues/109'>#109</a></a>
 </li>
 <li>
 <code><a href="../reference/spatial_morphers.html">to_spatial_smooth()</a></code> now returns the original network when no pseudo nodes are present. Fixes <a href="https://github.com/luukvdmeer/sfnetworks/issues/112"><a href='https://github.com/luukvdmeer/sfnetworks/issues/112'>#112</a></a>
 </li>
 <li>
 <code><a href="../reference/spatial_morphers.html">to_spatial_subdivision()</a></code> now returns the original network when there are no locations for subdivision.</li>
+<li>
+<code><a href="../reference/spatial_morphers.html">to_spatial_subdivision()</a></code> now returns correct node indices for undirected networks.</li>
 </ul>
 </li>
 <li>Several new examples and applications added to the vignettes.</li>
