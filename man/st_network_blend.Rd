@@ -4,7 +4,7 @@
 \alias{st_network_blend}
 \title{Blend geospatial points into a spatial network}
 \usage{
-st_network_blend(x, y, tolerance = Inf, sort = FALSE)
+st_network_blend(x, y, tolerance = Inf)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
@@ -18,11 +18,6 @@ Should be a non-negative number preferably given as an object of class
 \code{\link[units]{units}}. Otherwise, it will be assumed that the unit is
 meters. If set to \code{Inf} all features will be blended. Defaults to
 \code{Inf}.}
-
-\item{sort}{Should the nodes in the resulting network be sorted in the same
-order as those in \code{x}, followed by the new nodes blended in from
-\code{y}? Defaults to \code{FALSE}, meaning that node order might be
-changed.}
 }
 \value{
 The blended network as an object of class \code{\link{sfnetwork}}.
@@ -34,6 +29,18 @@ subsequently splitting that edge at the location of the snapped point, and
 finally adding the snapped point as node to the network. If the location
 of the snapped point is already a node in the network, the attributes of the
 point (if any) will be joined to that node.
+}
+\details{
+There are two important details to be aware of. Firstly: when the 
+snap locations of multiple points are equal, only the first of these points 
+is blended into the network. That is, by first arranging \code{y} before 
+blending you can influence which (type of) point is given priority in such 
+cases. 
+Secondly: when the snap location of a point intersects with multiple edges,
+it is only blended into the first of these edges. Again, you can influence 
+this process by first arranging the edges data before blending. Also, you 
+can run the \code{\link{to_spatial_subdivision}} morpher after blending,
+such that equal but unconnected edge points get connected.
 }
 \note{
 Due to internal rounding of rational numbers, it may occur that the
