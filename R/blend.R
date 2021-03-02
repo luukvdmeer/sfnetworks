@@ -217,7 +217,7 @@ blend_ = function(x, y, tolerance) {
     )
     return (x)
   } else {
-    raise_assume_constant("st_network_blend")
+    if (will_assume_constant(x)) raise_assume_constant("st_network_blend")
   }
   # Remove duplicated features in y.
   # These features will have the same blending location.

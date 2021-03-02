@@ -764,7 +764,7 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
 #' @export
 to_spatial_subdivision = function(x) {
   require_spatially_explicit_edges(x)
-  raise_assume_constant("to_spatial_subdivision")
+  if (will_assume_constant(x)) raise_assume_constant("to_spatial_subdivision")
   # Retrieve nodes and edges from the network.
   nodes = nodes_as_sf(x)
   edges = edges_as_sf(x)
