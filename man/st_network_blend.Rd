@@ -33,14 +33,12 @@ point (if any) will be joined to that node.
 \details{
 There are two important details to be aware of. Firstly: when the 
 snap locations of multiple points are equal, only the first of these points 
-is blended into the network. That is, by first arranging \code{y} before 
-blending you can influence which (type of) point is given priority in such 
-cases. 
+is blended into the network. By arranging \code{y} before blending you can
+influence which (type of) point is given priority in such cases. 
 Secondly: when the snap location of a point intersects with multiple edges,
-it is only blended into the first of these edges. Again, you can influence 
-this process by first arranging the edges data before blending. Also, you 
-can run the \code{\link{to_spatial_subdivision}} morpher after blending,
-such that equal but unconnected edge points get connected.
+it is only blended into the first of these edges. You might want to run the
+\code{\link{to_spatial_subdivision}} morpher after blending, such that
+intersecting but unconnected edges get connected.
 }
 \note{
 Due to internal rounding of rational numbers, it may occur that the
