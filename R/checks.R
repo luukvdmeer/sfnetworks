@@ -151,7 +151,8 @@ will_assume_constant = function(x) {
     ".sfnetwork_index"
   )
   agr = edge_agr(x)
-  any(agr[!names(agr) %in% ignore] != "constant")
+  real_agr = agr[!names(agr) %in% ignore]
+  any(is.na(real_agr)) || any(real_agr != "constant") 
 }
 
 #' Check if a planar coordinates will be assumed for a network
