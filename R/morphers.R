@@ -768,6 +768,9 @@ to_spatial_subdivision = function(x) {
   # Retrieve nodes and edges from the network.
   nodes = nodes_as_sf(x)
   edges = edges_as_sf(x)
+  # For later use:
+  # --> Check wheter x is directed.
+  directed = is_directed(x)
   ## ===========================
   # STEP I: DECOMPOSE THE EDGES
   # Decompose the edges linestring geometries into the points that shape them.
@@ -848,7 +851,7 @@ to_spatial_subdivision = function(x) {
   # We will update them later.
   ## ===================================
   # Find which *original* edge belongs to which *new* edge:
-  # --> Use the list of new edge points constructed before.
+  # --> Use the lists of edge indices mapped to the new edge points.
   # --> There we already mapped each new edge point to its original edge.
   # --> First define which new edge points are startpoints of new edges.
   # --> Then retrieve the original edge index from these new startpoints.
@@ -881,7 +884,11 @@ to_spatial_subdivision = function(x) {
   # Find which of the *original* edge points equaled which *original* node.
   # If an edge point did not equal a node, store NA instead.
   node_idxs = rep(NA, nrow(edge_pts))
-  node_idxs[is_boundary] = edge_boundary_node_indices(x)
+  if (directed) {
+    node_idxs[is_boundary] = edge_boundary_node_indices(x)
+  } else {
+    node_idxs[is_boundary] = edge_boundary_point_indices(x)
+  }
   # Find which of the *original* nodes belong to which *new* edge boundary.
   # If a new edge boundary does not equal an original node, store NA instead.
   orig_node_idxs = rep(node_idxs, reps)[is_new_boundary]
@@ -913,7 +920,7 @@ to_spatial_subdivision = function(x) {
   # Use the new nodes data and the new edges data to create the new network.
   ## ============================
   # Create new network.
-  x_new = sfnetwork_(new_nodes, new_edges, directed = is_directed(x))
+  x_new = sfnetwork_(new_nodes, new_edges, directed = directed)
   # Return in a list.
   list(
     subdivision = x_new %preserve_graph_attrs% x
