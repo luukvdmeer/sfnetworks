@@ -229,7 +229,7 @@ net = as_sfnetwork(edge)
 
 # Create a set of POIs.
 pois = data.frame(poi_type = c("bakery", "butcher"),
-                  x = c(0, 0.6), y = c(0.3, 0.3)) %>%
+                  x = c(0, 0.6), y = c(0.2, 0.2)) %>%
   st_as_sf(coords = c("x", "y"))
 
 # Find indices of nearest nodes.
@@ -286,11 +286,11 @@ The `st_network_blend()` function has a `tolerance` parameter, which defines the
 
 ```{r, fig.show='hold', out.width = '50%'}
 pois = data.frame(poi_type = c("bakery", "butcher", "bar"),
-                  x = c(0, 0.6, 0.4), y = c(0.3, 0.3, 0.4)) %>%
+                  x = c(0, 0.6, 0.4), y = c(0.2, 0.2, 0.3)) %>%
   st_as_sf(coords = c("x", "y"))
 
 blended = st_network_blend(net, pois)
-blended_with_tolerance = st_network_blend(net, pois, tolerance = 0.3)
+blended_with_tolerance = st_network_blend(net, pois, tolerance = 0.2)
 
 plot(blended, cex = 2, lwd = 4)
 plot_connections(pois)
@@ -333,11 +333,11 @@ net = as_sfnetwork(l1)
 p = st_intersection(l1, l2)
 
 plot(l1)
-plot(l2, col = "grey", add = TRUE)
-plot(st_network_blend(net, p, tolerance = 0), add = TRUE)
+plot(l2, col = "grey", lwd = 2, add = TRUE)
+plot(st_network_blend(net, p, tolerance = 0), lwd = 2, cex = 2, add = TRUE)
 plot(l1)
-plot(l2, col = "grey", add = TRUE)
-plot(st_network_blend(net, p, tolerance = 1e-10), add = TRUE)
+plot(l2, col = "grey", lwd = 2, add = TRUE)
+plot(st_network_blend(net, p, tolerance = 1e-10), lwd = 2, cex = 2, add = TRUE)
 ```
 
 ### Joining two networks
