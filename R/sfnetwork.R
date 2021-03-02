@@ -118,15 +118,16 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
   # If edges is an sf object:
   # --> Tidygraph cannot handle it due to sticky geometry.
   # --> Therefore it has to be converted into a regular data frame (or tibble).
-  if (has_sfc(edges)) {
-    if (is.sf(edges)) class(edges) = setdiff(class(edges), "sf")
+  if (is.sf(edges)) {
+    edges_df = structure(edges, class = setdiff(class(edges), "sf"))
     if (is.null(edges_as_lines)) edges_as_lines = TRUE
   } else {
+    edges_df = edges
     if (is.null(edges_as_lines)) edges_as_lines = FALSE
   }
   # Create network.
   # Store sf attributes of the nodes and edges in a special graph attribute.
-  x_tbg = tbl_graph(nodes, edges, directed, node_key)
+  x_tbg = tbl_graph(nodes, edges_df, directed, node_key)
   x_sfn = structure(x_tbg, class = c("sfnetwork", class(x_tbg)))
   # Post-process network.
   if (is.null(edges)) {
@@ -134,6 +135,9 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
     if (! force) require_valid_network_structure(x_sfn, message = TRUE)
     return (x_sfn)
   }
+  # Set edge attributes again.
+  # This ensures correct forwarding of additional attributes such as agr.
+  edge_graph_attributes(x_sfn) = edges
   if (edges_as_lines) {
     # Run validity check before explicitizing edges.
     if (! force) require_valid_network_structure(x_sfn, message = TRUE)
@@ -160,8 +164,13 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
 
 #' @importFrom tidygraph tbl_graph
 sfnetwork_ = function(nodes, edges = NULL, directed = TRUE) {
-  if (is.sf(edges)) class(edges) = setdiff(class(edges), "sf")
-  x_tbg = tbl_graph(nodes, edges, directed)
+  if (is.sf(edges)) {
+    edges_df = structure(edges, class = setdiff(class(edges), "sf"))
+  } else {
+    edges_df = edges
+  }
+  x_tbg = tbl_graph(nodes, edges_df, directed)
+  if (! is.null(edges)) edge_graph_attributes(x_tbg) = edges
   structure(x_tbg, class = c("sfnetwork", class(x_tbg)))
 }
 
