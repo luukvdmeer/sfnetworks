@@ -496,8 +496,9 @@ st_crop.morphed_sfnetwork = function(x, y, ...) {
   x
 }
 
-#' @importFrom sf st_crop
+#' @importFrom sf st_as_sfc st_crop
 spatial_crop_nodes = function(x, y, ...) {
+  if (inherits(y, "bbox")) y = st_as_sfc(y)
   spatial_filter_nodes(x, y, ..., .operator = st_crop)
 }
 
