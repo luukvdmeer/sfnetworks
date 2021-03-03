@@ -31,10 +31,10 @@ of the snapped point is already a node in the network, the attributes of the
 point (if any) will be joined to that node.
 }
 \details{
-There are two important details to be aware of. Firstly: when the 
-snap locations of multiple points are equal, only the first of these points 
+There are two important details to be aware of. Firstly: when the
+snap locations of multiple points are equal, only the first of these points
 is blended into the network. By arranging \code{y} before blending you can
-influence which (type of) point is given priority in such cases. 
+influence which (type of) point is given priority in such cases.
 Secondly: when the snap location of a point intersects with multiple edges,
 it is only blended into the first of these edges. You might want to run the
 \code{\link{to_spatial_subdivision}} morpher after blending, such that
