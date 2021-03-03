@@ -323,9 +323,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="co"># Create a line between each site and its closest facility, for visualization.</span>
 <span class="va">draw_lines</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">sources</span>, <span class="va">targets</span><span class="op">)</span> <span class="op">{</span>
   <span class="va">lines</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mapply.html">mapply</a></span><span class="op">(</span>
-    <span class="kw">function</span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span><span class="op">)</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html">st_cast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span><span class="op">)</span>, <span class="st">"LINESTRING"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span>, 
-    <span class="va">sources</span>, 
-    <span class="va">targets</span>, 
+    <span class="kw">function</span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span><span class="op">)</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html">st_cast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span><span class="op">)</span>, <span class="st">"LINESTRING"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span>,
+    <span class="va">sources</span>,
+    <span class="va">targets</span>,
     SIMPLIFY <span class="op">=</span> <span class="cn">FALSE</span>
   <span class="op">)</span>
   <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="st">"c"</span>, <span class="va">lines</span><span class="op">)</span>
@@ -394,9 +394,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="va">to_idxs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">tour_idxs</span><span class="op">[</span><span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">tour_idxs</span><span class="op">)</span><span class="op">]</span>, <span class="va">tour_idxs</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>
 
 <span class="co"># Calculate the specified paths.</span>
-<span class="va">tsp_paths</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mapply.html">mapply</a></span><span class="op">(</span><span class="va">st_network_paths</span>, 
-    from <span class="op">=</span> <span class="va">from_idxs</span>, 
-    to <span class="op">=</span> <span class="va">to_idxs</span>, 
+<span class="va">tsp_paths</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mapply.html">mapply</a></span><span class="op">(</span><span class="va">st_network_paths</span>,
+    from <span class="op">=</span> <span class="va">from_idxs</span>,
+    to <span class="op">=</span> <span class="va">to_idxs</span>,
     MoreArgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">net</span><span class="op">)</span>
   <span class="op">)</span><span class="op">[</span><span class="st">"node_paths"</span>, <span class="op">]</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span>recursive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
