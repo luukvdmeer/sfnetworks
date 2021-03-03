@@ -251,10 +251,10 @@ blend_ = function(x, y, tolerance) {
   # --> The index of the snapped feature in y that equals it, if any.
   # --> The row index.
   edge_pts = data.frame(
-    geom = edge_pts, 
-    edge_id = pts_idxs, 
-    feat_id = NA, 
-    row_id = c(1:length(edge_pts))
+    geom = edge_pts,
+    edge_id = pts_idxs,
+    feat_id = NA,
+    row_id = seq_along(edge_pts)
   )
   # Add the indices of the snapped features in y that equal an edge point.
   if (length(real_matches) > 0) {
@@ -312,7 +312,7 @@ blend_ = function(x, y, tolerance) {
       row_idxs = values + src_id
       # Return in the same format as the edge points table.
       data.frame(
-        geom = Y[feat_idxs], 
+        geom = Y[feat_idxs],
         edge_id = rep(edge_id, n),
         feat_id = feat_idxs,
         row_id = row_idxs
@@ -444,7 +444,7 @@ blend_ = function(x, y, tolerance) {
   # Join the orignal node data and the blended features.
   # Different scenarios require a different approach.
   if (is.sf(y) && ncol(y) > 1) {
-    # Scenario I: the features in y have attributes. 
+    # Scenario I: the features in y have attributes.
     # This requires:
     # --> A full join between the original node data and the features.
     # First, subset y to keep only those features that were blended.

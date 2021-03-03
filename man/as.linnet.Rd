@@ -5,7 +5,7 @@
 \alias{as.linnet.sfnetwork}
 \title{Convert a sfnetwork into a linnet}
 \usage{
-as.linnet.sfnetwork(X, ...)
+\method{as.linnet}{sfnetwork}(X, ...)
 }
 \arguments{
 \item{X}{An object of class \code{\link{sfnetwork}} with a projected CRS.}
