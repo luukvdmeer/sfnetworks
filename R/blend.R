@@ -189,15 +189,15 @@ blend_ = function(x, y, tolerance) {
   ## =======================
   if (any(is_close)) {
     # Find the nearest edge to each close feature.
-    nf = st_nearest_feature(Y[is_close], E)
+    A = suppressMessages(st_nearest_feature(Y[is_close], E))
     # Find the nearest point on the nearest edge to each close feature.
     # st_nearest_points returns a straight line between two features.
     # Hence, the endpoint of that line is the location we are looking for.
-    np = st_nearest_points(Y[is_close], E[nf], pairwise = TRUE)
-    bounds = linestring_boundary_points(np)
-    ends = bounds[seq(2, length(bounds), 2)]
+    B = suppressMessages(st_nearest_points(Y[is_close], E[A], pairwise = TRUE))
+    B = linestring_boundary_points(B)
+    B = B[seq(2, length(B), 2)]
     # Replace the geometries of the *close* features.
-    Y[is_close] = ends
+    Y[is_close] = B
   }
   ## ========================
   # STEP IV: SUBSET FEATURES
@@ -274,7 +274,7 @@ blend_ = function(x, y, tolerance) {
     sgs_psns = do.call("c", lapply(rle(sgs_idxs)$lengths, seq_len))
     # Now we find for each feature its nearest segment.
     # Then we know exactly where to include the feature geometry.
-    nearest = st_nearest_feature(Y[na_matches], edge_sgs)
+    nearest = suppressMessages(st_nearest_feature(Y[na_matches], edge_sgs))
     # Include the features by looping over the identified nearest segments.
     # If only a single feature needs to be included in that segment:
     # --> Add that feature at the right position in the edge points table.
@@ -319,7 +319,7 @@ blend_ = function(x, y, tolerance) {
       )
     }
     new_pts = do.call("rbind", lapply(unique(nearest), include))
-    edge_pts = rbind(edge_pts, new_pts)
+    edge_pts = bind_rows(edge_pts, new_pts)
     edge_pts = edge_pts[order(edge_pts$row_id), ]
   }
   ## =============================

@@ -91,6 +91,7 @@ NULL
 to_spatial_contracted = function(x, ..., simplify = FALSE,
                                  summarise_attributes = "ignore",
                                  store_original_data = FALSE) {
+  if (will_assume_planar(x)) raise_assume_planar("to_spatial_contracted")
   # Retrieve nodes from the network.
   nodes = nodes_as_sf(x)
   geom_colname = attr(nodes, "sf_column")
@@ -146,7 +147,10 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
   # For each node that was contracted:
   # --> Use the centroid of the geometries of the group members.
   new_node_geoms = st_geometry(nodes)[!duplicated(all_group_idxs)]
-  get_centroid = function(i) st_centroid(st_combine(st_geometry(i)))
+  get_centroid = function(i) {
+    comb = st_combine(st_geometry(i))
+    suppressWarnings(st_centroid(comb))
+  }
   cnt_node_geoms = do.call("c", lapply(cnt_groups, get_centroid))
   new_node_geoms[cnt_group_idxs] = cnt_node_geoms
   new_nodes[geom_colname] = list(new_node_geoms)
@@ -252,7 +256,7 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
         # --> The index of the contracted node at its boundary.
         bnd_geoms = linestring_boundary_points(new_edge_geoms[is_incident])
         src_geoms = bnd_geoms[seq(1, length(bnd_geoms) - 1, 2)]
-        src_idxs = st_intersects(src_geoms, all_group_geoms)
+        src_idxs = suppressMessages(st_intersects(src_geoms, all_group_geoms))
         bnd_idxs = bounds[is_incident, ]
         bnd_idxs = lapply(seq_len(nrow(bnd_idxs)), function(i) bnd_idxs[i, ])
         # Initially, assume that:
