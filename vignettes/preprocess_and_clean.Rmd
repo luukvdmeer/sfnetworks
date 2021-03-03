@@ -72,16 +72,8 @@ st_geometry(edges) = st_geometry(edges) %>%
 as_sfnetwork(edges)
 ```
 
-Rounding of coordinates can invalidate geometries within your set of lines and cause problems later. We can test whether each line is valid. E.g.:
-
-```{r}
-edges %>%
-  mutate(valid = purrr::map_lgl(x, st_is_valid)) %>%
-  filter(valid == FALSE)
-```
-
 ### Dealing with one-way edges
-In `sfnetworks` you can create directed and undirected networks. In directed ones, an edge can only be traveled from its start node to its end node. In undirected ones, an edge can be traveled both ways. However, in the real world there are networks where *some* edges can be traveled both ways and *some* edges only one way. For example, a road network in a city where there are one-way streets. 
+In `sfnetworks` you can create directed and undirected networks. In directed ones, an edge can only be traveled from its start node to its end node. In undirected ones, an edge can be traveled both ways. However, in the real world there are networks where *some* edges can be traveled both ways and *some* edges only one way. For example, a road network in a city where there are one-way streets.
 
 Unfortunately, neither `igraph` nor `tidygraph` provides an interface for such networks. Therefore, the only way to deal with this is to create a directed network but first *duplicate* and *reverse* all edge linestrings that can be traveled both ways.
 
@@ -163,7 +155,7 @@ plot(st_geometry(net, "nodes"), pch = 20, cex = 2, add = TRUE)
 ```
 
 ### Simplify network
-A network may contain sets of edges that connect the same pair of nodes. Such edges can be called *multiple edges*. Also, it may contain an edge that starts and ends at the same node. Such an edge can be called a *loop edge*. 
+A network may contain sets of edges that connect the same pair of nodes. Such edges can be called *multiple edges*. Also, it may contain an edge that starts and ends at the same node. Such an edge can be called a *loop edge*.
 
 In graph theory, a *simple graph* is defined as a graph that does *not* contain multiple edges nor loop edges. To obtain a simple version of our network, we can remove multiple edges and loop edges by calling tidygraphs edge filter functions `tidygraph::edge_is_multiple()` and `tidygraph::edge_is_loop()`.
 
@@ -260,7 +252,7 @@ When constructing a sfnetwork from a set of sf linestrings, the *endpoints* of t
 
 In graph theory terms the process of splitting and edge is called *subdivision*: the subdivision of an edge $o = \{a, b\}$ (i.e. an edge from node $a$ to node $b$) is the addition of a new node $c$ and the replacement of $o$ by two new edges $p = \{a, c\}$ and $q = \{c, b\}$.
 
-The function `to_spatial_subdivision()` subdivides edges at interior points whenever these interior points are equal to one or more interior points or endpoints of other edges, and recalculates network connectivity afterwards. 
+The function `to_spatial_subdivision()` subdivides edges at interior points whenever these interior points are equal to one or more interior points or endpoints of other edges, and recalculates network connectivity afterwards.
 
 To illustrate the workflow, lets consider a situation where an interior point $p_{x}$ in edge $x$ is shared with point $p_{y}$ in edge $y$. That gives two possible situations:
 
@@ -322,7 +314,7 @@ node_coords = smoothed %>%
 # Nodes within a distance of 0.5 from each other will be in the same cluster.
 # We set minPts = 1 such that:
 # A node is assigned a cluster even if it is the only member of that cluster.
-clusters = dbscan(node_coords, eps = 0.5, minPts = 1)$cluster 
+clusters = dbscan(node_coords, eps = 0.5, minPts = 1)$cluster
 
 # Add the cluster information to the nodes of the network.
 clustered = smoothed %>%
@@ -378,8 +370,8 @@ combinations = list(
 
 # Contract with to_spatial_contracted.
 contracted = convert(
-  clustered, 
-  to_spatial_contracted, 
+  clustered,
+  to_spatial_contracted,
   cls, cmp,
   simplify = TRUE,
   summarise_attributes = combinations
