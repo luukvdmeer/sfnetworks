@@ -332,8 +332,8 @@ linestring_segments = function(x) {
   # Extract coordinates of the point that are an endpoint of a segment.
   src_coords = coords[!is_endpoint, ]
   trg_coords = coords[!is_startpoint, ]
-  src_coords$segment_id = c(1:nrow(src_coords))
-  trg_coords$segment_id = c(1:nrow(trg_coords))
+  src_coords$segment_id = seq_len(nrow(src_coords))
+  trg_coords$segment_id = seq_len(nrow(trg_coords))
   # Construct the segments.
   segment_pts = rbind(src_coords, trg_coords)
   segment_pts = segment_pts[order(segment_pts$segment_id), ]
