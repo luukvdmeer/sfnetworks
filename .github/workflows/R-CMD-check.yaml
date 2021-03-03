@@ -22,7 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: ubuntu-latest, r: 'release'}
+          - {os: ubuntu-18.04, r: 'release'}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -70,9 +70,6 @@ jobs:
             libgdal-dev \
             libgeos-dev \
             libproj-dev
-
-          # Other
-          sudo apt install gfortran
 
       - name: Install dependencies
         run: |

@@ -12,7 +12,7 @@ name: test-coverage
 
 jobs:
   test-coverage:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -53,9 +53,6 @@ jobs:
             libgdal-dev \
             libgeos-dev \
             libproj-dev
-
-          # Other
-          sudo apt install gfortran
 
       - name: Install dependencies
         run: |
