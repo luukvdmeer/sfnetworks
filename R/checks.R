@@ -41,7 +41,7 @@ has_spatial_nodes = function(x) {
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @return \code{TRUE} if the network has spatially explicit edges, 
+#' @return \code{TRUE} if the network has spatially explicit edges,
 #' \code{FALSE} otherwise.
 #'
 #' @importFrom igraph edge_attr
@@ -137,7 +137,7 @@ nodes_match_edge_boundaries = function(x) {
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @return \code{TRUE} when the attribute-geometry relationship of at least
-#' one edge attribute of x is not constant, but sf will for some operations 
+#' one edge attribute of x is not constant, but sf will for some operations
 #' assume that it is, \code{FALSE} otherwise.
 #'
 #' @noRd
@@ -152,7 +152,7 @@ will_assume_constant = function(x) {
   )
   agr = edge_agr(x)
   real_agr = agr[!names(agr) %in% ignore]
-  any(is.na(real_agr)) || any(real_agr != "constant") 
+  any(is.na(real_agr)) || any(real_agr != "constant")
 }
 
 #' Check if a planar coordinates will be assumed for a network

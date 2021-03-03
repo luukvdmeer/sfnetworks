@@ -23,6 +23,6 @@ between \code{sfnetworks} and \code{spatstat}. Use this method without the
 }
 \seealso{
 \code{\link{as_sfnetwork}} to convert objects of class
-\code{\link[spatstat]{linnet}} into objects of class 
+\code{\link[spatstat]{linnet}} into objects of class
 \code{\link{sfnetwork}}.
 }

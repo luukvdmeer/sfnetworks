@@ -8,14 +8,14 @@
 #' @details Require will be called when the function needs spatially explicit
 #' edges no matter which element is active. Expect will be called when the
 #' function needs spatially explicit edges when applied to the edges, but will
-#' still work when applied to the nodes. 
+#' still work when applied to the nodes.
 #'
 #' @name check_explicitness
 #' @noRd
 require_spatially_explicit_edges = function(x) {
   if (! has_spatially_explicit_edges(x)) {
     stop(
-      "This call requires spatially explicit edges", 
+      "This call requires spatially explicit edges",
       call. = FALSE
     )
   }
@@ -26,7 +26,7 @@ require_spatially_explicit_edges = function(x) {
 expect_spatially_explicit_edges = function(x) {
   if (! has_spatially_explicit_edges(x)) {
     stop(
-      "Edges are spatially implicit. Activate nodes first?", 
+      "Edges are spatially implicit. Activate nodes first?",
       call. = FALSE
     )
   }
@@ -39,21 +39,21 @@ expect_spatially_explicit_edges = function(x) {
 #' @param message Should a message be printed before and after the validation?
 #' Default to \code{FALSE}.
 #'
-#' @return Nothing when the network has a valid sfnetwork structure, an error 
+#' @return Nothing when the network has a valid sfnetwork structure, an error
 #' message otherwise.
 #'
-#' @details A valid sfnetwork structure means that all nodes have \code{POINT} 
-#' geometries, and - when edges are spatially explicit - all edges have 
-#' \code{LINESTRING} geometries, nodes and edges have the same CRS and 
+#' @details A valid sfnetwork structure means that all nodes have \code{POINT}
+#' geometries, and - when edges are spatially explicit - all edges have
+#' \code{LINESTRING} geometries, nodes and edges have the same CRS and
 #' coordinates of edge boundaries match coordinates of their corresponding
 #' nodes.
 #'
 #' @noRd
 require_valid_network_structure = function(x, message = FALSE) {
   if (message) message("Checking if spatial network structure is valid...")
-  validate_nodes(x)  
-  if (has_spatially_explicit_edges(x)) {    
-  	validate_edges(x)    
+  validate_nodes(x)
+  if (has_spatially_explicit_edges(x)) {
+    validate_edges(x)
   }
   if (message) message("Spatial network structure is valid")
 }
@@ -64,7 +64,7 @@ validate_nodes = function(x) {
   # --> Are all node geometries points?
   if (! has_single_geom_type(nodes, "POINT")) {
     stop(
-      "Not all nodes have geometry type POINT", 
+      "Not all nodes have geometry type POINT",
       call. = FALSE
     )
   }
@@ -78,14 +78,14 @@ validate_edges = function(x) {
   # --> Are all edge geometries linestrings?
   if (! has_single_geom_type(edges, "LINESTRING")) {
     stop(
-      "Not all edges have geometry type LINESTRING", 
+      "Not all edges have geometry type LINESTRING",
       call. = FALSE
     )
   }
   # --> Is the CRS of the edges the same as of the nodes?
   if (! have_equal_crs(nodes, edges)) {
     stop(
-      "Nodes and edges do not have the same CRS", 
+      "Nodes and edges do not have the same CRS",
       call. = FALSE
     )
   }
@@ -95,7 +95,7 @@ validate_edges = function(x) {
     # End point should match end node.
     if (! all(nodes_match_edge_boundaries(x))) {
       stop(
-        "Edge boundaries do not match their corresponding nodes", 
+        "Edge boundaries do not match their corresponding nodes",
         call. = FALSE
       )
     }
@@ -104,7 +104,7 @@ validate_edges = function(x) {
     # End point should match either start or end node.
     if (! all(nodes_in_edge_boundaries(x))) {
       stop(
-        "Edge boundaries do not match their corresponding nodes", 
+        "Edge boundaries do not match their corresponding nodes",
         call. = FALSE
       )
     }

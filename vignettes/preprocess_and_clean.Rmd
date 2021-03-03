@@ -316,7 +316,7 @@ node_coords = smoothed %>%
 # Nodes within a distance of 0.5 from each other will be in the same cluster.
 # We set minPts = 1 such that:
 # A node is assigned a cluster even if it is the only member of that cluster.
-clusters = dbscan(node_coords, eps = 0.5, minPts = 1)$cluster 
+clusters = dbscan(node_coords, eps = 0.5, minPts = 1)$cluster
 
 # Add the cluster information to the nodes of the network.
 clustered = smoothed %>%
@@ -338,7 +338,12 @@ The combination of the cluster index and the component index can now be used to 
 A point of attention is that contraction introduces new *multiple edges* and/or *loop edges*. Multiple edges are introduced by contraction when there are several connections between the same groups of nodes. Loop edges are introduced by contraction when there are connections within a group. Setting `simplify = TRUE` will remove the multiple and loop edges after contraction. However, note that this also removes multiple and loop edges that already existed before contraction.
 
 ```{r, fig.show='hold', out.width = '50%'}
-contracted = convert(clustered, to_spatial_contracted, cls, cmp, simplify = TRUE)
+contracted = convert(
+  clustered,
+  to_spatial_contracted,
+  cls, cmp,
+  simplify = TRUE
+)
 
 plot(st_geometry(smoothed, "edges"), col = edge_colors(smoothed), lwd = 4)
 plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
@@ -352,7 +357,11 @@ One thing we did not mention yet: in the same way as `to_spatial_simple()` allow
 # Add some additional attribute columns to the nodes table.
 clustered = clustered %>%
   activate("nodes") %>%
-  mutate(is_priority = sample(c(TRUE, FALSE), vcount(clustered), replace = TRUE))
+  mutate(is_priority = sample(
+    c(TRUE, FALSE),
+    vcount(clustered),
+    replace = TRUE
+  ))
 
 # We know from before there is one group with several close, connected nodes.
 # Lets look at them.
@@ -372,8 +381,8 @@ combinations = list(
 
 # Contract with to_spatial_contracted.
 contracted = convert(
-  clustered, 
-  to_spatial_contracted, 
+  clustered,
+  to_spatial_contracted,
   cls, cmp,
   simplify = TRUE,
   summarise_attributes = combinations

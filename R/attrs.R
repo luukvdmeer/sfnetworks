@@ -9,7 +9,7 @@
 #' extracting. If \code{NULL}, it will be set to the current active element of
 #' the given network. Defaults to \code{NULL}.
 #'
-#' @return The value of the attribute matched, or \code{NULL} if no exact 
+#' @return The value of the attribute matched, or \code{NULL} if no exact
 #' match is found.
 #'
 #' @details sf attributes include \code{sf_column} (the name of the sf column)
@@ -37,12 +37,12 @@ sf_attr = function(x, name, active = NULL) {
 #' @param orig An object of class \code{\link{sfnetwork}}.
 #'
 #' @details All attributes include the graph attributes *and* the attributes
-#' of its element objects (i.e. nodes and edges). Graph attributes always 
-#' contain the class of the object and the name of the active element. Users 
-#' can also add their own attributes to the network. Element attributes 
+#' of its element objects (i.e. nodes and edges). Graph attributes always
+#' contain the class of the object and the name of the active element. Users
+#' can also add their own attributes to the network. Element attributes
 #' contain the name of the geometry list column and the agr factor of the
-#' element. Note that we talk about the attributes of the element *objects*. 
-#' Hence, attributes attached to the object that stores the elements data. 
+#' element. Note that we talk about the attributes of the element *objects*.
+#' Hence, attributes attached to the object that stores the elements data.
 #' This is *not* the same as the attribute columns *in* the element data.
 #'
 #' @importFrom igraph graph_attr graph_attr<-
@@ -62,8 +62,8 @@ sf_attr = function(x, name, active = NULL) {
 #' @param orig An object of class \code{\link{sfnetwork}}.
 #'
 #' @details The graph attributes are the attributes directly attached to
-#' the network object as a whole. Hence, this does *not* include attributes 
-#' belonging to the element objects (i.e. the nodes table or the edges table). 
+#' the network object as a whole. Hence, this does *not* include attributes
+#' belonging to the element objects (i.e. the nodes table or the edges table).
 #' Graph attributes always includes the class of the object and the name of the
 #' active element. Users can also add their own attributes to the network.
 #'
@@ -91,9 +91,9 @@ sf_attr = function(x, name, active = NULL) {
 #' indices of start and end nodes of an edge are. Hence, the function
 #' \code{graph_attribute_names} will return a vector of names that includes
 #' the name of the geometry column, but - when active = 'edges' - not the
-#' names of the to and from columns. The function 
-#' \code{spatial_attribute_names} will return a vector of names that does not 
-#' include the name of the geometry column, but - when active = 'edges' - does 
+#' names of the to and from columns. The function
+#' \code{spatial_attribute_names} will return a vector of names that does not
+#' include the name of the geometry column, but - when active = 'edges' - does
 #' include the names of the to and from colums.
 #'
 #' @name attr_names
@@ -158,7 +158,7 @@ edge_spatial_attribute_names = function(x) {
 #'
 #' @param value A table in which each column is an attribute to be set. If the
 #' nodes are active, this table has to be of class \code{\link[sf]{sf}}. For
-#' the edges, it can also be a \code{data.frame} or 
+#' the edges, it can also be a \code{data.frame} or
 #' \code{\link[tibble]{tibble}}.
 #'
 #' @return An object of class \code{\link{sfnetwork}} with updated attributes.

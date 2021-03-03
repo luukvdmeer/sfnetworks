@@ -38,7 +38,7 @@ morph.sfnetwork = function(.data, ...) {
   # --> Otherwise, just return the morphed_tbl_graph.
   if (is.sfnetwork(morphed_data[[1]])) {
     structure(
-      morphed_data, 
+      morphed_data,
       class = c("morphed_sfnetwork", class(morphed_data))
     )
   } else if (has_spatial_nodes(morphed_data[[1]])) {
@@ -46,7 +46,7 @@ morph.sfnetwork = function(.data, ...) {
     morphed_data = lapply(morphed_data, tbg_to_sfn)
     attributes(morphed_data) = attrs
     structure(
-      morphed_data, 
+      morphed_data,
       class = c("morphed_sfnetwork", class(morphed_data))
     )
   } else {
@@ -88,7 +88,7 @@ unmorph.morphed_sfnetwork = function(.data, ...) {
       attrs = attributes(.data)
       .data = lapply(.data, delete_edge_attr, geom_colname)
       attributes(.data) = attrs
-    }  
+    }
   }
   # Call tidygraphs unmorph.
   NextMethod(.data, ...)
@@ -100,11 +100,11 @@ unmorph.morphed_sfnetwork = function(.data, ...) {
 #' From: https://github.com/thomasp85/tidygraph/blob/master/R/tbl_graph.R
 #' November 5, 2020
 #'
-#' @importFrom igraph is_simple is_directed is_bipartite is_connected is_dag 
+#' @importFrom igraph is_simple is_directed is_bipartite is_connected is_dag
 #' gorder
 #' @noRd
 describe_graph = function(x) {
-  if (gorder(x) == 0) return('An empty graph')
+  if (gorder(x) == 0) return("An empty graph")
   prop = list(
     simple = is_simple(x),
     directed = is_directed(x),
@@ -115,28 +115,28 @@ describe_graph = function(x) {
     DAG = is_dag(x))
   desc = c()
   if (prop$tree || prop$forest) {
-    desc[1] = if (prop$directed) 'A rooted'
-              else 'An unrooted'
-    desc[2] = if (prop$tree) 'tree'
+    desc[1] = if (prop$directed) "A rooted"
+              else "An unrooted"
+    desc[2] = if (prop$tree) "tree"
               else paste0(
-                'forest with ',
+                "forest with ",
                 count_components(x),
-                ' trees'
+                " trees"
               )
   } else {
-    desc[1] = if (prop$DAG) 'A directed acyclic'
-              else if (prop$bipartite) 'A bipartite'
-              else if (prop$directed) 'A directed'
-              else 'An undirected'
-    desc[2] = if (prop$simple) 'simple graph'
-              else 'multigraph'
+    desc[1] = if (prop$DAG) "A directed acyclic"
+              else if (prop$bipartite) "A bipartite"
+              else if (prop$directed) "A directed"
+              else "An undirected"
+    desc[2] = if (prop$simple) "simple graph"
+              else "multigraph"
     n_comp = count_components(x)
     desc[3] = paste0(
-      'with ' , n_comp, ' component',
-      if (n_comp > 1) 's' else ''
+      "with ", n_comp, " component",
+      if (n_comp > 1) "s" else ""
     )
   }
-  paste(desc, collapse = ' ')
+  paste(desc, collapse = " ")
 }
 
 #' @importFrom igraph is_connected is_simple gorder gsize is_directed
@@ -146,7 +146,7 @@ is_tree = function(x) {
     (gorder(x) - gsize(x) == 1)
 }
 
-#' @importFrom igraph is_connected is_simple gorder gsize count_components 
+#' @importFrom igraph is_connected is_simple gorder gsize count_components
 #' is_directed
 is_forest = function(x) {
   !is_connected(x) &&

@@ -161,17 +161,25 @@ new_net = net %>%
   mutate(louvain = as.factor(group_louvain()))
 
 contracted_net = convert(
-  new_net, 
-  to_spatial_contracted, 
-  louvain, 
+  new_net,
+  to_spatial_contracted,
+  louvain,
   simplify = TRUE,
-  summarise_attributes = list(foo = "sum", bar = function(x) any(x), louvain = "first")
+  summarise_attributes = list(
+    foo = "sum",
+    bar = function(x) any(x),
+    louvain = "first"
+  )
 )
 
 plot(st_geometry(new_net, "edges"), main = "Grouped nodes")
 plot(st_as_sf(new_net)["louvain"], key.pos = NULL, pch = 20, add = TRUE)
 plot(st_geometry(contracted_net, "edges"), main = "Contracted network")
-plot(st_as_sf(contracted_net)["louvain"], cex = 2, key.pos = NULL, pch = 20, add = TRUE)
+plot(
+  st_as_sf(contracted_net)["louvain"],
+  cex = 2, key.pos = NULL,
+  pch = 20, add = TRUE
+)
 ```
 
 ### to_spatial_directed
@@ -289,7 +297,7 @@ new_net = net %>%
 
 # Select a set of multiple edges to inspect before simplifying.
 a_multiple = new_net %>%
-  filter(edge_is_multiple()) %>% 
+  filter(edge_is_multiple()) %>%
   slice(1)
 
 new_net %>%
@@ -299,7 +307,10 @@ new_net %>%
 # We summarise the flow attribute by taking the sum of the merged edge flows.
 # For all the other attributes we simply take the first value in the set.
 simple_net = new_net %>%
-  convert(to_spatial_simple, summarise_attributes = list(flow = "sum", "first"))
+  convert(
+    to_spatial_simple,
+    summarise_attributes = list(flow = "sum", "first")
+  )
 
 # The multiple edges are merged into one.
 # The flow is summarised by taking the sum of the merged edge flows.

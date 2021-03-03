@@ -88,7 +88,7 @@ empty_agr = function(names) {
 #' @param names A character vector containing the names that should be present
 #' in the agr factor.
 #'
-#' @param levels A character vector containing the levels that should be 
+#' @param levels A character vector containing the levels that should be
 #' present in the agr factor.
 #'
 #' @return A named factor with appropriate levels. Names are guaranteed to

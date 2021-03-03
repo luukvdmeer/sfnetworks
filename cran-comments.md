@@ -8,7 +8,7 @@ This is a resubmission. I have made the following changes:
   - Value entries have been added to the following .Rd files: as_tibble.Rd, is.sfnetwork.Rd and sf.Rd
   - Value entries have been extended in the following .Rd files: st_network_bbox.Rd, st_network_blend.Rd, st_network_join.Rd
   - A value entry has *not* been added to plot.Rd, since it seems to us this is not common for plot methods in any R packages, including base R.
-  - A arguments entry has *not* been added to node_coordinates.Rd since these functions do not have arguments. Following the tidygraph philosophy, they are meant to be called inside the environment of "dplyr verbs" like mutate and filter, where the network that is being worked on is known and not needed as an argument to the function. This behaviour is documented in the function documentation.
+  - An arguments entry has *not* been added to node_coordinates.Rd since these functions do not have arguments. Following the tidygraph philosophy, they are meant to be called inside the environment of "dplyr verbs" like mutate and filter, where the network that is being worked on is known and not needed as an argument to the function. This behaviour is documented in the function documentation.
   
 - Regarding comment: "You have examples for unexported functions. Please either omit these examples or export the functions."
   - To avoid large dependencies for only one additional function, we use a dynamic registration of the spatstat::linnet and ggplot2::autoplot methods on load. That is the reason they are not exported. We have now removed their example sections.

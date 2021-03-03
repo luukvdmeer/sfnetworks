@@ -28,7 +28,7 @@ cat_subtle = function(...) { # nocov start
 #' @noRd
 create_edges_from_nodes = function(nodes) {
   # Define indices for source and target nodes.
-  source_ids = 1:(nrow(nodes)-1)
+  source_ids = 1:(nrow(nodes) - 1)
   target_ids = 2:nrow(nodes)
   # Create separate tables for source and target nodes.
   sources = nodes[source_ids, ]
@@ -198,8 +198,8 @@ edge_boundary_points = function(x) {
 #' the number of edges in x, and ordered as
 #' [start of edge 1, end of edge 1, start of edge 2, end of edge 2, ...]. If
 #' matrix is \code{TRUE}, a two-column matrix, with the number of rows equal to
-#' the number of edges in the network. The first column contains the node 
-#' indices of the start points of the edges, the seconds column contains the 
+#' the number of edges in the network. The first column contains the node
+#' indices of the start points of the edges, the seconds column contains the
 #' node indices of the end points of the edges.
 #'
 #' @importFrom igraph ecount
@@ -339,7 +339,7 @@ linestring_segments = function(x) {
   segment_pts = segment_pts[order(segment_pts$segment_id), ]
   segments = sfc_linestring(segment_pts, linestring_id = "segment_id")
   st_crs(segments) = st_crs(x)
-  segments  
+  segments
 }
 
 #' Determine duplicated geometries
@@ -352,6 +352,6 @@ linestring_segments = function(x) {
 #' @noRd
 spatial_duplicated = function(x) {
   dup = rep(FALSE, length(x))
-  dup[unique(do.call("c", lapply(st_equals(x), `[`, -1)))] = TRUE
+  dup[unique(do.call("c", lapply(st_equals(x), `[`, - 1)))] = TRUE
   dup
 }

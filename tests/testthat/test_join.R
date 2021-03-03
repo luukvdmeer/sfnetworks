@@ -28,7 +28,7 @@ rdm = net %>%
 test_that("st_join gives a warning when there are multiple node matches", {
   ptsdup = rbind(pts, pts)
   expect_warning(
-    st_join(net, ptsdup), 
+    st_join(net, ptsdup),
     "Multiple matches were detected from some nodes. "
   )
 })
