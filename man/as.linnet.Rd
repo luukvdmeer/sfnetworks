@@ -10,19 +10,19 @@ as.linnet.sfnetwork(X, ...)
 \arguments{
 \item{X}{An object of class \code{\link{sfnetwork}} with a projected CRS.}
 
-\item{...}{Arguments passed to \code{\link[spatstat]{linnet}}.}
+\item{...}{Arguments passed to \code{\link[spatstat.linnet]{linnet}}.}
 }
 \value{
-An object of class \code{\link[spatstat]{linnet}}.
+An object of class \code{\link[spatstat.linnet]{linnet}}.
 }
 \description{
 A method to convert an object of class \code{\link{sfnetwork}} into
-\code{\link[spatstat]{linnet}} format and enhance the interoperability
+\code{\link[spatstat.linnet]{linnet}} format and enhance the interoperability
 between \code{sfnetworks} and \code{spatstat}. Use this method without the
 .sfnetwork suffix and after loading the \code{spatstat} package.
 }
 \seealso{
 \code{\link{as_sfnetwork}} to convert objects of class
-\code{\link[spatstat]{linnet}} into objects of class
+\code{\link[spatstat.linnet]{linnet}} into objects of class
 \code{\link{sfnetwork}}.
 }

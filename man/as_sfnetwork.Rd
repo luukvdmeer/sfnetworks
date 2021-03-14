@@ -88,7 +88,7 @@ if (require(spatstat, quietly = TRUE)) {
 }
 
 # From a psp object.
-if (require(spatstat, quietly = TRUE)) {
+if (require(spatstat.geom, quietly = TRUE)) {
   set.seed(42)
   test_psp = psp(runif(10), runif(10), runif(10), runif(10), window=owin())
   as_sfnetwork(test_psp)

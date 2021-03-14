@@ -47,15 +47,17 @@ Imports:
     units,
     utils
 Suggests:
+    spatstat.geom,
     dbscan,
     fansi,
     ggplot2 (>= 3.0.0),
     knitr,
     rmarkdown,
-    spatstat,
+    spatstat (>= 2.0.0),
     testthat,
     tidyverse,
-    TSP
+    TSP,
+    spatstat.linnet
 VignetteBuilder: 
     knitr
 ByteCompile: true
