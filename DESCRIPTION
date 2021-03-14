@@ -40,7 +40,7 @@ Imports:
     igraph,
     lwgeom,
     rlang,
-    sf,
+    sf (>= 0.9.8),
     sfheaders,
     tibble,
     tidygraph,
@@ -64,3 +64,5 @@ ByteCompile: true
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
+Remotes:  
+    r-spatial/sf
