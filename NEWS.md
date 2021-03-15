@@ -1,3 +1,5 @@
+# sfnetworks (development version)
+
 # sfnetworks v0.5.0 "Nienberge"
 
 * Addition of a `to_spatial_contracted()` morpher, to contract groups of nodes based on given grouping variables. Refs [#104](https://github.com/luukvdmeer/sfnetworks/issues/104)
