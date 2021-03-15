@@ -58,6 +58,8 @@ There are currently five vignettes that guide you through the functionalities of
 
 <img align="left" src="https://github.com/loreabad6/ggraph-spatial-examples/blob/main/figs/sfnetworks-showcase.gif" >
 
+(GIF (c) by [Lore Abad](https://github.com/loreabad6))
+
 ## Contribution
 
 We look very much forward to contributions to the package. See the [contributing guide](https://github.com/luukvdmeer/sfnetworks/blob/master/CONTRIBUTING.md) for further details.
