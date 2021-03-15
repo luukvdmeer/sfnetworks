@@ -22,6 +22,9 @@
 #'
 #' @param ... Arguments passed on to \code{\link[tibble]{as_tibble}}.
 #'
+#' @return The active element of the network as an object of class
+#' \code{\link[tibble]{tibble}}.
+#'
 #' @name as_tibble
 #'
 #' @examples

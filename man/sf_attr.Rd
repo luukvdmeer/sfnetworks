@@ -17,7 +17,7 @@ extracting. If \code{NULL}, it will be set to the current active element of
 the given network. Defaults to \code{NULL}.}
 }
 \value{
-The value of the attribute matched, or \code{NULL} if no exact 
+The value of the attribute matched, or \code{NULL} if no exact
 match is found.
 }
 \description{

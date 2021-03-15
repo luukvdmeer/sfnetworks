@@ -5,7 +5,6 @@
 \alias{st_as_sf.sfnetwork}
 \alias{st_geometry.sfnetwork}
 \alias{st_geometry<-.sfnetwork}
-\alias{st_geometry<-.morphed_sfnetwork}
 \alias{st_bbox.sfnetwork}
 \alias{st_coordinates.sfnetwork}
 \alias{st_is.sfnetwork}
@@ -35,8 +34,6 @@
 \method{st_geometry}{sfnetwork}(x, active = NULL, ...)
 
 \method{st_geometry}{sfnetwork}(x) <- value
-
-\method{st_geometry}{morphed_sfnetwork}(x) <- value
 
 \method{st_bbox}{sfnetwork}(x, ...)
 
@@ -91,13 +88,23 @@ the given network. Defaults to \code{NULL}.}
 
 \item{...}{Arguments passed on the corresponding \code{sf} function.}
 
-\item{value}{See \code{\link[sf]{st_crs}}, \code{\link[sf]{st_geometry}} or
-\code{\link[sf]{st_agr}}.}
+\item{value}{The value to be assigned. See the documentation of the
+corresponding sf function for details.}
 
 \item{y}{An object of class \code{\link[sf]{sf}}, or directly convertible to
 it using \code{\link[sf]{st_as_sf}}. In some cases, it can also be an object
 of \code{\link[sf:st]{sfg}} or \code{\link[sf:st_bbox]{bbox}}. Always look
 at the documentation of the corresponding \code{sf} function for details.}
+}
+\value{
+The \code{sfnetwork} method for \code{\link[sf]{st_as_sf}} returns
+the active element of the network as object of class \code{\link[sf]{sf}}.
+The \code{sfnetwork} and \code{morphed_sfnetwork} methods for
+\code{\link[sf]{st_join}}, \code{\link[sf]{st_filter}} and
+\code{\link[sf]{st_crop}} return an object of class \code{\link{sfnetwork}}
+and \code{morphed_sfnetwork} respectively. All other
+methods return the same type of objects as their corresponding sf function.
+See the \code{\link[sf]{sf}} documentation for details.
 }
 \description{
 \code{\link[sf]{sf}} methods for \code{\link{sfnetwork}} objects.
@@ -142,27 +149,31 @@ codes$post_code = as.character(seq(1000, 1000 + nrow(codes) * 10 - 10, 10))
 joined = st_join(net, codes, join = st_intersects)
 joined
 
+oldpar = par(no.readonly = TRUE)
 par(mar = c(1,1,1,1), mfrow = c(1,2))
 plot(net, col = "grey")
 plot(codes, col = NA, border = "red", lty = 4, lwd = 4, add = TRUE)
 text(st_coordinates(st_centroid(st_geometry(codes))), codes$post_code)
 plot(st_geometry(joined, "edges"))
 plot(st_as_sf(joined, "nodes"), pch = 20, add = TRUE)
+par(oldpar)
 # Spatial filter applied to the active network element.
 p1 = st_point(c(4151358, 3208045))
 p2 = st_point(c(4151340, 3207520))
 p3 = st_point(c(4151756, 3207506))
 p4 = st_point(c(4151774, 3208031))
 
-poly = st_multipoint(c(p1, p2, p3, p4)) \%>\% 
-  st_cast('POLYGON') \%>\% 
+poly = st_multipoint(c(p1, p2, p3, p4)) \%>\%
+  st_cast('POLYGON') \%>\%
   st_sfc(crs = 3035) \%>\%
   st_as_sf()
 
 filtered = st_filter(net, poly, .pred = st_intersects)
 
+oldpar = par(no.readonly = TRUE)
 par(mar = c(1,1,1,1), mfrow = c(1,2))
 plot(net, col = "grey")
 plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 plot(filtered)
+par(oldpar)
 }

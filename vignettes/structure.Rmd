@@ -18,8 +18,10 @@ knitr::opts_knit$set(global.par = TRUE)
 
 ```{r plot, echo=FALSE, results='asis'}
 # plot margins
+oldpar = par(no.readonly = TRUE)
 par(mar = c(1, 1, 1, 1))
 # crayon needs to be explicitly activated in Rmd
+oldoptions = options()
 options(crayon.enabled = TRUE)
 # Hooks needs to be set to deal with outputs
 # thanks to fansi logic
@@ -376,3 +378,8 @@ net %>%
 ```
 
 However, be careful, because we are currently not sure if this information survives all functions from `igraph` and `tidygraph`. If you have any issues with this, please let us know in our [issue tracker](https://github.com/luukvdmeer/sfnetworks/issues).
+
+```{r, include = FALSE}
+par(oldpar)
+options(oldoptions)
+```

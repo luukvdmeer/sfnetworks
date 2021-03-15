@@ -18,8 +18,10 @@ knitr::opts_knit$set(global.par = TRUE)
 
 ```{r plot, echo=FALSE, results='asis'}
 # plot margins
+oldpar = par(no.readonly = TRUE)
 par(mar = c(1, 1, 1, 1))
 # crayon needs to be explicitly activated in Rmd
+oldoptions = options()
 options(crayon.enabled = TRUE)
 # Hooks needs to be set to deal with outputs
 # thanks to fansi logic
@@ -31,7 +33,7 @@ old_hooks = fansi::set_knit_hooks(
 
 Calculating shortest paths between pairs of nodes is a core task in network analysis. The `sfnetworks` package offers wrappers around the path calculation functions of `igraph`, making it easier to use them when working with spatial data and tidyverse packages. This vignette demonstrates their functionality.
 
-In this regard it is important to remember that `sfnetworks` is a general-purpose package for spatial network analysis, not specifically optimized for a single task. If your *only* purpose is many-to-many routing in large networks, there might be other approaches that are faster and fit better to your needs. For example, the [dodgr](https://github.com/ATFutures/dodgr) package was designed for many-to-many routing on large dual-weighted graphs, with its main focus on OpenStreetMap road network data. The [cppRouting](https://github.com/vlarmet/cppRouting) package contains functions to calculate shortest paths and isochrones/isodistances on weighted graphs. When working with OpenStreetMap data, it is also possible to use the interfaces to external routing engines such as [graphhopper](https://github.com/crazycapivara/graphhopper-r), [osrm](https://github.com/rCarto/osrm) and [opentripplanner](https://github.com/ropensci/opentripplanner). The [stplanr](https://github.com/ropensci/stplanr) package for sustainable transport planning lets you use many routing engines from a single interface, through `stplanr::route()`, including routing using local R objects. Of course, all these packages can be happily used *alongside* `sfnetworks`.
+In this regard it is important to remember that `sfnetworks` is a general-purpose package for spatial network analysis, not specifically optimized for a single task. If your *only* purpose is many-to-many routing in large networks, there might be other approaches that are faster and fit better to your needs. For example, the [dodgr](https://github.com/ATFutures/dodgr) package was designed for many-to-many routing on large dual-weighted graphs, with its main focus on OpenStreetMap road network data. The [cppRouting](https://github.com/vlarmet/cppRouting) package contains functions to calculate shortest paths and isochrones/isodistances on weighted graphs. When working with OpenStreetMap data, it is also possible to use the interfaces to external routing engines such as [graphhopper](https://github.com/crazycapivara/graphhopper-r), [osrm](https://github.com/riatelab/osrm) and [opentripplanner](https://github.com/ropensci/opentripplanner). The [stplanr](https://github.com/ropensci/stplanr) package for sustainable transport planning lets you use many routing engines from a single interface, through `stplanr::route()`, including routing using local R objects. Of course, all these packages can be happily used *alongside* `sfnetworks`.
 
 ```{r, message=FALSE}
 library(sfnetworks)
@@ -209,9 +211,9 @@ closest = facilities[apply(cost_matrix, 1, function(x) which(x == min(x))[1])]
 # Create a line between each site and its closest facility, for visualization.
 draw_lines = function(sources, targets) {
   lines = mapply(
-    function(a, b) st_sfc(st_cast(c(a, b), "LINESTRING"), crs = st_crs(net)), 
-    sources, 
-    targets, 
+    function(a, b) st_sfc(st_cast(c(a, b), "LINESTRING"), crs = st_crs(net)),
+    sources,
+    targets,
     SIMPLIFY = FALSE
   )
   do.call("c", lines)
@@ -228,7 +230,7 @@ plot(sites, pch = 20, cex = 2, col = colors[2], add = TRUE)
 
 ### Route optimization
 
-The traveling salesman problem aims to find the shortest tour that visits a set of locations exactly once and then returns to the starting location. In `sfnetworks`, there are no dedicated functions to solve this. However, we can bring in other packages here to assist us. Probably the best known R package for solving traveling salesman problems is [TSP](https://cran.r-project.org/web/packages/TSP/vignettes/TSP.pdf). To do so, it requires a matrix that specifies the travel cost between each pair of locations. As shown above, we can use `sfnetworks` to calculate such a cost matrix for our network.
+The traveling salesman problem aims to find the shortest tour that visits a set of locations exactly once and then returns to the starting location. In `sfnetworks`, there are no dedicated functions to solve this. However, we can bring in other packages here to assist us. Probably the best known R package for solving traveling salesman problems is [TSP](https://CRAN.R-project.org/package=TSP). To do so, it requires a matrix that specifies the travel cost between each pair of locations. As shown above, we can use `sfnetworks` to calculate such a cost matrix for our network.
 
 Lets first generate a set of random points within the bounding box of the network. These will serve as the locations the traveling salesman has to visit. 
 
@@ -268,7 +270,7 @@ round(tour_length(tour), 0)
 
 Knowing the optimal order to visit all provided locations, we move back to `sfnetworks` to match this route to the network. We do so by computing the shortest paths between each location and its subsequent one, until we reach the starting point again.
 
-For more details on solving travelling salesman problems in R, see the [TSP package vignette](https://cran.r-project.org/web/packages/TSP/vignettes/TSP.pdf).
+For more details on solving travelling salesman problems in R, see the [TSP package documentation](https://CRAN.R-project.org/package=TSP).
 
 ```{r, fig.height=5, fig.width=5}
 # Define the nodes to calculate the shortest paths from.
@@ -278,9 +280,9 @@ from_idxs = tour_idxs
 to_idxs = c(tour_idxs[2:length(tour_idxs)], tour_idxs[1])
 
 # Calculate the specified paths.
-tsp_paths = mapply(st_network_paths, 
-    from = from_idxs, 
-    to = to_idxs, 
+tsp_paths = mapply(st_network_paths,
+    from = from_idxs,
+    to = to_idxs,
     MoreArgs = list(x = net)
   )["node_paths", ] %>%
   unlist(recursive = FALSE)
@@ -428,3 +430,8 @@ plot(st_geometry(weighted_paths_sf), add = TRUE)
 
 Note that developing more sophisticated routing profiles is beyond the scope of this package.
 If you need complex mode-specific routing profiles, we recommend looking at routing profiles associated with open source routing engines, such as [bike.lua](https://github.com/fossgis-routing-server/cbf-routing-profiles/blob/master/bike.lua) in the OSRM project. Another direction of travel could be to extend on the approach illustrated here, but this work could be well-suited to a separate package that builds on `sfnetworks` (remembering that sophisticated routing profiles account for nodes and edges). If you'd like to work on such a project to improve mode-specific routing in R by building on this package, please let us know in the [discussion room](https://github.com/luukvdmeer/sfnetworks/discussions)!
+
+```{r, include = FALSE}
+par(oldpar)
+options(oldoptions)
+```

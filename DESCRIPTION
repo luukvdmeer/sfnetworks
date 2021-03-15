@@ -1,6 +1,6 @@
 Package: sfnetworks
 Title: Tidy Geospatial Networks
-Version: 0.4.1
+Version: 0.5.0
 Authors@R: 
     c(person(given = "Lucas",
              family = "van der Meer",
@@ -27,7 +27,7 @@ Description: Provides a tidy approach to spatial network
     analysis, in the form of classes and functions that enable a seamless
     interaction between the network analysis package 'tidygraph' and the
     spatial analysis package 'sf'.
-License: Apache License (>= 2) | file LICENSE
+License: Apache License (>= 2)
 URL: https://luukvdmeer.github.io/sfnetworks/,
     https://github.com/luukvdmeer/sfnetworks
 BugReports: https://github.com/luukvdmeer/sfnetworks/issues/

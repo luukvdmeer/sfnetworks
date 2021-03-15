@@ -1,11 +1,11 @@
 #' Join two spatial networks based on equality of node geometries
 #'
 #' A spatial network specific join function which makes a spatial full join on
-#' the geometries of the nodes data, based on the \code{\link[sf]{st_equals}} 
-#' spatial predicate. Edge data are combined using a 
-#' \code{\link[dplyr]{bind_rows}} semantic, meaning that data are matched by 
-#' column name and values are filled with \code{NA} if missing in either of 
-#' the networks. The \code{from} and \code{to} columns in the edge data are 
+#' the geometries of the nodes data, based on the \code{\link[sf]{st_equals}}
+#' spatial predicate. Edge data are combined using a
+#' \code{\link[dplyr]{bind_rows}} semantic, meaning that data are matched by
+#' column name and values are filled with \code{NA} if missing in either of
+#' the networks. The \code{from} and \code{to} columns in the edge data are
 #' updated such that they match the new node indices of the resulting network.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
@@ -15,7 +15,7 @@
 #'
 #' @param ... Arguments passed on to \code{\link[tidygraph]{graph_join}}.
 #'
-#' @return An object of class \code{\link{sfnetwork}}.
+#' @return The joined networks as an object of class \code{\link{sfnetwork}}.
 #'
 #' @examples
 #' library(sf, quietly = TRUE)
@@ -35,10 +35,12 @@
 #' joined
 #'
 #' ## Plot results.
+#' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1), mfrow = c(1,2))
 #' plot(net1, pch = 15, cex = 2, lwd = 4)
 #' plot(net2, col = "red", pch = 18, cex = 2, lty = 3, lwd = 4, add = TRUE)
 #' plot(joined, cex = 2, lwd = 4)
+#' par(oldpar)
 #'
 #' @export
 st_network_join = function(x, y, ...) {

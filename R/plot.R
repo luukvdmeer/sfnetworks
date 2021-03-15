@@ -17,6 +17,7 @@
 #' and others.
 #'
 #' @examples
+#' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1), mfrow = c(1,1))
 #' net = as_sfnetwork(roxel)
 #' plot(net)
@@ -30,6 +31,7 @@
 #' # Changing default settings.
 #' par(mar = c(1,1,1,1), mfrow = c(1,1))
 #' plot(net, col = 'blue', pch = 18, lwd = 1, cex = 2)
+#' par(oldpar)
 #'
 #' @importFrom graphics plot
 #' @importFrom sf st_geometry
@@ -65,46 +67,18 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
 #'
 #' @param ... Ignored.
 #'
+#' @return An object of class \code{\link[ggplot2]{ggplot}}.
+#'
 #' @details See \code{\link[ggplot2]{autoplot}}.
 #'
-#' @examples
-#' library(ggplot2, quietly = TRUE)
-#' library(sf, quietly = TRUE)
-#'
-#' net = as_sfnetwork(roxel) %>%
-#'   st_transform(3035)
-#'
-#' # Quick overview of the network in ggplot style.
-#' autoplot(net)
-#'
-#' # Other ggplot elements can be added.
-#' points = net %>%
-#'   st_bbox() %>%
-#'   st_as_sfc() %>%
-#'   st_sample(10, type = 'random') %>%
-#'   st_set_crs(3035) %>%
-#'   st_cast('POINT')
-#'
-#' autoplot(net) +
-#'   # The theme can be customized
-#'   theme_minimal() +
-#'   # Labels can be added
-#'   labs(title = 'Nice ggplot') +
-#'   # And extra sf layers can be included
-#'   geom_sf(data = points, color = 'red', size = 2)
-#'
 #' @name autoplot
-#' @importFrom sf st_as_sf
 autoplot.sfnetwork = function(object, ...) {
-  g = ggplot2::ggplot() +
-    ggplot2::geom_sf(data = st_as_sf(object, 'nodes'))
+  g = ggplot2::ggplot() + ggplot2::geom_sf(data = nodes_as_sf(object))
   if (has_spatially_explicit_edges(object)) {
-    g +
-      ggplot2::geom_sf(data = st_as_sf(object, 'edges'))
+    g + ggplot2::geom_sf(data = edges_as_sf(object))
   } else {
-    message('Spatially implicit edges are drawn as lines.')
+    message("Spatially implicit edges are drawn as lines", call. = FALSE)
     object = explicitize_edges(object)
-    g +
-      ggplot2::geom_sf(data = st_as_sf(object, 'edges'))
+    g + ggplot2::geom_sf(data = edges_as_sf(object))
   }
 }

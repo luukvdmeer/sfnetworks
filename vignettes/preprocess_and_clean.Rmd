@@ -18,8 +18,10 @@ knitr::opts_knit$set(global.par = TRUE)
 
 ```{r plot, echo=FALSE, results='asis'}
 # plot margins
+oldpar = par(no.readonly = TRUE)
 par(mar = c(1, 1, 1, 1))
 # crayon needs to be explicitly activated in Rmd
+oldoptions = options()
 options(crayon.enabled = TRUE)
 # Hooks needs to be set to deal with outputs
 # thanks to fansi logic
@@ -71,6 +73,8 @@ st_geometry(edges) = st_geometry(edges) %>%
 # The edges are connected.
 as_sfnetwork(edges)
 ```
+
+Note that too much rounding can create linestring geometries of zero length, with the same start and endpoint. This may cause problems later.
 
 ### Dealing with one-way edges
 In `sfnetworks` you can create directed and undirected networks. In directed ones, an edge can only be traveled from its start node to its end node. In undirected ones, an edge can be traveled both ways. However, in the real world there are networks where *some* edges can be traveled both ways and *some* edges only one way. For example, a road network in a city where there are one-way streets.
@@ -147,7 +151,7 @@ l15 = st_sfc(st_linestring(c(p16, p20)))
 
 lines = c(l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15)
 
-edge_colors = function(x) sf.colors(ecount(x), categorical = TRUE)
+edge_colors = function(x) rep(sf.colors(12, categorical = TRUE)[-2], 2)[c(1:ecount(x))]
 
 net = as_sfnetwork(lines)
 plot(st_geometry(net, "edges"), col = edge_colors(net), lwd = 4)
@@ -166,9 +170,9 @@ simple = net %>%
   filter(!edge_is_loop())
 
 plot(st_geometry(net, "edges"), col = edge_colors(net), lwd = 4)
-plot(st_geometry(net, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(net, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(simple, "edges"), col = edge_colors(simple), lwd = 4)
-plot(st_geometry(simple, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(simple, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
 Note that removing multiple edges in that way always *keeps* the *first* edge in each set of multiple edges, and drops all the other members of the set. Hence, the resulting network does not contain multiple edges anymore, but the connections between the nodes are preserved. Which of the multiple edges is the first one in a set depends on the order of the edges in the edges table. That is, by re-arranging the edges table before applying the filter you can influence which edges are kept whenever sets of multiple edges are detected. For example, you might want to always keep the edge with the shortest distance in the set.
@@ -181,9 +185,9 @@ simple = net %>%
   filter(!edge_is_loop())
 
 plot(st_geometry(net, "edges"), col = edge_colors(net), lwd = 4)
-plot(st_geometry(net, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(net, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(simple, "edges"), col = edge_colors(simple), lwd = 4)
-plot(st_geometry(simple, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(simple, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
 By arranging the edges table first, you can influence *which* edge in a set of multiple edges is kept. However, this way of simplifying still selects a single edge from the set, and drops all the others. When your edges have attributes, you might prefer to *merge* the edges in a set into a single new edge. This new edge has the geometry of the first edge in the set, but its attribute values are a combination of the attributes of all the edges in the set. This is exactly what the function `to_spatial_simple()` does. It has an argument `summarise_attributes` that lets you specify exactly how you want to merge the attributes of each set of multiple edges.
@@ -240,9 +244,9 @@ simple %>%
   filter(edge_is_between(6, 7)) %>%
   st_as_sf()
 plot(st_geometry(net, "edges"), col = edge_colors(net), lwd = 4)
-plot(st_geometry(net, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(net, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(simple, "edges"), col = edge_colors(simple), lwd = 4)
-plot(st_geometry(simple, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(simple, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
 When the edges table does not have attribute columns, using `to_spatial_simple` does not have advantages and applying the filter functions as shown before is faster.
@@ -272,9 +276,9 @@ For our example network, this means:
 subdivision = convert(simple, to_spatial_subdivision)
 
 plot(st_geometry(simple, "edges"), col = edge_colors(simple), lwd = 4)
-plot(st_geometry(simple, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(simple, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(subdivision, "edges"), col = edge_colors(subdivision), lwd = 4)
-plot(st_geometry(subdivision, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
 ### Smooth pseudo nodes
@@ -288,9 +292,9 @@ The function `to_spatial_smooth()` iteratively smooths pseudo nodes, and after e
 smoothed = convert(subdivision, to_spatial_smooth)
 
 plot(st_geometry(subdivision, "edges"), col = edge_colors(subdivision), lwd = 4)
-plot(st_geometry(subdivision, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(smoothed, "edges"), col = edge_colors(smoothed), lwd = 4)
-plot(st_geometry(smoothed, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
 ### Simplify intersections
@@ -336,21 +340,30 @@ The combination of the cluster index and the component index can now be used to 
 A point of attention is that contraction introduces new *multiple edges* and/or *loop edges*. Multiple edges are introduced by contraction when there are several connections between the same groups of nodes. Loop edges are introduced by contraction when there are connections within a group. Setting `simplify = TRUE` will remove the multiple and loop edges after contraction. However, note that this also removes multiple and loop edges that already existed before contraction.
 
 ```{r, fig.show='hold', out.width = '50%'}
-contracted = convert(clustered, to_spatial_contracted, cls, cmp, simplify = TRUE)
+contracted = convert(
+  clustered,
+  to_spatial_contracted,
+  cls, cmp,
+  simplify = TRUE
+)
 
 plot(st_geometry(smoothed, "edges"), col = edge_colors(smoothed), lwd = 4)
-plot(st_geometry(smoothed, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(contracted, "edges"), col = edge_colors(contracted), lwd = 4)
-plot(st_geometry(contracted, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(contracted, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
-One thing we did not mention yet: in the same way as `to_spatial_simple()` allowed you to combine attributes of multiple edges, `to_spatial_contracted()` allows you to combine attributes of contracted nodes. It works exactly the same: on a per-attribute basis you can specify how the attribute values of the new node should be inferred from those of the orginal nodes in the group. An example:
+One thing we did not mention yet: in the same way as `to_spatial_simple()` allowed you to combine attributes of multiple edges, `to_spatial_contracted()` allows you to combine attributes of contracted nodes. It works exactly the same: on a per-attribute basis you can specify how the attribute values of the new node should be inferred from those of the original nodes in the group. An example:
 
 ```{r}
 # Add some additional attribute columns to the nodes table.
 clustered = clustered %>%
   activate("nodes") %>%
-  mutate(is_priority = sample(c(TRUE, FALSE), vcount(clustered), replace = TRUE))
+  mutate(is_priority = sample(
+    c(TRUE, FALSE),
+    vcount(clustered),
+    replace = TRUE
+  ))
 
 # We know from before there is one group with several close, connected nodes.
 # Lets look at them.
@@ -390,14 +403,12 @@ After applying all the network cleaning functions described in the previous sect
 
 ```{r, fig.show='hold', out.width = '50%'}
 plot(st_geometry(net, "edges"), col = edge_colors(net), lwd = 4)
-plot(st_geometry(net, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(net, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(contracted, "edges"), col = edge_colors(contracted), lwd = 4)
-plot(st_geometry(contracted, "nodes"), pch = 20, add = TRUE)
+plot(st_geometry(contracted, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
-
-
-
-
-
-
+```{r, include = FALSE}
+par(oldpar)
+options(oldoptions)
+```

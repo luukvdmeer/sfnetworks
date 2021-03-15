@@ -28,7 +28,7 @@ cat_subtle = function(...) { # nocov start
 #' @noRd
 create_edges_from_nodes = function(nodes) {
   # Define indices for source and target nodes.
-  source_ids = 1:(nrow(nodes)-1)
+  source_ids = 1:(nrow(nodes) - 1)
   target_ids = 2:nrow(nodes)
   # Create separate tables for source and target nodes.
   sources = nodes[source_ids, ]
@@ -198,8 +198,8 @@ edge_boundary_points = function(x) {
 #' the number of edges in x, and ordered as
 #' [start of edge 1, end of edge 1, start of edge 2, end of edge 2, ...]. If
 #' matrix is \code{TRUE}, a two-column matrix, with the number of rows equal to
-#' the number of edges in the network. The first column contains the node 
-#' indices of the start points of the edges, the seconds column contains the 
+#' the number of edges in the network. The first column contains the node
+#' indices of the start points of the edges, the seconds column contains the
 #' node indices of the end points of the edges.
 #'
 #' @importFrom igraph ecount
@@ -258,43 +258,6 @@ explicitize_edges = function(x) {
   }
 }
 
-#' Extend a straight line by a given distance
-#'
-#' @param l The line to extend, as object of class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}, containing a single feature with \code{LINESTRING}
-#' geometry.
-#'
-#' @param d The distance to extend the line by, in the same units as the CRS
-#' of x.
-#'
-#' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
-#' geometry.
-#'
-#' @details Euclidean space is assumed no matter the CRS.
-#'
-#' @importFrom sf st_coordinates st_crs st_linestring st_point st_sfc
-#' @noRd
-extend_line = function(l, d) {
-  # Get coordinate of endpoints of l.
-  coords = st_coordinates(l)
-  A_x = coords[1, 1] # x coordinate of startpoint of l
-  B_x = coords[nrow(coords), 1] # x coordinate of endpoint of l
-  A_y = coords[1, 2] # y coordinate of startpoint of l
-  B_y = coords[nrow(coords), 2] # y coordinate of endpoint of l
-  # Compute length of l in Euclidean space.
-  length_AB = sqrt((A_x - B_x)^2 + (A_y - B_y)^2)
-  # Create the endpoint of the extended line.
-  C_x = B_x + (B_x - A_x) / length_AB * d # x coordinate of new endpoint
-  C_y = B_y + (B_y - A_y) / length_AB * d # y coordinate of new endpoint
-  # Combine points together in a new line.
-  A = st_point(c(A_x, A_y))
-  B = st_point(c(B_x, B_y))
-  C = st_point(c(C_x, C_y))
-  l_new = st_linestring(c(A, B, C))
-  # Return as sfc.
-  st_sfc(l_new, crs = st_crs(l))
-}
-
 #' Make edges spatially implicit
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
@@ -311,7 +274,7 @@ implicitize_edges = function(x) {
   }
 }
 
-#' Get the boundary points of LINESTRING geometries
+#' Get the boundary points of linestring geometries
 #'
 #' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 #' with \code{LINESTRING} geometries.
@@ -320,7 +283,8 @@ implicitize_edges = function(x) {
 #' geometries, of length equal to twice the number of lines in x, and ordered
 #' as [start of line 1, end of line 1, start of line 2, end of line 2, ...].
 #'
-#' @details See issue #59 on the GitHub repo for a discussion on this function.
+#' @details With boundary points we mean the points at the start and end of
+#' a linestring.
 #'
 #' @importFrom sf st_crs st_geometry
 #' @importFrom sfheaders sfc_point sfc_to_df
@@ -341,58 +305,53 @@ linestring_boundary_points = function(x) {
   points
 }
 
-#' Get the points where linestrings cross
+#' Get the segments of linestring geometries
 #'
 #' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 #' with \code{LINESTRING} geometries.
 #'
-#' @param y An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
-#' with \code{LINESTRING} geometries.
-#'
-#' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
-#' geometries.
-#'
-#' @importFrom sf st_crosses st_equals st_geometry st_intersection st_is
-#' @noRd
-linestring_crossings = function(x, y) { #nocov start
-  # ! Function not in use currently
-  # Get geometries of x and y.
-  xgeom = st_geometry(x)
-  ygeom = st_geometry(y)
-  # Find crossing geometries.
-  cross_matrix = suppressMessages(st_crosses(xgeom, ygeom, sparse = FALSE))
-  # Subset geometries to only keep those that cross.
-  xgeom_sub = xgeom[apply(cross_matrix, 1, any)]
-  ygeom_sub = ygeom[apply(cross_matrix, 2, any)]
-  # Find intersections between the geometry subsets.
-  all_intersections = suppressMessages(st_intersection(xgeom_sub, ygeom_sub))
-  # Subset intersections to keep only those that are points.
-  point_intersections = all_intersections[st_is(all_intersections, "POINT")]
-  # Subset point intersections to keep only those that are crossings.
-  boundaries = c(linestring_boundary_points(x), linestring_boundary_points(y))
-  is_boundary = lengths(st_equals(point_intersections, boundaries)) > 0
-  crossings = point_intersections[!is_boundary]
-  # Return crossings.
-  crossings
-} # nocov end
-
-#' Split lines by other features
-#'
-#' @param x The lines to be splitted, as object of class \code{\link[sf]{sf}}
-#' or \code{\link[sf]{sfc}} with \code{LINESTRING} geometries.
-#'
-#' @param y The features to split with, as object of class \code{\link[sf]{sf}}
-#' or \code{\link[sf]{sfc}}.
-#'
 #' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
 #' geometries.
 #'
-#' @details Features in x will only be splitted if they intersect with a
-#' feature in y.
+#' @details With a line segment we mean a linestring geometry that has no
+#' interior points.
 #'
-#' @importFrom lwgeom st_split
-#' @importFrom sf st_collection_extract
+#' @importFrom sf st_crs st_geometry
+#' @importFrom sfheaders sfc_linestring sfc_to_df
 #' @noRd
-split_lines = function(x, y) {
-  st_collection_extract(st_split(x, y), "LINESTRING")
+linestring_segments = function(x) {
+  # Decompose lines into the points that shape them.
+  pts = sfc_to_df(st_geometry(x))
+  # Define which of the points are a startpoint of a line.
+  # Define which of the points are an endpoint of a line.
+  is_startpoint = !duplicated(pts[["linestring_id"]])
+  is_endpoint = !duplicated(pts[["linestring_id"]], fromLast = TRUE)
+  # Extract the coordinates from the points.
+  coords = pts[names(pts) %in% c("x", "y", "z", "m")]
+  # Extract coordinates of the point that are a startpoint of a segment.
+  # Extract coordinates of the point that are an endpoint of a segment.
+  src_coords = coords[!is_endpoint, ]
+  trg_coords = coords[!is_startpoint, ]
+  src_coords$segment_id = seq_len(nrow(src_coords))
+  trg_coords$segment_id = seq_len(nrow(trg_coords))
+  # Construct the segments.
+  segment_pts = rbind(src_coords, trg_coords)
+  segment_pts = segment_pts[order(segment_pts$segment_id), ]
+  segments = sfc_linestring(segment_pts, linestring_id = "segment_id")
+  st_crs(segments) = st_crs(x)
+  segments
+}
+
+#' Determine duplicated geometries
+#'
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
+#'
+#' @return A logical vector of the same length as \code{x}.
+#'
+#' @importFrom sf st_equals
+#' @noRd
+spatial_duplicated = function(x) {
+  dup = rep(FALSE, length(x))
+  dup[unique(do.call("c", lapply(st_equals(x), `[`, - 1)))] = TRUE
+  dup
 }

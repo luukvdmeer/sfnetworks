@@ -30,9 +30,9 @@
 #' \code{to} and \code{from} are given as integers. Defaults to \code{'name'}.
 #'
 #' @param edges_as_lines Should the edges be spatially explicit, i.e. have
-#' \code{LINESTRING} geometries stored in a geometry list column? If 
-#' \code{NULL}, this will be automatically defined, by setting the argument to 
-#' \code{TRUE} when the edges are given as an object of class 
+#' \code{LINESTRING} geometries stored in a geometry list column? If
+#' \code{NULL}, this will be automatically defined, by setting the argument to
+#' \code{TRUE} when the edges are given as an object of class
 #' \code{\link[sf]{sf}}, and \code{FALSE} otherwise. Defaults to \code{NULL}.
 #'
 #' @param length_as_weight Should the length of the edges be stored in a column
@@ -107,8 +107,8 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
       st_as_sf(nodes, ...),
       error = function(e) {
         stop(
-          "Failed to convert nodes to sf object because: ", 
-          e, 
+          "Failed to convert nodes to sf object because: ",
+          e,
           call. = FALSE
         )
       }
@@ -118,15 +118,16 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
   # If edges is an sf object:
   # --> Tidygraph cannot handle it due to sticky geometry.
   # --> Therefore it has to be converted into a regular data frame (or tibble).
-  if (has_sfc(edges)) {
-    if (is.sf(edges)) class(edges) = setdiff(class(edges), "sf")
+  if (is.sf(edges)) {
+    edges_df = structure(edges, class = setdiff(class(edges), "sf"))
     if (is.null(edges_as_lines)) edges_as_lines = TRUE
   } else {
+    edges_df = edges
     if (is.null(edges_as_lines)) edges_as_lines = FALSE
   }
   # Create network.
   # Store sf attributes of the nodes and edges in a special graph attribute.
-  x_tbg = tbl_graph(nodes, edges, directed, node_key)
+  x_tbg = tbl_graph(nodes, edges_df, directed, node_key)
   x_sfn = structure(x_tbg, class = c("sfnetwork", class(x_tbg)))
   # Post-process network.
   if (is.null(edges)) {
@@ -134,6 +135,9 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
     if (! force) require_valid_network_structure(x_sfn, message = TRUE)
     return (x_sfn)
   }
+  # Set edge attributes again.
+  # This ensures correct forwarding of additional attributes such as agr.
+  edge_graph_attributes(x_sfn) = edges
   if (edges_as_lines) {
     # Run validity check before explicitizing edges.
     if (! force) require_valid_network_structure(x_sfn, message = TRUE)
@@ -160,8 +164,13 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
 
 #' @importFrom tidygraph tbl_graph
 sfnetwork_ = function(nodes, edges = NULL, directed = TRUE) {
-  if (is.sf(edges)) class(edges) = setdiff(class(edges), "sf")
-  x_tbg = tbl_graph(nodes, edges, directed)
+  if (is.sf(edges)) {
+    edges_df = structure(edges, class = setdiff(class(edges), "sf"))
+  } else {
+    edges_df = edges
+  }
+  x_tbg = tbl_graph(nodes, edges_df, directed)
+  if (! is.null(edges)) edge_graph_attributes(x_tbg) = edges
   structure(x_tbg, class = c("sfnetwork", class(x_tbg)))
 }
 
@@ -172,19 +181,6 @@ sfnetwork_ = function(nodes, edges = NULL, directed = TRUE) {
 tbg_to_sfn = function(x) {
   class(x) = c("sfnetwork", class(x))
   x
-}
-
-# Fast function to convert from morphed_tbl_graph to morphed_sfnetwork.
-# Must be sure that each tbl_graph has already a valid sfnetwork structure.
-# ONLY FOR INTERNAL USE!
-
-morphed_tbg_to_morphed_sfn = function(x) {
-  structure(
-    lapply(x, tbg_to_sfn),
-    class = c("morphed_sfnetwork", class(x)),
-    .orig_graph = attr(x, ".orig_graph"),
-    .morpher = attr(x, ".morpher")
-  )
 }
 
 #' Convert a foreign object to a sfnetwork
@@ -227,9 +223,11 @@ as_sfnetwork.default = function(x, ...) {
 #' # With LINESTRING geometries.
 #' as_sfnetwork(roxel)
 #'
+#' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1), mfrow = c(1,2))
 #' plot(st_geometry(roxel))
 #' plot(as_sfnetwork(roxel))
+#' par(oldpar)
 #'
 #' # With POINT geometries.
 #' p1 = st_point(c(7, 51))
@@ -238,9 +236,11 @@ as_sfnetwork.default = function(x, ...) {
 #' points = st_as_sf(st_sfc(p1, p2, p3))
 #' as_sfnetwork(points)
 #'
+#' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1), mfrow = c(1,2))
 #' plot(st_geometry(points))
 #' plot(as_sfnetwork(points))
+#' par(oldpar)
 #'
 #' @export
 as_sfnetwork.sf = function(x, ...) {
@@ -436,6 +436,9 @@ print.morphed_sfnetwork = function(x, ...) {
 #' Check if an object is a sfnetwork
 #'
 #' @param x Object to be checked.
+#'
+#' @return \code{TRUE} if the given object is an object of class
+#' \code{\link{sfnetwork}}, \code{FALSE} otherwise.
 #'
 #' @examples
 #' library(tidygraph, quietly = TRUE, warn.conflicts = FALSE)

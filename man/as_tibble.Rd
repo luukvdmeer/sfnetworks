@@ -20,6 +20,10 @@ column. Defaults to \code{TRUE}.}
 
 \item{...}{Arguments passed on to \code{\link[tibble]{as_tibble}}.}
 }
+\value{
+The active element of the network as an object of class
+\code{\link[tibble]{tibble}}.
+}
 \description{
 The sfnetwork method for \code{\link[tibble]{as_tibble}} is conceptually
 different. Whenever a geometry list column is present, it will by default

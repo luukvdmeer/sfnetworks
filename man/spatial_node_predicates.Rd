@@ -89,11 +89,12 @@ within = net \%>\%
 disjoint = net \%>\%
   activate("nodes") \%>\%
   filter(node_is_disjoint(poly))
-
+oldpar = par(no.readonly = TRUE)
 par(mar = c(1,1,1,1))
 plot(net)
 plot(within, col = "red", add = TRUE)
 plot(disjoint, col = "blue", add = TRUE)
+par(oldpar)
 
 # Use predicate query function in a mutate call.
 net \%>\%

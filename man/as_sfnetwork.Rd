@@ -63,9 +63,11 @@ library(sf, quietly = TRUE)
 # With LINESTRING geometries.
 as_sfnetwork(roxel)
 
+oldpar = par(no.readonly = TRUE)
 par(mar = c(1,1,1,1), mfrow = c(1,2))
 plot(st_geometry(roxel))
 plot(as_sfnetwork(roxel))
+par(oldpar)
 
 # With POINT geometries.
 p1 = st_point(c(7, 51))
@@ -74,9 +76,11 @@ p3 = st_point(c(8, 52))
 points = st_as_sf(st_sfc(p1, p2, p3))
 as_sfnetwork(points)
 
+oldpar = par(no.readonly = TRUE)
 par(mar = c(1,1,1,1), mfrow = c(1,2))
 plot(st_geometry(points))
 plot(as_sfnetwork(points))
+par(oldpar)
 
 # From a linnet object.
 if (require(spatstat, quietly = TRUE)) {

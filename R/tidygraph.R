@@ -36,10 +36,22 @@ morph.sfnetwork = function(.data, ...) {
   # If morphed data still consist of valid sfnetworks:
   # --> Convert the morphed_tbl_graph into a morphed_sfnetwork.
   # --> Otherwise, just return the morphed_tbl_graph.
-  if (has_spatial_nodes(morphed_data[[1]])) {
-    morphed_data = morphed_tbg_to_morphed_sfn(morphed_data)
+  if (is.sfnetwork(morphed_data[[1]])) {
+    structure(
+      morphed_data,
+      class = c("morphed_sfnetwork", class(morphed_data))
+    )
+  } else if (has_spatial_nodes(morphed_data[[1]])) {
+    attrs = attributes(morphed_data)
+    morphed_data = lapply(morphed_data, tbg_to_sfn)
+    attributes(morphed_data) = attrs
+    structure(
+      morphed_data,
+      class = c("morphed_sfnetwork", class(morphed_data))
+    )
+  } else {
+    morphed_data
   }
-  morphed_data
 }
 
 #' @importFrom igraph delete_edge_attr delete_vertex_attr edge_attr vertex_attr
@@ -47,37 +59,38 @@ morph.sfnetwork = function(.data, ...) {
 #' @importFrom tidygraph unmorph
 #' @export
 unmorph.morphed_sfnetwork = function(.data, ...) {
-  # Extract:
-  # --> First graph in the morphed object.
-  # --> Attributes of the morphed object.
-  # --> Original graph before morphing.
-  x1 = .data[[1]]
-  xa = attributes(.data)
-  xo = xa$.orig_graph
-  # If some nodes and/or edges where merged during morphing:
-  # --> This stores original node and/or edge indices in a list column.
-  # --> However, this also keeps a geometry column for the combined features.
-  # --> If a regular tidygraph morpher was used as a list of sfc objects.
-  # --> If spatial morpher was used as single sfc object.
-  # --> This gives problems when unmorphing.
-  # --> Therefore, we need to remove these combined geometries first.
-  # --> Original geometries are stored elsewhere and are not affected.
-  n_idx = ".tidygraph_node_index"
-  e_idx = ".tidygraph_edge_index"
-  n_nms = vertex_attr_names(x1)
-  e_nms = edge_attr_names(x1)
-  if (n_idx %in% n_nms && class(vertex_attr(x1, n_idx)) == "list") {
-    geom_col = node_geom_colname(xo)
-    .data = lapply(.data, function(x) delete_vertex_attr(x, geom_col))
-    attributes(.data) = xa
-  }
-  if (has_spatially_explicit_edges(xo)) {
-    if (e_idx %in% e_nms && class(edge_attr(x1, e_idx)) == "list") {
-      geom_col = edge_geom_colname(xo)
-      .data = lapply(.data, function(x) delete_edge_attr(x, geom_col))
-      attributes(.data) = xa
+  # Unmorphing needs special treatment for morphed sfnetworks when:
+  # --> Features were merged and original data stored in a .orig_data column.
+  # --> A new geometry column exists next to this .orig_data column.
+  # This new geometry is a geometry describing the merged features.
+  # When unmorphing the merged features get unmerged again.
+  # Hence, the geometry column for the merged features should not be preserved.
+  x_first = .data[[1]] # Extract the first element to run checks on.
+  # If nodes were merged:
+  # --> Remove the geometry column of the merged features before proceeding.
+  n_idxs = vertex_attr(x_first, ".tidygraph_node_index")
+  e_idxs = vertex_attr(x_first, ".tidygraph_edge_index")
+  if (is.list(n_idxs) || is.list(e_idxs)) {
+    geom_colname = node_geom_colname(attr(.data, ".orig_graph"))
+    if (geom_colname %in% vertex_attr_names(x_first)) {
+      attrs = attributes(.data)
+      .data = lapply(.data, delete_vertex_attr, geom_colname)
+      attributes(.data) = attrs
     }
   }
+  # If edges were merged:
+  # --> Remove the geometry column of the merged features before proceeding.
+  n_idxs = edge_attr(x_first, ".tidygraph_node_index")
+  e_idxs = edge_attr(x_first, ".tidygraph_edge_index")
+  if (is.list(e_idxs) || is.list(n_idxs)) {
+    geom_colname = edge_geom_colname(attr(.data, ".orig_graph"))
+    if (!is.null(geom_colname) && geom_colname %in% edge_attr_names(x_first)) {
+      attrs = attributes(.data)
+      .data = lapply(.data, delete_edge_attr, geom_colname)
+      attributes(.data) = attrs
+    }
+  }
+  # Call tidygraphs unmorph.
   NextMethod(.data, ...)
 }
 
@@ -87,11 +100,11 @@ unmorph.morphed_sfnetwork = function(.data, ...) {
 #' From: https://github.com/thomasp85/tidygraph/blob/master/R/tbl_graph.R
 #' November 5, 2020
 #'
-#' @importFrom igraph is_simple is_directed is_bipartite is_connected is_dag 
+#' @importFrom igraph is_simple is_directed is_bipartite is_connected is_dag
 #' gorder
 #' @noRd
 describe_graph = function(x) {
-  if (gorder(x) == 0) return('An empty graph')
+  if (gorder(x) == 0) return("An empty graph")
   prop = list(
     simple = is_simple(x),
     directed = is_directed(x),
@@ -102,28 +115,28 @@ describe_graph = function(x) {
     DAG = is_dag(x))
   desc = c()
   if (prop$tree || prop$forest) {
-    desc[1] = if (prop$directed) 'A rooted'
-              else 'An unrooted'
-    desc[2] = if (prop$tree) 'tree'
+    desc[1] = if (prop$directed) "A rooted"
+              else "An unrooted"
+    desc[2] = if (prop$tree) "tree"
               else paste0(
-                'forest with ',
+                "forest with ",
                 count_components(x),
-                ' trees'
+                " trees"
               )
   } else {
-    desc[1] = if (prop$DAG) 'A directed acyclic'
-              else if (prop$bipartite) 'A bipartite'
-              else if (prop$directed) 'A directed'
-              else 'An undirected'
-    desc[2] = if (prop$simple) 'simple graph'
-              else 'multigraph'
+    desc[1] = if (prop$DAG) "A directed acyclic"
+              else if (prop$bipartite) "A bipartite"
+              else if (prop$directed) "A directed"
+              else "An undirected"
+    desc[2] = if (prop$simple) "simple graph"
+              else "multigraph"
     n_comp = count_components(x)
     desc[3] = paste0(
-      'with ' , n_comp, ' component',
-      if (n_comp > 1) 's' else ''
+      "with ", n_comp, " component",
+      if (n_comp > 1) "s" else ""
     )
   }
-  paste(desc, collapse = ' ')
+  paste(desc, collapse = " ")
 }
 
 #' @importFrom igraph is_connected is_simple gorder gsize is_directed
@@ -133,7 +146,7 @@ is_tree = function(x) {
     (gorder(x) - gsize(x) == 1)
 }
 
-#' @importFrom igraph is_connected is_simple gorder gsize count_components 
+#' @importFrom igraph is_connected is_simple gorder gsize count_components
 #' is_directed
 is_forest = function(x) {
   !is_connected(x) &&
