@@ -21,6 +21,7 @@ test_that("st_set_geometry gives an error when replacing edges geometry CRS", {
 
 test_that("st_set_geometry gives an error when replacing edges geometry
           endpoints", {
+  skip_if_not(sf::sf_extSoftVersion()["GEOS"] >= "3.7.0")
   net = roxel %>% as_sfnetwork()
   new_geom = sf::st_geometry(sf::st_reverse(roxel))
   expect_error(activate(net, "edges") %>% sf::st_set_geometry(new_geom))

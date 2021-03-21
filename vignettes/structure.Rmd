@@ -14,6 +14,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 knitr::opts_knit$set(global.par = TRUE)
+geos37 = sf::sf_extSoftVersion()["GEOS"] >= "3.7.0"
 ```
 
 ```{r plot, echo=FALSE, results='asis'}
@@ -273,9 +274,9 @@ net %>%
   plot(vertex.color = "black", main = "Nodes without geometries")
 ```
 
-Geometries can be replaced also by using [geometry unary operations](https://r-spatial.github.io/sf/reference/geos_unary.html), as long as they don't break the valid spatial network structure. In practice this means that only `sf::st_reverse()` and `sf::st_simplify()` are supported. When calling `sf::st_reverse()` on the edges of a directed network, not only the geometries will be reversed, but the *from* and *to* columns of the edges will be swapped as well. In the case of undirected networks these columns remain unchanged, since the terms *from* and *to* don't have a meaning in undirected networks and can be used interchangeably.
+Geometries can be replaced also by using [geometry unary operations](https://r-spatial.github.io/sf/reference/geos_unary.html), as long as they don't break the valid spatial network structure. In practice this means that only `sf::st_reverse()` and `sf::st_simplify()` are supported. When calling `sf::st_reverse()` on the edges of a directed network, not only the geometries will be reversed, but the *from* and *to* columns of the edges will be swapped as well. In the case of undirected networks these columns remain unchanged, since the terms *from* and *to* don't have a meaning in undirected networks and can be used interchangeably. Note that reversing linestrings using `sf::st_reverse()` only works with GEOS >= 3.7.
 
-```{r}
+```{r, eval = geos37}
 as_sfnetwork(roxel, directed = TRUE) %>%
   activate("edges") %>%
   st_reverse()
