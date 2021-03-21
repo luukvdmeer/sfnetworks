@@ -12,7 +12,9 @@
     utils::packageVersion("spatstat") >= "2.0.0"
 
   if (has_spatstat_2.0) {
-    s3_register("spatstat.linnet::as.linnet", "sfnetwork")
+    suppressPackageStartupMessages({
+      s3_register("spatstat.linnet::as.linnet", "sfnetwork")
+    })
   }
 
   invisible()
