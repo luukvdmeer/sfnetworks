@@ -16,6 +16,16 @@ check_spatstat <- function(pkg) {
       ))
     }
   }
+
+  # Add an extra check to test the version of sf package. See
+  # https://github.com/luukvdmeer/sfnetworks/pull/138#issuecomment-803430686 and
+  # other comments in the same PR for more details
+  if (packageVersion("sf") < "0.9.8") {
+    stop(
+      "spatstat code requires sf >= 0.9.8 and you are using an older version. ",
+      "Please update sf."
+    )
+  }
 }
 
 #' Convert a sfnetwork into a linnet

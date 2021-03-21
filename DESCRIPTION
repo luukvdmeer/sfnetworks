@@ -40,7 +40,7 @@ Imports:
     igraph,
     lwgeom,
     rlang,
-    sf (>= 0.9.8),
+    sf,
     sfheaders,
     tibble,
     tidygraph,
