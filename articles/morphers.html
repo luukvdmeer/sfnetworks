@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9000</span>
       </span>
     </div>
 
@@ -103,7 +103,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>5. Spatial morphers</h1>
             
-            <h4 class="date">2021-03-03</h4>
+            <h4 class="date">2021-03-25</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/morphers.Rmd"><code>vignettes/morphers.Rmd</code></a></small>
       <div class="hidden name"><code>morphers.Rmd</code></div>
@@ -495,15 +495,15 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">edge_is_between</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">a_multiple</span>, <span class="va">from</span><span class="op">)</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">a_multiple</span>, <span class="va">to</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; Simple feature collection with 2 features and 5 fields
-#&gt; geometry type:  LINESTRING
-#&gt; dimension:      XY
-#&gt; bbox:           xmin: 4150715 ymin: 3207067 xmax: 4150752 ymax: 3207108
-#&gt; projected CRS:  ETRS89-extended / LAEA Europe
+#&gt; Geometry type: LINESTRING
+#&gt; Dimension:     XY
+#&gt; Bounding box:  xmin: 4150715 ymin: 3207067 xmax: 4150752 ymax: 3207108
+#&gt; Projected CRS: ETRS89-extended / LAEA Europe
 #&gt; <span style="color: #555555;"># A tibble: 2 x 6</span><span>
 #&gt;    from    to name      type                                      geometry  flow
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>     </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                             </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>   118   119 </span><span style="color: #BB0000;">NA</span><span>        serv… (4150716 3207080, 4150715 3207108, 4150751 …     6
-#&gt; </span><span style="color: #555555;">2</span><span>   118   119 Pienersa… serv…           (4150716 3207080, 4150752 3207067)    48
+#&gt; </span><span style="color: #555555;">1</span><span>   118   119 </span><span style="color: #BB0000;">NA</span><span>        serv… (4150716 3207080, 4150715 3207108, 4150751 …    24
+#&gt; </span><span style="color: #555555;">2</span><span>   118   119 Pienersa… serv…           (4150716 3207080, 4150752 3207067)    56
 </span></code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Simplify the network.</span>
@@ -521,14 +521,14 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">edge_is_between</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">a_multiple</span>, <span class="va">from</span><span class="op">)</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">a_multiple</span>, <span class="va">to</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; Simple feature collection with 1 feature and 6 fields
-#&gt; geometry type:  LINESTRING
-#&gt; dimension:      XY
-#&gt; bbox:           xmin: 4150715 ymin: 3207067 xmax: 4150752 ymax: 3207108
-#&gt; projected CRS:  ETRS89-extended / LAEA Europe
+#&gt; Geometry type: LINESTRING
+#&gt; Dimension:     XY
+#&gt; Bounding box:  xmin: 4150715 ymin: 3207067 xmax: 4150752 ymax: 3207108
+#&gt; Projected CRS: ETRS89-extended / LAEA Europe
 #&gt; <span style="color: #555555;"># A tibble: 1 x 7</span><span>
 #&gt;    from    to name  type                         geometry  flow .tidygraph_edge…
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;list&gt;</span><span>          
-#&gt; </span><span style="color: #555555;">1</span><span>   118   119 </span><span style="color: #BB0000;">NA</span><span>    servi… (4150716 3207080, 4150715 320…    54 </span><span style="color: #555555;">&lt;int [2]&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>   118   119 </span><span style="color: #BB0000;">NA</span><span>    servi… (4150716 3207080, 4150715 320…    80 </span><span style="color: #555555;">&lt;int [2]&gt;</span><span>
 </span></code></pre>
 </div>
 <div id="to_spatial_smooth" class="section level3">
@@ -639,7 +639,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923) FALSE           </span><span style="color: #BB0000;">NA</span><span>
 #&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946) TRUE          </span><span style="text-decoration: underline;">1</span><span>020
 #&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777) FALSE           </span><span style="color: #BB0000;">NA</span><span>
-#&gt; </span><span style="color: #555555;">4</span><span> (4151370 3207673) TRUE          </span><span style="text-decoration: underline;">1</span><span>020
+#&gt; </span><span style="color: #555555;">4</span><span> (4151370 3207673) FALSE           </span><span style="color: #BB0000;">NA</span><span>
 #&gt; </span><span style="color: #555555;">5</span><span> (4151408 3207539) FALSE           </span><span style="color: #BB0000;">NA</span><span>
 #&gt; </span><span style="color: #555555;">6</span><span> (4151421 3207592) FALSE           </span><span style="color: #BB0000;">NA</span><span>
 #&gt; </span><span style="color: #555555;"># … with 695 more rows</span><span>

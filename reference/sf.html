@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9000</span>
       </span>
     </div>
 
@@ -280,10 +280,10 @@ See the <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a><
 <span class='co'># Extract the active network element.</span>
 <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; Simple feature collection with 701 features and 0 fields
-#&gt; geometry type:  POINT
-#&gt; dimension:      XY
-#&gt; bbox:           xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
-#&gt; geographic CRS: WGS 84
+#&gt; Geometry type: POINT
+#&gt; Dimension:     XY
+#&gt; Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
+#&gt; Geodetic CRS:  WGS 84
 #&gt; <span style='color: #949494;'># A tibble: 701 x 1</span><span>
 #&gt;               geometry
 #&gt;            </span><span style='color: #949494;font-style: italic;'>&lt;POINT [°]&gt;</span><span>
@@ -301,10 +301,10 @@ See the <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a><
 <span class='co'># Extract any network element.</span>
 <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"edges"</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; Simple feature collection with 851 features and 4 fields
-#&gt; geometry type:  LINESTRING
-#&gt; dimension:      XY
-#&gt; bbox:           xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
-#&gt; geographic CRS: WGS 84
+#&gt; Geometry type: LINESTRING
+#&gt; Dimension:     XY
+#&gt; Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
+#&gt; Geodetic CRS:  WGS 84
 #&gt; </span><span style='color: #949494;'># A tibble: 851 x 5</span><span>
 #&gt;     from    to name         type                                        geometry
 #&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>        </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>                               </span><span style='color: #949494;font-style: italic;'>&lt;LINESTRING [°]&gt;</span><span>
@@ -322,18 +322,18 @@ See the <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a><
 <span class='co'># Get geometry of the active network element.</span>
 <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; Geometry set for 701 features 
-#&gt; geometry type:  POINT
-#&gt; dimension:      XY
-#&gt; bbox:           xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
-#&gt; geographic CRS: WGS 84
+#&gt; Geometry type: POINT
+#&gt; Dimension:     XY
+#&gt; Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
+#&gt; Geodetic CRS:  WGS 84
 #&gt; First 5 geometries:</div><div class='output co'>#&gt; <span class='message'>POINT (7.533722 51.95556)</span></div><div class='output co'>#&gt; <span class='message'>POINT (7.533461 51.95576)</span></div><div class='output co'>#&gt; <span class='message'>POINT (7.532442 51.95422)</span></div><div class='output co'>#&gt; <span class='message'>POINT (7.53209 51.95328)</span></div><div class='output co'>#&gt; <span class='message'>POINT (7.532709 51.95209)</span></div><div class='input'>
 <span class='co'># Get geometry of any network element.</span>
 <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"edges"</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; Geometry set for 851 features 
-#&gt; geometry type:  LINESTRING
-#&gt; dimension:      XY
-#&gt; bbox:           xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
-#&gt; geographic CRS: WGS 84
+#&gt; Geometry type: LINESTRING
+#&gt; Dimension:     XY
+#&gt; Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
+#&gt; Geodetic CRS:  WGS 84
 #&gt; First 5 geometries:</div><div class='output co'>#&gt; <span class='message'>LINESTRING (7.533722 51.95556, 7.533461 51.95576)</span></div><div class='output co'>#&gt; <span class='message'>LINESTRING (7.532442 51.95422, 7.53236 51.95377...</span></div><div class='output co'>#&gt; <span class='message'>LINESTRING (7.532709 51.95209, 7.532823 51.9523...</span></div><div class='output co'>#&gt; <span class='message'>LINESTRING (7.540063 51.94468, 7.539696 51.9447...</span></div><div class='output co'>#&gt; <span class='message'>LINESTRING (7.537673 51.9475, 7.537614 51.94562)</span></div><div class='input'>
 <span class='co'># Get bbox of the active network element.</span>
 <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_bbox.html'>st_bbox</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span>

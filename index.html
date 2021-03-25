@@ -41,7 +41,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9000</span>
       </span>
     </div>
 
@@ -108,10 +108,7 @@
 <a href="#tidy-geospatial-networks-in-r-" class="anchor"></a>Tidy Geospatial Networks in R <img src="reference/figures/logo.png" align="right" width="120">
 </h1></div>
 <!-- badges: start -->
-<!--![R-CMD-check](https://github.com/luukvdmeer/sfnetworks/workflows/R-CMD-check/badge.svg) -->
 
-<!-- Plan: add badge showing documents build on pkgdown (RL) -->
-<!-- ![R-CMD-check-develop](https://github.com/luukvdmeer/sfnetworks/workflows/R-CMD-check/badge.svg?branch=develop) -->
 <!-- badges: end -->
 <p><code>sfnetworks</code> is an R package for analysis of geospatial networks. It connects the functionalities of the <code>tidygraph</code> package for network analysis and the <code>sf</code> package for spatial data science.</p>
 <div id="background" class="section level2">
@@ -126,20 +123,14 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<!-- You can install the released version of sfnetworks from [CRAN](https://CRAN.R-project.org) with: -->
-<!-- ``` r -->
-<!-- install.packages("sfnetworks") -->
-<!-- ``` -->
-<p>The <code>sfnetworks</code> package is still in very active development, Therefore, the package is also not on CRAN yet. Install it directly from GitHub using the <code>remotes</code> package in R.</p>
-<p>Install the more stable master branch with:</p>
+<p>You can install the latest stable version of <code>sfnetworks</code> from <a href="https://cran.r-project.org/package=sfnetworks">CRAN</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"luukvdmeer/sfnetworks"</span><span class="op">)</span></code></pre></div>
-<p>Install the <code>develop</code> branch, where most of the development takes place and where PRs should be directed, as follows:</p>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"sfnetworks"</span><span class="op">)</span></code></pre></div>
+<p>The <code>sfnetworks</code> package is still in very active development, Therefore, the package is also not on CRAN yet. Install it directly from GitHub using the <code>remotes</code> package in R.</p>
+<p>You can install the development version from <a href="https://github.com/luukvdmeer/sfnetworks">GitHub</a> with:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"luukvdmeer/sfnetworks"</span>, ref <span class="op">=</span> <span class="st">"develop"</span><span class="op">)</span></code></pre></div>
-<p>Originally, <code>sfnetworks</code> was created as a homework assignment for an R course. Some people actually started using that version of the package in their work. Note that the new package is completely different! If you still want to install the original version, use:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"luukvdmeer/sfnetworks@v0.1"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"luukvdmeer/sfnetworks"</span><span class="op">)</span></code></pre></div>
+<p><strong>Note:</strong> Two important dependencies of <code>sfnetworks</code>, the <code>sf</code> package for spatial data science and the <code>igraph</code> package for network analysis, require some low-level software libraries to be installed on your system. Depending on which operating system you use, this can mean that you have to install these system requirements first, before you can install <code>sfnetworks</code>. See the installation guides of <a href="https://github.com/r-spatial/sf#installing">sf</a> and <a href="https://github.com/igraph/rigraph#installation">igraph</a> for details.</p>
 </div>
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
@@ -157,6 +148,8 @@
 <li><a href="https://luukvdmeer.github.io/sfnetworks/articles/routing.html">Routing</a></li>
 <li><a href="https://luukvdmeer.github.io/sfnetworks/articles/morphers.html">Spatial morphers</a></li>
 </ul>
+<p><img align="left" src="https://github.com/loreabad6/ggraph-spatial-examples/blob/main/figs/sfnetworks-showcase.gif"></p>
+<p>(GIF (c) by <a href="https://github.com/loreabad6">Lore Abad</a>)</p>
 </div>
 <div id="contribution" class="section level2">
 <h2 class="hasAnchor">
@@ -177,6 +170,8 @@
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
+<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=sfnetworks">https://​cloud.r-project.org/​package=sfnetworks</a>
+</li>
 <li>Browse source code at <br><a href="https://github.com/luukvdmeer/sfnetworks/">https://​github.com/​luukvdmeer/​sfnetworks/​</a>
 </li>
 <li>Report a bug at <br><a href="https://github.com/luukvdmeer/sfnetworks/issues/">https://​github.com/​luukvdmeer/​sfnetworks/​issues/​</a>
@@ -212,6 +207,8 @@
 <ul class="list-unstyled">
 <li><a href="https://github.com/luukvdmeer/sfnetworks/actions"><img src="https://github.com/luukvdmeer/sfnetworks/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
 <li><a href="https://codecov.io/gh/luukvdmeer/sfnetworks/"><img src="https://codecov.io/gh/luukvdmeer/sfnetworks/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://cran.r-project.org/package=sfnetworks"><img src="http://www.r-pkg.org/badges/version/sfnetworks" alt="CRAN"></a></li>
+<li><a href="https://cran.r-project.org/package=sfnetworks"><img src="https://cranlogs.r-pkg.org/badges/sfnetworks?color=orange" alt="Downloads"></a></li>
 </ul>
 </div>
 </div>

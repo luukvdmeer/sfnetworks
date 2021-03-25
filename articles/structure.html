@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9000</span>
       </span>
     </div>
 
@@ -103,7 +103,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>1. The sfnetwork data structure</h1>
             
-            <h4 class="date">2021-03-03</h4>
+            <h4 class="date">2021-03-25</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/structure.Rmd"><code>vignettes/structure.Rmd</code></a></small>
       <div class="hidden name"><code>structure.Rmd</code></div>
@@ -226,10 +226,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 
 <span class="va">edges</span>
 <span class="co">#&gt; Simple feature collection with 3 features and 2 fields</span>
-<span class="co">#&gt; geometry type:  LINESTRING</span>
-<span class="co">#&gt; dimension:      XY</span>
-<span class="co">#&gt; bbox:           xmin: 7 ymin: 51 xmax: 8 ymax: 52</span>
-<span class="co">#&gt; geographic CRS: WGS 84</span>
+<span class="co">#&gt; Geometry type: LINESTRING</span>
+<span class="co">#&gt; Dimension:     XY</span>
+<span class="co">#&gt; Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span>
+<span class="co">#&gt; Geodetic CRS:  WGS 84</span>
 <span class="co">#&gt;                                x from      to</span>
 <span class="co">#&gt; 1        LINESTRING (7 51, 7 52) city village</span>
 <span class="co">#&gt; 2 LINESTRING (7 51, 8 51.5, 8... city    farm</span>
@@ -330,10 +330,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">roxel</span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; Simple feature collection with 851 features and 2 fields
-#&gt; geometry type:  LINESTRING
-#&gt; dimension:      XY
-#&gt; bbox:           xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
-#&gt; geographic CRS: WGS 84
+#&gt; Geometry type: LINESTRING
+#&gt; Dimension:     XY
+#&gt; Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
+#&gt; Geodetic CRS:  WGS 84
 #&gt; <span style="color: #555555;"># A tibble: 851 x 3</span><span>
 #&gt;    name           type                                                  geometry
 #&gt;  </span><span style="color: #555555;">*</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>          </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                                         </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>
@@ -527,10 +527,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; Simple feature collection with 701 features and 0 fields
-#&gt; geometry type:  POINT
-#&gt; dimension:      XY
-#&gt; bbox:           xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
-#&gt; geographic CRS: WGS 84
+#&gt; Geometry type: POINT
+#&gt; Dimension:     XY
+#&gt; Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
+#&gt; Geodetic CRS:  WGS 84
 #&gt; <span style="color: #555555;"># A tibble: 701 x 1</span><span>
 #&gt;               geometry
 #&gt;            </span><span style="color: #555555;font-style: italic;">&lt;POINT [°]&gt;</span><span>
@@ -550,10 +550,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; Simple feature collection with 851 features and 4 fields
-#&gt; geometry type:  LINESTRING
-#&gt; dimension:      XY
-#&gt; bbox:           xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
-#&gt; geographic CRS: WGS 84
+#&gt; Geometry type: LINESTRING
+#&gt; Dimension:     XY
+#&gt; Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
+#&gt; Geodetic CRS:  WGS 84
 #&gt; <span style="color: #555555;"># A tibble: 851 x 5</span><span>
 #&gt;     from    to name         type                                        geometry
 #&gt;    </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>        </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                               </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>
@@ -606,10 +606,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; Geometry set for 701 features </span>
-<span class="co">#&gt; geometry type:  POINT</span>
-<span class="co">#&gt; dimension:      XY</span>
-<span class="co">#&gt; bbox:           xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
-<span class="co">#&gt; geographic CRS: WGS 84</span>
+<span class="co">#&gt; Geometry type: POINT</span>
+<span class="co">#&gt; Dimension:     XY</span>
+<span class="co">#&gt; Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
+<span class="co">#&gt; Geodetic CRS:  WGS 84</span>
 <span class="co">#&gt; First 5 geometries:</span>
 <span class="co">#&gt; POINT (7.533722 51.95556)</span>
 <span class="co">#&gt; POINT (7.533461 51.95576)</span>
@@ -620,10 +620,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>
 <span class="co">#&gt; Geometry set for 851 features </span>
-<span class="co">#&gt; geometry type:  LINESTRING</span>
-<span class="co">#&gt; dimension:      XY</span>
-<span class="co">#&gt; bbox:           xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
-<span class="co">#&gt; geographic CRS: WGS 84</span>
+<span class="co">#&gt; Geometry type: LINESTRING</span>
+<span class="co">#&gt; Dimension:     XY</span>
+<span class="co">#&gt; Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
+<span class="co">#&gt; Geodetic CRS:  WGS 84</span>
 <span class="co">#&gt; First 5 geometries:</span>
 <span class="co">#&gt; LINESTRING (7.533722 51.95556, 7.533461 51.95576)</span>
 <span class="co">#&gt; LINESTRING (7.532442 51.95422, 7.53236 51.95377...</span>
@@ -643,7 +643,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_set_geometry</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span>vertex.color <span class="op">=</span> <span class="st">"black"</span>, main <span class="op">=</span> <span class="st">"Nodes without geometries"</span><span class="op">)</span></code></pre></div>
 <p><img src="structure_files/figure-html/unnamed-chunk-20-1.png" width="50%"><img src="structure_files/figure-html/unnamed-chunk-20-2.png" width="50%"></p>
-<p>Geometries can be replaced also by using <a href="https://r-spatial.github.io/sf/reference/geos_unary.html">geometry unary operations</a>, as long as they don’t break the valid spatial network structure. In practice this means that only <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">sf::st_reverse()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">sf::st_simplify()</a></code> are supported. When calling <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">sf::st_reverse()</a></code> on the edges of a directed network, not only the geometries will be reversed, but the <em>from</em> and <em>to</em> columns of the edges will be swapped as well. In the case of undirected networks these columns remain unchanged, since the terms <em>from</em> and <em>to</em> don’t have a meaning in undirected networks and can be used interchangeably.</p>
+<p>Geometries can be replaced also by using <a href="https://r-spatial.github.io/sf/reference/geos_unary.html">geometry unary operations</a>, as long as they don’t break the valid spatial network structure. In practice this means that only <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">sf::st_reverse()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">sf::st_simplify()</a></code> are supported. When calling <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">sf::st_reverse()</a></code> on the edges of a directed network, not only the geometries will be reversed, but the <em>from</em> and <em>to</em> columns of the edges will be swapped as well. In the case of undirected networks these columns remain unchanged, since the terms <em>from</em> and <em>to</em> don’t have a meaning in undirected networks and can be used interchangeably. Note that reversing linestrings using <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">sf::st_reverse()</a></code> only works with GEOS &gt;= 3.7.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">roxel</span>, directed <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>

@@ -88,7 +88,7 @@ as a user, you can disable this behaviour by setting spatial = FALSE." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9000</span>
       </span>
     </div>
 
@@ -209,10 +209,10 @@ column. Defaults to <code>TRUE</code>.</p></td>
 <span class='co'># Extract the active network element as a spatial tibble.</span>
 <span class='fu'>as_tibble</span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; Simple feature collection with 701 features and 0 fields
-#&gt; geometry type:  POINT
-#&gt; dimension:      XY
-#&gt; bbox:           xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
-#&gt; geographic CRS: WGS 84
+#&gt; Geometry type: POINT
+#&gt; Dimension:     XY
+#&gt; Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
+#&gt; Geodetic CRS:  WGS 84
 #&gt; <span style='color: #949494;'># A tibble: 701 x 1</span><span>
 #&gt;               geometry
 #&gt;            </span><span style='color: #949494;font-style: italic;'>&lt;POINT [°]&gt;</span><span>
@@ -230,10 +230,10 @@ column. Defaults to <code>TRUE</code>.</p></td>
 <span class='co'># Extract any network element as a spatial tibble.</span>
 <span class='fu'>as_tibble</span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"edges"</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; Simple feature collection with 851 features and 4 fields
-#&gt; geometry type:  LINESTRING
-#&gt; dimension:      XY
-#&gt; bbox:           xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
-#&gt; geographic CRS: WGS 84
+#&gt; Geometry type: LINESTRING
+#&gt; Dimension:     XY
+#&gt; Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
+#&gt; Geodetic CRS:  WGS 84
 #&gt; </span><span style='color: #949494;'># A tibble: 851 x 5</span><span>
 #&gt;     from    to name         type                                        geometry
 #&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>        </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>                               </span><span style='color: #949494;font-style: italic;'>&lt;LINESTRING [°]&gt;</span><span>

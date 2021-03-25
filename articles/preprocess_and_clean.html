@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9000</span>
       </span>
     </div>
 
@@ -103,7 +103,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>2. Network pre-processing and cleaning</h1>
             
-            <h4 class="date">2021-03-03</h4>
+            <h4 class="date">2021-03-25</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/preprocess_and_clean.Rmd"><code>vignettes/preprocess_and_clean.Rmd</code></a></small>
       <div class="hidden name"><code>preprocess_and_clean.Rmd</code></div>
@@ -210,7 +210,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <a href="#dealing-with-one-way-edges" class="anchor"></a>Dealing with one-way edges</h3>
 <p>In <code>sfnetworks</code> you can create directed and undirected networks. In directed ones, an edge can only be traveled from its start node to its end node. In undirected ones, an edge can be traveled both ways. However, in the real world there are networks where <em>some</em> edges can be traveled both ways and <em>some</em> edges only one way. For example, a road network in a city where there are one-way streets.</p>
 <p>Unfortunately, neither <code>igraph</code> nor <code>tidygraph</code> provides an interface for such networks. Therefore, the only way to deal with this is to create a directed network but first <em>duplicate</em> and <em>reverse</em> all edge linestrings that can be traveled both ways.</p>
-<p>See the small example below, where we have three lines with one-way information stored in a <em>oneway</em> column. One of the lines is a one-way street, the other two are not. By duplicating and reversing the two linestrings that are not one-way streets, we create a directed network that correctly models our situation.</p>
+<p>See the small example below, where we have three lines with one-way information stored in a <em>oneway</em> column. One of the lines is a one-way street, the other two are not. By duplicating and reversing the two linestrings that are not one-way streets, we create a directed network that correctly models our situation. Note that reversing linestrings using <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">sf::st_reverse()</a></code> only works with GEOS &gt;= 3.7.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">51</span><span class="op">)</span><span class="op">)</span>
 <span class="va">p2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span>
@@ -224,16 +224,16 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="va">edges</span><span class="op">$</span><span class="va">oneway</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">FALSE</span><span class="op">)</span>
 <span class="va">edges</span>
 <span class="co">#&gt; Simple feature collection with 3 features and 1 field</span>
-<span class="co">#&gt; geometry type:  LINESTRING</span>
-<span class="co">#&gt; dimension:      XY</span>
-<span class="co">#&gt; bbox:           xmin: 7 ymin: 51 xmax: 8 ymax: 52</span>
-<span class="co">#&gt; geographic CRS: WGS 84</span>
+<span class="co">#&gt; Geometry type: LINESTRING</span>
+<span class="co">#&gt; Dimension:     XY</span>
+<span class="co">#&gt; Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span>
+<span class="co">#&gt; Geodetic CRS:  WGS 84</span>
 <span class="co">#&gt;                         x oneway</span>
 <span class="co">#&gt; 1 LINESTRING (7 51, 7 52)   TRUE</span>
 <span class="co">#&gt; 2 LINESTRING (7 51, 8 52)  FALSE</span>
-<span class="co">#&gt; 3 LINESTRING (8 52, 7 52)  FALSE</span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">duplicates</span> <span class="op">=</span> <span class="va">edges</span><span class="op">[</span><span class="op">!</span><span class="va">edges</span><span class="op">$</span><span class="va">oneway</span>, <span class="op">]</span>
+<span class="co">#&gt; 3 LINESTRING (8 52, 7 52)  FALSE</span>
+
+<span class="va">duplicates</span> <span class="op">=</span> <span class="va">edges</span><span class="op">[</span><span class="op">!</span><span class="va">edges</span><span class="op">$</span><span class="va">oneway</span>, <span class="op">]</span>
 <span class="va">reversed_duplicates</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_reverse</a></span><span class="op">(</span><span class="va">duplicates</span><span class="op">)</span>
 
 <span class="va">edges</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">edges</span>, <span class="va">reversed_duplicates</span><span class="op">)</span>
@@ -274,7 +274,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <a href="#network-cleaning-functions" class="anchor"></a>Network cleaning functions</h2>
 <p>The <code>sfnetworks</code> package contains a set of spatial network specific cleaning functions. They are implemented as <em>spatial morpher functions</em>. To learn more about spatial morphers and what they are, see the <a href="https://luukvdmeer.github.io/sfnetworks/articles/morphers.html">dedicated vignette</a> for that. For now, it is sufficient to know that you can use any spatial morpher function inside the <code><a href="https://tidygraph.data-imaginist.com/reference/morph.html">tidygraph::convert()</a></code> verb to convert your network into a different state.</p>
 <p>Before presenting the cleaning functions that are currently implemented, lets create a network to be cleaned.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
 <span class="va">p2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
 <span class="va">p3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
@@ -319,13 +319,13 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">lines</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-6-1.png" width="480"></p>
+<p><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-5-1.png" width="480"></p>
 <div id="simplify-network" class="section level3">
 <h3 class="hasAnchor">
 <a href="#simplify-network" class="anchor"></a>Simplify network</h3>
 <p>A network may contain sets of edges that connect the same pair of nodes. Such edges can be called <em>multiple edges</em>. Also, it may contain an edge that starts and ends at the same node. Such an edge can be called a <em>loop edge</em>.</p>
 <p>In graph theory, a <em>simple graph</em> is defined as a graph that does <em>not</em> contain multiple edges nor loop edges. To obtain a simple version of our network, we can remove multiple edges and loop edges by calling tidygraphs edge filter functions <code><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">tidygraph::edge_is_multiple()</a></code> and <code><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">tidygraph::edge_is_loop()</a></code>.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">simple</span> <span class="op">=</span> <span class="va">net</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">edge_is_multiple</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -335,9 +335,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">simple</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-7-1.png" width="50%"><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-7-2.png" width="50%"></p>
+<p><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-6-1.png" width="50%"><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-6-2.png" width="50%"></p>
 <p>Note that removing multiple edges in that way always <em>keeps</em> the <em>first</em> edge in each set of multiple edges, and drops all the other members of the set. Hence, the resulting network does not contain multiple edges anymore, but the connections between the nodes are preserved. Which of the multiple edges is the first one in a set depends on the order of the edges in the edges table. That is, by re-arranging the edges table before applying the filter you can influence which edges are kept whenever sets of multiple edges are detected. For example, you might want to always keep the edge with the shortest distance in the set.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">simple</span> <span class="op">=</span> <span class="va">net</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -348,7 +348,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">simple</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-8-1.png" width="50%"><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-8-2.png" width="50%"></p>
+<p><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-7-1.png" width="50%"><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-7-2.png" width="50%"></p>
 <p>By arranging the edges table first, you can influence <em>which</em> edge in a set of multiple edges is kept. However, this way of simplifying still selects a single edge from the set, and drops all the others. When your edges have attributes, you might prefer to <em>merge</em> the edges in a set into a single new edge. This new edge has the geometry of the first edge in the set, but its attribute values are a combination of the attributes of all the edges in the set. This is exactly what the function <code><a href="../reference/spatial_morphers.html">to_spatial_simple()</a></code> does. It has an argument <code>summarise_attributes</code> that lets you specify exactly how you want to merge the attributes of each set of multiple edges.</p>
 <p>How attributes should be combined is of course dependent on the type and purpose of each attribute. Therefore, the combination technique can be specified on a per-attribute basis. There are two ways to specify the combination technique for an attribute:</p>
 <ul>
@@ -358,7 +358,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>Providing a single character or a single function (e.g. <code>summarise_attributes = "sum"</code>) will apply the same technique to each attribute. Instead, you can provide a named list with a different technique for each attribute. This list can also include one unnamed element containing the technique that should be applied to all attributes that were not referenced in any of the other elements. Note that the geometry-list column as well as the <em>from</em> and <em>to</em> columns are not attributes!</p>
 <p>The analogue of this in tidyverse terms is a <code><a href="https://dplyr.tidyverse.org/reference/group_by.html">dplyr::group_by()</a></code> operation followed by a <code><a href="https://dplyr.tidyverse.org/reference/summarise.html">dplyr::summarise()</a></code> call. The groups in this case are defined by the start and end node indices of the edges. Edges that connect the same pair of nodes (i.e. multiple edges) are in the same group. Then, attributes are summarised into a single value for each group separately.</p>
 <p>Enough theory! Lets look at a practical example instead. We will first add some attribute columns to the edges, and then specify different combination techniques when simplifying the network.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Add some attribute columns to the edges table.</span>
 <span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="va">types</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"path"</span>, <span class="st">"road"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
@@ -383,12 +383,12 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span><span>
 #&gt;    from    to              x  flow type    foo bar  
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>   </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>    10     9 (6 1.2, 5.8 1)     4 path      8 g    
-#&gt; </span><span style="color: #555555;">2</span><span>    11    10 (6.2 1, 6 1.2)     8 road     15 x    
-#&gt; </span><span style="color: #555555;">3</span><span>     9    12 (5.8 1, 6 0.8)     8 path      2 q    
-#&gt; </span><span style="color: #555555;">4</span><span>    12    11 (6 0.8, 6.2 1)     8 road      5 v    
-#&gt; </span><span style="color: #555555;">5</span><span>    11    15   (6.2 1, 7 1)     4 road      1 t    
-#&gt; </span><span style="color: #555555;">6</span><span>    10    13   (6 1.2, 6 2)     1 road      3 h    
+#&gt; </span><span style="color: #555555;">1</span><span>    10     9 (6 1.2, 5.8 1)    10 path     13 o    
+#&gt; </span><span style="color: #555555;">2</span><span>    11    10 (6.2 1, 6 1.2)     5 road      8 f    
+#&gt; </span><span style="color: #555555;">3</span><span>     9    12 (5.8 1, 6 0.8)     2 road      9 w    
+#&gt; </span><span style="color: #555555;">4</span><span>    12    11 (6 0.8, 6.2 1)     5 road     14 c    
+#&gt; </span><span style="color: #555555;">5</span><span>    11    15   (6.2 1, 7 1)     5 road      7 x    
+#&gt; </span><span style="color: #555555;">6</span><span>    10    13   (6 1.2, 6 2)     4 road      1 n    
 #&gt; </span><span style="color: #555555;"># … with 9 more rows</span><span>
 #&gt; </span><span style="color: #555555;">#
 #&gt; # Node Data:     15 x 1</span><span>
@@ -402,7 +402,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;">3</span><span>   (4 1)
 #&gt; </span><span style="color: #555555;"># … with 12 more rows</span><span>
 </span></code></pre>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># We know from before that our example network has one set of multiple edges.</span>
 <span class="co"># Lets look at them.</span>
 <span class="va">net</span> <span class="op">%&gt;%</span>
@@ -410,17 +410,17 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">edge_is_between</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; Simple feature collection with 2 features and 6 fields
-#&gt; geometry type:  LINESTRING
-#&gt; dimension:      XY
-#&gt; bbox:           xmin: 4 ymin: 2 xmax: 5 ymax: 3
-#&gt; CRS:            NA
+#&gt; Geometry type: LINESTRING
+#&gt; Dimension:     XY
+#&gt; Bounding box:  xmin: 4 ymin: 2 xmax: 5 ymax: 3
+#&gt; CRS:           NA
 #&gt; <span style="color: #555555;"># A tibble: 2 x 7</span><span>
 #&gt;    from    to               x  flow type    foo bar  
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>    </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     6     7      (4 3, 4 2)     3 road      4 r    
-#&gt; </span><span style="color: #555555;">2</span><span>     6     7 (4 3, 5 2, 4 2)     8 road     11 k
+#&gt; </span><span style="color: #555555;">1</span><span>     6     7      (4 3, 4 2)    10 path      6 a    
+#&gt; </span><span style="color: #555555;">2</span><span>     6     7 (4 3, 5 2, 4 2)     3 path      3 l
 </span></code></pre>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Define how we want to combine the attributes.</span>
 <span class="co"># For the flows:</span>
 <span class="co"># --&gt; It makes sense to sum them when edges get merged.</span>
@@ -443,21 +443,21 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">edge_is_between</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; Simple feature collection with 1 feature and 5 fields
-#&gt; geometry type:  LINESTRING
-#&gt; dimension:      XY
-#&gt; bbox:           xmin: 4 ymin: 2 xmax: 4 ymax: 3
-#&gt; CRS:            NA
+#&gt; Geometry type: LINESTRING
+#&gt; Dimension:     XY
+#&gt; Bounding box:  xmin: 4 ymin: 2 xmax: 4 ymax: 3
+#&gt; CRS:           NA
 #&gt; <span style="color: #555555;"># A tibble: 1 x 6</span><span>
 #&gt;    from    to            x  flow type  .tidygraph_edge_index
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;list&gt;</span><span>               
-#&gt; </span><span style="color: #555555;">1</span><span>     6     7   (4 3, 4 2)    11 road  </span><span style="color: #555555;">&lt;int [2]&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     6     7   (4 3, 4 2)    13 path  </span><span style="color: #555555;">&lt;int [2]&gt;</span><span>
 </span></code></pre>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">simple</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-9-1.png" width="50%"><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-9-2.png" width="50%"></p>
+<p><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-8-1.png" width="50%"><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-8-2.png" width="50%"></p>
 <p>When the edges table does not have attribute columns, using <code>to_spatial_simple</code> does not have advantages and applying the filter functions as shown before is faster.</p>
 </div>
 <div id="subdivide-edges" class="section level3">
@@ -489,7 +489,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 </ul>
 <p>Note that an edge is <em>not</em> subdivided when it crosses another edge at a location that is not an interior point or endpoint in the linestring geometry of any of the two edges.</p>
 <p>For our example network, this means:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">subdivision</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">convert</a></span><span class="op">(</span><span class="va">simple</span>, <span class="va">to_spatial_subdivision</span><span class="op">)</span>
 <span class="co">#&gt; Warning: to_spatial_subdivision assumes attributes are constant over geometries</span>
 
@@ -497,7 +497,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">subdivision</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">subdivision</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">subdivision</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-10-1.png" width="50%"><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-10-2.png" width="50%"></p>
+<p><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-9-1.png" width="50%"><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-9-2.png" width="50%"></p>
 </div>
 <div id="smooth-pseudo-nodes" class="section level3">
 <h3 class="hasAnchor">
@@ -505,14 +505,14 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>A network may contain nodes that have only one incoming and one outgoing edge. For tasks like calculating shortest paths, such nodes are redundant, because they don’t represent a point where different directions can possibly be taken. Sometimes, these type of nodes are referred to as <em>pseudo nodes</em>. Note that their equivalent in undirected networks is any node with only two incident edges, since <em>incoming</em> and <em>outgoing</em> does not have a meaning there. To reduce complexity of subsequent operations, we might want to get rid of these pseudo nodes.</p>
 <p>In graph theory terms this process is the opposite of subdivision and also called <em>smoothing</em>: smoothing a node <span class="math inline">\(b\)</span> with incident edges <span class="math inline">\(o = \{a, b\}\)</span> and <span class="math inline">\(p = \{b, c\}\)</span> removes <span class="math inline">\(b\)</span>, <span class="math inline">\(o\)</span> and <span class="math inline">\(p\)</span> and creates the new edge <span class="math inline">\(q = \{a, c\}\)</span>.</p>
 <p>The function <code><a href="../reference/spatial_morphers.html">to_spatial_smooth()</a></code> iteratively smooths pseudo nodes, and after each removal concatenates the linestring geometries of the two affected edges together into a new, single linestring geometry.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">smoothed</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">convert</a></span><span class="op">(</span><span class="va">subdivision</span>, <span class="va">to_spatial_smooth</span><span class="op">)</span>
 
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">subdivision</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">subdivision</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">subdivision</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">smoothed</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">smoothed</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">smoothed</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-11-1.png" width="50%"><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-11-2.png" width="50%"></p>
+<p><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-10-1.png" width="50%"><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-10-2.png" width="50%"></p>
 </div>
 <div id="simplify-intersections" class="section level3">
 <h3 class="hasAnchor">
@@ -521,7 +521,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>In graph theory terms this process is called <em>contraction</em>: the contraction of a set of nodes <span class="math inline">\(P = \{p_{1}, p_{2}, ..., p_{n}\}\)</span> is the replacement of <span class="math inline">\(S\)</span> and all its incident edges by a <em>single</em> node <span class="math inline">\(p^{*}\)</span> and a set of edges that connect <span class="math inline">\(p^{*}\)</span> to all nodes that were adjacent to any node <span class="math inline">\(p_{i} \in P\)</span>.</p>
 <p>The function <code><a href="../reference/spatial_morphers.html">to_spatial_contracted()</a></code> contracts groups of nodes based on a given grouping variable. The geometry of each contracted node is the <em>centroid</em> of the original group members’ geometries. Moreover, the geometries of the edges that start or end at a contracted node are updated such that their boundaries match the new node geometries.</p>
 <p>Grouping variables are internally forwarded to <code><a href="https://dplyr.tidyverse.org/reference/group_by.html">dplyr::group_by()</a></code>. That means you can group the nodes based on any (combination of) attribute(s). However, in this case, we want to group the nodes spatially, such that nodes that are very close to each other in space will form a group and get contracted. To do so, we can use any spatial clustering algorithm. In this example, we apply the well-known DBSCAN algorithm as implemented in the R package <code>dbscan</code>.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Retrieve the coordinates of the nodes.</span>
 <span class="va">node_coords</span> <span class="op">=</span> <span class="va">smoothed</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -539,7 +539,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>cls <span class="op">=</span> <span class="va">clusters</span><span class="op">)</span></code></pre></div>
 <p>Now we have assigned each node to a spatial cluster. However, we forgot one important point. When simplifying intersections, it is not only important that the contracted nodes are close to each other in space. They should also be <em>connected</em>. Two nodes that are close to each other but <em>not</em> connected, can never be part of the same intersection. Hence, a group of nodes to be contracted should in this case be located in the same <em>component</em> of the network. We can use <code><a href="https://tidygraph.data-imaginist.com/reference/group_graph.html">tidygraph::group_components()</a></code> to assign a component index to each node. Note that in our example network this is not so much of use, since the whole network forms a single connected component. But for the sake of completeness, we will still show it:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">clustered</span> <span class="op">=</span> <span class="va">clustered</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>cmp <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/group_graph.html">group_components</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 
@@ -570,14 +570,14 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span><span>
 #&gt;    from    to            x  flow type  .tidygraph_edge_index
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;list&gt;</span><span>               
-#&gt; </span><span style="color: #555555;">1</span><span>     2     3   (3 1, 4 1)     8 road  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
-#&gt; </span><span style="color: #555555;">2</span><span>     3     4 (4 1, 5.8 1)     4 road  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
-#&gt; </span><span style="color: #555555;">3</span><span>     5     2   (3 2, 3 1)     5 road  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
+#&gt; </span><span style="color: #555555;">1</span><span>     2     3   (3 1, 4 1)     5 road  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
+#&gt; </span><span style="color: #555555;">2</span><span>     3     4 (4 1, 5.8 1)     9 road  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
+#&gt; </span><span style="color: #555555;">3</span><span>     5     2   (3 2, 3 1)     8 road  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
 #&gt; </span><span style="color: #555555;"># … with 11 more rows</span><span>
 </span></code></pre>
 <p>The combination of the cluster index and the component index can now be used to define the groups of nodes to be contracted. Nodes that form a group on their own will remain unchanged.</p>
 <p>A point of attention is that contraction introduces new <em>multiple edges</em> and/or <em>loop edges</em>. Multiple edges are introduced by contraction when there are several connections between the same groups of nodes. Loop edges are introduced by contraction when there are connections within a group. Setting <code>simplify = TRUE</code> will remove the multiple and loop edges after contraction. However, note that this also removes multiple and loop edges that already existed before contraction.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">contracted</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">convert</a></span><span class="op">(</span>
   <span class="va">clustered</span>,
   <span class="va">to_spatial_contracted</span>,
@@ -589,9 +589,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">smoothed</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">contracted</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">contracted</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">contracted</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-14-1.png" width="50%"><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-14-2.png" width="50%"></p>
+<p><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-13-1.png" width="50%"><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-13-2.png" width="50%"></p>
 <p>One thing we did not mention yet: in the same way as <code><a href="../reference/spatial_morphers.html">to_spatial_simple()</a></code> allowed you to combine attributes of multiple edges, <code><a href="../reference/spatial_morphers.html">to_spatial_contracted()</a></code> allows you to combine attributes of contracted nodes. It works exactly the same: on a per-attribute basis you can specify how the attribute values of the new node should be inferred from those of the original nodes in the group. An example:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Add some additional attribute columns to the nodes table.</span>
 <span class="va">clustered</span> <span class="op">=</span> <span class="va">clustered</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -608,19 +608,19 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">cls</span> <span class="op">==</span> <span class="fl">4</span> <span class="op">&amp;</span> <span class="va">cmp</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; Simple feature collection with 4 features and 4 fields
-#&gt; geometry type:  POINT
-#&gt; dimension:      XY
-#&gt; bbox:           xmin: 5.8 ymin: 0.8 xmax: 6.2 ymax: 1.2
-#&gt; CRS:            NA
+#&gt; Geometry type: POINT
+#&gt; Dimension:     XY
+#&gt; Bounding box:  xmin: 5.8 ymin: 0.8 xmax: 6.2 ymax: 1.2
+#&gt; CRS:           NA
 #&gt; <span style="color: #555555;"># A tibble: 4 x 5</span><span>
 #&gt;         x .tidygraph_node_index   cls   cmp is_priority
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;POINT&gt;</span><span>                 </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;lgl&gt;</span><span>      
-#&gt; </span><span style="color: #555555;">1</span><span> (5.8 1)                     5     4     1 FALSE      
-#&gt; </span><span style="color: #555555;">2</span><span> (6 0.8)                    11     4     1 FALSE      
+#&gt; </span><span style="color: #555555;">1</span><span> (5.8 1)                     5     4     1 TRUE       
+#&gt; </span><span style="color: #555555;">2</span><span> (6 0.8)                    11     4     1 TRUE       
 #&gt; </span><span style="color: #555555;">3</span><span> (6 1.2)                    12     4     1 TRUE       
-#&gt; </span><span style="color: #555555;">4</span><span> (6.2 1)                    14     4     1 FALSE
+#&gt; </span><span style="color: #555555;">4</span><span> (6.2 1)                    14     4     1 TRUE
 </span></code></pre>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Define how we want to combine the attributes.</span>
 <span class="co"># For the boolean is_priority variable:</span>
 <span class="co"># --&gt; We want it to be TRUE if any of the nodes has a values of TRUE.</span>
@@ -646,10 +646,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; Simple feature collection with 1 feature and 2 fields
-#&gt; geometry type:  POINT
-#&gt; dimension:      XY
-#&gt; bbox:           xmin: 6 ymin: 1 xmax: 6 ymax: 1
-#&gt; CRS:            NA
+#&gt; Geometry type: POINT
+#&gt; Dimension:     XY
+#&gt; Bounding box:  xmin: 6 ymin: 1 xmax: 6 ymax: 1
+#&gt; CRS:           NA
 #&gt; <span style="color: #555555;"># A tibble: 1 x 3</span><span>
 #&gt;   .tidygraph_node_index is_priority       x
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;list&gt;</span><span>                </span><span style="color: #555555;font-style: italic;">&lt;lgl&gt;</span><span>       </span><span style="color: #555555;font-style: italic;">&lt;POINT&gt;</span><span>
@@ -660,12 +660,12 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <h3 class="hasAnchor">
 <a href="#overview" class="anchor"></a>Overview</h3>
 <p>After applying all the network cleaning functions described in the previous sections, we have cleaned our original network as follows:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">contracted</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">contracted</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">contracted</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
-<p><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-16-1.png" width="50%"><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-16-2.png" width="50%"></p>
+<p><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-15-1.png" width="50%"><img src="preprocess_and_clean_files/figure-html/unnamed-chunk-15-2.png" width="50%"></p>
 </div>
 </div>
   </div>
