@@ -82,7 +82,7 @@ In `sfnetworks` you can create directed and undirected networks. In directed one
 
 Unfortunately, neither `igraph` nor `tidygraph` provides an interface for such networks. Therefore, the only way to deal with this is to create a directed network but first *duplicate* and *reverse* all edge linestrings that can be traveled both ways.
 
-See the small example below, where we have three lines with one-way information stored in a *oneway* column. One of the lines is a one-way street, the other two are not. By duplicating and reversing the two linestrings that are not one-way streets, we create a directed network that correctly models our situation. Note that reversing linestrings using `sf::st_reverse()` only works with GEOS >= 3.7.
+See the small example below, where we have three lines with one-way information stored in a *oneway* column. One of the lines is a one-way street, the other two are not. By duplicating and reversing the two linestrings that are not one-way streets, we create a directed network that correctly models our situation. Note that reversing linestrings using `sf::st_reverse()` only works when sf links to a GEOS version of at least 3.7.0.
 
 ```{r, eval = geos37}
 p1 = st_point(c(7, 51))

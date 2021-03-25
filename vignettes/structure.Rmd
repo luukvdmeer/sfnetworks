@@ -46,7 +46,7 @@ library(igraph)
 
 ## Philosophy
 
-The philosophy of a tbl_graph object is best described by the following paragraph from the [tidygraph introduction](https://www.data-imaginist.com/2017/introducing-tidygraph/): "Relational data cannot in any meaningful way be encoded as a single tidy data frame. On the other hand, both node and edge data by itself fits very well within the tidy concept as each node and edge is, in a sense, a single observation. Thus, a close approximation of tidyness for relational data is two tidy data frames, one describing the node data and one describing the edge data." 
+The philosophy of a tbl_graph object is best described by the following paragraph from the [tidygraph introduction](https://www.data-imaginist.com/2017/introducing-tidygraph/): "Relational data cannot in any meaningful way be encoded as a single tidy data frame. On the other hand, both node and edge data by itself fits very well within the tidy concept as each node and edge is, in a sense, a single observation. Thus, a close approximation of tidyness for relational data is two tidy data frames, one describing the node data and one describing the edge data."
 
 Since sfnetworks subclass tbl_graph, it shares the same philosophy. However, it extends it into the domain of geospatial data analysis, where each observation has a location in geographical space. For that, it brings `sf` into the game. An sf object stores the geographical coordinates of each observation in standardized format in a geometry list-column, which has a Coordinate Reference System (CRS) associated with it. Thus, in `sfnetworks`, we re-formulate the last sentence of the paragraph above to the following. "A close approximation of tidyness for relational *geospatial data* is two *sf objects*, one describing the node data and one describing the edge data."
 
@@ -84,7 +84,7 @@ By default, the created network is a directed network. If you want to create an 
 ```{r}
 net = sfnetwork(nodes, edges, directed = FALSE)
 net
-``` 
+```
 
 Instead of *from* and *to* columns containing integers that refer to node indices, the provided edges table can also have *from* and *to* columns containing characters that refer to node keys. In that case, you should tell the construction function which column in the nodes table contains these keys. Internally, they will then be converted to integer indices.
 
@@ -258,7 +258,7 @@ Just as with `sf::st_as_sf()`, there is also a shortcut to quickly extract geome
 st_geometry(net, "edges")
 ```
 
-Geometries can be replaced using either `st_geometry(x) = value` or the pipe-friendly `st_set_geometry(x, value)`. However, a replacement that breaks the valid spatial network structure will throw an error. 
+Geometries can be replaced using either `st_geometry(x) = value` or the pipe-friendly `st_set_geometry(x, value)`. However, a replacement that breaks the valid spatial network structure will throw an error.
 
 Replacing a geometry with `NULL` will remove the geometries. Removing edge geometries will result in a sfnetwork with spatially implicit edges. Removing node geometries will result in a tbl_graph, losing the spatial structure.
 
@@ -274,7 +274,7 @@ net %>%
   plot(vertex.color = "black", main = "Nodes without geometries")
 ```
 
-Geometries can be replaced also by using [geometry unary operations](https://r-spatial.github.io/sf/reference/geos_unary.html), as long as they don't break the valid spatial network structure. In practice this means that only `sf::st_reverse()` and `sf::st_simplify()` are supported. When calling `sf::st_reverse()` on the edges of a directed network, not only the geometries will be reversed, but the *from* and *to* columns of the edges will be swapped as well. In the case of undirected networks these columns remain unchanged, since the terms *from* and *to* don't have a meaning in undirected networks and can be used interchangeably. Note that reversing linestrings using `sf::st_reverse()` only works with GEOS >= 3.7.
+Geometries can be replaced also by using [geometry unary operations](https://r-spatial.github.io/sf/reference/geos_unary.html), as long as they don't break the valid spatial network structure. In practice this means that only `sf::st_reverse()` and `sf::st_simplify()` are supported. When calling `sf::st_reverse()` on the edges of a directed network, not only the geometries will be reversed, but the *from* and *to* columns of the edges will be swapped as well. In the case of undirected networks these columns remain unchanged, since the terms *from* and *to* don't have a meaning in undirected networks and can be used interchangeably. Note that reversing linestrings using `sf::st_reverse()` only works when sf links to a GEOS version of at least 3.7.0.
 
 ```{r, eval = geos37}
 as_sfnetwork(roxel, directed = TRUE) %>%
@@ -316,7 +316,7 @@ net %>%
 
 ### Coordinate Reference System
 
-The Coordinate Reference System in which the coordinates of the network geometries are stored can be extracted with the sf function `sf::st_crs()`. The CRS in a valid spatial network structure is *always* the same for nodes and edges. 
+The Coordinate Reference System in which the coordinates of the network geometries are stored can be extracted with the sf function `sf::st_crs()`. The CRS in a valid spatial network structure is *always* the same for nodes and edges.
 
 ```{r}
 st_crs(net)
