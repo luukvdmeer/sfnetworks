@@ -295,16 +295,14 @@ as_sfnetwork.linnet = function(x, ...) {
 #' @importFrom utils packageVersion
 #' @export
 as_sfnetwork.psp = function(x, ...) {
-  # Add an extra check to test the version of sf package. See
-  # https://github.com/luukvdmeer/sfnetworks/pull/138#issuecomment-803430686 and
-  # other comments in the same PR for more details
+  # Add an extra check to test the version of sf package. See:
+  # https://github.com/luukvdmeer/sfnetworks/pull/138#issuecomment-803430686
   if (packageVersion("sf") < "0.9.8") {
     stop(
-      "spatstat code requires sf >= 0.9.8 and you are using an older version. ",
-      "Please update sf."
+      "spatstat code requires sf >= 0.9.8; please update sf",
+      call. = FALSE
     )
   }
-
   # The easiest method for transforming a Line Segment Pattern (psp) object
   # into sfnetwork format is to transform it into sf format and then apply
   # the usual methods.
