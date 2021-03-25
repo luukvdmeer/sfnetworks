@@ -1,3 +1,5 @@
+# sfnetworks (development version)
+
 # sfnetworks v0.5.0 "Nienberge"
 
 * Addition of a `to_spatial_contracted()` morpher, to contract groups of nodes based on given grouping variables. Refs [#104](https://github.com/luukvdmeer/sfnetworks/issues/104)
@@ -100,7 +102,7 @@
   - Various edge measure algorithms, including edge circuity. Refs [#51](https://github.com/luukvdmeer/sfnetworks/issues/51)
 * More methods for `as_sfnetwork()`. Refs [#41](https://github.com/luukvdmeer/sfnetworks/issues/41)
   - Support [sfNetwork](https://docs.ropensci.org/stplanr/reference/SpatialLinesNetwork.html) from [stplanr](https://docs.ropensci.org/stplanr/)
-  - Support [linnet](https://rdrr.io/cran/spatstat/man/linnet.html) and [psp](https://rdrr.io/cran/spatstat/man/psp.object.html) from [spatstat](https://rdrr.io/cran/spatstat/)
+  - Support [linnet](https://rdrr.io/cran/spatstat.linnet/man/linnet.html) and [psp](https://rdrr.io/cran/spatstat.geom/man/psp.object.html) from [spatstat](https://rdrr.io/cran/spatstat/)
 * Preserving sf attributes for nodes and edges inside the sfnetwork object. Refs [#24](https://github.com/luukvdmeer/sfnetworks/issues/24)
 * Structural and performance improvements of the code base. This includes:
   - Construction checks are run only when needed, adding a force argument to skip validity tests.
