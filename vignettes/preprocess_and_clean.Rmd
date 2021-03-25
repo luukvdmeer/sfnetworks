@@ -14,6 +14,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 knitr::opts_knit$set(global.par = TRUE)
+geos37 = sf::sf_extSoftVersion()["GEOS"] >= "3.7.0"
 ```
 
 ```{r plot, echo=FALSE, results='asis'}
@@ -81,9 +82,9 @@ In `sfnetworks` you can create directed and undirected networks. In directed one
 
 Unfortunately, neither `igraph` nor `tidygraph` provides an interface for such networks. Therefore, the only way to deal with this is to create a directed network but first *duplicate* and *reverse* all edge linestrings that can be traveled both ways.
 
-See the small example below, where we have three lines with one-way information stored in a *oneway* column. One of the lines is a one-way street, the other two are not. By duplicating and reversing the two linestrings that are not one-way streets, we create a directed network that correctly models our situation.
+See the small example below, where we have three lines with one-way information stored in a *oneway* column. One of the lines is a one-way street, the other two are not. By duplicating and reversing the two linestrings that are not one-way streets, we create a directed network that correctly models our situation. Note that reversing linestrings using `sf::st_reverse()` only works with GEOS >= 3.7.
 
-```{r}
+```{r, eval = geos37}
 p1 = st_point(c(7, 51))
 p2 = st_point(c(7, 52))
 p3 = st_point(c(8, 52))
@@ -95,8 +96,7 @@ l3 = st_sfc(st_linestring(c(p3, p2)))
 edges = st_as_sf(c(l1, l2, l3), crs = 4326)
 edges$oneway = c(TRUE, FALSE, FALSE)
 edges
-```
-```{r}
+
 duplicates = edges[!edges$oneway, ]
 reversed_duplicates = st_reverse(duplicates)
 
