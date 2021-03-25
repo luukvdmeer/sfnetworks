@@ -908,7 +908,7 @@ to_spatial_subdivision = function(x) {
   ## ==================================================
   # Define the indices of the new nodes.
   # Equal geometries should get the same index.
-  new_node_idxs = match(new_node_geoms, unique(new_node_geoms))
+  new_node_idxs = st_match(new_node_geoms)
   # Map node indices to edges.
   is_source = rep(c(TRUE, FALSE), length(new_node_geoms) / 2)
   new_edges$from = new_node_idxs[is_source]
