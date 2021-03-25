@@ -41,7 +41,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1</span>
       </span>
     </div>
 
@@ -114,11 +114,8 @@
 <div id="background" class="section level2">
 <h2 class="hasAnchor">
 <a href="#background" class="anchor"></a>Background</h2>
-<p>Thanks to active developer and user communities, R is becoming an increasingly popular language for interactive geospatial data analysis. A large step forward was the release of the <a href="https://r-spatial.github.io/sf/">sf package</a>, which provides classes and functions to represent and manipulate spatial vector data. Unlike its predecessors, <code>sf</code> is compatible with the popular data science oriented packages that form the <a href="https://www.tidyverse.org/">tidyverse</a>, most notably the data manipulation toolbox <a href="https://dplyr.tidyverse.org/">dplyr</a>, and more generally with the concept of <a href="https://vita.had.co.nz/papers/tidy-data.pdf">tidy data</a>.</p>
-<p>R is also well-suited for network analysis, thanks to the R interface of the <a href="https://igraph.org/">igraph library</a>. The <a href="https://tidygraph.data-imaginist.com/index.html">tidygraph package</a> extends <code>igraph</code> into the domain of the tidyverse, enabling compatibility with <code>dplyr</code> by treating a graph as a collection of two tidy data frames describing respectively the nodes and edges.</p>
-<p>Given the strength of R in spatial <em>and</em> network analysis, one would expect it to be an ideal language for analysis of geospatial networks. Geospatial networks are simultaneously graph and spatial objects, with nodes and edges embedded in geographic space. Well known examples include transport networks, river basins, power grids, ecological networks and geolocated social networks.</p>
-<p>Although several R packages exist that address geospatial networks, they often focus on a specific application within the broader domain of geospatial network analysis, or complicate tidyverse compatibility. At present, no general purpose, tidyverse compatible classes exist for geospatial network data, representing a gap in R’s spatial and network analysis ecosystems (see the <a href="https://cran.r-project.org/view=gR">gRaphical Models</a> and <a href="https://cran.r-project.org/view=Spatial">Spatial</a> task views). <code>sfnetworks</code> is created to fill this gap, and form a connecting edge between the two worlds.</p>
-<p>The core of the package is a data structure that can be provided as input to both graph analytical functions of <code>tidygraph</code> and to spatial analytical functions of <code>sf</code>, without the need for conversion. On top of that, it contains a set of spatial network specific functions that can be used alongside the offer of the two ‘parent packages’.</p>
+<p>Geospatial networks are graphs embedded in geographical space. That means that both the nodes and edges in the graph can be represented as geographic features: the nodes most commonly as points, and the edges as linestrings. They play an important role in many different domains, ranging from transportation planning and logistics to ecology and epidemiology. The structure and characteristics of geospatial networks go beyond standard graph topology, and therefore it is crucial to explicitly take space into account when analyzing them.</p>
+<p>We created <code>sfnetworks</code> to facilitate such an integrated workflow. It combines the forces of two popular R packages: <a href="https://r-spatial.github.io/sf/">sf</a> for spatial data science and the <a href="https://tidygraph.data-imaginist.com/index.html">tidygraph</a> for standard graph analysis. The core of the package is a dedicated data structure for geospatial networks, that can be provided as input to both the graph analytical functions of tidygraph as well as the spatial analytical functions of sf, without the need for conversion. Additionally, we implemented a set of geospatial network specific functions, such as routines for shortest path calculation, network cleaning and topology modification. <code>sfnetworks</code> is designed as a general-purpose package suitable for usage across different application domains, and can be seamlessly integrated in <a href="https://www.tidyverse.org/">tidyverse</a> workflows.</p>
 </div>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
@@ -148,7 +145,7 @@
 <li><a href="https://luukvdmeer.github.io/sfnetworks/articles/routing.html">Routing</a></li>
 <li><a href="https://luukvdmeer.github.io/sfnetworks/articles/morphers.html">Spatial morphers</a></li>
 </ul>
-<p><img align="left" src="https://github.com/loreabad6/ggraph-spatial-examples/blob/main/figs/sfnetworks-showcase.gif"></p>
+<p><img align="left" src="https://raw.githubusercontent.com/loreabad6/ggraph-spatial-examples/main/figs/sfnetworks-showcase.gif"></p>
 <p>(GIF (c) by <a href="https://github.com/loreabad6">Lore Abad</a>)</p>
 </div>
 <div id="contribution" class="section level2">

@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1</span>
       </span>
     </div>
 
@@ -146,10 +146,24 @@
       <small>Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="sfnetworks-development-version" class="section level1">
-<h1 class="page-header" data-toc-text="development version">
-<a href="#sfnetworks-development-version" class="anchor"></a>sfnetworks (development version)<small> Unreleased </small>
+    <div id="sfnetworks-v051" class="section level1">
+<h1 class="page-header" data-toc-text="0.5.1">
+<a href="#sfnetworks-v051" class="anchor"></a>sfnetworks v0.5.1<small> Unreleased </small>
 </h1>
+<ul>
+<li>Compatibility with <code>spatstat v2</code>, which is now splitted into multiple sub-packages. See <a href="https://github.com/spatstat/spatstat/tree/v1.64-2#spatstat-is-now-split-into-several-packages">here</a> for details. In <code>sfnetworks</code>, this affected the functions <code><a href="../reference/as_sfnetwork.html">as_sfnetwork.linnet()</a></code>, <code><a href="../reference/as_sfnetwork.html">as_sfnetwork.psp()</a></code> and <code><a href="../reference/as.linnet.html">as.linnet.sfnetwork()</a></code>. Using this functions now requires <code>spatstat &gt;= 2.0.0</code> and <code>sf &gt;= 0.9.8</code>.</li>
+<li>Bug fixes:
+<ul>
+<li>Usage of <code>match</code> for checking coordinate equality is replaced by a new <code>st_match</code> function specifically designed for this task. This fixes bugs related to numeric approximations of detailed coordinates. See <a href="https://github.com/luukvdmeer/sfnetworks/issues/104"><a href='https://github.com/luukvdmeer/sfnetworks/issues/130'>#130</a></a>
+</li>
+</ul>
+</li>
+<li>Documentation updates:
+<ul>
+<li>It is now clearly documented that using <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">sf::st_reverse()</a></code> to reverse edge linestrings is only possible with GEOS versions &gt;= 3.7.</li>
+</ul>
+</li>
+</ul>
 </div>
     <div id="sfnetworks-v050-nienberge" class="section level1">
 <h1 class="page-header" data-toc-text="0.5.0">

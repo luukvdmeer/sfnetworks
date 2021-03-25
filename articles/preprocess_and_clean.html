@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1</span>
       </span>
     </div>
 
@@ -210,7 +210,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <a href="#dealing-with-one-way-edges" class="anchor"></a>Dealing with one-way edges</h3>
 <p>In <code>sfnetworks</code> you can create directed and undirected networks. In directed ones, an edge can only be traveled from its start node to its end node. In undirected ones, an edge can be traveled both ways. However, in the real world there are networks where <em>some</em> edges can be traveled both ways and <em>some</em> edges only one way. For example, a road network in a city where there are one-way streets.</p>
 <p>Unfortunately, neither <code>igraph</code> nor <code>tidygraph</code> provides an interface for such networks. Therefore, the only way to deal with this is to create a directed network but first <em>duplicate</em> and <em>reverse</em> all edge linestrings that can be traveled both ways.</p>
-<p>See the small example below, where we have three lines with one-way information stored in a <em>oneway</em> column. One of the lines is a one-way street, the other two are not. By duplicating and reversing the two linestrings that are not one-way streets, we create a directed network that correctly models our situation. Note that reversing linestrings using <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">sf::st_reverse()</a></code> only works with GEOS &gt;= 3.7.</p>
+<p>See the small example below, where we have three lines with one-way information stored in a <em>oneway</em> column. One of the lines is a one-way street, the other two are not. By duplicating and reversing the two linestrings that are not one-way streets, we create a directed network that correctly models our situation. Note that reversing linestrings using <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">sf::st_reverse()</a></code> only works when sf links to a GEOS version of at least 3.7.0.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">51</span><span class="op">)</span><span class="op">)</span>
 <span class="va">p2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span>
@@ -383,12 +383,12 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span><span>
 #&gt;    from    to              x  flow type    foo bar  
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>   </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>    10     9 (6 1.2, 5.8 1)    10 path     13 o    
-#&gt; </span><span style="color: #555555;">2</span><span>    11    10 (6.2 1, 6 1.2)     5 road      8 f    
-#&gt; </span><span style="color: #555555;">3</span><span>     9    12 (5.8 1, 6 0.8)     2 road      9 w    
-#&gt; </span><span style="color: #555555;">4</span><span>    12    11 (6 0.8, 6.2 1)     5 road     14 c    
-#&gt; </span><span style="color: #555555;">5</span><span>    11    15   (6.2 1, 7 1)     5 road      7 x    
-#&gt; </span><span style="color: #555555;">6</span><span>    10    13   (6 1.2, 6 2)     4 road      1 n    
+#&gt; </span><span style="color: #555555;">1</span><span>    10     9 (6 1.2, 5.8 1)     3 path     13 c    
+#&gt; </span><span style="color: #555555;">2</span><span>    11    10 (6.2 1, 6 1.2)     6 path      1 f    
+#&gt; </span><span style="color: #555555;">3</span><span>     9    12 (5.8 1, 6 0.8)    10 road     12 v    
+#&gt; </span><span style="color: #555555;">4</span><span>    12    11 (6 0.8, 6.2 1)     9 path      6 i    
+#&gt; </span><span style="color: #555555;">5</span><span>    11    15   (6.2 1, 7 1)     1 road      9 h    
+#&gt; </span><span style="color: #555555;">6</span><span>    10    13   (6 1.2, 6 2)     8 path      2 s    
 #&gt; </span><span style="color: #555555;"># … with 9 more rows</span><span>
 #&gt; </span><span style="color: #555555;">#
 #&gt; # Node Data:     15 x 1</span><span>
@@ -417,8 +417,8 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; <span style="color: #555555;"># A tibble: 2 x 7</span><span>
 #&gt;    from    to               x  flow type    foo bar  
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>    </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     6     7      (4 3, 4 2)    10 path      6 a    
-#&gt; </span><span style="color: #555555;">2</span><span>     6     7 (4 3, 5 2, 4 2)     3 path      3 l
+#&gt; </span><span style="color: #555555;">1</span><span>     6     7      (4 3, 4 2)     6 path      8 b    
+#&gt; </span><span style="color: #555555;">2</span><span>     6     7 (4 3, 5 2, 4 2)     6 road     10 x
 </span></code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Define how we want to combine the attributes.</span>
@@ -450,7 +450,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; <span style="color: #555555;"># A tibble: 1 x 6</span><span>
 #&gt;    from    to            x  flow type  .tidygraph_edge_index
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;list&gt;</span><span>               
-#&gt; </span><span style="color: #555555;">1</span><span>     6     7   (4 3, 4 2)    13 path  </span><span style="color: #555555;">&lt;int [2]&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     6     7   (4 3, 4 2)    12 </span><span style="color: #BB0000;">NA</span><span>    </span><span style="color: #555555;">&lt;int [2]&gt;</span><span>
 </span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
@@ -570,9 +570,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span><span>
 #&gt;    from    to            x  flow type  .tidygraph_edge_index
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;list&gt;</span><span>               
-#&gt; </span><span style="color: #555555;">1</span><span>     2     3   (3 1, 4 1)     5 road  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
-#&gt; </span><span style="color: #555555;">2</span><span>     3     4 (4 1, 5.8 1)     9 road  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
-#&gt; </span><span style="color: #555555;">3</span><span>     5     2   (3 2, 3 1)     8 road  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
+#&gt; </span><span style="color: #555555;">1</span><span>     2     3   (3 1, 4 1)     5 path  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
+#&gt; </span><span style="color: #555555;">2</span><span>     3     4 (4 1, 5.8 1)    10 road  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
+#&gt; </span><span style="color: #555555;">3</span><span>     5     2   (3 2, 3 1)     8 path  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
 #&gt; </span><span style="color: #555555;"># … with 11 more rows</span><span>
 </span></code></pre>
 <p>The combination of the cluster index and the component index can now be used to define the groups of nodes to be contracted. Nodes that form a group on their own will remain unchanged.</p>
@@ -617,7 +617,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt;   </span><span style="color: #555555;font-style: italic;">&lt;POINT&gt;</span><span>                 </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;lgl&gt;</span><span>      
 #&gt; </span><span style="color: #555555;">1</span><span> (5.8 1)                     5     4     1 TRUE       
 #&gt; </span><span style="color: #555555;">2</span><span> (6 0.8)                    11     4     1 TRUE       
-#&gt; </span><span style="color: #555555;">3</span><span> (6 1.2)                    12     4     1 TRUE       
+#&gt; </span><span style="color: #555555;">3</span><span> (6 1.2)                    12     4     1 FALSE      
 #&gt; </span><span style="color: #555555;">4</span><span> (6.2 1)                    14     4     1 TRUE
 </span></code></pre>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
