@@ -1,4 +1,10 @@
-# sfnetworks (development version)
+# sfnetworks v0.5.1
+
+* Compatibility with `spatstat v2`, which is now splitted into multiple sub-packages. See [here](https://github.com/spatstat/spatstat/tree/v1.64-2#spatstat-is-now-split-into-several-packages) for details. In `sfnetworks`, this affected the functions `as_sfnetwork.linnet()`, `as_sfnetwork.psp()` and `as.linnet.sfnetwork()`. Using this functions now requires `spatstat >= 2.0.0` and `sf >= 0.9.8`.
+* Bug fixes:
+  - Usage of `match` for checking coordinate equality is replaced by a new `st_match` function specifically designed for this task. This fixes bugs related to numeric approximations of detailed coordinates. See [#130](https://github.com/luukvdmeer/sfnetworks/issues/104)
+* Documentation updates:
+  - It is now clearly documented that using `sf::st_reverse()` to reverse edge linestrings is only possible with GEOS versions >= 3.7.
 
 # sfnetworks v0.5.0 "Nienberge"
 
@@ -85,7 +91,7 @@
 * Together with the documentation improvements, several new units tests brought the test coverage to +/- 80%.
 * The internal code base is completely restructured, such that it is more performant and easier to read, debug and extend.
 
-# sfnetworks v0.3.1 
+# sfnetworks v0.3.1
 
 * Bug fixes:
   - `as_sfnetwork()` now handles circular linestrings. Fixes [#59](https://github.com/luukvdmeer/sfnetworks/issues/59)
