@@ -1,5 +1,4 @@
-## Resubmission
-This is a resubmission. I have made the following changes:
+In this release I have made the following changes:
 
 - All functions that interact with the `spatstat` package have been updated to comply with the new structure of that package (see https://github.com/spatstat/spatstat/tree/v1.64-2#spatstat-is-now-split-into-several-packages). These include `as_sfnetwork.linnet()`, `as_sfnetwork.psp()` and `as.linnet.sfnetwork()`. Documentation entries containing links to the spatstat documentation have been updated accordingly as well.
 
