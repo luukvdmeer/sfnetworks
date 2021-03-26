@@ -123,11 +123,10 @@
 <p>You can install the latest stable version of <code>sfnetworks</code> from <a href="https://cran.r-project.org/package=sfnetworks">CRAN</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"sfnetworks"</span><span class="op">)</span></code></pre></div>
-<p>The <code>sfnetworks</code> package is still in very active development, Therefore, the package is also not on CRAN yet. Install it directly from GitHub using the <code>remotes</code> package in R.</p>
 <p>You can install the development version from <a href="https://github.com/luukvdmeer/sfnetworks">GitHub</a> with:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"luukvdmeer/sfnetworks"</span><span class="op">)</span></code></pre></div>
-<p><strong>Note:</strong> Two important dependencies of <code>sfnetworks</code>, the <code>sf</code> package for spatial data science and the <code>igraph</code> package for network analysis, require some low-level software libraries to be installed on your system. Depending on which operating system you use, this can mean that you have to install these system requirements first, before you can install <code>sfnetworks</code>. See the installation guides of <a href="https://github.com/r-spatial/sf#installing">sf</a> and <a href="https://github.com/igraph/rigraph#installation">igraph</a> for details.</p>
+<p><strong>Note:</strong> Two important dependencies of <code>sfnetworks</code>, the <code>sf</code> package for spatial data science and the <code>igraph</code> package for network analysis (which is the main “analysis backend” of <code>tidygraph</code>), require some low-level software libraries to be installed on your system. Depending on which operating system you use, this can mean that you have to install these system requirements first, before you can install <code>sfnetworks</code>. See the installation guides of <a href="https://github.com/r-spatial/sf#installing">sf</a> and <a href="https://github.com/igraph/rigraph#installation">igraph</a> for details.</p>
 </div>
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
