@@ -25,15 +25,13 @@ You can install the latest stable version of `sfnetworks` from [CRAN](https://cr
 install.packages("sfnetworks")
 ```
 
-The `sfnetworks` package is still in very active development, Therefore, the package is also not on CRAN yet. Install it directly from GitHub using the `remotes` package in R.
-
 You can install the development version from [GitHub](https://github.com/luukvdmeer/sfnetworks) with:
 
 ```r
 remotes::install_github("luukvdmeer/sfnetworks")
 ```
 
-**Note:** Two important dependencies of `sfnetworks`, the `sf` package for spatial data science and the `igraph` package for network analysis, require some low-level software libraries to be installed on your system. Depending on which operating system you use, this can mean that you have to install these system requirements first, before you can install `sfnetworks`. See the installation guides of [sf](https://github.com/r-spatial/sf#installing) and [igraph](https://github.com/igraph/rigraph#installation) for details.
+**Note:** Two important dependencies of `sfnetworks`, the `sf` package for spatial data science and the `igraph` package for network analysis (which is the main "analysis backend" of `tidygraph`), require some low-level software libraries to be installed on your system. Depending on which operating system you use, this can mean that you have to install these system requirements first, before you can install `sfnetworks`. See the installation guides of [sf](https://github.com/r-spatial/sf#installing) and [igraph](https://github.com/igraph/rigraph#installation) for details.
 
 ## Usage
 
