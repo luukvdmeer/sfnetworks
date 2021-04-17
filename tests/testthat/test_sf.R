@@ -50,6 +50,7 @@ dirnet = as_sfnetwork(edge)
 undirnet = as_sfnetwork(edge, directed = FALSE)
 
 test_that("st_reverse returns valid networks", {
+  skip_if_not(sf::sf_extSoftVersion()["GEOS"] >= "3.7.0")
   reversed_D <- suppressWarnings(st_reverse(activate(dirnet, "edges")))
   reversed_U <- st_reverse(activate(undirnet, "edges"))
   expect_null(sfnetworks:::require_valid_network_structure(reversed_D))
@@ -58,6 +59,7 @@ test_that("st_reverse returns valid networks", {
 
 test_that("st_reverse gives a warning when nodes are active, keeping the same
           coordinates order and from/to columns", {
+  skip_if_not(sf::sf_extSoftVersion()["GEOS"] >= "3.7.0")
   expect_warning(reversed <- st_reverse(dirnet), "no effect on nodes")
   expect_setequal(st_coordinates(reversed), st_coordinates(dirnet))
   expect_setequal(
@@ -76,6 +78,7 @@ test_that("st_reverse gives a warning when nodes are active, keeping the same
 
 test_that("st_reverse reverses the order of the to/from columns and the
           order of the coordinates for directed networks", {
+  skip_if_not(sf::sf_extSoftVersion()["GEOS"] >= "3.7.0")
   expect_warning(
     reversed <- st_reverse(activate(dirnet, "edges")),
     "st_reverse swaps columns"
@@ -100,6 +103,7 @@ test_that("st_reverse reverses the order of the to/from columns and the
 
 test_that("st_reverse reverses the order of the coordinates for
           undirected networks", {
+ skip_if_not(sf::sf_extSoftVersion()["GEOS"] >= "3.7.0")
  reversed <- st_reverse(activate(undirnet, "edges"))
  expect_equal(
    st_coordinates(reversed)[1, ],

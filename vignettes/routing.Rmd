@@ -211,9 +211,9 @@ closest = facilities[apply(cost_matrix, 1, function(x) which(x == min(x))[1])]
 # Create a line between each site and its closest facility, for visualization.
 draw_lines = function(sources, targets) {
   lines = mapply(
-    function(a, b) st_sfc(st_cast(c(a, b), "LINESTRING"), crs = st_crs(net)), 
-    sources, 
-    targets, 
+    function(a, b) st_sfc(st_cast(c(a, b), "LINESTRING"), crs = st_crs(net)),
+    sources,
+    targets,
     SIMPLIFY = FALSE
   )
   do.call("c", lines)
@@ -280,9 +280,9 @@ from_idxs = tour_idxs
 to_idxs = c(tour_idxs[2:length(tour_idxs)], tour_idxs[1])
 
 # Calculate the specified paths.
-tsp_paths = mapply(st_network_paths, 
-    from = from_idxs, 
-    to = to_idxs, 
+tsp_paths = mapply(st_network_paths,
+    from = from_idxs,
+    to = to_idxs,
     MoreArgs = list(x = net)
   )["node_paths", ] %>%
   unlist(recursive = FALSE)

@@ -118,15 +118,16 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
   # If edges is an sf object:
   # --> Tidygraph cannot handle it due to sticky geometry.
   # --> Therefore it has to be converted into a regular data frame (or tibble).
-  if (has_sfc(edges)) {
-    if (is.sf(edges)) class(edges) = setdiff(class(edges), "sf")
+  if (is.sf(edges)) {
+    edges_df = structure(edges, class = setdiff(class(edges), "sf"))
     if (is.null(edges_as_lines)) edges_as_lines = TRUE
   } else {
+    edges_df = edges
     if (is.null(edges_as_lines)) edges_as_lines = FALSE
   }
   # Create network.
   # Store sf attributes of the nodes and edges in a special graph attribute.
-  x_tbg = tbl_graph(nodes, edges, directed, node_key)
+  x_tbg = tbl_graph(nodes, edges_df, directed, node_key)
   x_sfn = structure(x_tbg, class = c("sfnetwork", class(x_tbg)))
   # Post-process network.
   if (is.null(edges)) {
@@ -134,6 +135,9 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
     if (! force) require_valid_network_structure(x_sfn, message = TRUE)
     return (x_sfn)
   }
+  # Set edge attributes again.
+  # This ensures correct forwarding of additional attributes such as agr.
+  edge_graph_attributes(x_sfn) = edges
   if (edges_as_lines) {
     # Run validity check before explicitizing edges.
     if (! force) require_valid_network_structure(x_sfn, message = TRUE)
@@ -160,8 +164,13 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
 
 #' @importFrom tidygraph tbl_graph
 sfnetwork_ = function(nodes, edges = NULL, directed = TRUE) {
-  if (is.sf(edges)) class(edges) = setdiff(class(edges), "sf")
-  x_tbg = tbl_graph(nodes, edges, directed)
+  if (is.sf(edges)) {
+    edges_df = structure(edges, class = setdiff(class(edges), "sf"))
+  } else {
+    edges_df = edges
+  }
+  x_tbg = tbl_graph(nodes, edges_df, directed)
+  if (! is.null(edges)) edge_graph_attributes(x_tbg) = edges
   structure(x_tbg, class = c("sfnetwork", class(x_tbg)))
 }
 
@@ -265,27 +274,35 @@ as_sfnetwork.sf = function(x, ...) {
 #'
 #' @export
 as_sfnetwork.linnet = function(x, ...) {
+  check_spatstat("spatstat.geom")
+
   # The easiest approach is the same as for psp objects, i.e. converting the
   # linnet object into a psp format and then applying the corresponding method.
-  if (!requireNamespace("spatstat", quietly = TRUE)) {
-    stop("Package spatstat required, please install it first", call. = FALSE)
-  }
-  x_psp = spatstat::as.psp(x)
+  x_psp = spatstat.geom::as.psp(x)
   as_sfnetwork(x_psp, ...)
 }
 
 #' @name as_sfnetwork
 #' @examples
 #' # From a psp object.
-#' if (require(spatstat, quietly = TRUE)) {
+#' if (require(spatstat.geom, quietly = TRUE)) {
 #'   set.seed(42)
 #'   test_psp = psp(runif(10), runif(10), runif(10), runif(10), window=owin())
 #'   as_sfnetwork(test_psp)
 #' }
 #'
 #' @importFrom sf st_as_sf st_collection_extract
+#' @importFrom utils packageVersion
 #' @export
 as_sfnetwork.psp = function(x, ...) {
+  # Add an extra check to test the version of sf package. See:
+  # https://github.com/luukvdmeer/sfnetworks/pull/138#issuecomment-803430686
+  if (packageVersion("sf") < "0.9.8") {
+    stop(
+      "spatstat code requires sf >= 0.9.8; please update sf",
+      call. = FALSE
+    )
+  }
   # The easiest method for transforming a Line Segment Pattern (psp) object
   # into sfnetwork format is to transform it into sf format and then apply
   # the usual methods.

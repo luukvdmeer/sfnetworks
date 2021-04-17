@@ -1,7 +1,7 @@
 Package: sfnetworks
 Title: Tidy Geospatial Networks
-Version: 0.5.0
-Authors@R: 
+Version: 0.5.1
+Authors@R:
     c(person(given = "Lucas",
              family = "van der Meer",
              role = c("aut", "cre"),
@@ -27,11 +27,11 @@ Description: Provides a tidy approach to spatial network
     analysis, in the form of classes and functions that enable a seamless
     interaction between the network analysis package 'tidygraph' and the
     spatial analysis package 'sf'.
-License: Apache License (>= 2) | file LICENSE
+License: Apache License (>= 2)
 URL: https://luukvdmeer.github.io/sfnetworks/,
     https://github.com/luukvdmeer/sfnetworks
 BugReports: https://github.com/luukvdmeer/sfnetworks/issues/
-Depends: 
+Depends:
     R (>= 3.6)
 Imports:
     crayon,
@@ -47,16 +47,18 @@ Imports:
     units,
     utils
 Suggests:
+    spatstat.geom,
     dbscan,
     fansi,
     ggplot2 (>= 3.0.0),
     knitr,
     rmarkdown,
-    spatstat,
+    spatstat (>= 2.0.0),
     testthat,
     tidyverse,
-    TSP
-VignetteBuilder: 
+    TSP,
+    spatstat.linnet
+VignetteBuilder:
     knitr
 ByteCompile: true
 Encoding: UTF-8

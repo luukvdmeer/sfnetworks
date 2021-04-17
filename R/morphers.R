@@ -96,6 +96,7 @@ NULL
 to_spatial_contracted = function(x, ..., simplify = FALSE,
                                  summarise_attributes = "ignore",
                                  store_original_data = FALSE) {
+  if (will_assume_planar(x)) raise_assume_planar("to_spatial_contracted")
   # Retrieve nodes from the network.
   nodes = nodes_as_sf(x)
   geom_colname = attr(nodes, "sf_column")
@@ -151,7 +152,10 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
   # For each node that was contracted:
   # --> Use the centroid of the geometries of the group members.
   new_node_geoms = st_geometry(nodes)[!duplicated(all_group_idxs)]
-  get_centroid = function(i) st_centroid(st_combine(st_geometry(i)))
+  get_centroid = function(i) {
+    comb = st_combine(st_geometry(i))
+    suppressWarnings(st_centroid(comb))
+  }
   cnt_node_geoms = do.call("c", lapply(cnt_groups, get_centroid))
   new_node_geoms[cnt_group_idxs] = cnt_node_geoms
   new_nodes[geom_colname] = list(new_node_geoms)
@@ -257,7 +261,7 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
         # --> The index of the contracted node at its boundary.
         bnd_geoms = linestring_boundary_points(new_edge_geoms[is_incident])
         src_geoms = bnd_geoms[seq(1, length(bnd_geoms) - 1, 2)]
-        src_idxs = st_intersects(src_geoms, all_group_geoms)
+        src_idxs = suppressMessages(st_intersects(src_geoms, all_group_geoms))
         bnd_idxs = bounds[is_incident, ]
         bnd_idxs = lapply(seq_len(nrow(bnd_idxs)), function(i) bnd_idxs[i, ])
         # Initially, assume that:
@@ -876,10 +880,13 @@ to_spatial_smooth = function(
 #' @export
 to_spatial_subdivision = function(x) {
   require_spatially_explicit_edges(x)
-  raise_assume_constant("to_spatial_subdivision")
+  if (will_assume_constant(x)) raise_assume_constant("to_spatial_subdivision")
   # Retrieve nodes and edges from the network.
   nodes = nodes_as_sf(x)
   edges = edges_as_sf(x)
+  # For later use:
+  # --> Check wheter x is directed.
+  directed = is_directed(x)
   ## ===========================
   # STEP I: DECOMPOSE THE EDGES
   # Decompose the edges linestring geometries into the points that shape them.
@@ -960,7 +967,7 @@ to_spatial_subdivision = function(x) {
   # We will update them later.
   ## ===================================
   # Find which *original* edge belongs to which *new* edge:
-  # --> Use the list of new edge points constructed before.
+  # --> Use the lists of edge indices mapped to the new edge points.
   # --> There we already mapped each new edge point to its original edge.
   # --> First define which new edge points are startpoints of new edges.
   # --> Then retrieve the original edge index from these new startpoints.
@@ -993,7 +1000,11 @@ to_spatial_subdivision = function(x) {
   # Find which of the *original* edge points equaled which *original* node.
   # If an edge point did not equal a node, store NA instead.
   node_idxs = rep(NA, nrow(edge_pts))
-  node_idxs[is_boundary] = edge_boundary_node_indices(x)
+  if (directed) {
+    node_idxs[is_boundary] = edge_boundary_node_indices(x)
+  } else {
+    node_idxs[is_boundary] = edge_boundary_point_indices(x)
+  }
   # Find which of the *original* nodes belong to which *new* edge boundary.
   # If a new edge boundary does not equal an original node, store NA instead.
   orig_node_idxs = rep(node_idxs, reps)[is_new_boundary]
@@ -1009,7 +1020,7 @@ to_spatial_subdivision = function(x) {
   ## ==================================================
   # Define the indices of the new nodes.
   # Equal geometries should get the same index.
-  new_node_idxs = match(new_node_geoms, unique(new_node_geoms))
+  new_node_idxs = st_match(new_node_geoms)
   # Map node indices to edges.
   is_source = rep(c(TRUE, FALSE), length(new_node_geoms) / 2)
   new_edges$from = new_node_idxs[is_source]
@@ -1025,7 +1036,7 @@ to_spatial_subdivision = function(x) {
   # Use the new nodes data and the new edges data to create the new network.
   ## ============================
   # Create new network.
-  x_new = sfnetwork_(new_nodes, new_edges, directed = is_directed(x))
+  x_new = sfnetwork_(new_nodes, new_edges, directed = directed)
   # Return in a list.
   list(
     subdivision = x_new %preserve_graph_attrs% x

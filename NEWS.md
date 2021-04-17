@@ -1,18 +1,33 @@
+# sfnetworks v0.5.1
+
+* Compatibility with `spatstat v2`, which is now splitted into multiple sub-packages. See [here](https://github.com/spatstat/spatstat/tree/v1.64-2#spatstat-is-now-split-into-several-packages) for details. In `sfnetworks`, this affected the functions `as_sfnetwork.linnet()`, `as_sfnetwork.psp()` and `as.linnet.sfnetwork()`. Using this functions now requires `spatstat >= 2.0.0` and `sf >= 0.9.8`.
+* Bug fixes:
+  - Usage of `match` for checking coordinate equality is replaced by a new `st_match` function specifically designed for this task. This fixes bugs related to numeric approximations of detailed coordinates. See [#130](https://github.com/luukvdmeer/sfnetworks/issues/104)
+* Documentation updates:
+  - It is now clearly documented that using `sf::st_reverse()` to reverse edge linestrings is only possible with GEOS versions >= 3.7.
+
 # sfnetworks v0.5.0 "Nienberge"
 
 * Addition of a `to_spatial_contracted()` morpher, to contract groups of nodes based on given grouping variables. Refs [#104](https://github.com/luukvdmeer/sfnetworks/issues/104)
 * Addition of a `to_spatial_neighborhood()` morpher, to limit a network to the neighborhood of a given node, based on a given cost threshold. Refs [#90](https://github.com/luukvdmeer/sfnetworks/issues/90)
+* New implementation of `st_network_blend()`, which is faster and more reliable. The `sort` argument is deprecated, since the returned network is now always sorted.
 * Addition of an `summarise_attributes` argument to the `to_spatial_simple()` morpher, allowing to specify on a per-attribute basis how attribute values of merged multiple edges should be inferred from the original ones. Refs [#113](https://github.com/luukvdmeer/sfnetworks/issues/113). The same argument is also part of the new `to_spatial_contracted()` morpher, where it can be used to specify on a per-attribute basis how attribute values of contracted groups of nodes should be inferred from the original ones.
 * The argument `remove_parallels` of the `to_spatial_simple()` morpher is renamed to `remove_multiples` to better fit naming conventions in `igraph`.
 * The argument `store_orig_data` of the `to_spatial_smooth()` morpher is renamed to `store_original_data` to be better interpretable. This argument is also added to the morphers `to_spatial_simple()` and `to_spatial_contracted()`, allowing to store original node or edge data in a `.orig_data` column, matching the design standards of `tidygraph`.
 * Addition of a `Inf_as_NaN` argument to `st_network_cost()`, to store cost values of paths between unconnected edges as `NaN` instead of `Inf`. The default value of this argument is `FALSE`. Refs [#111](https://github.com/luukvdmeer/sfnetworks/issues/111)
-* The default of the `Inf_as_NaN` argument in `edge_circuity()` is changed from `TRUE` to `FALSE`, to better fit with the change mentioned above, and to make sure no changes to R defaults are made without the user explicity specifying them.
+* The default of the `Inf_as_NaN` argument in `edge_circuity()` is changed from `TRUE` to `FALSE`, to better fit with the change mentioned above, and to make sure no changes to R defaults are made without the user explicitly specifying them.
 * Whenever there are multiple matches when spatially joining information to the nodes of a network with `sf::st_join()`, only the information of the first match is now joined. Before, this used to throw an error. Refs [#108](https://github.com/luukvdmeer/sfnetworks/discussions/108)
 * Removal of the morphed_sfnetwork method for `sf::st_geometry<-`, since geometries should not be replaced in a morphed state.
+* The warning '.. assumes attributes are constant over geometries' is now only raised when not all attribute-geometry relationships are set to 'constant'. Refs [#123](https://github.com/luukvdmeer/sfnetworks/discussions/123)
 * Bug fixes:
-  - `sf::st_crop()` now correctly updates the nodes table after cropping the edges. Fixes [#109](https://github.com/luukvdmeer/sfnetworks/issues/109)
+  - The attribute-geometry relationships of edge attributes are now preserved during network construction. Fixes [#123](https://github.com/luukvdmeer/sfnetworks/issues/123)
+  - `st_network_blend()` now correctly blends points that are very close to the network. Fixes [#98](https://github.com/luukvdmeer/sfnetworks/issues/98)
+  - `st_network_blend()` now preserves the directedness of the input network. Fixes [#127](https://github.com/luukvdmeer/sfnetworks/issues/127)
+  - `st_network_blend()` now runs even if the network contains edges of length 0. Fixes [#125](https://github.com/luukvdmeer/sfnetworks/issues/125)
+  - The sfnetwork method for `sf::st_crop()` now correctly updates the nodes table after cropping the edges. Fixes [#109](https://github.com/luukvdmeer/sfnetworks/issues/109)
   - `to_spatial_smooth()` now returns the original network when no pseudo nodes are present. Fixes [#112](https://github.com/luukvdmeer/sfnetworks/issues/112)
   - `to_spatial_subdivision()` now returns the original network when there are no locations for subdivision.
+  - `to_spatial_subdivision()` now returns correct node indices for undirected networks.
 * Several new examples and applications added to the vignettes.
 
 # sfnetworks v0.4.1
@@ -76,7 +91,7 @@
 * Together with the documentation improvements, several new units tests brought the test coverage to +/- 80%.
 * The internal code base is completely restructured, such that it is more performant and easier to read, debug and extend.
 
-# sfnetworks v0.3.1 
+# sfnetworks v0.3.1
 
 * Bug fixes:
   - `as_sfnetwork()` now handles circular linestrings. Fixes [#59](https://github.com/luukvdmeer/sfnetworks/issues/59)
@@ -93,7 +108,7 @@
   - Various edge measure algorithms, including edge circuity. Refs [#51](https://github.com/luukvdmeer/sfnetworks/issues/51)
 * More methods for `as_sfnetwork()`. Refs [#41](https://github.com/luukvdmeer/sfnetworks/issues/41)
   - Support [sfNetwork](https://docs.ropensci.org/stplanr/reference/SpatialLinesNetwork.html) from [stplanr](https://docs.ropensci.org/stplanr/)
-  - Support [linnet](https://rdrr.io/cran/spatstat/man/linnet.html) and [psp](https://rdrr.io/cran/spatstat/man/psp.object.html) from [spatstat](https://rdrr.io/cran/spatstat/)
+  - Support [linnet](https://rdrr.io/cran/spatstat.linnet/man/linnet.html) and [psp](https://rdrr.io/cran/spatstat.geom/man/psp.object.html) from [spatstat](https://rdrr.io/cran/spatstat/)
 * Preserving sf attributes for nodes and edges inside the sfnetwork object. Refs [#24](https://github.com/luukvdmeer/sfnetworks/issues/24)
 * Structural and performance improvements of the code base. This includes:
   - Construction checks are run only when needed, adding a force argument to skip validity tests.

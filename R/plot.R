@@ -72,7 +72,6 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
 #' @details See \code{\link[ggplot2]{autoplot}}.
 #'
 #' @name autoplot
-#' @importFrom sf st_as_sf
 autoplot.sfnetwork = function(object, ...) {
   g = ggplot2::ggplot() + ggplot2::geom_sf(data = nodes_as_sf(object))
   if (has_spatially_explicit_edges(object)) {

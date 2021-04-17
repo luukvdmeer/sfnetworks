@@ -1,37 +1,11 @@
-## Resubmission
-This is a resubmission. I have made the following changes:
+In this release I have made the following changes:
 
-- License components with restrictions and base license
-  - 
- 
-- Please add \value to .Rd files regarding exported methods and explain
-the functions results in the documentation. Please write about the
-structure of the output (class) and also what the output means. (If a
-function does not return a value, please document that too, e.g.
-\value{No return value, called for side effects} or similar)
-  - 
-  
-- You have examples for unexported functions. Please either omit these examples or export the functions.
-  - To avoid a strong dependency from these packages, we have applied a dynamic registration of the methods on load, hence we would like to keep the functions without exporting them, but also give examples of their use.
-  
-- Please ensure that your functions do not write by default or in your
-examples/vignettes/tests in the user's home filespace (including the
-package directory and getwd()). This is not allowed by CRAN policies. In
-your examples/vignettes/tests you can write to tempdir().
-  - We have made sure functions fo not write in the user's filespace
+- All functions that interact with the `spatstat` package have been updated to comply with the new structure of that package (see https://github.com/spatstat/spatstat/tree/v1.64-2#spatstat-is-now-split-into-several-packages). These include `as_sfnetwork.linnet()`, `as_sfnetwork.psp()` and `as.linnet.sfnetwork()`. Documentation entries containing links to the spatstat documentation have been updated accordingly as well.
 
-- Please always make sure to reset to user's options(), working directory
-or par() after you changed it in examples and vignettes and demos.
-  - par() and options() parameters are reset after each example and vignette.
+- Internally, usage of `match()` for checking coordinate equality is replaced by a new `st_match()` utility function specifically designed for this task.
 
-
-## Test environments
-* local R installation, R 4.0.3
-* ubuntu 16.04 (on travis-ci), R 4.0.3
-* win-builder (devel)
+- It is now clearly documented that using `sf::st_reverse()` to reverse edge linestrings is only possible with GEOS versions >= 3.7. Test and examples for this function now first check if the required GEOS version is installed before running.
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
-
-* This is a new release.
+0 errors | 0 warnings | 0 notes

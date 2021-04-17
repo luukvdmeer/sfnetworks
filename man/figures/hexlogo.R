@@ -42,7 +42,7 @@ sticker(
   s_x = 1, s_y = 1, s_width = 2.3, s_height = 2.3,
   package = "sfnetworks",
   p_size = 58, p_color = "#fffefe",  p_fontface = "bold",
-  p_x= 1, p_y = 1, p_family = "orbitron",
+  p_x = 1, p_y = 1, p_family = "orbitron",
   #hexagon
   h_fill = "grey50", h_size = 1.5, h_color = "#ff9000",
   url = "© OpenStreetMap   contributors",
