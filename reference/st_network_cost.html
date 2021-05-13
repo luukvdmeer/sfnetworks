@@ -190,11 +190,13 @@ calculated. By default, all nodes in the network are included.</p></td>
       <th>to</th>
       <td><p>The (set of) geospatial point(s) to which the shortest paths will
 be calculated. Can be an object of  class <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a></code> or
-<code><a href='https://r-spatial.github.io/sf/reference/sfc.html'>sfc</a></code>.
+<code><a href='https://r-spatial.github.io/sf/reference/sfc.html'>sfc</a></code>. Features with duplicated nearest node indices will be
+removed before calculating the cost matrix.
 Alternatively it can be a numeric vector containing the indices of the nodes
 to which the shortest paths will be calculated, or a character vector
 containing the names of the nodes to which the shortest paths will be
-calculated. By default, all nodes in the network are included.</p></td>
+calculated. Duplicated values will be removed before calculating the cost
+matrix. By default, all nodes in the network are included.</p></td>
     </tr>
     <tr>
       <th>weights</th>
@@ -221,10 +223,25 @@ If set to <code>NA</code>, no weights are used, even if the edges have a
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>An n times m numeric matrix where n is the length of the <code>from</code>
-argument, and m is the length of the <code>to</code> argument.</p>
+argument, and m is the length of unique values in the <code>to</code> argument.
+When the <code>to</code> argument contains spatial features that have the same
+nearest node, these features are considered duplicates.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>See the <code><a href='https://rdrr.io/pkg/igraph/man/distances.html'>igraph</a></code> documentation.</p>
+    <p>Spatial features provided to the <code>from</code> and/or
+<code>to</code> argument don't necessarily have to be points. Internally, the
+nearest node to each feature is found by calling
+<code><a href='https://r-spatial.github.io/sf/reference/st_nearest_feature.html'>st_nearest_feature</a></code>, so any feature with a geometry type
+that is accepted by that function can be provided as <code>from</code> and/or
+<code>to</code> argument.</p>
+<p>When directly providing integer node indices or character node names to the
+<code>from</code> and/or <code>to</code> argument, keep the following in mind. A node
+index should correspond to a row-number of the nodes table of the network.
+A node name should correspond to a value of a column in the nodes table
+named <code>name</code>. This column should contain character values without
+duplicates.</p>
+<p>For more details on the wrapped function from <code><a href='https://rdrr.io/pkg/igraph/man/aaa-igraph-package.html'>igraph</a></code>
+see the <code><a href='https://rdrr.io/pkg/igraph/man/distances.html'>distances</a></code> documentation page.</p>
     <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
     <p>By default, <code><a href='https://rdrr.io/pkg/igraph/man/distances.html'>distances</a></code> calculates costs by
@@ -233,6 +250,11 @@ undirected network. This is the default even when the input network is
 directed! For directed networks, the behaviour can be changed by setting
 <code>mode = "out"</code> to consider only outbound edges, or <code>mode = "in"</code>
 to consider only inbound edges.</p>
+<p>Furthermore, <code><a href='https://rdrr.io/pkg/igraph/man/distances.html'>distances</a></code> does not allow duplicated
+values in the <code>to</code> argument. This also means that when providing
+spatial features, sets of multiple features that happen to have the same
+nearest node will be reduced to one by selecting only the first of these
+features.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='st_network_paths.html'>st_network_paths</a></code></p></div>

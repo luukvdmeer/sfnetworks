@@ -103,7 +103,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>1. The sfnetwork data structure</h1>
             
-            <h4 class="date">2021-03-26</h4>
+            <h4 class="date">2021-05-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/structure.Rmd"><code>vignettes/structure.Rmd</code></a></small>
       <div class="hidden name"><code>structure.Rmd</code></div>
@@ -121,7 +121,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://luukvdmeer.github.io/sfnetworks/">sfnetworks</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidygraph.data-imaginist.com">tidygraph</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://igraph.org">igraph</a></span><span class="op">)</span></code></pre></div>
 <div id="philosophy" class="section level2">
 <h2 class="hasAnchor">
@@ -294,11 +294,11 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
 #&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
 #&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span><span>
-#&gt;    from    to                    x  weight
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>     </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>   </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2         (7 51, 7 52) </span><span style="text-decoration: underline;">111</span><span>258.
-#&gt; </span><span style="color: #555555;">2</span><span>     1     3 (7 51, 8 51.5, 8 52) </span><span style="text-decoration: underline;">144</span><span>900.
-#&gt; </span><span style="color: #555555;">3</span><span>     3     2         (8 52, 7 52)  </span><span style="text-decoration: underline;">68</span><span>677.
+#&gt;    from    to                    x    weight
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>     </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>       </span><span style="color: #555555;">[m]</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     1     2         (7 51, 7 52) 111257.83
+#&gt; </span><span style="color: #555555;">2</span><span>     1     3 (7 51, 8 51.5, 8 52) 144899.77
+#&gt; </span><span style="color: #555555;">3</span><span>     3     2         (8 52, 7 52)  68677.47
 </span></code></pre>
 <p>If your edges table does not have linestring geometries, but only references to node indices or keys, you can tell the construction function to create the linestring geometries during construction. This will draw a straight line between the endpoints of each edge.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -480,40 +480,40 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>A sfnetwork is a multitable object in which the core network elements (i.e. nodes and edges) are embedded as sf objects. However, thanks to the neat structure of <code>tidygraph</code>, there is no need to first extract one of those elements before you are able to apply your favorite sf function or tidyverse verb. Instead, there is always one element at a time labeled as <em>active</em>. This active element is the target of data manipulation. All functions from sf and the tidyverse that are called on a sfnetwork, are internally applied to that active element. The active element can be changed with the <code><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate()</a></code> verb, i.e. by calling <code><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate("nodes")</a></code> or <code><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate("edges")</a></code>. For example, calculating the betweenness centrality of nodes and subsequently setting the geographical length of edges as edge weights can be done as follows:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">net</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>bc <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/centrality.html">centrality_betweenness</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>weight <span class="op">=</span> <span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>weight <span class="op">=</span> <span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>bc <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/centrality.html">centrality_betweenness</a></span><span class="op">(</span>weights <span class="op">=</span> <span class="va">weight</span>, directed <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
 #&gt; #
 #&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">
 #&gt; #
 #&gt; # A directed multigraph with 14 components with spatially explicit edges
 #&gt; #
-#&gt; # Edge Data:     851 x 6 (active)</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
-#&gt;    from    to name       type                                  geometry   weight
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>      </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                         </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>      </span><span style="color: #555555;">[m]</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbeck… reside… (7.533722 51.95556, 7.533461 51.95576)  28.859…
-#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersal… second… (7.532442 51.95422, 7.53236 51.95377,… 107.704…
-#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-B… reside… (7.532709 51.95209, 7.532823 51.95239…  54.362…
-#&gt; </span><span style="color: #555555;">4</span><span>     7     8 </span><span style="color: #BB0000;">NA</span><span>         path    (7.540063 51.94468, 7.539696 51.94479… 155.230…
-#&gt; </span><span style="color: #555555;">5</span><span>     9    10 Welsinghe… reside…  (7.537673 51.9475, 7.537614 51.94562) 208.663…
-#&gt; </span><span style="color: #555555;">6</span><span>    11    12 </span><span style="color: #BB0000;">NA</span><span>         footway (7.543791 51.94733, 7.54369 51.94686,…  63.023…
-#&gt; </span><span style="color: #555555;"># … with 845 more rows</span><span>
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Node Data:     701 x 2</span><span>
+#&gt; # Node Data:     701 x 2 (active)</span><span>
 #&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
 #&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
 #&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
-#&gt;              geometry     bc
-#&gt;           </span><span style="color: #555555;font-style: italic;">&lt;POINT [°]&gt;</span><span>  </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span> (7.533722 51.95556) </span><span style="text-decoration: underline;">12</span><span>936.
-#&gt; </span><span style="color: #555555;">2</span><span> (7.533461 51.95576) </span><span style="text-decoration: underline;">11</span><span>824 
-#&gt; </span><span style="color: #555555;">3</span><span> (7.532442 51.95422) </span><span style="text-decoration: underline;">11</span><span>926.
-#&gt; </span><span style="color: #555555;"># … with 698 more rows</span><span>
+#&gt;              geometry    bc
+#&gt;           </span><span style="color: #555555;font-style: italic;">&lt;POINT [°]&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span> (7.533722 51.95556) </span><span style="text-decoration: underline;">13</span><span>809
+#&gt; </span><span style="color: #555555;">2</span><span> (7.533461 51.95576)  </span><span style="text-decoration: underline;">9</span><span>777
+#&gt; </span><span style="color: #555555;">3</span><span> (7.532442 51.95422) </span><span style="text-decoration: underline;">35</span><span>240
+#&gt; </span><span style="color: #555555;">4</span><span>  (7.53209 51.95328) </span><span style="text-decoration: underline;">31</span><span>745
+#&gt; </span><span style="color: #555555;">5</span><span> (7.532709 51.95209)  </span><span style="text-decoration: underline;">7</span><span>174
+#&gt; </span><span style="color: #555555;">6</span><span> (7.532869 51.95257)  </span><span style="text-decoration: underline;">9</span><span>081
+#&gt; </span><span style="color: #555555;"># … with 695 more rows</span><span>
+#&gt; </span><span style="color: #555555;">#
+#&gt; # Edge Data:     851 x 6</span><span>
+#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
+#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
+#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
+#&gt;    from    to name        type                                 geometry   weight
+#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>       </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                        </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>      </span><span style="color: #555555;">[m]</span><span>
+#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbecke… residen… (7.533722 51.95556, 7.533461 51.955…  28.859…
+#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersall… seconda… (7.532442 51.95422, 7.53236 51.9537… 107.704…
+#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-Be… residen… (7.532709 51.95209, 7.532823 51.952…  54.362…
+#&gt; </span><span style="color: #555555;"># … with 848 more rows</span><span>
 </span></code></pre>
 <p>Some of the functions have effects also outside of the active element. For example, whenever nodes are removed from the network, the edges terminating at those nodes will be removed too. This behavior is <em>not</em> symmetric: when removing edges, the endpoints of those edges remain, even if they are not an endpoint of any other edge. This is because by definition edges can never exist without nodes on their ends, while nodes can peacefully exist in isolation.</p>
 </div>

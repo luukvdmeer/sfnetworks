@@ -185,7 +185,7 @@ node before calculating the shortest or simple paths.</p>
       <td><p>The geospatial point from which the paths will be
 calculated. Can be an object an object of class <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a></code> or
 <code><a href='https://r-spatial.github.io/sf/reference/sfc.html'>sfc</a></code>, containing a single feature. When multiple features
-are given, only the first one is taken.
+are given, only the first one is used.
 Alternatively, it can be an integer, referring to the index of the
 node from which the paths will be calculated, or a character,
 referring to the name of the node from which the paths will be
@@ -242,8 +242,21 @@ that path). <code>'all_shortest'</code> and <code>'all_simple'</code> return onl
 <code>node_paths</code>, while <code>'shortest'</code> returns both.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>See the <code><a href='https://rdrr.io/pkg/igraph/man/distances.html'>igraph</a></code> or
-<code><a href='https://rdrr.io/pkg/igraph/man/all_simple_paths.html'>igraph</a></code> documentation.</p>
+    <p>Spatial features provided to the <code>from</code> and/or
+<code>to</code> argument don't necessarily have to be points. Internally, the
+nearest node to each feature is found by calling
+<code><a href='https://r-spatial.github.io/sf/reference/st_nearest_feature.html'>st_nearest_feature</a></code>, so any feature with a geometry type
+that is accepted by that function can be provided as <code>from</code> and/or
+<code>to</code> argument.</p>
+<p>When directly providing integer node indices or character node names to the
+<code>from</code> and/or <code>to</code> argument, keep the following in mind. A node
+index should correspond to a row-number of the nodes table of the network.
+A node name should correspond to a value of a column in the nodes table
+named <code>name</code>. This column should contain character values without
+duplicates.</p>
+<p>For more details on the wrapped functions from <code><a href='https://rdrr.io/pkg/igraph/man/aaa-igraph-package.html'>igraph</a></code>
+see the <code><a href='https://rdrr.io/pkg/igraph/man/distances.html'>shortest_paths</a></code> or
+<code><a href='https://rdrr.io/pkg/igraph/man/all_simple_paths.html'>all_simple_paths</a></code> documentation pages.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='st_network_cost.html'>st_network_cost</a></code></p></div>

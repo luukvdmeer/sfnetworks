@@ -103,7 +103,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>4. Routing</h1>
             
-            <h4 class="date">2021-03-26</h4>
+            <h4 class="date">2021-05-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/routing.Rmd"><code>vignettes/routing.Rmd</code></a></small>
       <div class="hidden name"><code>routing.Rmd</code></div>
@@ -121,7 +121,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://luukvdmeer.github.io/sfnetworks/">sfnetworks</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidygraph.data-imaginist.com">tidygraph</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mhahsler/TSP">TSP</a></span><span class="op">)</span></code></pre></div>
 <div id="setting-edge-weights" class="section level2">
 <h2 class="hasAnchor">
@@ -171,6 +171,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777)
 #&gt; </span><span style="color: #555555;"># … with 698 more rows</span><span>
 </span></code></pre>
+<p>It is important to mention that <code>tidygraph</code> does not always comply with the default <code>igraph</code> behaviors as we described them above. For example, when using tidygraphs centrality functions, you <em>have</em> to explicity set <code>weights = weight</code> when you want to use your <em>weight</em> column as edge weights in the centrality calculation. If the <code>weights</code> argument is not set (i.e. <code>weights = NULL</code>) it will not use any edge weights.</p>
 </div>
 <div id="calculating-shortest-paths" class="section level2">
 <h2 class="hasAnchor">
@@ -179,7 +180,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <ul>
 <li>Besides node indices and node names, <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> gives the additional option to provide any (set of) geospatial point(s) as <em>from</em> and <em>to</em> location(s) of the shortest paths, either as sf or sfc object. Provided points that do not equal any node in the network will be snapped to their nearest node before calculating the paths.</li>
 <li>To allow smooth integration with the tidyverse, the output of <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> is a tibble, with one row per returned path. The column <em>node_paths</em> contains the ordered list of node indices in the path, and the column <em>edge_paths</em> contains the ordered list of edge indices in the path.</li>
-<li>Whenever <code>weights = NULL</code> <em>and</em> there is no column in the edges table named <em>weight</em>, <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> by default uses the geographic edge length as weight.</li>
+<li>Whenever there is no column in the edges table named <em>weight</em> and the <code>weights</code> argument is not set (i.e. <code>weights = NULL</code>), <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> by default uses the geographic edge length as weight.</li>
 </ul>
 <p>Just as <code><a href="https://rdrr.io/pkg/igraph/man/distances.html">igraph::shortest_paths()</a></code>, the <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> function is meant for one-to-one and one-to-many routing. Hence, it is only possible to provide a single <em>from</em> location, while the <em>to</em> locations can be more than one.</p>
 <p>Lets start with the most basic example of providing node indices as <em>from</em> and <em>to</em> locations. Remember that a node index in a sfnetwork refers to the position of the node in the nodes table of the network (i.e. its row number). There is also the possibility to use character encoded node names instead of numeric node indices. This requires the nodes table to have a column <em>name</em> with a unique name for each node.</p>
