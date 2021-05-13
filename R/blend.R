@@ -109,9 +109,9 @@ st_network_blend.sfnetwork = function(x, y, tolerance = Inf) {
 
 #' @importFrom dplyr bind_rows full_join
 #' @importFrom igraph is_directed vcount
-#' @importFrom sf st_as_sf st_crs st_distance st_equals st_geometry
+#' @importFrom sf st_as_sf st_cast st_crs st_distance st_equals st_geometry
 #' st_intersects st_is_within_distance st_nearest_feature st_nearest_points
-#' @importFrom sfheaders sfc_cast sfc_linestring sfc_to_df
+#' @importFrom sfheaders sfc_linestring sfc_to_df
 #' @importFrom units set_units
 blend_ = function(x, y, tolerance) {
   # Extract the following:
@@ -234,7 +234,7 @@ blend_ = function(x, y, tolerance) {
   ## ==========================================
   # Decompose the edge geometries into their points.
   # Map each of these points to the index of its "parent edge".
-  edge_pts = sfc_cast(E, "POINT")
+  edge_pts = st_cast(E, "POINT")
   pts_idxs = rep(seq_along(E), lengths(E) / 2)
   # Define for each snapped feature in y which edge point it equals.
   # If it equals more than one edge point, only the first match is taken.
