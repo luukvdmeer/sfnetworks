@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.1.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.2</span>
       </span>
     </div>
 
@@ -146,6 +146,27 @@
       <small>Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="sfnetworks-v052" class="section level1">
+<h1 class="page-header" data-toc-text="0.5.2">
+<a href="#sfnetworks-v052" class="anchor"></a>sfnetworks v0.5.2<small> Unreleased </small>
+</h1>
+<ul>
+<li>Compatibility with <code>s2</code> by adding a <code><a href="https://r-spatial.github.io/s2/reference/as_s2_geography.html">s2::as_s2_geography()</a></code> method for sfnetwork objects. In the new version of <code>sf</code>, the <code>s2</code> package will be used for geometric operations involving longitude-latitude coordinates, see <a href="https://github.com/r-spatial/sf/issues/1649">here</a>.</li>
+<li>Bug fixes:
+<ul>
+<li>When setting <code>length_as_weight = TRUE</code> in the sfnetwork construction function, the added weight column now preserves specification of units.</li>
+<li>
+<code><a href="../reference/st_network_blend.html">st_network_blend()</a></code> now internally uses <code><a href="https://r-spatial.github.io/sf/reference/st_cast.html">sf::st_cast()</a></code> instead of <code><a href="https://dcooley.github.io/sfheaders/reference/sfc_cast.html">sfheaders::sfc_cast()</a></code> to avoid errors with some CRS specifications.</li>
+</ul>
+</li>
+<li>Documentation updates:
+<ul>
+<li>Extended documentation for the shortest paths functions.</li>
+<li>Clear mention in vignettes that <code>tidygraph</code> behavior regarding the <code>weight</code> attribute settings is sometimes differing from <code>igraph</code>.</li>
+</ul>
+</li>
+</ul>
+</div>
     <div id="sfnetworks-v051" class="section level1">
 <h1 class="page-header" data-toc-text="0.5.1">
 <a href="#sfnetworks-v051" class="anchor"></a>sfnetworks v0.5.1<small> 2021-03-28 </small>
