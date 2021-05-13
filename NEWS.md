@@ -1,4 +1,4 @@
-# development
+# sfnetworks v0.5.2
 
 * Compatibility with `s2` by adding a `s2::as_s2_geography()` method for sfnetwork objects. In the new version of `sf`, the `s2` package will be used for geometric operations involving longitude-latitude coordinates, see [here](https://github.com/r-spatial/sf/issues/1649).
 * Bug fixes:
