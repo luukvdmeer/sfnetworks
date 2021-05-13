@@ -1,3 +1,13 @@
+# development
+
+* Compatibility with `s2` by adding a `s2::as_s2_geography()` method for sfnetwork objects. In the new version of `sf`, the `s2` package will be used for geometric operations involving longitude-latitude coordinates, see [here](https://github.com/r-spatial/sf/issues/1649).
+* Bug fixes:
+  - When setting `length_as_weight = TRUE` in the sfnetwork construction function, the added weight column now preserves specification of units.
+  - `st_network_blend()` now internally uses `sf::st_cast()` instead of `sfheaders::sfc_cast()` to avoid errors with some CRS specifications.
+* Documentation updates:
+  - Extended documentation for the shortest paths functions.
+  - Clear mention in vignettes that `tidygraph` behavior regarding the `weight` attribute settings is sometimes differing from `igraph`.
+
 # sfnetworks v0.5.1
 
 * Compatibility with `spatstat v2`, which is now splitted into multiple sub-packages. See [here](https://github.com/spatstat/spatstat/tree/v1.64-2#spatstat-is-now-split-into-several-packages) for details. In `sfnetworks`, this affected the functions `as_sfnetwork.linnet()`, `as_sfnetwork.psp()` and `as.linnet.sfnetwork()`. Using this functions now requires `spatstat >= 2.0.0` and `sf >= 0.9.8`.
@@ -34,7 +44,7 @@
 
 * Addition of an edge measure function `edge_azimuth()`, to calculate the azimuth (i.e. bearing) of edges. Refs [#107](https://github.com/luukvdmeer/sfnetworks/issues/107)
 * Addition of a `to_spatial_transformed()` morpher, to temporarily transform a sfnetwork into a different CRS.
-* Addition of a sfnetwork methods for `linnet` objects, to enhance interoperability between `sfnetwork` and the `spatstat` package for spatial point patterns on linear networks.
+* Addition of a sfnetwork methods for `linnet` objects, to enhance interoperability between `sfnetworks` and the `spatstat` package for spatial point patterns on linear networks.
 * Addition of an `Inf_as_NaN` argument to the `edge_circuity()` function, to store circuity values of loop edges as `NaN` instead of `Inf`. The default value of this argument is `TRUE`.
 * Changes to `st_network_paths()`:
   - Addition of a new argument `type`, which lets you set the type of paths calculation that should be performed.
