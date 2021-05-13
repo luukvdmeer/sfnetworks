@@ -185,10 +185,10 @@ A sfnetwork is a multitable object in which the core network elements (i.e. node
 
 ```{r}
 net %>%
-  activate("nodes") %>%
-  mutate(bc = centrality_betweenness()) %>%
   activate("edges") %>%
-  mutate(weight = edge_length())
+  mutate(weight = edge_length()) %>%
+  activate("nodes") %>%
+  mutate(bc = centrality_betweenness(weights = weight, directed = FALSE))
 ```
 
 Some of the functions have effects also outside of the active element. For example, whenever nodes are removed from the network, the edges terminating at those nodes will be removed too. This behavior is *not* symmetric: when removing edges, the endpoints of those edges remain, even if they are not an endpoint of any other edge. This is because by definition edges can never exist without nodes on their ends, while nodes can peacefully exist in isolation.
