@@ -25,9 +25,10 @@
 #' of \code{tidygraph}. Defaults to \code{FALSE}.
 #'
 #' @param extra_fields Character vector specying the name(s) of one or more
-#'   fields in the edges table. If not NULL, then the to_spatial_smooth morpher
-#'   removes only theose peudo nodes where the chosen attributes for the
-#'   incident edges are equal.
+#' fields in the edges table. If not NULL, then the \code{to_spatial_smooth}
+#' morpher removes only the nodes that have one incoming and one outcoming
+#' edge (or two incident edges in case of undirected networks) and identical
+#' values for the chosen fields.
 #'
 #' @param summarise_attributes Whenever multiple features (i.e. nodes and/or
 #' edges) are merged into a single feature during morphing, how should their
@@ -536,11 +537,13 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #'   that have only one incoming and one outgoing edge. In undirected networks,
 #'   pseudo nodes are those nodes that have two incident edges. Connectivity of
 #'   the network is preserved by concatenating the incident edges of each
-#'   removed pseudo node. If \code{extra_fields} is not \code{NULL}, then a node
-#'   is a pseudo node only if the chosen fields of incident edges are equal.
-#'   Hence, this parameter is used to avoid merging segments with different
-#'   characteristics. Returns a \code{morphed_sfnetwork} containing a single
-#'   element of class \code{\link{sfnetwork}}.
+#'   removed pseudo node. If the argument \code{extra_fields} is not
+#'   \code{NULL}, then a node is removed only if the two incident edges (or the
+#'   ingoing/outgoing edges) share identical attributes considering the chosen
+#'   field(s). This parameter can be used to avoid merging segments with
+#'   different characteristics (i.e. highway type). Returns a
+#'   \code{morphed_sfnetwork} containing a single element of class
+#'   \code{\link{sfnetwork}}.
 #' @importFrom dplyr bind_rows
 #' @importFrom igraph adjacent_vertices decompose degree delete_vertices
 #'   edge_attr get.edge.ids induced_subgraph is_directed vertex_attr E incident
@@ -577,27 +580,31 @@ to_spatial_smooth = function(
 
   ## ==========================
   # STEP I (INTEGRATION): FILTER THE PSEUDO NODES
-  # The following code is run only if the user set one or more fields in the
-  # extra_fields argument. In that case, we define a pseudo node as follows:
-  # a node is a pseudo node if it has one incoming and one outgoing edge (or
-  # simply two incident edges in the case of undirected networks) and all the
-  # attributes of these two edges are equal.
-  # See also https://github.com/luukvdmeer/sfnetworks/issues/124
+
+  # The following code runs only if the user set one or more fields in the
+  # extra_fields argument. In that case, we define a pseudo node as follows: a
+  # node is a pseudo node if it has one incoming and one outgoing edge (or
+  # simply two incident edges in the case of undirected networks) and the chosen
+  # attributes of these two edges are equal. See also
+  # https://github.com/luukvdmeer/sfnetworks/issues/124
 
   if (!is.null(extra_fields)) {
-    # Check if all fields in extra_fields are present in the edges table
+    # First, I want to check if all fields in extra_fields exist in the edges
+    # table
     if (!all(extra_fields %in% edge_graph_attribute_names(x))) {
       stop(
-        "One or more fields in extra_fields do not exist in the edges graph",
+        "One or more fields in extra_fields parameter do not exist in the edges graph",
         call. = FALSE
       )
     }
 
     # Now I want to determine the id of the pseudo nodes. I use which() since
     # pseudo is a vector of length vcount(x) filled with boolean values which
-    # are TRUE only if the corresponding node has one incoming and one outgoing
+    # are TRUE if only if the corresponding node has one incoming and one outgoing
     # edge (or simply two incident edges in the case of undirected networks).
     id_pseudo <- which(pseudo)
+
+    browser()
 
     for (id in id_pseudo) {
       # Extract the attributes of the corresponding incident vertices.
@@ -607,7 +614,7 @@ to_spatial_smooth = function(
         graph = x,
         index = incident(x, id)
       )
-      # I decided to use an lapply loop since edge_attr can extract only one
+      # I had to use an lapply since edge_attr can extract only one
       # attribute at a time.
 
       # Convert incident_attributes to a matrix format to test if all the
