@@ -26,7 +26,7 @@
 #'
 #' @param extra_fields Character vector specying the name(s) of one or more
 #' fields in the edges table. If not NULL, then the \code{to_spatial_smooth}
-#' morpher removes only the nodes that have one incoming and one outcoming
+#' morpher removes only those nodes that have one incoming and one outcoming
 #' edge (or two incident edges in case of undirected networks) and identical
 #' values for the chosen fields.
 #'
@@ -538,15 +538,16 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #'   pseudo nodes are those nodes that have two incident edges. Connectivity of
 #'   the network is preserved by concatenating the incident edges of each
 #'   removed pseudo node. If the argument \code{extra_fields} is not
-#'   \code{NULL}, then a node is removed only if the two incident edges (or the
-#'   ingoing/outgoing edges) share identical attributes considering the chosen
-#'   field(s). This parameter can be used to avoid merging segments with
-#'   different characteristics (i.e. highway type). Returns a
+#'   \code{NULL}, then a node is removed if only if the two incident edges (or
+#'   the ingoing and outgoing edges) share identical value for one or more
+#'   fields. This parameter can be used to prevent merging segments with
+#'   different characteristics (i.e. highway types). The function returns a
 #'   \code{morphed_sfnetwork} containing a single element of class
 #'   \code{\link{sfnetwork}}.
 #' @importFrom dplyr bind_rows
 #' @importFrom igraph adjacent_vertices decompose degree delete_vertices
-#'   edge_attr get.edge.ids induced_subgraph is_directed vertex_attr E incident
+#'   edge_attr get.edge.ids induced_subgraph is_directed vertex_attr
+#'   incident_edges edge.attributes
 #' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_line_merge
 #'   st_drop_geometry
 #' @export
@@ -582,63 +583,75 @@ to_spatial_smooth = function(
   # STEP I (INTEGRATION): FILTER THE PSEUDO NODES
 
   # The following code runs only if the user set one or more fields in the
-  # extra_fields argument. In that case, we define a pseudo node as follows: a
-  # node is a pseudo node if it has one incoming and one outgoing edge (or
-  # simply two incident edges in the case of undirected networks) and the chosen
-  # attributes of these two edges are equal. See also
-  # https://github.com/luukvdmeer/sfnetworks/issues/124
+  # extra_fields argument. In that case, we say that a node is a pseudo node if
+  # it has one incoming and one outgoing edge (or simply two incident edges in
+  # the case of undirected networks) and the chosen attributes of these two
+  # edges are equal. See also https://github.com/luukvdmeer/sfnetworks/issues/124
 
-  if (!is.null(extra_fields)) {
-    # First, I want to check if all fields in extra_fields exist in the edges
-    # table
-    if (!all(extra_fields %in% edge_graph_attribute_names(x))) {
+  if (! is.null(extra_fields)) {
+    # First, I need to check that all fields specified in in extra_fields do
+    # exist in the edges table
+    if (! all(extra_fields %in% edge_graph_attribute_names(x))) {
       stop(
-        "One or more fields in extra_fields parameter do not exist in the edges graph",
+        "One or more fields in extra_fields do not exist in edges graph",
         call. = FALSE
       )
     }
 
-    # Now I want to determine the id of the pseudo nodes. I use which() since
-    # pseudo is a vector of length vcount(x) filled with boolean values which
-    # are TRUE if only if the corresponding node has one incoming and one outgoing
-    # edge (or simply two incident edges in the case of undirected networks).
-    id_pseudo <- which(pseudo)
+    # Then, I need to determine the id(s) of the pseudo nodes. Please note that
+    # pseudo is a vector of length vcount(x) filled with logical values denoting
+    # the pseudo nodes.
+    id_pseudo = which(pseudo)
 
-    browser()
+    # The following code is used to extract the id(s) of the edges that are
+    # incident to the pseudo nodes. I set mode = "all" since I need both
+    # outgoing and incoming edges in case of directed networks.
+    incident_edges_ids = incident_edges(
+      graph = x,
+      v = id_pseudo,
+      mode = "all"
+    )
 
-    for (id in id_pseudo) {
-      # Extract the attributes of the corresponding incident vertices.
-      incident_attributes = lapply(
-        X = extra_fields,
-        FUN = edge_attr,
-        graph = x,
-        index = incident(x, id)
-      )
-      # I had to use an lapply since edge_attr can extract only one
-      # attribute at a time.
+    # Then, I extract all attributes associated to those edges
+    incident_edges_attributes = edge.attributes(
+      graph = x,
+      index = do.call(c, incident_edges_ids)
+    )
 
-      # Convert incident_attributes to a matrix format to test if all the
-      # attributes in the two edges are identical
-      incident_attributes_matrix <- do.call(cbind, incident_attributes)
+    # and now I need to check that, for each field in extra_fields, the values
+    # for the two incident edges are identical
+    equality_tests <- lapply(
+      X = incident_edges_attributes[extra_fields], # select only the relevant attributes
+      FUN = function(x) {
+        # The subsetting operator seq(1, 2 * length(id_pseudo), by = 2) is used
+        # to select only the attributes associated with the ingoing edges, while
+        # seq(2, 2 * length(id_pseudo), by = 2) subsets only the outgoing edges
+        res <- x[seq(1, 2 * length(id_pseudo), by = 2)] == x[seq(2, 2 * length(id_pseudo), by = 2)]
+        # I used the operator == to compare the two objects since I need
+        # elementwise comparisons. I'm not sure if the same approach can be used
+        # with identical() or all.equal().
 
-      # If the two rows are not identical, then the corresponding node is not a
-      # psedo_node (according to this "new" definition"). In that case, remove
-      # that ID.
-      if (nrow(unique(incident_attributes_matrix)) == 1L) {
-        next
-      } else if (nrow(unique(incident_attributes_matrix)) == 2L) {
-        pseudo[id] <- FALSE
-      } else {
-        stop(
-          "The matrix of unique incident values must have either one or two rows",
-          "Please raise a new issue at https://github.com/luukvdmeer/sfnetworks",
-          call. = FALSE
-        )
+        # If one of the two values is NA or NaN, then the result of the
+        # elementwise comparison is NA. In that case, the two elements are
+        # certainly not identical, I can set the value FALSE.
+        res[is.na(res)] <- FALSE
+
+        # Return
+        res
       }
+    )
+
+    # Check if any pseudo node does not satisfy the new requirements (i.e.
+    # equality for the fields) and, in that case, change the boolean value
+    # stored by pseudo.
+    extra_fields_tests <- rowSums(do.call(cbind, equality_tests)) != length(extra_fields)
+    if (any(extra_fields_tests)) {
+      id_not_pseudo_anymore <- id_pseudo[extra_fields_tests]
+      pseudo[id_not_pseudo_anymore] <- FALSE
     }
   }
 
-    # Check again if there is at least one pseudo node
+  # Check again if there is at least one pseudo node
   if (! any(pseudo)) return (x)
 
   ## ===============================
@@ -752,7 +765,7 @@ to_spatial_smooth = function(
   new_edges$to = as.integer(new_edges$to)
 
   ## ===============================
-  # STEP II (EXTENSIONS): FIND FIELDS OF EDGES THAT WILL BE MERGED
+  # STEP II (EXTENSIONS): FIND FIELDS OF THE EDGES THAT WILL BE MERGED
   # The following code is run only if the user set of or more fields in the
   # extra_fields argument. In that case, those fields will be preserved when
   # merging the edges.
@@ -772,7 +785,7 @@ to_spatial_smooth = function(
 
         if (nrow(unique_old_fields) > 1L) {
           stop(
-            "There should be a unique value for the old field",
+            "Stop. There should be a unique value for each field\n",
             "Please raise a new issue at https://github.com/luukvdmeer/sfnetworks",
             call. = FALSE
           )
