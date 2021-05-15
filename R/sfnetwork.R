@@ -92,8 +92,8 @@
 #' # Store edge lenghts in a weight column.
 #' sfnetwork(nodes, edges, length_as_weight = TRUE)
 #'
-#' @importFrom sf st_as_sf
-#' @importFrom tidygraph tbl_graph with_graph
+#' @importFrom sf st_as_sf st_length
+#' @importFrom tidygraph tbl_graph
 #' @export
 sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
                      edges_as_lines = NULL, length_as_weight = FALSE,
@@ -136,7 +136,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
     return (x_sfn)
   }
   # Set edge attributes again.
-  # This ensures correct forwarding of additional attributes such as agr.
+  # This ensures correct forwarding of sf specific attributes such as agr.
   edge_graph_attributes(x_sfn) = edges
   if (edges_as_lines) {
     # Run validity check before explicitizing edges.
@@ -150,10 +150,12 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
     if (! force) require_valid_network_structure(x_sfn, message = TRUE)
   }
   if (length_as_weight) {
-    if ("weight" %in% edge_graph_attribute_names(x_sfn)) {
+    edges = edges_as_sf(x_sfn)
+    if ("weight" %in% names(edges)) {
       raise_overwrite("weight")
     }
-    edge_attr(x_sfn, "weight") = with_graph(x_sfn, edge_length())
+    edges$weight = st_length(edges)
+    edge_graph_attributes(x_sfn) = edges
   }
   x_sfn
 }

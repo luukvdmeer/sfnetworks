@@ -1,10 +1,14 @@
 In this release I have made the following changes:
 
-- All functions that interact with the `spatstat` package have been updated to comply with the new structure of that package (see https://github.com/spatstat/spatstat/tree/v1.64-2#spatstat-is-now-split-into-several-packages). These include `as_sfnetwork.linnet()`, `as_sfnetwork.psp()` and `as.linnet.sfnetwork()`. Documentation entries containing links to the spatstat documentation have been updated accordingly as well.
+- Compatibility with the `s2` package for spherical geometry operations by adding a `s2::as_s2_geography()` method for sfnetwork objects. In the new version of `sf` (one of our core dependencies), the `s2` package will be used for geometric operations involving longitude-latitude coordinates, see https://github.com/r-spatial/sf/issues/1649.
 
-- Internally, usage of `match()` for checking coordinate equality is replaced by a new `st_match()` utility function specifically designed for this task.
+- Minor bug fixes:
+  - When setting `length_as_weight = TRUE` in the sfnetwork construction function, the added weight column now preserves specification of units.
+  - `st_network_blend()` now internally uses `sf::st_cast()` instead of `sfheaders::sfc_cast()` to avoid errors with some CRS specifications.
 
-- It is now clearly documented that using `sf::st_reverse()` to reverse edge linestrings is only possible with GEOS versions >= 3.7. Test and examples for this function now first check if the required GEOS version is installed before running.
+- Documentation improvements:
+  - Extended function documentation for the shortest paths functions.
+  - Updated vignettes.
 
 ## R CMD check results
 

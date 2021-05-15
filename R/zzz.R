@@ -17,6 +17,8 @@
     })
   }
 
+  s3_register("s2::as_s2_geography", "sfnetwork")
+
   invisible()
 }
 
