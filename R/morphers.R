@@ -547,7 +547,7 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' @importFrom dplyr bind_rows
 #' @importFrom igraph adjacent_vertices decompose degree delete_vertices
 #'   edge_attr get.edge.ids induced_subgraph is_directed vertex_attr
-#'   incident_edges edge.attributes
+#'   incident_edges edge.attributes igraph_opt igraph_options
 #' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_line_merge
 #'   st_drop_geometry
 #' @export
@@ -620,11 +620,11 @@ to_spatial_smooth = function(
     # immediately after running the code.
 
     # Extract the default option for "return.vs.es"
-    default_igraph_opt <- igraph::igraph_opt("return.vs.es")
+    default_igraph_opt = igraph_opt("return.vs.es")
     # Set it to FALSE
-    igraph::igraph_options(return.vs.es = FALSE)
+    igraph_options(return.vs.es = FALSE)
     # Restore the default option (I think that this is mandatory for CRAN checks)
-    on.exit(igraph::igraph_options(return.vs.es = default_igraph_opt))
+    on.exit(igraph_options(return.vs.es = default_igraph_opt))
     # Run the code
     incident_edges_ids = incident_edges(
       graph = x,
@@ -633,7 +633,7 @@ to_spatial_smooth = function(
     )
 
     # Again, restore the default options for the next part of the code
-    igraph::igraph_options(return.vs.es = default_igraph_opt)
+    igraph_options(return.vs.es = default_igraph_opt)
 
     # Then, I extract all attributes associated to those edges
     incident_edges_attributes = edge.attributes(
@@ -645,13 +645,13 @@ to_spatial_smooth = function(
 
     # and now I need to check that, for each field in extra_fields, the values
     # for the two incident edges are identical
-    equality_tests <- lapply(
+    equality_tests = lapply(
       X = incident_edges_attributes[extra_fields], # select only the relevant attributes
       FUN = function(x) {
         # The subsetting operator seq(1, 2 * length(id_pseudo), by = 2) is used
         # to select only the attributes associated with the ingoing edges, while
         # seq(2, 2 * length(id_pseudo), by = 2) subsets only the outgoing edges
-        res <- x[seq(1, 2 * length(id_pseudo), by = 2)] == x[seq(2, 2 * length(id_pseudo), by = 2)]
+        res = x[seq(1, 2 * length(id_pseudo), by = 2)] == x[seq(2, 2 * length(id_pseudo), by = 2)]
         # I used the operator == to compare the two objects since I need
         # elementwise comparisons. I'm not sure if the same approach can be used
         # with identical() or all.equal().
@@ -659,7 +659,7 @@ to_spatial_smooth = function(
         # If one of the two values is NA or NaN, then the result of the
         # elementwise comparison is NA. In that case, the two elements are
         # certainly not identical, I can set the value FALSE.
-        res[is.na(res)] <- FALSE
+        res[is.na(res)] = FALSE
 
         # Return
         res
@@ -669,10 +669,10 @@ to_spatial_smooth = function(
     # Check if any pseudo node does not satisfy the new requirements (i.e.
     # equality for the fields) and, in that case, change the boolean value
     # stored by pseudo.
-    extra_fields_tests <- rowSums(do.call(cbind, equality_tests)) != length(extra_fields)
+    extra_fields_tests = rowSums(do.call(cbind, equality_tests)) != length(extra_fields)
     if (any(extra_fields_tests)) {
-      id_not_pseudo_anymore <- id_pseudo[extra_fields_tests]
-      pseudo[id_not_pseudo_anymore] <- FALSE
+      id_not_pseudo_anymore = id_pseudo[extra_fields_tests]
+      pseudo[id_not_pseudo_anymore] = FALSE
     }
   }
 
@@ -820,7 +820,7 @@ to_spatial_smooth = function(
       }
     )
 
-    orig_fields <- bind_rows(orig_fields_list)
+    orig_fields = bind_rows(orig_fields_list)
 
     # cbind those fields
     new_edges = cbind(new_edges, orig_fields)
