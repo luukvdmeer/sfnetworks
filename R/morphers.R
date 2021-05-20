@@ -606,16 +606,41 @@ to_spatial_smooth = function(
     # The following code is used to extract the id(s) of the edges that are
     # incident to the pseudo nodes. I set mode = "all" since I need both
     # outgoing and incoming edges in case of directed networks.
+
+    # Most of the computing time in igraph::incident_edges is spent running the
+    # following code:
+    # if (igraph_opt("return.vs.es")) {
+    # res <- lapply(res, function(x) create_es(graph, x + 1))
+    # }
+    # and, from the help page of ?igraph_opt, we can read that return.vs.es:
+    # Whether functions that return a set or sequence of vertices/edges should
+    # return formal vertex/edge sequence objects. We don't need that feature in
+    # this part of the code (since edge.attributes can work with any integers
+    # input), so I (temporarily) set it to FALSE and restore the default option
+    # immediately after running the code.
+
+    # Extract the default option for "return.vs.es"
+    default_igraph_opt <- igraph::igraph_opt("return.vs.es")
+    # Set it to FALSE
+    igraph::igraph_options(return.vs.es = FALSE)
+    # Restore the default option (I think that this is mandatory for CRAN checks)
+    on.exit(igraph::igraph_options(return.vs.es = default_igraph_opt))
+    # Run the code
     incident_edges_ids = incident_edges(
       graph = x,
       v = id_pseudo,
       mode = "all"
     )
 
+    # Again, restore the default options for the next part of the code
+    igraph::igraph_options(return.vs.es = default_igraph_opt)
+
     # Then, I extract all attributes associated to those edges
     incident_edges_attributes = edge.attributes(
       graph = x,
-      index = do.call(c, incident_edges_ids)
+      # Add 1 since the output of incident_edges when return.vs.es is FALSE is a
+      # list of ids indexed from 0
+      index = do.call(c, incident_edges_ids) + 1
     )
 
     # and now I need to check that, for each field in extra_fields, the values
