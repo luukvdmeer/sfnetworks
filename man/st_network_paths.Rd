@@ -19,7 +19,7 @@ st_network_paths(
 \item{from}{The geospatial point from which the paths will be
 calculated. Can be an object an object of class \code{\link[sf]{sf}} or
 \code{\link[sf]{sfc}}, containing a single feature. When multiple features
-are given, only the first one is taken.
+are given, only the first one is used.
 Alternatively, it can be an integer, referring to the index of the
 node from which the paths will be calculated, or a character,
 referring to the name of the node from which the paths will be
@@ -74,8 +74,23 @@ is not equal to a node in the network, it will be snapped to its nearest
 node before calculating the shortest or simple paths.
 }
 \details{
-See the \code{\link[igraph:shortest_paths]{igraph}} or
-\code{\link[igraph:all_simple_paths]{igraph}} documentation.
+Spatial features provided to the \code{from} and/or
+\code{to} argument don't necessarily have to be points. Internally, the
+nearest node to each feature is found by calling
+\code{\link[sf]{st_nearest_feature}}, so any feature with a geometry type
+that is accepted by that function can be provided as \code{from} and/or
+\code{to} argument.
+
+When directly providing integer node indices or character node names to the
+\code{from} and/or \code{to} argument, keep the following in mind. A node
+index should correspond to a row-number of the nodes table of the network.
+A node name should correspond to a value of a column in the nodes table
+named \code{name}. This column should contain character values without
+duplicates.
+
+For more details on the wrapped functions from \code{\link[igraph]{igraph}}
+see the \code{\link[igraph]{shortest_paths}} or
+\code{\link[igraph]{all_simple_paths}} documentation pages.
 }
 \examples{
 library(sf, quietly = TRUE)

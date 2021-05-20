@@ -38,7 +38,7 @@ to_spatial_simple(
   store_original_data = FALSE
 )
 
-to_spatial_smooth(x, store_original_data = FALSE)
+to_spatial_smooth(x, store_original_data = FALSE, extra_fields = NULL)
 
 to_spatial_subdivision(x)
 
@@ -99,6 +99,12 @@ will be calculated from the other nodes towards the reference node instead.}
 to \code{TRUE}.}
 
 \item{remove_loops}{Should loop edges be removed. Defaults to \code{TRUE}.}
+
+\item{extra_fields}{Character vector specying the name(s) of one or more
+fields in the edges table. If not NULL, then the \code{to_spatial_smooth}
+morpher removes only those nodes that have one incoming and one outcoming
+edge (or two incident edges in case of undirected networks) and identical
+values for the chosen fields.}
 
 \item{subset_by}{Whether to create subgraphs based on nodes or edges.}
 }
@@ -181,12 +187,17 @@ Returns a \code{morphed_sfnetwork} containing a single element of class
 
 \item \code{to_spatial_smooth}: Construct a smoothed version of the network by
 iteratively removing pseudo nodes, while preserving the connectivity of the
-network. In the case of directed networks, pseudo nodes are those nodes that
-have only one incoming and one outgoing edge. In undirected networks, pseudo
-nodes are those nodes that have two incident edges. Connectivity of the
-network is preserved by concatenating the incident edges of each removed
-pseudo node. Returns a \code{morphed_sfnetwork} containing a single element
-of class \code{\link{sfnetwork}}.
+network. In the case of directed networks, pseudo nodes are those nodes
+that have only one incoming and one outgoing edge. In undirected networks,
+pseudo nodes are those nodes that have two incident edges. Connectivity of
+the network is preserved by concatenating the incident edges of each
+removed pseudo node. If the argument \code{extra_fields} is not
+\code{NULL}, then a node is removed if only if the two incident edges (or
+the ingoing and outgoing edges) share identical value for one or more
+fields. This parameter can be used to prevent merging segments with
+different characteristics (i.e. highway types). The function returns a
+\code{morphed_sfnetwork} containing a single element of class
+\code{\link{sfnetwork}}.
 
 \item \code{to_spatial_subdivision}: Construct a subdivision of the network by
 subdividing edges at each interior point that is equal to any

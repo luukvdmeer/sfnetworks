@@ -69,7 +69,7 @@ create_nodes_from_edges = function(edges) {
   # Get the boundary points of the edges.
   nodes = linestring_boundary_points(edges)
   # Give each unique location a unique ID.
-  indices = match(nodes, unique(nodes))
+  indices = st_match(nodes)
   # Define for each endpoint if it is a source or target node.
   is_source = rep(c(TRUE, FALSE), length(nodes) / 2)
   # Define for each edges which node is its source and target node.
@@ -350,8 +350,22 @@ linestring_segments = function(x) {
 #'
 #' @importFrom sf st_equals
 #' @noRd
-spatial_duplicated = function(x) {
+st_duplicated = function(x) {
   dup = rep(FALSE, length(x))
   dup[unique(do.call("c", lapply(st_equals(x), `[`, - 1)))] = TRUE
   dup
+}
+
+#' Geometry matching
+#'
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
+#'
+#' @return A numeric vector giving for each feature in x the row number of the
+#' first feature in x that has equal coordinates.
+#'
+#' @importFrom sf st_equals
+#' @noRd
+st_match = function(x) {
+  idxs = do.call("c", lapply(st_equals(x), `[`, 1))
+  match(idxs, unique(idxs))
 }

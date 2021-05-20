@@ -92,8 +92,8 @@
 #' # Store edge lenghts in a weight column.
 #' sfnetwork(nodes, edges, length_as_weight = TRUE)
 #'
-#' @importFrom sf st_as_sf
-#' @importFrom tidygraph tbl_graph with_graph
+#' @importFrom sf st_as_sf st_length
+#' @importFrom tidygraph tbl_graph
 #' @export
 sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
                      edges_as_lines = NULL, length_as_weight = FALSE,
@@ -136,7 +136,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
     return (x_sfn)
   }
   # Set edge attributes again.
-  # This ensures correct forwarding of additional attributes such as agr.
+  # This ensures correct forwarding of sf specific attributes such as agr.
   edge_graph_attributes(x_sfn) = edges
   if (edges_as_lines) {
     # Run validity check before explicitizing edges.
@@ -150,10 +150,12 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
     if (! force) require_valid_network_structure(x_sfn, message = TRUE)
   }
   if (length_as_weight) {
-    if ("weight" %in% edge_graph_attribute_names(x_sfn)) {
+    edges = edges_as_sf(x_sfn)
+    if ("weight" %in% names(edges)) {
       raise_overwrite("weight")
     }
-    edge_attr(x_sfn, "weight") = with_graph(x_sfn, edge_length())
+    edges$weight = st_length(edges)
+    edge_graph_attributes(x_sfn) = edges
   }
   x_sfn
 }
@@ -274,27 +276,35 @@ as_sfnetwork.sf = function(x, ...) {
 #'
 #' @export
 as_sfnetwork.linnet = function(x, ...) {
+  check_spatstat("spatstat.geom")
+
   # The easiest approach is the same as for psp objects, i.e. converting the
   # linnet object into a psp format and then applying the corresponding method.
-  if (!requireNamespace("spatstat", quietly = TRUE)) {
-    stop("Package spatstat required, please install it first", call. = FALSE)
-  }
-  x_psp = spatstat::as.psp(x)
+  x_psp = spatstat.geom::as.psp(x)
   as_sfnetwork(x_psp, ...)
 }
 
 #' @name as_sfnetwork
 #' @examples
 #' # From a psp object.
-#' if (require(spatstat, quietly = TRUE)) {
+#' if (require(spatstat.geom, quietly = TRUE)) {
 #'   set.seed(42)
 #'   test_psp = psp(runif(10), runif(10), runif(10), runif(10), window=owin())
 #'   as_sfnetwork(test_psp)
 #' }
 #'
 #' @importFrom sf st_as_sf st_collection_extract
+#' @importFrom utils packageVersion
 #' @export
 as_sfnetwork.psp = function(x, ...) {
+  # Add an extra check to test the version of sf package. See:
+  # https://github.com/luukvdmeer/sfnetworks/pull/138#issuecomment-803430686
+  if (packageVersion("sf") < "0.9.8") {
+    stop(
+      "spatstat code requires sf >= 0.9.8; please update sf",
+      call. = FALSE
+    )
+  }
   # The easiest method for transforming a Line Segment Pattern (psp) object
   # into sfnetwork format is to transform it into sf format and then apply
   # the usual methods.

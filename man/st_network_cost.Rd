@@ -26,11 +26,13 @@ calculated. By default, all nodes in the network are included.}
 
 \item{to}{The (set of) geospatial point(s) to which the shortest paths will
 be calculated. Can be an object of  class \code{\link[sf]{sf}} or
-\code{\link[sf]{sfc}}.
+\code{\link[sf]{sfc}}. Features with duplicated nearest node indices will be
+removed before calculating the cost matrix.
 Alternatively it can be a numeric vector containing the indices of the nodes
 to which the shortest paths will be calculated, or a character vector
 containing the names of the nodes to which the shortest paths will be
-calculated. By default, all nodes in the network are included.}
+calculated. Duplicated values will be removed before calculating the cost
+matrix. By default, all nodes in the network are included.}
 
 \item{weights}{The edge weights to be used in the shortest path calculation.
 Can be a numeric vector giving edge weights, or a column name referring to
@@ -48,7 +50,9 @@ If set to \code{NA}, no weights are used, even if the edges have a
 }
 \value{
 An n times m numeric matrix where n is the length of the \code{from}
-argument, and m is the length of the \code{to} argument.
+argument, and m is the length of unique values in the \code{to} argument.
+When the \code{to} argument contains spatial features that have the same
+nearest node, these features are considered duplicates.
 }
 \description{
 Wrapper around \code{\link[igraph]{distances}} to calculate costs of
@@ -58,7 +62,22 @@ If such a geospatial point is not equal to a node in the network, it will
 be snapped to its nearest node before calculating costs.
 }
 \details{
-See the \code{\link[igraph:distances]{igraph}} documentation.
+Spatial features provided to the \code{from} and/or
+\code{to} argument don't necessarily have to be points. Internally, the
+nearest node to each feature is found by calling
+\code{\link[sf]{st_nearest_feature}}, so any feature with a geometry type
+that is accepted by that function can be provided as \code{from} and/or
+\code{to} argument.
+
+When directly providing integer node indices or character node names to the
+\code{from} and/or \code{to} argument, keep the following in mind. A node
+index should correspond to a row-number of the nodes table of the network.
+A node name should correspond to a value of a column in the nodes table
+named \code{name}. This column should contain character values without
+duplicates.
+
+For more details on the wrapped function from \code{\link[igraph]{igraph}}
+see the \code{\link[igraph]{distances}} documentation page.
 }
 \note{
 By default, \code{\link[igraph]{distances}} calculates costs by
@@ -67,6 +86,12 @@ undirected network. This is the default even when the input network is
 directed! For directed networks, the behaviour can be changed by setting
 \code{mode = "out"} to consider only outbound edges, or \code{mode = "in"}
 to consider only inbound edges.
+
+Furthermore, \code{\link[igraph]{distances}} does not allow duplicated
+values in the \code{to} argument. This also means that when providing
+spatial features, sets of multiple features that happen to have the same
+nearest node will be reduced to one by selecting only the first of these
+features.
 }
 \examples{
 library(sf, quietly = TRUE)

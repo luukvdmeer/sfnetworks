@@ -24,6 +24,12 @@
 #' column named \code{.orig_data}. This is in line with the design principles
 #' of \code{tidygraph}. Defaults to \code{FALSE}.
 #'
+#' @param extra_fields Character vector specying the name(s) of one or more
+#' fields in the edges table. If not NULL, then the \code{to_spatial_smooth}
+#' morpher removes only those nodes that have one incoming and one outcoming
+#' edge (or two incident edges in case of undirected networks) and identical
+#' values for the chosen fields.
+#'
 #' @param summarise_attributes Whenever multiple features (i.e. nodes and/or
 #' edges) are merged into a single feature during morphing, how should their
 #' attributes be combined? Several options are possible, see
@@ -526,19 +532,30 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 }
 
 #' @describeIn spatial_morphers Construct a smoothed version of the network by
-#' iteratively removing pseudo nodes, while preserving the connectivity of the
-#' network. In the case of directed networks, pseudo nodes are those nodes that
-#' have only one incoming and one outgoing edge. In undirected networks, pseudo
-#' nodes are those nodes that have two incident edges. Connectivity of the
-#' network is preserved by concatenating the incident edges of each removed
-#' pseudo node. Returns a \code{morphed_sfnetwork} containing a single element
-#' of class \code{\link{sfnetwork}}.
+#'   iteratively removing pseudo nodes, while preserving the connectivity of the
+#'   network. In the case of directed networks, pseudo nodes are those nodes
+#'   that have only one incoming and one outgoing edge. In undirected networks,
+#'   pseudo nodes are those nodes that have two incident edges. Connectivity of
+#'   the network is preserved by concatenating the incident edges of each
+#'   removed pseudo node. If the argument \code{extra_fields} is not
+#'   \code{NULL}, then a node is removed if only if the two incident edges (or
+#'   the ingoing and outgoing edges) share identical value for one or more
+#'   fields. This parameter can be used to prevent merging segments with
+#'   different characteristics (i.e. highway types). The function returns a
+#'   \code{morphed_sfnetwork} containing a single element of class
+#'   \code{\link{sfnetwork}}.
 #' @importFrom dplyr bind_rows
 #' @importFrom igraph adjacent_vertices decompose degree delete_vertices
-#' edge_attr get.edge.ids induced_subgraph is_directed vertex_attr
+#'   edge_attr get.edge.ids induced_subgraph is_directed vertex_attr
+#'   incident_edges edge.attributes igraph_opt igraph_options
 #' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_line_merge
+#'   st_drop_geometry
 #' @export
-to_spatial_smooth = function(x, store_original_data = FALSE) {
+to_spatial_smooth = function(
+  x,
+  store_original_data = FALSE,
+  extra_fields = NULL
+ ) {
   # Retrieve nodes and edges from the network.
   nodes = nodes_as_sf(x)
   edges = edges_as_table(x)
@@ -561,6 +578,107 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
     pseudo = degree(x) == 2
   }
   if (! any(pseudo)) return (x)
+
+  ## ==========================
+  # STEP I (INTEGRATION): FILTER THE PSEUDO NODES
+
+  # The following code runs only if the user set one or more fields in the
+  # extra_fields argument. In that case, we say that a node is a pseudo node if
+  # it has one incoming and one outgoing edge (or simply two incident edges in
+  # the case of undirected networks) and the chosen attributes of these two
+  # edges are equal. See also https://github.com/luukvdmeer/sfnetworks/issues/124
+
+  if (! is.null(extra_fields)) {
+    # First, I need to check that all fields specified in in extra_fields do
+    # exist in the edges table
+    if (! all(extra_fields %in% edge_graph_attribute_names(x))) {
+      stop(
+        "One or more fields in extra_fields do not exist in edges graph",
+        call. = FALSE
+      )
+    }
+
+    # Then, I need to determine the id(s) of the pseudo nodes. Please note that
+    # pseudo is a vector of length vcount(x) filled with logical values denoting
+    # the pseudo nodes.
+    id_pseudo = which(pseudo)
+
+    # The following code is used to extract the id(s) of the edges that are
+    # incident to the pseudo nodes. I set mode = "all" since I need both
+    # outgoing and incoming edges in case of directed networks.
+
+    # Most of the computing time in igraph::incident_edges is spent running the
+    # following code:
+    # if (igraph_opt("return.vs.es")) {
+    # res <- lapply(res, function(x) create_es(graph, x + 1))
+    # }
+    # and, from the help page of ?igraph_opt, we can read that return.vs.es:
+    # Whether functions that return a set or sequence of vertices/edges should
+    # return formal vertex/edge sequence objects. We don't need that feature in
+    # this part of the code (since edge.attributes can work with any integers
+    # input), so I (temporarily) set it to FALSE and restore the default option
+    # immediately after running the code.
+
+    # Extract the default option for "return.vs.es"
+    default_igraph_opt = igraph_opt("return.vs.es")
+    # Set it to FALSE
+    igraph_options(return.vs.es = FALSE)
+    # Restore the default option (I think that this is mandatory for CRAN checks)
+    on.exit(igraph_options(return.vs.es = default_igraph_opt))
+    # Run the code
+    incident_edges_ids = incident_edges(
+      graph = x,
+      v = id_pseudo,
+      mode = "all"
+    )
+
+    # Again, restore the default options for the next part of the code
+    igraph_options(return.vs.es = default_igraph_opt)
+
+    # Then, I extract all attributes associated to those edges
+    incident_edges_attributes = edge.attributes(
+      graph = x,
+      # Add 1 since the output of incident_edges when return.vs.es is FALSE is a
+      # list of ids indexed from 0
+      index = do.call(c, incident_edges_ids) + 1
+    )
+
+    # and now I need to check that, for each field in extra_fields, the values
+    # for the two incident edges are identical
+    equality_tests = lapply(
+      X = incident_edges_attributes[extra_fields], # select only the relevant attributes
+      FUN = function(x) {
+        # The subsetting operator seq(1, 2 * length(id_pseudo), by = 2) is used
+        # to select only the attributes associated with the ingoing edges, while
+        # seq(2, 2 * length(id_pseudo), by = 2) subsets only the outgoing edges
+        res = x[seq(1, 2 * length(id_pseudo), by = 2)] == x[seq(2, 2 * length(id_pseudo), by = 2)]
+        # I used the operator == to compare the two objects since I need
+        # elementwise comparisons. I'm not sure if the same approach can be used
+        # with identical() or all.equal().
+
+        # If one of the two values is NA or NaN, then the result of the
+        # elementwise comparison is NA. In that case, the two elements are
+        # certainly not identical, I can set the value FALSE.
+        res[is.na(res)] = FALSE
+
+        # Return
+        res
+      }
+    )
+
+    # Check if any pseudo node does not satisfy the new requirements (i.e.
+    # equality for the fields) and, in that case, change the boolean value
+    # stored by pseudo.
+    extra_fields_tests = rowSums(do.call(cbind, equality_tests)) != length(extra_fields)
+    if (any(extra_fields_tests)) {
+      id_not_pseudo_anymore = id_pseudo[extra_fields_tests]
+      pseudo[id_not_pseudo_anymore] = FALSE
+    }
+  }
+
+  # Check again if there is at least one pseudo node
+  if (! any(pseudo)) return (x)
+
   ## ===============================
   # STEP II: FIND EDGES TO BE MERGED
   # The connectivity of the network should be preserved.
@@ -670,6 +788,44 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
   new_edges = data.frame(do.call("rbind", new_edge_list))
   new_edges$from = as.integer(new_edges$from)
   new_edges$to = as.integer(new_edges$to)
+
+  ## ===============================
+  # STEP II (EXTENSIONS): FIND FIELDS OF THE EDGES THAT WILL BE MERGED
+  # The following code is run only if the user set of or more fields in the
+  # extra_fields argument. In that case, those fields will be preserved when
+  # merging the edges.
+  # See also https://github.com/luukvdmeer/sfnetworks/issues/124
+
+  if (! is.null(extra_fields)) {
+    # Determine the (unique) levels of the fields that will be preserved
+    orig_fields_list = lapply(
+      X = new_edges$.tidygraph_edge_index,
+      FUN = function(id, data = edges) {
+        old_fields = st_drop_geometry(data)[
+          i = id,
+          j = extra_fields,
+        ]
+
+        unique_old_fields = unique(old_fields)
+
+        if (nrow(unique_old_fields) > 1L) {
+          stop(
+            "Stop. There should be a unique value for each field\n",
+            "Please raise a new issue at https://github.com/luukvdmeer/sfnetworks",
+            call. = FALSE
+          )
+        }
+
+        unique_old_fields
+      }
+    )
+
+    orig_fields = bind_rows(orig_fields_list)
+
+    # cbind those fields
+    new_edges = cbind(new_edges, orig_fields)
+  }
+
   ## ====================================
   # STEP III: CONCATENATE EDGE GEOMETRIES
   # If the edges to be merged have geometries:
@@ -746,6 +902,7 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
     new_edges$.orig_data = lapply(new_edges$.tidygraph_edge_index, copy_data)
     edge_graph_attributes(x_new) = new_edges
   }
+
   # Return in a list.
   list(
     smooth = x_new
@@ -908,7 +1065,7 @@ to_spatial_subdivision = function(x) {
   ## ==================================================
   # Define the indices of the new nodes.
   # Equal geometries should get the same index.
-  new_node_idxs = match(new_node_geoms, unique(new_node_geoms))
+  new_node_idxs = st_match(new_node_geoms)
   # Map node indices to edges.
   is_source = rep(c(TRUE, FALSE), length(new_node_geoms) / 2)
   new_edges$from = new_node_idxs[is_source]
