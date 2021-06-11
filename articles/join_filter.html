@@ -103,7 +103,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>3. Spatial joins and filters</h1>
             
-            <h4 class="date">2021-05-13</h4>
+            <h4 class="date">2021-06-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/join_filter.Rmd"><code>vignettes/join_filter.Rmd</code></a></small>
       <div class="hidden name"><code>join_filter.Rmd</code></div>
@@ -196,62 +196,62 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <code class="sourceCode R"><span class="va">net</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="fu"><a href="../reference/spatial_edge_predicates.html">edge_crosses</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/context_accessors.html">.E</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">0</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">701</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">0</span> <span style="color: #555555;">edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
+#&gt; # CRS: </span> <span style="color: #555555;">EPSG:3035</span> <span style="color: #555555;">
 #&gt; #
 #&gt; # A rooted forest with 701 trees with spatially explicit edges
 #&gt; #
-#&gt; # Edge Data: 0 x 5 (active)</span><span>
-#&gt; </span><span style="color: #555555;"># … with 5 variables: from &lt;int&gt;, to &lt;int&gt;, name &lt;chr&gt;, type &lt;fct&gt;,</span><span>
-#&gt; </span><span style="color: #555555;">#   geometry &lt;GEOMETRY [m]&gt;</span><span>
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Node Data:     701 x 1</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt; # Edge Data: 0 x 5 (active)</span>
+#&gt; <span style="color: #555555;"># … with 5 variables: from &lt;int&gt;, to &lt;int&gt;, name &lt;chr&gt;, type &lt;fct&gt;,</span>
+#&gt; <span style="color: #555555;">#   geometry &lt;GEOMETRY [m]&gt;</span>
+#&gt; <span style="color: #555555;">#
+#&gt; # Node Data:     701 x 1</span>
+#&gt; <span style="color: #555555;"># Geometry type: POINT</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 #&gt;            geometry
-#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923)
-#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946)
-#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777)
-#&gt; </span><span style="color: #555555;"># … with 698 more rows</span><span>
-</span></code></pre>
+#&gt;         <span style="color: #555555; font-style: italic;">&lt;POINT [m]&gt;</span>
+#&gt; <span style="color: #555555;">1</span> (4151491 3207923)
+#&gt; <span style="color: #555555;">2</span> (4151474 3207946)
+#&gt; <span style="color: #555555;">3</span> (4151398 3207777)
+#&gt; <span style="color: #555555;"># … with 698 more rows</span>
+</code></pre>
 <p>If you just want to store the information about the investigated spatial relation, without filtering the network, you can also use the spatial node and edge query functions inside a <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">dplyr::mutate()</a></code> verb.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">net</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>in_poly <span class="op">=</span> <span class="fu"><a href="../reference/spatial_node_predicates.html">node_intersects</a></span><span class="op">(</span><span class="va">poly</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">701</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">851</span> <span style="color: #555555;">edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
+#&gt; # CRS: </span> <span style="color: #555555;">EPSG:3035</span> <span style="color: #555555;">
 #&gt; #
 #&gt; # A directed multigraph with 14 components with spatially explicit edges
 #&gt; #
-#&gt; # Node Data:     701 x 2 (active)</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt; # Node Data:     701 x 2 (active)</span>
+#&gt; <span style="color: #555555;"># Geometry type: POINT</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 #&gt;            geometry in_poly
-#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;lgl&gt;</span><span>  
-#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923) TRUE   
-#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946) TRUE   
-#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777) TRUE   
-#&gt; </span><span style="color: #555555;">4</span><span> (4151370 3207673) TRUE   
-#&gt; </span><span style="color: #555555;">5</span><span> (4151408 3207539) TRUE   
-#&gt; </span><span style="color: #555555;">6</span><span> (4151421 3207592) TRUE   
-#&gt; </span><span style="color: #555555;"># … with 695 more rows</span><span>
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Edge Data:     851 x 5</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;         <span style="color: #555555; font-style: italic;">&lt;POINT [m]&gt;</span> <span style="color: #555555; font-style: italic;">&lt;lgl&gt;</span>  
+#&gt; <span style="color: #555555;">1</span> (4151491 3207923) TRUE   
+#&gt; <span style="color: #555555;">2</span> (4151474 3207946) TRUE   
+#&gt; <span style="color: #555555;">3</span> (4151398 3207777) TRUE   
+#&gt; <span style="color: #555555;">4</span> (4151370 3207673) TRUE   
+#&gt; <span style="color: #555555;">5</span> (4151408 3207539) TRUE   
+#&gt; <span style="color: #555555;">6</span> (4151421 3207592) TRUE   
+#&gt; <span style="color: #555555;"># … with 695 more rows</span>
+#&gt; <span style="color: #555555;">#
+#&gt; # Edge Data:     851 x 5</span>
+#&gt; <span style="color: #555555;"># Geometry type: LINESTRING</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 #&gt;    from    to name            type                                      geometry
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>           </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                             </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbecker St… resident…       (4151491 3207923, 4151474 3207946)
-#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersallee    secondary (4151398 3207777, 4151390 3207727, 4151…
-#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-Bernd-… resident… (4151408 3207539, 4151417 3207573, 4151…
-#&gt; </span><span style="color: #555555;"># … with 848 more rows</span><span>
-</span></code></pre>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #555555; font-style: italic;">&lt;fct&gt;</span>                             <span style="color: #555555; font-style: italic;">&lt;LINESTRING [m]&gt;</span>
+#&gt; <span style="color: #555555;">1</span>     1     2 Havixbecker St… resident…       (4151491 3207923, 4151474 3207946)
+#&gt; <span style="color: #555555;">2</span>     3     4 Pienersallee    secondary (4151398 3207777, 4151390 3207727, 4151…
+#&gt; <span style="color: #555555;">3</span>     5     6 Schulte-Bernd-… resident… (4151408 3207539, 4151417 3207573, 4151…
+#&gt; <span style="color: #555555;"># … with 848 more rows</span>
+</code></pre>
 <p>Besides predicate query functions, you can also use the <a href="https://luukvdmeer.github.io/sfnetworks/reference/node_coordinates.html">coordinate query functions</a> for spatial filters on the nodes. For example:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">v</span> <span class="op">=</span> <span class="fl">4152000</span>
@@ -306,37 +306,37 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 
 <span class="va">joined</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_join</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">codes</span>, join <span class="op">=</span> <span class="va">st_intersects</span><span class="op">)</span>
 <span class="va">joined</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">701</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">851</span> <span style="color: #555555;">edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
+#&gt; # CRS: </span> <span style="color: #555555;">EPSG:3035</span> <span style="color: #555555;">
 #&gt; #
 #&gt; # A directed multigraph with 14 components with spatially explicit edges
 #&gt; #
-#&gt; # Node Data:     701 x 2 (active)</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt; # Node Data:     701 x 2 (active)</span>
+#&gt; <span style="color: #555555;"># Geometry type: POINT</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 #&gt;            geometry post_code
-#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>    
-#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923) 1020     
-#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946) 1020     
-#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777) 1020     
-#&gt; </span><span style="color: #555555;">4</span><span> (4151370 3207673) 1020     
-#&gt; </span><span style="color: #555555;">5</span><span> (4151408 3207539) 1020     
-#&gt; </span><span style="color: #555555;">6</span><span> (4151421 3207592) 1020     
-#&gt; </span><span style="color: #555555;"># … with 695 more rows</span><span>
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Edge Data:     851 x 5</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;         <span style="color: #555555; font-style: italic;">&lt;POINT [m]&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>    
+#&gt; <span style="color: #555555;">1</span> (4151491 3207923) 1020     
+#&gt; <span style="color: #555555;">2</span> (4151474 3207946) 1020     
+#&gt; <span style="color: #555555;">3</span> (4151398 3207777) 1020     
+#&gt; <span style="color: #555555;">4</span> (4151370 3207673) 1020     
+#&gt; <span style="color: #555555;">5</span> (4151408 3207539) 1020     
+#&gt; <span style="color: #555555;">6</span> (4151421 3207592) 1020     
+#&gt; <span style="color: #555555;"># … with 695 more rows</span>
+#&gt; <span style="color: #555555;">#
+#&gt; # Edge Data:     851 x 5</span>
+#&gt; <span style="color: #555555;"># Geometry type: LINESTRING</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 #&gt;    from    to name            type                                      geometry
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>           </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                             </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbecker St… resident…       (4151491 3207923, 4151474 3207946)
-#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersallee    secondary (4151398 3207777, 4151390 3207727, 4151…
-#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-Bernd-… resident… (4151408 3207539, 4151417 3207573, 4151…
-#&gt; </span><span style="color: #555555;"># … with 848 more rows</span><span>
-</span></code></pre>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #555555; font-style: italic;">&lt;fct&gt;</span>                             <span style="color: #555555; font-style: italic;">&lt;LINESTRING [m]&gt;</span>
+#&gt; <span style="color: #555555;">1</span>     1     2 Havixbecker St… resident…       (4151491 3207923, 4151474 3207946)
+#&gt; <span style="color: #555555;">2</span>     3     4 Pienersallee    secondary (4151398 3207777, 4151390 3207727, 4151…
+#&gt; <span style="color: #555555;">3</span>     5     6 Schulte-Bernd-… resident… (4151408 3207539, 4151417 3207573, 4151…
+#&gt; <span style="color: #555555;"># … with 848 more rows</span>
+</code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">codes</span>, col <span class="op">=</span> <span class="cn">NA</span>, border <span class="op">=</span> <span class="st">"red"</span>, lty <span class="op">=</span> <span class="fl">4</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
@@ -355,74 +355,74 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_join</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">two_equal_polys</span>, join <span class="op">=</span> <span class="va">st_intersects</span><span class="op">)</span>
 <span class="co">#&gt; Warning: Multiple matches were detected from some nodes. Only the first match is</span>
 <span class="co">#&gt; considered</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">701</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">851</span> <span style="color: #555555;">edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
+#&gt; # CRS: </span> <span style="color: #555555;">EPSG:3035</span> <span style="color: #555555;">
 #&gt; #
 #&gt; # A directed multigraph with 14 components with spatially explicit edges
 #&gt; #
-#&gt; # Node Data:     701 x 2 (active)</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt; # Node Data:     701 x 2 (active)</span>
+#&gt; <span style="color: #555555;"># Geometry type: POINT</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 #&gt;            geometry foo  
-#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923) a    
-#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946) a    
-#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777) a    
-#&gt; </span><span style="color: #555555;">4</span><span> (4151370 3207673) a    
-#&gt; </span><span style="color: #555555;">5</span><span> (4151408 3207539) a    
-#&gt; </span><span style="color: #555555;">6</span><span> (4151421 3207592) a    
-#&gt; </span><span style="color: #555555;"># … with 695 more rows</span><span>
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Edge Data:     851 x 5</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;         <span style="color: #555555; font-style: italic;">&lt;POINT [m]&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>
+#&gt; <span style="color: #555555;">1</span> (4151491 3207923) a    
+#&gt; <span style="color: #555555;">2</span> (4151474 3207946) a    
+#&gt; <span style="color: #555555;">3</span> (4151398 3207777) a    
+#&gt; <span style="color: #555555;">4</span> (4151370 3207673) a    
+#&gt; <span style="color: #555555;">5</span> (4151408 3207539) a    
+#&gt; <span style="color: #555555;">6</span> (4151421 3207592) a    
+#&gt; <span style="color: #555555;"># … with 695 more rows</span>
+#&gt; <span style="color: #555555;">#
+#&gt; # Edge Data:     851 x 5</span>
+#&gt; <span style="color: #555555;"># Geometry type: LINESTRING</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 #&gt;    from    to name            type                                      geometry
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>           </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                             </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbecker St… resident…       (4151491 3207923, 4151474 3207946)
-#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersallee    secondary (4151398 3207777, 4151390 3207727, 4151…
-#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-Bernd-… resident… (4151408 3207539, 4151417 3207573, 4151…
-#&gt; </span><span style="color: #555555;"># … with 848 more rows</span><span>
-</span></code></pre>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #555555; font-style: italic;">&lt;fct&gt;</span>                             <span style="color: #555555; font-style: italic;">&lt;LINESTRING [m]&gt;</span>
+#&gt; <span style="color: #555555;">1</span>     1     2 Havixbecker St… resident…       (4151491 3207923, 4151474 3207946)
+#&gt; <span style="color: #555555;">2</span>     3     4 Pienersallee    secondary (4151398 3207777, 4151390 3207727, 4151…
+#&gt; <span style="color: #555555;">3</span>     5     6 Schulte-Bernd-… resident… (4151408 3207539, 4151417 3207573, 4151…
+#&gt; <span style="color: #555555;"># … with 848 more rows</span>
+</code></pre>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Join on edges duplicates edges that have multiple matches.</span>
 <span class="co"># The number of edges in the resulting network is higher than in the original.</span>
 <span class="va">net</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_join</a></span><span class="op">(</span><span class="va">two_equal_polys</span>, join <span class="op">=</span> <span class="va">st_intersects</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">989</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">701</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">989</span> <span style="color: #555555;">edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
+#&gt; # CRS: </span> <span style="color: #555555;">EPSG:3035</span> <span style="color: #555555;">
 #&gt; #
 #&gt; # A directed multigraph with 14 components with spatially explicit edges
 #&gt; #
-#&gt; # Edge Data:     989 x 6 (active)</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt; # Edge Data:     989 x 6 (active)</span>
+#&gt; <span style="color: #555555;"># Geometry type: LINESTRING</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 #&gt;    from    to name          type                                  geometry foo  
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>         </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                         </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbecker … residen…    (4151491 3207923, 4151474 3207946) a    
-#&gt; </span><span style="color: #555555;">2</span><span>     1     2 Havixbecker … residen…    (4151491 3207923, 4151474 3207946) b    
-#&gt; </span><span style="color: #555555;">3</span><span>     3     4 Pienersallee  seconda… (4151398 3207777, 4151390 3207727, 4… a    
-#&gt; </span><span style="color: #555555;">4</span><span>     3     4 Pienersallee  seconda… (4151398 3207777, 4151390 3207727, 4… b    
-#&gt; </span><span style="color: #555555;">5</span><span>     5     6 Schulte-Bern… residen… (4151408 3207539, 4151417 3207573, 4… a    
-#&gt; </span><span style="color: #555555;">6</span><span>     5     6 Schulte-Bern… residen… (4151408 3207539, 4151417 3207573, 4… b    
-#&gt; </span><span style="color: #555555;"># … with 983 more rows</span><span>
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Node Data:     701 x 1</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #555555; font-style: italic;">&lt;fct&gt;</span>                         <span style="color: #555555; font-style: italic;">&lt;LINESTRING [m]&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>
+#&gt; <span style="color: #555555;">1</span>     1     2 Havixbecker … residen…    (4151491 3207923, 4151474 3207946) a    
+#&gt; <span style="color: #555555;">2</span>     1     2 Havixbecker … residen…    (4151491 3207923, 4151474 3207946) b    
+#&gt; <span style="color: #555555;">3</span>     3     4 Pienersallee  seconda… (4151398 3207777, 4151390 3207727, 4… a    
+#&gt; <span style="color: #555555;">4</span>     3     4 Pienersallee  seconda… (4151398 3207777, 4151390 3207727, 4… b    
+#&gt; <span style="color: #555555;">5</span>     5     6 Schulte-Bern… residen… (4151408 3207539, 4151417 3207573, 4… a    
+#&gt; <span style="color: #555555;">6</span>     5     6 Schulte-Bern… residen… (4151408 3207539, 4151417 3207573, 4… b    
+#&gt; <span style="color: #555555;"># … with 983 more rows</span>
+#&gt; <span style="color: #555555;">#
+#&gt; # Node Data:     701 x 1</span>
+#&gt; <span style="color: #555555;"># Geometry type: POINT</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 #&gt;            geometry
-#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923)
-#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946)
-#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777)
-#&gt; </span><span style="color: #555555;"># … with 698 more rows</span><span>
-</span></code></pre>
+#&gt;         <span style="color: #555555; font-style: italic;">&lt;POINT [m]&gt;</span>
+#&gt; <span style="color: #555555;">1</span> (4151491 3207923)
+#&gt; <span style="color: #555555;">2</span> (4151474 3207946)
+#&gt; <span style="color: #555555;">3</span> (4151398 3207777)
+#&gt; <span style="color: #555555;"># … with 698 more rows</span>
+</code></pre>
 <p>For non-spatial joins based on attribute columns, simply use a join function from <code>dplyr</code> (e.g. <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">dplyr::left_join()</a></code> or <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">dplyr::inner_join()</a></code>) instead of <code><a href="https://r-spatial.github.io/sf/reference/st_join.html">sf::st_join()</a></code>.</p>
 </div>
 <div id="snapping-points-to-their-nearest-node-before-joining" class="section level3">
@@ -466,29 +466,29 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>After snapping the POIs, we can use <code><a href="https://r-spatial.github.io/sf/reference/st_join.html">sf::st_join()</a></code> as expected. Do remember that if multiple POIs are snapped to the same node, only the information of the first one is joined into the network.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_join</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">snapped_pois</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">2</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">1</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">2</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">1</span> <span style="color: #555555;">edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style="color: #555555;">NA</span><span> </span><span style="color: #555555;">
+#&gt; # CRS: </span> <span style="color: #555555;">NA</span> <span style="color: #555555;">
 #&gt; #
 #&gt; # A rooted tree with spatially explicit edges
 #&gt; #
-#&gt; # Node Data:     2 x 2 (active)</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 0 ymin: 0 xmax: 1 ymax: 0</span><span>
+#&gt; # Node Data:     2 x 2 (active)</span>
+#&gt; <span style="color: #555555;"># Geometry type: POINT</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 0 ymin: 0 xmax: 1 ymax: 0</span>
 #&gt;         x poi_type
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;POINT&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>   
-#&gt; </span><span style="color: #555555;">1</span><span>   (0 0) bakery  
-#&gt; </span><span style="color: #555555;">2</span><span>   (1 0) butcher 
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Edge Data:     1 x 3</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 0 ymin: 0 xmax: 1 ymax: 0</span><span>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;POINT&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>   
+#&gt; <span style="color: #555555;">1</span>   (0 0) bakery  
+#&gt; <span style="color: #555555;">2</span>   (1 0) butcher 
+#&gt; <span style="color: #555555;">#
+#&gt; # Edge Data:     1 x 3</span>
+#&gt; <span style="color: #555555;"># Geometry type: LINESTRING</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 0 ymin: 0 xmax: 1 ymax: 0</span>
 #&gt;    from    to            x
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2   (0 0, 1 0)
-</span></code></pre>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;LINESTRING&gt;</span>
+#&gt; <span style="color: #555555;">1</span>     1     2   (0 0, 1 0)
+</code></pre>
 </div>
 <div id="blending-points-into-a-network" class="section level3">
 <h3 class="hasAnchor">
@@ -498,31 +498,31 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">blended</span> <span class="op">=</span> <span class="fu"><a href="../reference/st_network_blend.html">st_network_blend</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">pois</span><span class="op">)</span>
 <span class="va">blended</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">3</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">2</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">3</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">2</span> <span style="color: #555555;">edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style="color: #555555;">NA</span><span> </span><span style="color: #555555;">
+#&gt; # CRS: </span> <span style="color: #555555;">NA</span> <span style="color: #555555;">
 #&gt; #
 #&gt; # A rooted tree with spatially explicit edges
 #&gt; #
-#&gt; # Node Data:     3 x 2 (active)</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 0 ymin: 0 xmax: 1 ymax: 0</span><span>
+#&gt; # Node Data:     3 x 2 (active)</span>
+#&gt; <span style="color: #555555;"># Geometry type: POINT</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 0 ymin: 0 xmax: 1 ymax: 0</span>
 #&gt;   poi_type       x
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>    </span><span style="color: #555555;font-style: italic;">&lt;POINT&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span> bakery     (0 0)
-#&gt; </span><span style="color: #555555;">2</span><span> </span><span style="color: #BB0000;">NA</span><span>         (1 0)
-#&gt; </span><span style="color: #555555;">3</span><span> butcher  (0.6 0)
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Edge Data:     2 x 3</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 0 ymin: 0 xmax: 1 ymax: 0</span><span>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #555555; font-style: italic;">&lt;POINT&gt;</span>
+#&gt; <span style="color: #555555;">1</span> bakery     (0 0)
+#&gt; <span style="color: #555555;">2</span> <span style="color: #BB0000;">NA</span>         (1 0)
+#&gt; <span style="color: #555555;">3</span> butcher  (0.6 0)
+#&gt; <span style="color: #555555;">#
+#&gt; # Edge Data:     2 x 3</span>
+#&gt; <span style="color: #555555;"># Geometry type: LINESTRING</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 0 ymin: 0 xmax: 1 ymax: 0</span>
 #&gt;    from    to            x
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     3 (0 0, 0.6 0)
-#&gt; </span><span style="color: #555555;">2</span><span>     3     2 (0.6 0, 1 0)
-</span></code></pre>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;LINESTRING&gt;</span>
+#&gt; <span style="color: #555555;">1</span>     1     3 (0 0, 0.6 0)
+#&gt; <span style="color: #555555;">2</span>     3     2 (0.6 0, 1 0)
+</code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">plot_connections</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">pois</span><span class="op">)</span> <span class="op">{</span>
   <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">pois</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
@@ -612,34 +612,34 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 
 <span class="va">joined</span> <span class="op">=</span> <span class="fu"><a href="../reference/st_network_join.html">st_network_join</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">other_net</span><span class="op">)</span>
 <span class="va">joined</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">4</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">4</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">4</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">4</span> <span style="color: #555555;">edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style="color: #555555;">NA</span><span> </span><span style="color: #555555;">
+#&gt; # CRS: </span> <span style="color: #555555;">NA</span> <span style="color: #555555;">
 #&gt; #
 #&gt; # A directed acyclic multigraph with 1 component with spatially explicit edges
 #&gt; #
-#&gt; # Node Data:     4 x 1 (active)</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 0 ymin: 0 xmax: 1 ymax: 1</span><span>
+#&gt; # Node Data:     4 x 1 (active)</span>
+#&gt; <span style="color: #555555;"># Geometry type: POINT</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 0 ymin: 0 xmax: 1 ymax: 1</span>
 #&gt;         x
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;POINT&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>   (0 0)
-#&gt; </span><span style="color: #555555;">2</span><span>   (1 0)
-#&gt; </span><span style="color: #555555;">3</span><span>   (1 1)
-#&gt; </span><span style="color: #555555;">4</span><span>   (0 1)
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Edge Data:     4 x 3</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 0 ymin: 0 xmax: 1 ymax: 1</span><span>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;POINT&gt;</span>
+#&gt; <span style="color: #555555;">1</span>   (0 0)
+#&gt; <span style="color: #555555;">2</span>   (1 0)
+#&gt; <span style="color: #555555;">3</span>   (1 1)
+#&gt; <span style="color: #555555;">4</span>   (0 1)
+#&gt; <span style="color: #555555;">#
+#&gt; # Edge Data:     4 x 3</span>
+#&gt; <span style="color: #555555;"># Geometry type: LINESTRING</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 0 ymin: 0 xmax: 1 ymax: 1</span>
 #&gt;    from    to            x
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2   (0 0, 1 0)
-#&gt; </span><span style="color: #555555;">2</span><span>     2     3   (1 0, 1 1)
-#&gt; </span><span style="color: #555555;">3</span><span>     2     3   (1 0, 1 1)
-#&gt; </span><span style="color: #555555;"># … with 1 more row</span><span>
-</span></code></pre>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;LINESTRING&gt;</span>
+#&gt; <span style="color: #555555;">1</span>     1     2   (0 0, 1 0)
+#&gt; <span style="color: #555555;">2</span>     2     3   (1 0, 1 1)
+#&gt; <span style="color: #555555;">3</span>     2     3   (1 0, 1 1)
+#&gt; <span style="color: #555555;"># … with 1 more row</span>
+</code></pre>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">net</span>, pch <span class="op">=</span> <span class="fl">15</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">other_net</span>, col <span class="op">=</span> <span class="st">"red"</span>, pch <span class="op">=</span> <span class="fl">18</span>, cex <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>

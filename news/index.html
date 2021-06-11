@@ -148,7 +148,7 @@
 
     <div id="sfnetworks-v052" class="section level1">
 <h1 class="page-header" data-toc-text="0.5.2">
-<a href="#sfnetworks-v052" class="anchor"></a>sfnetworks v0.5.2<small> Unreleased </small>
+<a href="#sfnetworks-v052" class="anchor"></a>sfnetworks v0.5.2<small> 2021-05-13 </small>
 </h1>
 <ul>
 <li>Compatibility with <code>s2</code> by adding a <code><a href="https://r-spatial.github.io/s2/reference/as_s2_geography.html">s2::as_s2_geography()</a></code> method for sfnetwork objects. In the new version of <code>sf</code>, the <code>s2</code> package will be used for geometric operations involving longitude-latitude coordinates, see <a href="https://github.com/r-spatial/sf/issues/1649">here</a>.</li>
@@ -175,7 +175,7 @@
 <li>Compatibility with <code>spatstat v2</code>, which is now splitted into multiple sub-packages. See <a href="https://github.com/spatstat/spatstat/tree/v1.64-2#spatstat-is-now-split-into-several-packages">here</a> for details. In <code>sfnetworks</code>, this affected the functions <code><a href="../reference/as_sfnetwork.html">as_sfnetwork.linnet()</a></code>, <code><a href="../reference/as_sfnetwork.html">as_sfnetwork.psp()</a></code> and <code><a href="../reference/as.linnet.html">as.linnet.sfnetwork()</a></code>. Using this functions now requires <code>spatstat &gt;= 2.0.0</code> and <code>sf &gt;= 0.9.8</code>.</li>
 <li>Bug fixes:
 <ul>
-<li>Usage of <code>match</code> for checking coordinate equality is replaced by a new <code>st_match</code> function specifically designed for this task. This fixes bugs related to numeric approximations of detailed coordinates. See <a href="https://github.com/luukvdmeer/sfnetworks/issues/104"><a href='https://github.com/luukvdmeer/sfnetworks/issues/130'>#130</a></a>
+<li>Usage of <code>match</code> for checking coordinate equality is replaced by a new <code>st_match</code> function specifically designed for this task. This fixes bugs related to numeric approximations of detailed coordinates. See <a href="https://github.com/luukvdmeer/sfnetworks/issues/130"><a href='https://github.com/luukvdmeer/sfnetworks/issues/130'>#130</a></a>
 </li>
 </ul>
 </li>

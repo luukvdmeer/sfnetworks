@@ -284,20 +284,20 @@ See the <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a><
 #&gt; Dimension:     XY
 #&gt; Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
 #&gt; Geodetic CRS:  WGS 84
-#&gt; <span style='color: #949494;'># A tibble: 701 x 1</span><span>
+#&gt; <span style='color: #949494;'># A tibble: 701 x 1</span>
 #&gt;               geometry
-#&gt;            </span><span style='color: #949494;font-style: italic;'>&lt;POINT [°]&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> (7.533722 51.95556)
-#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> (7.533461 51.95576)
-#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> (7.532442 51.95422)
-#&gt; </span><span style='color: #BCBCBC;'> 4</span><span>  (7.53209 51.95328)
-#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> (7.532709 51.95209)
-#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> (7.532869 51.95257)
-#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> (7.540063 51.94468)
-#&gt; </span><span style='color: #BCBCBC;'> 8</span><span>  (7.53822 51.94546)
-#&gt; </span><span style='color: #BCBCBC;'> 9</span><span>  (7.537673 51.9475)
-#&gt; </span><span style='color: #BCBCBC;'>10</span><span> (7.537614 51.94562)
-#&gt; </span><span style='color: #949494;'># … with 691 more rows</span><span></div><div class='input'>
+#&gt;            <span style='color: #949494; font-style: italic;'>&lt;POINT [°]&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 1</span> (7.533722 51.95556)
+#&gt; <span style='color: #BCBCBC;'> 2</span> (7.533461 51.95576)
+#&gt; <span style='color: #BCBCBC;'> 3</span> (7.532442 51.95422)
+#&gt; <span style='color: #BCBCBC;'> 4</span>  (7.53209 51.95328)
+#&gt; <span style='color: #BCBCBC;'> 5</span> (7.532709 51.95209)
+#&gt; <span style='color: #BCBCBC;'> 6</span> (7.532869 51.95257)
+#&gt; <span style='color: #BCBCBC;'> 7</span> (7.540063 51.94468)
+#&gt; <span style='color: #BCBCBC;'> 8</span>  (7.53822 51.94546)
+#&gt; <span style='color: #BCBCBC;'> 9</span>  (7.537673 51.9475)
+#&gt; <span style='color: #BCBCBC;'>10</span> (7.537614 51.94562)
+#&gt; <span style='color: #949494;'># … with 691 more rows</span></div><div class='input'>
 <span class='co'># Extract any network element.</span>
 <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"edges"</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; Simple feature collection with 851 features and 4 fields
@@ -305,20 +305,20 @@ See the <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a><
 #&gt; Dimension:     XY
 #&gt; Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
 #&gt; Geodetic CRS:  WGS 84
-#&gt; </span><span style='color: #949494;'># A tibble: 851 x 5</span><span>
+#&gt; <span style='color: #949494;'># A tibble: 851 x 5</span>
 #&gt;     from    to name         type                                        geometry
-#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>        </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>                               </span><span style='color: #949494;font-style: italic;'>&lt;LINESTRING [°]&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'> 1</span><span>     1     2 Havixbecker… reside…       (7.533722 51.95556, 7.533461 51.95576)
-#&gt; </span><span style='color: #BCBCBC;'> 2</span><span>     3     4 Pienersallee second… (7.532442 51.95422, 7.53236 51.95377, 7.532…
-#&gt; </span><span style='color: #BCBCBC;'> 3</span><span>     5     6 Schulte-Ber… reside… (7.532709 51.95209, 7.532823 51.95239, 7.53…
-#&gt; </span><span style='color: #BCBCBC;'> 4</span><span>     7     8 </span><span style='color: #BB0000;'>NA</span><span>           path    (7.540063 51.94468, 7.539696 51.94479, 7.53…
-#&gt; </span><span style='color: #BCBCBC;'> 5</span><span>     9    10 Welsingheide reside…        (7.537673 51.9475, 7.537614 51.94562)
-#&gt; </span><span style='color: #BCBCBC;'> 6</span><span>    11    12 </span><span style='color: #BB0000;'>NA</span><span>           footway (7.543791 51.94733, 7.54369 51.94686, 7.543…
-#&gt; </span><span style='color: #BCBCBC;'> 7</span><span>    13    14 </span><span style='color: #BB0000;'>NA</span><span>           footway        (7.54012 51.94478, 7.539931 51.94514)
-#&gt; </span><span style='color: #BCBCBC;'> 8</span><span>     8    10 </span><span style='color: #BB0000;'>NA</span><span>           path    (7.53822 51.94546, 7.538131 51.94549, 7.538…
-#&gt; </span><span style='color: #BCBCBC;'> 9</span><span>     7    15 </span><span style='color: #BB0000;'>NA</span><span>           track   (7.540063 51.94468, 7.540338 51.94468, 7.54…
-#&gt; </span><span style='color: #BCBCBC;'>10</span><span>    16    17 </span><span style='color: #BB0000;'>NA</span><span>           track   (7.5424 51.94599, 7.54205 51.94629, 7.54196…
-#&gt; </span><span style='color: #949494;'># … with 841 more rows</span><span></div><div class='input'>
+#&gt;    <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>        <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                               <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [°]&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 1</span>     1     2 Havixbecker… reside…       (7.533722 51.95556, 7.533461 51.95576)
+#&gt; <span style='color: #BCBCBC;'> 2</span>     3     4 Pienersallee second… (7.532442 51.95422, 7.53236 51.95377, 7.532…
+#&gt; <span style='color: #BCBCBC;'> 3</span>     5     6 Schulte-Ber… reside… (7.532709 51.95209, 7.532823 51.95239, 7.53…
+#&gt; <span style='color: #BCBCBC;'> 4</span>     7     8 <span style='color: #BB0000;'>NA</span>           path    (7.540063 51.94468, 7.539696 51.94479, 7.53…
+#&gt; <span style='color: #BCBCBC;'> 5</span>     9    10 Welsingheide reside…        (7.537673 51.9475, 7.537614 51.94562)
+#&gt; <span style='color: #BCBCBC;'> 6</span>    11    12 <span style='color: #BB0000;'>NA</span>           footway (7.543791 51.94733, 7.54369 51.94686, 7.543…
+#&gt; <span style='color: #BCBCBC;'> 7</span>    13    14 <span style='color: #BB0000;'>NA</span>           footway        (7.54012 51.94478, 7.539931 51.94514)
+#&gt; <span style='color: #BCBCBC;'> 8</span>     8    10 <span style='color: #BB0000;'>NA</span>           path    (7.53822 51.94546, 7.538131 51.94549, 7.538…
+#&gt; <span style='color: #BCBCBC;'> 9</span>     7    15 <span style='color: #BB0000;'>NA</span>           track   (7.540063 51.94468, 7.540338 51.94468, 7.54…
+#&gt; <span style='color: #BCBCBC;'>10</span>    16    17 <span style='color: #BB0000;'>NA</span>           track   (7.5424 51.94599, 7.54205 51.94629, 7.54196…
+#&gt; <span style='color: #949494;'># … with 841 more rows</span></div><div class='input'>
 <span class='co'># Get geometry of the active network element.</span>
 <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; Geometry set for 701 features 
@@ -378,36 +378,36 @@ See the <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a><
 
 <span class='va'>joined</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_join.html'>st_join</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='va'>codes</span>, join <span class='op'>=</span> <span class='va'>st_intersects</span><span class='op'>)</span>
 <span class='va'>joined</span>
-</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>701</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>851</span><span> </span><span style='color: #555555;'>edges
+</div><div class='output co'>#&gt; <span style='color: #555555;'># A sfnetwork with</span> <span style='color: #555555;'>701</span> <span style='color: #555555;'>nodes and</span> <span style='color: #555555;'>851</span> <span style='color: #555555;'>edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style='color: #555555;'>EPSG:3035</span><span> </span><span style='color: #555555;'>
+#&gt; # CRS: </span> <span style='color: #555555;'>EPSG:3035</span> <span style='color: #555555;'>
 #&gt; #
 #&gt; # A directed multigraph with 14 components with spatially explicit edges
 #&gt; #
-#&gt; </span><span style='color: #949494;'># Node Data:     701 x 2 (active)</span><span>
-#&gt; </span><span style='color: #949494;'># Geometry type: POINT</span><span>
-#&gt; </span><span style='color: #949494;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #949494;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt; </span><span style='color: #949494;'># Node Data:     701 x 2 (active)</span>
+#&gt; <span style='color: #949494;'># Geometry type: POINT</span>
+#&gt; <span style='color: #949494;'># Dimension:     XY</span>
+#&gt; <span style='color: #949494;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 #&gt;            geometry post_code
-#&gt;         </span><span style='color: #949494;font-style: italic;'>&lt;POINT [m]&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>    
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> (4151491 3207923) 1020     
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> (4151474 3207946) 1020     
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span> (4151398 3207777) 1020     
-#&gt; </span><span style='color: #BCBCBC;'>4</span><span> (4151370 3207673) 1020     
-#&gt; </span><span style='color: #BCBCBC;'>5</span><span> (4151408 3207539) 1020     
-#&gt; </span><span style='color: #BCBCBC;'>6</span><span> (4151421 3207592) 1020     
-#&gt; </span><span style='color: #949494;'># … with 695 more rows</span><span>
-#&gt; </span><span style='color: #555555;'>#
-#&gt; </span><span style='color: #949494;'># Edge Data:     851 x 5</span><span>
-#&gt; </span><span style='color: #949494;'># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style='color: #949494;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #949494;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt;         <span style='color: #949494; font-style: italic;'>&lt;POINT [m]&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>    
+#&gt; <span style='color: #BCBCBC;'>1</span> (4151491 3207923) 1020     
+#&gt; <span style='color: #BCBCBC;'>2</span> (4151474 3207946) 1020     
+#&gt; <span style='color: #BCBCBC;'>3</span> (4151398 3207777) 1020     
+#&gt; <span style='color: #BCBCBC;'>4</span> (4151370 3207673) 1020     
+#&gt; <span style='color: #BCBCBC;'>5</span> (4151408 3207539) 1020     
+#&gt; <span style='color: #BCBCBC;'>6</span> (4151421 3207592) 1020     
+#&gt; <span style='color: #949494;'># … with 695 more rows</span>
+#&gt; <span style='color: #555555;'>#
+#&gt; </span><span style='color: #949494;'># Edge Data:     851 x 5</span>
+#&gt; <span style='color: #949494;'># Geometry type: LINESTRING</span>
+#&gt; <span style='color: #949494;'># Dimension:     XY</span>
+#&gt; <span style='color: #949494;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 #&gt;    from    to name            type                                      geometry
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>           </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>                             </span><span style='color: #949494;font-style: italic;'>&lt;LINESTRING [m]&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span>     1     2 Havixbecker St… resident…       (4151491 3207923, 4151474 3207946)
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span>     3     4 Pienersallee    secondary (4151398 3207777, 4151390 3207727, 4151…
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span>     5     6 Schulte-Bernd-… resident… (4151408 3207539, 4151417 3207573, 4151…
-#&gt; </span><span style='color: #949494;'># … with 848 more rows</span><span></div><div class='input'>
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>           <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                             <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [m]&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 Havixbecker St… resident…       (4151491 3207923, 4151474 3207946)
+#&gt; <span style='color: #BCBCBC;'>2</span>     3     4 Pienersallee    secondary (4151398 3207777, 4151390 3207727, 4151…
+#&gt; <span style='color: #BCBCBC;'>3</span>     5     6 Schulte-Bernd-… resident… (4151408 3207539, 4151417 3207573, 4151…
+#&gt; <span style='color: #949494;'># … with 848 more rows</span></div><div class='input'>
 <span class='va'>oldpar</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>no.readonly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, mfrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
 <span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>net</span>, col <span class='op'>=</span> <span class='st'>"grey"</span><span class='op'>)</span>
@@ -435,7 +435,7 @@ See the <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a><
 <span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>poly</span>, border <span class='op'>=</span> <span class='st'>"red"</span>, lty <span class='op'>=</span> <span class='fl'>4</span>, lwd <span class='op'>=</span> <span class='fl'>4</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 <span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>filtered</span><span class='op'>)</span>
 </div><div class='img'><img src='sf-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='va'>oldpar</span><span class='op'>)</span>
-</div></span></pre>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

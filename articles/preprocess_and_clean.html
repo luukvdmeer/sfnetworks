@@ -103,7 +103,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>2. Network pre-processing and cleaning</h1>
             
-            <h4 class="date">2021-05-13</h4>
+            <h4 class="date">2021-06-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/preprocess_and_clean.Rmd"><code>vignettes/preprocess_and_clean.Rmd</code></a></small>
       <div class="hidden name"><code>preprocess_and_clean.Rmd</code></div>
@@ -144,32 +144,32 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 
 <span class="co"># The edges are not connected.</span>
 <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">4</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">2</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">4</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">2</span> <span style="color: #555555;">edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">
+#&gt; # CRS: </span> <span style="color: #555555;">EPSG:4326</span> <span style="color: #555555;">
 #&gt; #
 #&gt; # A rooted forest with 2 trees with spatially explicit edges
 #&gt; #
-#&gt; # Node Data:     4 x 1 (active)</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 7 ymin: 51 xmax: 8.000001 ymax: 52</span><span>
+#&gt; # Node Data:     4 x 1 (active)</span>
+#&gt; <span style="color: #555555;"># Geometry type: POINT</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 7 ymin: 51 xmax: 8.000001 ymax: 52</span>
 #&gt;               x
-#&gt;     </span><span style="color: #555555;font-style: italic;">&lt;POINT [°]&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>        (7 51)
-#&gt; </span><span style="color: #555555;">2</span><span>        (8 52)
-#&gt; </span><span style="color: #555555;">3</span><span> (8.000001 52)
-#&gt; </span><span style="color: #555555;">4</span><span>        (7 52)
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Edge Data:     2 x 3</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 7 ymin: 51 xmax: 8.000001 ymax: 52</span><span>
+#&gt;     <span style="color: #555555; font-style: italic;">&lt;POINT [°]&gt;</span>
+#&gt; <span style="color: #555555;">1</span>        (7 51)
+#&gt; <span style="color: #555555;">2</span>        (8 52)
+#&gt; <span style="color: #555555;">3</span> (8.000001 52)
+#&gt; <span style="color: #555555;">4</span>        (7 52)
+#&gt; <span style="color: #555555;">#
+#&gt; # Edge Data:     2 x 3</span>
+#&gt; <span style="color: #555555;"># Geometry type: LINESTRING</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 7 ymin: 51 xmax: 8.000001 ymax: 52</span>
 #&gt;    from    to                   x
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>    </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2        (7 51, 8 52)
-#&gt; </span><span style="color: #555555;">2</span><span>     3     4 (8.000001 52, 7 52)
-</span></code></pre>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>    <span style="color: #555555; font-style: italic;">&lt;LINESTRING [°]&gt;</span>
+#&gt; <span style="color: #555555;">1</span>     1     2        (7 51, 8 52)
+#&gt; <span style="color: #555555;">2</span>     3     4 (8.000001 52, 7 52)
+</code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Round coordinates to 0 digits.</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -178,31 +178,31 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 
 <span class="co"># The edges are connected.</span>
 <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">3</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">2</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">3</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">2</span> <span style="color: #555555;">edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">
+#&gt; # CRS: </span> <span style="color: #555555;">EPSG:4326</span> <span style="color: #555555;">
 #&gt; #
 #&gt; # A rooted tree with spatially explicit edges
 #&gt; #
-#&gt; # Node Data:     3 x 1 (active)</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span><span>
+#&gt; # Node Data:     3 x 1 (active)</span>
+#&gt; <span style="color: #555555;"># Geometry type: POINT</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span>
 #&gt;             x
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;POINT [°]&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>      (7 51)
-#&gt; </span><span style="color: #555555;">2</span><span>      (8 52)
-#&gt; </span><span style="color: #555555;">3</span><span>      (7 52)
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Edge Data:     2 x 3</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span><span>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;POINT [°]&gt;</span>
+#&gt; <span style="color: #555555;">1</span>      (7 51)
+#&gt; <span style="color: #555555;">2</span>      (8 52)
+#&gt; <span style="color: #555555;">3</span>      (7 52)
+#&gt; <span style="color: #555555;">#
+#&gt; # Edge Data:     2 x 3</span>
+#&gt; <span style="color: #555555;"># Geometry type: LINESTRING</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span>
 #&gt;    from    to                x
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2     (7 51, 8 52)
-#&gt; </span><span style="color: #555555;">2</span><span>     2     3     (8 52, 7 52)
-</span></code></pre>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;LINESTRING [°]&gt;</span>
+#&gt; <span style="color: #555555;">1</span>     1     2     (7 51, 8 52)
+#&gt; <span style="color: #555555;">2</span>     2     3     (8 52, 7 52)
+</code></pre>
 <p>Note that too much rounding can create linestring geometries of zero length, with the same start and endpoint. This may cause problems later.</p>
 </div>
 <div id="dealing-with-one-way-edges" class="section level3">
@@ -239,34 +239,34 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="va">edges</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">edges</span>, <span class="va">reversed_duplicates</span><span class="op">)</span>
 <span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span>
 <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">3</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">5</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">3</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">5</span> <span style="color: #555555;">edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:4326</span><span> </span><span style="color: #555555;">
+#&gt; # CRS: </span> <span style="color: #555555;">EPSG:4326</span> <span style="color: #555555;">
 #&gt; #
 #&gt; # A directed simple graph with 1 component with spatially explicit edges
 #&gt; #
-#&gt; # Edge Data:     5 x 4 (active)</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span><span>
+#&gt; # Edge Data:     5 x 4 (active)</span>
+#&gt; <span style="color: #555555;"># Geometry type: LINESTRING</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span>
 #&gt;    from    to oneway                x
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;lgl&gt;</span><span>  </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [°]&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2 TRUE       (7 51, 7 52)
-#&gt; </span><span style="color: #555555;">2</span><span>     1     3 FALSE      (7 51, 8 52)
-#&gt; </span><span style="color: #555555;">3</span><span>     3     2 FALSE      (8 52, 7 52)
-#&gt; </span><span style="color: #555555;">4</span><span>     3     1 FALSE      (8 52, 7 51)
-#&gt; </span><span style="color: #555555;">5</span><span>     2     3 FALSE      (7 52, 8 52)
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Node Data:     3 x 1</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span><span>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;lgl&gt;</span>  <span style="color: #555555; font-style: italic;">&lt;LINESTRING [°]&gt;</span>
+#&gt; <span style="color: #555555;">1</span>     1     2 TRUE       (7 51, 7 52)
+#&gt; <span style="color: #555555;">2</span>     1     3 FALSE      (7 51, 8 52)
+#&gt; <span style="color: #555555;">3</span>     3     2 FALSE      (8 52, 7 52)
+#&gt; <span style="color: #555555;">4</span>     3     1 FALSE      (8 52, 7 51)
+#&gt; <span style="color: #555555;">5</span>     2     3 FALSE      (7 52, 8 52)
+#&gt; <span style="color: #555555;">#
+#&gt; # Node Data:     3 x 1</span>
+#&gt; <span style="color: #555555;"># Geometry type: POINT</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span>
 #&gt;             x
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;POINT [°]&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>      (7 51)
-#&gt; </span><span style="color: #555555;">2</span><span>      (7 52)
-#&gt; </span><span style="color: #555555;">3</span><span>      (8 52)
-</span></code></pre>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;POINT [°]&gt;</span>
+#&gt; <span style="color: #555555;">1</span>      (7 51)
+#&gt; <span style="color: #555555;">2</span>      (7 52)
+#&gt; <span style="color: #555555;">3</span>      (8 52)
+</code></pre>
 </div>
 </div>
 <div id="network-cleaning-functions" class="section level2">
@@ -371,37 +371,37 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>flow <span class="op">=</span> <span class="va">flows</span>, type <span class="op">=</span> <span class="va">types</span>, foo <span class="op">=</span> <span class="va">foo</span>, bar <span class="op">=</span> <span class="va">bar</span><span class="op">)</span>
 
 <span class="va">net</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">15</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">15</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">15</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">15</span> <span style="color: #555555;">edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style="color: #555555;">NA</span><span> </span><span style="color: #555555;">
+#&gt; # CRS: </span> <span style="color: #555555;">NA</span> <span style="color: #555555;">
 #&gt; #
 #&gt; # A directed multigraph with 3 components with spatially explicit edges
 #&gt; #
-#&gt; # Edge Data:     15 x 7 (active)</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span><span>
+#&gt; # Edge Data:     15 x 7 (active)</span>
+#&gt; <span style="color: #555555;"># Geometry type: LINESTRING</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span>
 #&gt;    from    to              x  flow type    foo bar  
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>   </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>    10     9 (6 1.2, 5.8 1)     6 road      9 t    
-#&gt; </span><span style="color: #555555;">2</span><span>    11    10 (6.2 1, 6 1.2)     8 path     11 i    
-#&gt; </span><span style="color: #555555;">3</span><span>     9    12 (5.8 1, 6 0.8)     3 road      4 f    
-#&gt; </span><span style="color: #555555;">4</span><span>    12    11 (6 0.8, 6.2 1)     9 path     13 d    
-#&gt; </span><span style="color: #555555;">5</span><span>    11    15   (6.2 1, 7 1)     8 path     10 v    
-#&gt; </span><span style="color: #555555;">6</span><span>    10    13   (6 1.2, 6 2)     7 road     12 b    
-#&gt; </span><span style="color: #555555;"># … with 9 more rows</span><span>
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Node Data:     15 x 1</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span><span>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;LINESTRING&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>
+#&gt; <span style="color: #555555;">1</span>    10     9 (6 1.2, 5.8 1)     7 path      4 l    
+#&gt; <span style="color: #555555;">2</span>    11    10 (6.2 1, 6 1.2)     3 road      9 u    
+#&gt; <span style="color: #555555;">3</span>     9    12 (5.8 1, 6 0.8)     3 path      6 r    
+#&gt; <span style="color: #555555;">4</span>    12    11 (6 0.8, 6.2 1)     7 path      7 h    
+#&gt; <span style="color: #555555;">5</span>    11    15   (6.2 1, 7 1)     7 path     15 j    
+#&gt; <span style="color: #555555;">6</span>    10    13   (6 1.2, 6 2)     3 path      8 k    
+#&gt; <span style="color: #555555;"># … with 9 more rows</span>
+#&gt; <span style="color: #555555;">#
+#&gt; # Node Data:     15 x 1</span>
+#&gt; <span style="color: #555555;"># Geometry type: POINT</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span>
 #&gt;         x
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;POINT&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>   (0 1)
-#&gt; </span><span style="color: #555555;">2</span><span>   (2 1)
-#&gt; </span><span style="color: #555555;">3</span><span>   (4 1)
-#&gt; </span><span style="color: #555555;"># … with 12 more rows</span><span>
-</span></code></pre>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;POINT&gt;</span>
+#&gt; <span style="color: #555555;">1</span>   (0 1)
+#&gt; <span style="color: #555555;">2</span>   (2 1)
+#&gt; <span style="color: #555555;">3</span>   (4 1)
+#&gt; <span style="color: #555555;"># … with 12 more rows</span>
+</code></pre>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># We know from before that our example network has one set of multiple edges.</span>
 <span class="co"># Lets look at them.</span>
@@ -414,12 +414,12 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; Dimension:     XY
 #&gt; Bounding box:  xmin: 4 ymin: 2 xmax: 5 ymax: 3
 #&gt; CRS:           NA
-#&gt; <span style="color: #555555;"># A tibble: 2 x 7</span><span>
+#&gt; <span style="color: #555555;"># A tibble: 2 x 7</span>
 #&gt;    from    to               x  flow type    foo bar  
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span>    </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     6     7      (4 3, 4 2)    10 path      8 g    
-#&gt; </span><span style="color: #555555;">2</span><span>     6     7 (4 3, 5 2, 4 2)     4 path     14 e
-</span></code></pre>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>    <span style="color: #555555; font-style: italic;">&lt;LINESTRING&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>
+#&gt; <span style="color: #555555;">1</span>     6     7      (4 3, 4 2)     9 path      2 a    
+#&gt; <span style="color: #555555;">2</span>     6     7 (4 3, 5 2, 4 2)     1 road     13 t
+</code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Define how we want to combine the attributes.</span>
 <span class="co"># For the flows:</span>
@@ -447,11 +447,11 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; Dimension:     XY
 #&gt; Bounding box:  xmin: 4 ymin: 2 xmax: 4 ymax: 3
 #&gt; CRS:           NA
-#&gt; <span style="color: #555555;"># A tibble: 1 x 6</span><span>
+#&gt; <span style="color: #555555;"># A tibble: 1 x 6</span>
 #&gt;    from    to            x  flow type  .tidygraph_edge_index
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;list&gt;</span><span>               
-#&gt; </span><span style="color: #555555;">1</span><span>     6     7   (4 3, 4 2)    14 path  </span><span style="color: #555555;">&lt;int [2]&gt;</span><span>
-</span></code></pre>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;LINESTRING&gt;</span> <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span> <span style="color: #555555; font-style: italic;">&lt;list&gt;</span>               
+#&gt; <span style="color: #555555;">1</span>     6     7   (4 3, 4 2)    10 <span style="color: #BB0000;">NA</span>    <span style="color: #555555;">&lt;int [2]&gt;</span>
+</code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
@@ -544,37 +544,37 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>cmp <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/group_graph.html">group_components</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 
 <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">clustered</span>, <span class="va">cls</span>, <span class="va">cmp</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">14</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">14</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">14</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">14</span> <span style="color: #555555;">edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style="color: #555555;">NA</span><span> </span><span style="color: #555555;">
+#&gt; # CRS: </span> <span style="color: #555555;">NA</span> <span style="color: #555555;">
 #&gt; #
 #&gt; # A directed simple graph with 1 component with spatially explicit edges
 #&gt; #
-#&gt; # Node Data:     14 x 3 (active)</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span><span>
+#&gt; # Node Data:     14 x 3 (active)</span>
+#&gt; <span style="color: #555555;"># Geometry type: POINT</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span>
 #&gt;     cls   cmp       x
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;POINT&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     1   (0 1)
-#&gt; </span><span style="color: #555555;">2</span><span>     2     1   (3 1)
-#&gt; </span><span style="color: #555555;">3</span><span>     3     1   (4 1)
-#&gt; </span><span style="color: #555555;">4</span><span>     4     1 (5.8 1)
-#&gt; </span><span style="color: #555555;">5</span><span>     5     1   (3 2)
-#&gt; </span><span style="color: #555555;">6</span><span>     6     1   (3 0)
-#&gt; </span><span style="color: #555555;"># … with 8 more rows</span><span>
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Edge Data:     14 x 6</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span><span>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;POINT&gt;</span>
+#&gt; <span style="color: #555555;">1</span>     1     1   (0 1)
+#&gt; <span style="color: #555555;">2</span>     2     1   (3 1)
+#&gt; <span style="color: #555555;">3</span>     3     1   (4 1)
+#&gt; <span style="color: #555555;">4</span>     4     1 (5.8 1)
+#&gt; <span style="color: #555555;">5</span>     5     1   (3 2)
+#&gt; <span style="color: #555555;">6</span>     6     1   (3 0)
+#&gt; <span style="color: #555555;"># … with 8 more rows</span>
+#&gt; <span style="color: #555555;">#
+#&gt; # Edge Data:     14 x 6</span>
+#&gt; <span style="color: #555555;"># Geometry type: LINESTRING</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span>
 #&gt;    from    to            x  flow type  .tidygraph_edge_index
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;dbl&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;list&gt;</span><span>               
-#&gt; </span><span style="color: #555555;">1</span><span>     2     3   (3 1, 4 1)     8 path  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
-#&gt; </span><span style="color: #555555;">2</span><span>     3     4 (4 1, 5.8 1)     8 path  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
-#&gt; </span><span style="color: #555555;">3</span><span>     5     2   (3 2, 3 1)     4 road  </span><span style="color: #555555;">&lt;int [1]&gt;</span><span>            
-#&gt; </span><span style="color: #555555;"># … with 11 more rows</span><span>
-</span></code></pre>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;LINESTRING&gt;</span> <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span> <span style="color: #555555; font-style: italic;">&lt;list&gt;</span>               
+#&gt; <span style="color: #555555;">1</span>     2     3   (3 1, 4 1)     1 road  <span style="color: #555555;">&lt;int [1]&gt;</span>            
+#&gt; <span style="color: #555555;">2</span>     3     4 (4 1, 5.8 1)     7 road  <span style="color: #555555;">&lt;int [1]&gt;</span>            
+#&gt; <span style="color: #555555;">3</span>     5     2   (3 2, 3 1)     7 path  <span style="color: #555555;">&lt;int [1]&gt;</span>            
+#&gt; <span style="color: #555555;"># … with 11 more rows</span>
+</code></pre>
 <p>The combination of the cluster index and the component index can now be used to define the groups of nodes to be contracted. Nodes that form a group on their own will remain unchanged.</p>
 <p>A point of attention is that contraction introduces new <em>multiple edges</em> and/or <em>loop edges</em>. Multiple edges are introduced by contraction when there are several connections between the same groups of nodes. Loop edges are introduced by contraction when there are connections within a group. Setting <code>simplify = TRUE</code> will remove the multiple and loop edges after contraction. However, note that this also removes multiple and loop edges that already existed before contraction.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
@@ -612,14 +612,14 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; Dimension:     XY
 #&gt; Bounding box:  xmin: 5.8 ymin: 0.8 xmax: 6.2 ymax: 1.2
 #&gt; CRS:           NA
-#&gt; <span style="color: #555555;"># A tibble: 4 x 5</span><span>
+#&gt; <span style="color: #555555;"># A tibble: 4 x 5</span>
 #&gt;         x .tidygraph_node_index   cls   cmp is_priority
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;POINT&gt;</span><span>                 </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;lgl&gt;</span><span>      
-#&gt; </span><span style="color: #555555;">1</span><span> (5.8 1)                     5     4     1 TRUE       
-#&gt; </span><span style="color: #555555;">2</span><span> (6 0.8)                    11     4     1 TRUE       
-#&gt; </span><span style="color: #555555;">3</span><span> (6 1.2)                    12     4     1 TRUE       
-#&gt; </span><span style="color: #555555;">4</span><span> (6.2 1)                    14     4     1 FALSE
-</span></code></pre>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;POINT&gt;</span>                 <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;lgl&gt;</span>      
+#&gt; <span style="color: #555555;">1</span> (5.8 1)                     5     4     1 TRUE       
+#&gt; <span style="color: #555555;">2</span> (6 0.8)                    11     4     1 TRUE       
+#&gt; <span style="color: #555555;">3</span> (6 1.2)                    12     4     1 FALSE      
+#&gt; <span style="color: #555555;">4</span> (6.2 1)                    14     4     1 FALSE
+</code></pre>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Define how we want to combine the attributes.</span>
 <span class="co"># For the boolean is_priority variable:</span>
@@ -650,11 +650,11 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; Dimension:     XY
 #&gt; Bounding box:  xmin: 6 ymin: 1 xmax: 6 ymax: 1
 #&gt; CRS:           NA
-#&gt; <span style="color: #555555;"># A tibble: 1 x 3</span><span>
+#&gt; <span style="color: #555555;"># A tibble: 1 x 3</span>
 #&gt;   .tidygraph_node_index is_priority       x
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;list&gt;</span><span>                </span><span style="color: #555555;font-style: italic;">&lt;lgl&gt;</span><span>       </span><span style="color: #555555;font-style: italic;">&lt;POINT&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span> </span><span style="color: #555555;">&lt;int [4]&gt;</span><span>             TRUE          (6 1)
-</span></code></pre>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;list&gt;</span>                <span style="color: #555555; font-style: italic;">&lt;lgl&gt;</span>       <span style="color: #555555; font-style: italic;">&lt;POINT&gt;</span>
+#&gt; <span style="color: #555555;">1</span> <span style="color: #555555;">&lt;int [4]&gt;</span>             TRUE          (6 1)
+</code></pre>
 </div>
 <div id="overview" class="section level3">
 <h3 class="hasAnchor">

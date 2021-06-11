@@ -220,36 +220,36 @@ edges sequentially. Hence, point 1 to point 2, point 2 to point 3, etc.</p></li>
 </div><div class='output co'>#&gt; <span class='message'>Linking to GEOS 3.8.0, GDAL 3.0.4, PROJ 7.0.0</span></div><div class='input'>
 <span class='co'># With LINESTRING geometries.</span>
 <span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>701</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>851</span><span> </span><span style='color: #555555;'>edges
+</div><div class='output co'>#&gt; <span style='color: #555555;'># A sfnetwork with</span> <span style='color: #555555;'>701</span> <span style='color: #555555;'>nodes and</span> <span style='color: #555555;'>851</span> <span style='color: #555555;'>edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style='color: #555555;'>EPSG:4326</span><span> </span><span style='color: #555555;'>
+#&gt; # CRS: </span> <span style='color: #555555;'>EPSG:4326</span> <span style='color: #555555;'>
 #&gt; #
 #&gt; # A directed multigraph with 14 components with spatially explicit edges
 #&gt; #
-#&gt; </span><span style='color: #949494;'># Node Data:     701 x 1 (active)</span><span>
-#&gt; </span><span style='color: #949494;'># Geometry type: POINT</span><span>
-#&gt; </span><span style='color: #949494;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #949494;'># Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
+#&gt; </span><span style='color: #949494;'># Node Data:     701 x 1 (active)</span>
+#&gt; <span style='color: #949494;'># Geometry type: POINT</span>
+#&gt; <span style='color: #949494;'># Dimension:     XY</span>
+#&gt; <span style='color: #949494;'># Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
 #&gt;              geometry
-#&gt;           </span><span style='color: #949494;font-style: italic;'>&lt;POINT [°]&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> (7.533722 51.95556)
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> (7.533461 51.95576)
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span> (7.532442 51.95422)
-#&gt; </span><span style='color: #BCBCBC;'>4</span><span>  (7.53209 51.95328)
-#&gt; </span><span style='color: #BCBCBC;'>5</span><span> (7.532709 51.95209)
-#&gt; </span><span style='color: #BCBCBC;'>6</span><span> (7.532869 51.95257)
-#&gt; </span><span style='color: #949494;'># … with 695 more rows</span><span>
-#&gt; </span><span style='color: #555555;'>#
-#&gt; </span><span style='color: #949494;'># Edge Data:     851 x 5</span><span>
-#&gt; </span><span style='color: #949494;'># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style='color: #949494;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #949494;'># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span><span>
+#&gt;           <span style='color: #949494; font-style: italic;'>&lt;POINT [°]&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span> (7.533722 51.95556)
+#&gt; <span style='color: #BCBCBC;'>2</span> (7.533461 51.95576)
+#&gt; <span style='color: #BCBCBC;'>3</span> (7.532442 51.95422)
+#&gt; <span style='color: #BCBCBC;'>4</span>  (7.53209 51.95328)
+#&gt; <span style='color: #BCBCBC;'>5</span> (7.532709 51.95209)
+#&gt; <span style='color: #BCBCBC;'>6</span> (7.532869 51.95257)
+#&gt; <span style='color: #949494;'># … with 695 more rows</span>
+#&gt; <span style='color: #555555;'>#
+#&gt; </span><span style='color: #949494;'># Edge Data:     851 x 5</span>
+#&gt; <span style='color: #949494;'># Geometry type: LINESTRING</span>
+#&gt; <span style='color: #949494;'># Dimension:     XY</span>
+#&gt; <span style='color: #949494;'># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
 #&gt;    from    to name           type                                       geometry
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>          </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>                              </span><span style='color: #949494;font-style: italic;'>&lt;LINESTRING [°]&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span>     1     2 Havixbecker S… residen…     (7.533722 51.95556, 7.533461 51.95576)
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span>     3     4 Pienersallee   seconda… (7.532442 51.95422, 7.53236 51.95377, 7.5…
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span>     5     6 Schulte-Bernd… residen… (7.532709 51.95209, 7.532823 51.95239, 7.…
-#&gt; </span><span style='color: #949494;'># … with 848 more rows</span><span></div><div class='input'>
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>          <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                              <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [°]&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 Havixbecker S… residen…     (7.533722 51.95556, 7.533461 51.95576)
+#&gt; <span style='color: #BCBCBC;'>2</span>     3     4 Pienersallee   seconda… (7.532442 51.95422, 7.53236 51.95377, 7.5…
+#&gt; <span style='color: #BCBCBC;'>3</span>     5     6 Schulte-Bernd… residen… (7.532709 51.95209, 7.532823 51.95239, 7.…
+#&gt; <span style='color: #949494;'># … with 848 more rows</span></div><div class='input'>
 <span class='va'>oldpar</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>no.readonly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, mfrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
 <span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span><span class='op'>)</span>
@@ -262,30 +262,30 @@ edges sequentially. Hence, point 1 to point 2, point 2 to point 3, etc.</p></li>
 <span class='va'>p3</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>8</span>, <span class='fl'>52</span><span class='op'>)</span><span class='op'>)</span>
 <span class='va'>points</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/sfc.html'>st_sfc</a></span><span class='op'>(</span><span class='va'>p1</span>, <span class='va'>p2</span>, <span class='va'>p3</span><span class='op'>)</span><span class='op'>)</span>
 <span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>points</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>3</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>2</span><span> </span><span style='color: #555555;'>edges
+</div><div class='output co'>#&gt; <span style='color: #555555;'># A sfnetwork with</span> <span style='color: #555555;'>3</span> <span style='color: #555555;'>nodes and</span> <span style='color: #555555;'>2</span> <span style='color: #555555;'>edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style='color: #555555;'>NA</span><span> </span><span style='color: #555555;'>
+#&gt; # CRS: </span> <span style='color: #555555;'>NA</span> <span style='color: #555555;'>
 #&gt; #
 #&gt; # A rooted tree with spatially explicit edges
 #&gt; #
-#&gt; </span><span style='color: #949494;'># Node Data:     3 x 1 (active)</span><span>
-#&gt; </span><span style='color: #949494;'># Geometry type: POINT</span><span>
-#&gt; </span><span style='color: #949494;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #949494;'># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span><span>
+#&gt; </span><span style='color: #949494;'># Node Data:     3 x 1 (active)</span>
+#&gt; <span style='color: #949494;'># Geometry type: POINT</span>
+#&gt; <span style='color: #949494;'># Dimension:     XY</span>
+#&gt; <span style='color: #949494;'># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span>
 #&gt;         x
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;POINT&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span>  (7 51)
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span>  (7 52)
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span>  (8 52)
-#&gt; </span><span style='color: #555555;'>#
-#&gt; </span><span style='color: #949494;'># Edge Data:     2 x 3</span><span>
-#&gt; </span><span style='color: #949494;'># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style='color: #949494;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #949494;'># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span><span>
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;POINT&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span>  (7 51)
+#&gt; <span style='color: #BCBCBC;'>2</span>  (7 52)
+#&gt; <span style='color: #BCBCBC;'>3</span>  (8 52)
+#&gt; <span style='color: #555555;'>#
+#&gt; </span><span style='color: #949494;'># Edge Data:     2 x 3</span>
+#&gt; <span style='color: #949494;'># Geometry type: LINESTRING</span>
+#&gt; <span style='color: #949494;'># Dimension:     XY</span>
+#&gt; <span style='color: #949494;'># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span>
 #&gt;    from    to            x
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;LINESTRING&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span>     1     2 (7 51, 7 52)
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span>     2     3 (7 52, 8 52)</div><div class='input'>
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;LINESTRING&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 (7 51, 7 52)
+#&gt; <span style='color: #BCBCBC;'>2</span>     2     3 (7 52, 8 52)</div><div class='input'>
 <span class='va'>oldpar</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>no.readonly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, mfrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
 <span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>points</span><span class='op'>)</span><span class='op'>)</span>
@@ -298,77 +298,77 @@ edges sequentially. Hence, point 1 to point 2, point 2 to point 3, etc.</p></li>
 <span class='op'>}</span>
 </div><div class='output co'>#&gt; <span class='message'>spatstat.geom 2.1-0</span></div><div class='output co'>#&gt; <span class='message'>spatstat.core 2.1-2</span></div><div class='output co'>#&gt; <span class='message'>spatstat.linnet 2.1-1</span></div><div class='output co'>#&gt; <span class='message'></span>
 #&gt; <span class='message'>spatstat 2.1-0       (nickname: ‘Comedic violence’) </span>
-#&gt; <span class='message'>For an introduction to spatstat, type ‘beginner’ </span></div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>10</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>10</span><span> </span><span style='color: #555555;'>edges
+#&gt; <span class='message'>For an introduction to spatstat, type ‘beginner’ </span></div><div class='output co'>#&gt; <span style='color: #555555;'># A sfnetwork with</span> <span style='color: #555555;'>10</span> <span style='color: #555555;'>nodes and</span> <span style='color: #555555;'>10</span> <span style='color: #555555;'>edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style='color: #555555;'>NA</span><span> </span><span style='color: #555555;'>
+#&gt; # CRS: </span> <span style='color: #555555;'>NA</span> <span style='color: #555555;'>
 #&gt; #
 #&gt; # A directed acyclic simple graph with 1 component with spatially explicit edges
 #&gt; #
-#&gt; </span><span style='color: #949494;'># Node Data:     10 x 1 (active)</span><span>
-#&gt; </span><span style='color: #949494;'># Geometry type: POINT</span><span>
-#&gt; </span><span style='color: #949494;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #949494;'># Bounding box:  xmin: 0.1497036 ymin: 0.1608339 xmax: 0.8418658 ymax:
-#&gt; #   0.9415173</span><span>
+#&gt; </span><span style='color: #949494;'># Node Data:     10 x 1 (active)</span>
+#&gt; <span style='color: #949494;'># Geometry type: POINT</span>
+#&gt; <span style='color: #949494;'># Dimension:     XY</span>
+#&gt; <span style='color: #949494;'># Bounding box:  xmin: 0.1497036 ymin: 0.1608339 xmax: 0.8418658 ymax:
+#&gt; #   0.9415173</span>
 #&gt;                    geom
-#&gt;                 </span><span style='color: #949494;font-style: italic;'>&lt;POINT&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span>  (0.181276 0.8345078)
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> (0.3254689 0.4607012)
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span> (0.1497036 0.2119066)
-#&gt; </span><span style='color: #BCBCBC;'>4</span><span> (0.5358572 0.8028913)
-#&gt; </span><span style='color: #BCBCBC;'>5</span><span> (0.4411403 0.1608339)
-#&gt; </span><span style='color: #BCBCBC;'>6</span><span> (0.3795058 0.3206155)
-#&gt; </span><span style='color: #949494;'># … with 4 more rows</span><span>
-#&gt; </span><span style='color: #555555;'>#
-#&gt; </span><span style='color: #949494;'># Edge Data:     10 x 4</span><span>
-#&gt; </span><span style='color: #949494;'># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style='color: #949494;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #949494;'># Bounding box:  xmin: 0.1497036 ymin: 0.1608339 xmax: 0.8418658 ymax:
-#&gt; #   0.9415173</span><span>
+#&gt;                 <span style='color: #949494; font-style: italic;'>&lt;POINT&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span>  (0.181276 0.8345078)
+#&gt; <span style='color: #BCBCBC;'>2</span> (0.3254689 0.4607012)
+#&gt; <span style='color: #BCBCBC;'>3</span> (0.1497036 0.2119066)
+#&gt; <span style='color: #BCBCBC;'>4</span> (0.5358572 0.8028913)
+#&gt; <span style='color: #BCBCBC;'>5</span> (0.4411403 0.1608339)
+#&gt; <span style='color: #BCBCBC;'>6</span> (0.3795058 0.3206155)
+#&gt; <span style='color: #949494;'># … with 4 more rows</span>
+#&gt; <span style='color: #555555;'>#
+#&gt; </span><span style='color: #949494;'># Edge Data:     10 x 4</span>
+#&gt; <span style='color: #949494;'># Geometry type: LINESTRING</span>
+#&gt; <span style='color: #949494;'># Dimension:     XY</span>
+#&gt; <span style='color: #949494;'># Bounding box:  xmin: 0.1497036 ymin: 0.1608339 xmax: 0.8418658 ymax:
+#&gt; #   0.9415173</span>
 #&gt;    from    to label                                         geom
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>                                 </span><span style='color: #949494;font-style: italic;'>&lt;LINESTRING&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span>     1     2 segment  (0.181276 0.8345078, 0.3254689 0.4607012)
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span>     3     2 segment (0.1497036 0.2119066, 0.3254689 0.4607012)
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span>     2     4 segment (0.3254689 0.4607012, 0.5358572 0.8028913)
-#&gt; </span><span style='color: #949494;'># … with 7 more rows</span><span></div><div class='input'>
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                                 <span style='color: #949494; font-style: italic;'>&lt;LINESTRING&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 segment  (0.181276 0.8345078, 0.3254689 0.4607012)
+#&gt; <span style='color: #BCBCBC;'>2</span>     3     2 segment (0.1497036 0.2119066, 0.3254689 0.4607012)
+#&gt; <span style='color: #BCBCBC;'>3</span>     2     4 segment (0.3254689 0.4607012, 0.5358572 0.8028913)
+#&gt; <span style='color: #949494;'># … with 7 more rows</span></div><div class='input'>
 <span class='co'># From a psp object.</span>
 <span class='kw'>if</span> <span class='op'>(</span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='http://spatstat.org/'>spatstat.geom</a></span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
   <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>42</span><span class='op'>)</span>
   <span class='va'>test_psp</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/spatstat.geom/man/psp.html'>psp</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>10</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>10</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>10</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>10</span><span class='op'>)</span>, window<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/pkg/spatstat.geom/man/owin.html'>owin</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
   <span class='fu'>as_sfnetwork</span><span class='op'>(</span><span class='va'>test_psp</span><span class='op'>)</span>
 <span class='op'>}</span>
-</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A sfnetwork with</span><span> </span><span style='color: #555555;'>20</span><span> </span><span style='color: #555555;'>nodes and</span><span> </span><span style='color: #555555;'>10</span><span> </span><span style='color: #555555;'>edges
+</div><div class='output co'>#&gt; <span style='color: #555555;'># A sfnetwork with</span> <span style='color: #555555;'>20</span> <span style='color: #555555;'>nodes and</span> <span style='color: #555555;'>10</span> <span style='color: #555555;'>edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style='color: #555555;'>NA</span><span> </span><span style='color: #555555;'>
+#&gt; # CRS: </span> <span style='color: #555555;'>NA</span> <span style='color: #555555;'>
 #&gt; #
 #&gt; # A rooted forest with 10 trees with spatially explicit edges
 #&gt; #
-#&gt; </span><span style='color: #949494;'># Node Data:     20 x 1 (active)</span><span>
-#&gt; </span><span style='color: #949494;'># Geometry type: POINT</span><span>
-#&gt; </span><span style='color: #949494;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #949494;'># Bounding box:  xmin: 0.08243756 ymin: 0.003948339 xmax: 0.9888917 ymax:
-#&gt; #   0.9782264</span><span>
+#&gt; </span><span style='color: #949494;'># Node Data:     20 x 1 (active)</span>
+#&gt; <span style='color: #949494;'># Geometry type: POINT</span>
+#&gt; <span style='color: #949494;'># Dimension:     XY</span>
+#&gt; <span style='color: #949494;'># Bounding box:  xmin: 0.08243756 ymin: 0.003948339 xmax: 0.9888917 ymax:
+#&gt; #   0.9782264</span>
 #&gt;                    geom
-#&gt;                 </span><span style='color: #949494;font-style: italic;'>&lt;POINT&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span>  (0.914806 0.4577418)
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> (0.9040314 0.7375956)
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span> (0.9370754 0.7191123)
-#&gt; </span><span style='color: #BCBCBC;'>4</span><span> (0.1387102 0.8110551)
-#&gt; </span><span style='color: #BCBCBC;'>5</span><span> (0.2861395 0.9346722)
-#&gt; </span><span style='color: #BCBCBC;'>6</span><span> (0.9888917 0.3881083)
-#&gt; </span><span style='color: #949494;'># … with 14 more rows</span><span>
-#&gt; </span><span style='color: #555555;'>#
-#&gt; </span><span style='color: #949494;'># Edge Data:     10 x 4</span><span>
-#&gt; </span><span style='color: #949494;'># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style='color: #949494;'># Dimension:     XY</span><span>
-#&gt; </span><span style='color: #949494;'># Bounding box:  xmin: 0.08243756 ymin: 0.003948339 xmax: 0.9888917 ymax:
-#&gt; #   0.9782264</span><span>
+#&gt;                 <span style='color: #949494; font-style: italic;'>&lt;POINT&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span>  (0.914806 0.4577418)
+#&gt; <span style='color: #BCBCBC;'>2</span> (0.9040314 0.7375956)
+#&gt; <span style='color: #BCBCBC;'>3</span> (0.9370754 0.7191123)
+#&gt; <span style='color: #BCBCBC;'>4</span> (0.1387102 0.8110551)
+#&gt; <span style='color: #BCBCBC;'>5</span> (0.2861395 0.9346722)
+#&gt; <span style='color: #BCBCBC;'>6</span> (0.9888917 0.3881083)
+#&gt; <span style='color: #949494;'># … with 14 more rows</span>
+#&gt; <span style='color: #555555;'>#
+#&gt; </span><span style='color: #949494;'># Edge Data:     10 x 4</span>
+#&gt; <span style='color: #949494;'># Geometry type: LINESTRING</span>
+#&gt; <span style='color: #949494;'># Dimension:     XY</span>
+#&gt; <span style='color: #949494;'># Bounding box:  xmin: 0.08243756 ymin: 0.003948339 xmax: 0.9888917 ymax:
+#&gt; #   0.9782264</span>
 #&gt;    from    to label                                         geom
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>                                 </span><span style='color: #949494;font-style: italic;'>&lt;LINESTRING&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span>     1     2 segment  (0.914806 0.4577418, 0.9040314 0.7375956)
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span>     3     4 segment (0.9370754 0.7191123, 0.1387102 0.8110551)
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span>     5     6 segment (0.2861395 0.9346722, 0.9888917 0.3881083)
-#&gt; </span><span style='color: #949494;'># … with 7 more rows</span><span></div><div class='input'>
-</div></span></pre>
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                                 <span style='color: #949494; font-style: italic;'>&lt;LINESTRING&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 segment  (0.914806 0.4577418, 0.9040314 0.7375956)
+#&gt; <span style='color: #BCBCBC;'>2</span>     3     4 segment (0.9370754 0.7191123, 0.1387102 0.8110551)
+#&gt; <span style='color: #BCBCBC;'>3</span>     5     6 segment (0.2861395 0.9346722, 0.9888917 0.3881083)
+#&gt; <span style='color: #949494;'># … with 7 more rows</span></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

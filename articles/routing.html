@@ -103,7 +103,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>4. Routing</h1>
             
-            <h4 class="date">2021-05-13</h4>
+            <h4 class="date">2021-06-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/routing.Rmd"><code>vignettes/routing.Rmd</code></a></small>
       <div class="hidden name"><code>routing.Rmd</code></div>
@@ -140,37 +140,37 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>weight <span class="op">=</span> <span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">net</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">701</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">851</span> <span style="color: #555555;">edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
+#&gt; # CRS: </span> <span style="color: #555555;">EPSG:3035</span> <span style="color: #555555;">
 #&gt; #
 #&gt; # An undirected multigraph with 14 components with spatially explicit edges
 #&gt; #
-#&gt; # Edge Data:     851 x 6 (active)</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
-#&gt;    from    to name       type                                  geometry   weight
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>      </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>                         </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>      </span><span style="color: #555555;">[m]</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havixbeck… reside…     (4151491 3207923, 4151474 3207946)  28.859…
-#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Pienersal… second… (4151398 3207777, 4151390 3207727, 41… 107.714…
-#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schulte-B… reside… (4151408 3207539, 4151417 3207573, 41…  54.367…
-#&gt; </span><span style="color: #555555;">4</span><span>     7     8 </span><span style="color: #BB0000;">NA</span><span>         path    (4151885 3206698, 4151861 3206711, 41… 155.223…
-#&gt; </span><span style="color: #555555;">5</span><span>     9    10 Welsinghe… reside…     (4151732 3207017, 4151721 3206809) 208.682…
-#&gt; </span><span style="color: #555555;">6</span><span>    11    12 </span><span style="color: #BB0000;">NA</span><span>         footway (4152152 3206984, 4152143 3206932, 41…  63.028…
-#&gt; </span><span style="color: #555555;"># … with 845 more rows</span><span>
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Node Data:     701 x 1</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt; # Edge Data:     851 x 6 (active)</span>
+#&gt; <span style="color: #555555;"># Geometry type: LINESTRING</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
+#&gt;    from    to name       type                                    geometry weight
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #555555; font-style: italic;">&lt;fct&gt;</span>                           <span style="color: #555555; font-style: italic;">&lt;LINESTRING [m]&gt;</span>    <span style="color: #555555;">[m]</span>
+#&gt; <span style="color: #555555;">1</span>     1     2 Havixbeck… reside…       (4151491 3207923, 4151474 3207946)   28.9
+#&gt; <span style="color: #555555;">2</span>     3     4 Pienersal… second… (4151398 3207777, 4151390 3207727, 4151…  108. 
+#&gt; <span style="color: #555555;">3</span>     5     6 Schulte-B… reside… (4151408 3207539, 4151417 3207573, 4151…   54.4
+#&gt; <span style="color: #555555;">4</span>     7     8 <span style="color: #BB0000;">NA</span>         path    (4151885 3206698, 4151861 3206711, 4151…  155. 
+#&gt; <span style="color: #555555;">5</span>     9    10 Welsinghe… reside…       (4151732 3207017, 4151721 3206809)  209. 
+#&gt; <span style="color: #555555;">6</span>    11    12 <span style="color: #BB0000;">NA</span>         footway (4152152 3206984, 4152143 3206932, 4152…   63.0
+#&gt; <span style="color: #555555;"># … with 845 more rows</span>
+#&gt; <span style="color: #555555;">#
+#&gt; # Node Data:     701 x 1</span>
+#&gt; <span style="color: #555555;"># Geometry type: POINT</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 #&gt;            geometry
-#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923)
-#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946)
-#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777)
-#&gt; </span><span style="color: #555555;"># … with 698 more rows</span><span>
-</span></code></pre>
+#&gt;         <span style="color: #555555; font-style: italic;">&lt;POINT [m]&gt;</span>
+#&gt; <span style="color: #555555;">1</span> (4151491 3207923)
+#&gt; <span style="color: #555555;">2</span> (4151474 3207946)
+#&gt; <span style="color: #555555;">3</span> (4151398 3207777)
+#&gt; <span style="color: #555555;"># … with 698 more rows</span>
+</code></pre>
 <p>It is important to mention that <code>tidygraph</code> does not always comply with the default <code>igraph</code> behaviors as we described them above. For example, when using tidygraphs centrality functions, you <em>have</em> to explicity set <code>weights = weight</code> when you want to use your <em>weight</em> column as edge weights in the centrality calculation. If the <code>weights</code> argument is not set (i.e. <code>weights = NULL</code>) it will not use any edge weights.</p>
 </div>
 <div id="calculating-shortest-paths" class="section level2">
@@ -188,12 +188,12 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">paths</span> <span class="op">=</span> <span class="fu"><a href="../reference/st_network_paths.html">st_network_paths</a></span><span class="op">(</span><span class="va">net</span>, from <span class="op">=</span> <span class="fl">495</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">458</span>, <span class="fl">121</span><span class="op">)</span><span class="op">)</span>
 <span class="va">paths</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A tibble: 2 x 2</span><span>
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A tibble: 2 x 2</span>
 #&gt;   node_paths edge_paths
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;list&gt;</span><span>     </span><span style="color: #555555;font-style: italic;">&lt;list&gt;</span><span>    
-#&gt; </span><span style="color: #555555;">1</span><span> </span><span style="color: #555555;">&lt;int [29]&gt;</span><span> </span><span style="color: #555555;">&lt;int [28]&gt;</span><span>
-#&gt; </span><span style="color: #555555;">2</span><span> </span><span style="color: #555555;">&lt;int [33]&gt;</span><span> </span><span style="color: #555555;">&lt;int [32]&gt;</span><span>
-</span></code></pre>
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;list&gt;</span>     <span style="color: #555555; font-style: italic;">&lt;list&gt;</span>    
+#&gt; <span style="color: #555555;">1</span> <span style="color: #555555;">&lt;int [29]&gt;</span> <span style="color: #555555;">&lt;int [28]&gt;</span>
+#&gt; <span style="color: #555555;">2</span> <span style="color: #555555;">&lt;int [33]&gt;</span> <span style="color: #555555;">&lt;int [32]&gt;</span>
+</code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">paths</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -454,37 +454,37 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span><span class="op">(</span><span class="op">)</span>
 
 <span class="va">net</span></code></pre></div>
-<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span><span> </span><span style="color: #555555;">701</span><span> </span><span style="color: #555555;">nodes and</span><span> </span><span style="color: #555555;">851</span><span> </span><span style="color: #555555;">edges
+<pre class="fansi fansi-output"><code>#&gt; <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">701</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">851</span> <span style="color: #555555;">edges
 #&gt; #
-#&gt; # CRS: </span><span> </span><span style="color: #555555;">EPSG:3035</span><span> </span><span style="color: #555555;">
+#&gt; # CRS: </span> <span style="color: #555555;">EPSG:3035</span> <span style="color: #555555;">
 #&gt; #
 #&gt; # An undirected multigraph with 14 components with spatially explicit edges
 #&gt; #
-#&gt; # Edge Data:     851 x 8 (active)</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: LINESTRING</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
-#&gt;    from    to name   type                    geometry   weight    speed     time
-#&gt;   </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;int&gt;</span><span> </span><span style="color: #555555;font-style: italic;">&lt;chr&gt;</span><span>  </span><span style="color: #555555;font-style: italic;">&lt;fct&gt;</span><span>           </span><span style="color: #555555;font-style: italic;">&lt;LINESTRING [m]&gt;</span><span>      </span><span style="color: #555555;">[m]</span><span>    </span><span style="color: #555555;">[m/s]</span><span>      </span><span style="color: #555555;">[s]</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span>     1     2 Havix… resi… (4151491 3207923, 4151474…  28.859… 1.057424  27.292…
-#&gt; </span><span style="color: #555555;">2</span><span>     3     4 Piene… seco… (4151398 3207777, 4151390… 107.714… 1.831544  58.810…
-#&gt; </span><span style="color: #555555;">3</span><span>     5     6 Schul… resi… (4151408 3207539, 4151417…  54.367… 1.057424  51.414…
-#&gt; </span><span style="color: #555555;">4</span><span>     7     8 </span><span style="color: #BB0000;">NA</span><span>     path  (4151885 3206698, 4151861… 155.223… 1.469837 105.605…
-#&gt; </span><span style="color: #555555;">5</span><span>     9    10 Welsi… resi… (4151732 3207017, 4151721… 208.682… 1.057424 197.349…
-#&gt; </span><span style="color: #555555;">6</span><span>    11    12 </span><span style="color: #BB0000;">NA</span><span>     foot… (4152152 3206984, 4152143…  63.028… 1.246804  50.552…
-#&gt; </span><span style="color: #555555;"># … with 845 more rows</span><span>
-#&gt; </span><span style="color: #555555;">#
-#&gt; # Node Data:     701 x 1</span><span>
-#&gt; </span><span style="color: #555555;"># Geometry type: POINT</span><span>
-#&gt; </span><span style="color: #555555;"># Dimension:     XY</span><span>
-#&gt; </span><span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span><span>
+#&gt; # Edge Data:     851 x 8 (active)</span>
+#&gt; <span style="color: #555555;"># Geometry type: LINESTRING</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
+#&gt;    from    to name     type                          geometry weight speed  time
+#&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #555555; font-style: italic;">&lt;fct&gt;</span>                 <span style="color: #555555; font-style: italic;">&lt;LINESTRING [m]&gt;</span>    <span style="color: #555555;">[m]</span> <span style="color: #555555;">[m/s]</span>   <span style="color: #555555;">[s]</span>
+#&gt; <span style="color: #555555;">1</span>     1     2 Havixbe… resi… (4151491 3207923, 4151474 32079…   28.9  1.06  27.3
+#&gt; <span style="color: #555555;">2</span>     3     4 Pieners… seco… (4151398 3207777, 4151390 32077…  108.   1.83  58.8
+#&gt; <span style="color: #555555;">3</span>     5     6 Schulte… resi… (4151408 3207539, 4151417 32075…   54.4  1.06  51.4
+#&gt; <span style="color: #555555;">4</span>     7     8 <span style="color: #BB0000;">NA</span>       path  (4151885 3206698, 4151861 32067…  155.   1.47 106. 
+#&gt; <span style="color: #555555;">5</span>     9    10 Welsing… resi… (4151732 3207017, 4151721 32068…  209.   1.06 197. 
+#&gt; <span style="color: #555555;">6</span>    11    12 <span style="color: #BB0000;">NA</span>       foot… (4152152 3206984, 4152143 32069…   63.0  1.25  50.6
+#&gt; <span style="color: #555555;"># … with 845 more rows</span>
+#&gt; <span style="color: #555555;">#
+#&gt; # Node Data:     701 x 1</span>
+#&gt; <span style="color: #555555;"># Geometry type: POINT</span>
+#&gt; <span style="color: #555555;"># Dimension:     XY</span>
+#&gt; <span style="color: #555555;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 #&gt;            geometry
-#&gt;         </span><span style="color: #555555;font-style: italic;">&lt;POINT [m]&gt;</span><span>
-#&gt; </span><span style="color: #555555;">1</span><span> (4151491 3207923)
-#&gt; </span><span style="color: #555555;">2</span><span> (4151474 3207946)
-#&gt; </span><span style="color: #555555;">3</span><span> (4151398 3207777)
-#&gt; </span><span style="color: #555555;"># … with 698 more rows</span><span>
-</span></code></pre>
+#&gt;         <span style="color: #555555; font-style: italic;">&lt;POINT [m]&gt;</span>
+#&gt; <span style="color: #555555;">1</span> (4151491 3207923)
+#&gt; <span style="color: #555555;">2</span> (4151474 3207946)
+#&gt; <span style="color: #555555;">3</span> (4151398 3207777)
+#&gt; <span style="color: #555555;"># … with 698 more rows</span>
+</code></pre>
 <p>Now, we can calculate the total travel time for each shortest path between the (nearest node of the) origin point and all other nodes in the network, using the node measure function <code><a href="https://tidygraph.data-imaginist.com/reference/pair_measures.html">tidygraph::node_distance_from()</a></code> with the values in the <em>time</em> column as weights. Then, we filter the nodes reachable within a given travel time from the origin. By drawing a convex hull around these selected nodes we roughly approximate the isochrone. If we wanted isochrones for travel times <em>towards</em> the central point, we could have used the node measure function <code><a href="https://tidygraph.data-imaginist.com/reference/pair_measures.html">tidygraph::node_distance_to()</a></code> instead.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>
