@@ -42,7 +42,7 @@ par(mar = c(1,1,1,1), mfrow = c(1,1))
 plot(net, col = 'blue', pch = 18, lwd = 1, cex = 2)
 
 # Add grid and axis
-par(mar = c(2.5, 2.5, 1, 1))
+par(mar = c(2.5,2.5,1,1))
 plot(net, graticule = TRUE, axes = TRUE)
 par(oldpar)
 
