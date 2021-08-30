@@ -57,7 +57,8 @@ Suggests:
     spatstat (>= 2.0.0),
     testthat,
     tidyverse,
-    TSP
+    TSP,
+    s2 (>= 1.0.1)
 VignetteBuilder:
     knitr
 ByteCompile: true
