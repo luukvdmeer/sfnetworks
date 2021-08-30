@@ -23,6 +23,7 @@ jobs:
       matrix:
         config:
           - {os: ubuntu-18.04, r: 'release'}
+          - {os: ubuntu-20.04, r: 'release'}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
