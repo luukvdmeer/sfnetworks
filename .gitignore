@@ -5,3 +5,5 @@
 *.html
 *cache*
 CRAN-RELEASE
+docs/
+pkgdown/
