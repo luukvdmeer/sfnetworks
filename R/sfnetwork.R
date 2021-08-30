@@ -404,11 +404,15 @@ print.sfnetwork = function(x, ...) {
 #' @importFrom tibble trunc_mat
 #' @importFrom tools toTitleCase
 #' @importFrom utils modifyList
-summarise_network_element = function(data, name, active = TRUE, ...) {
+summarise_network_element = function(data, name, active = TRUE,
+                                     n_active = getOption("sfn_max_print_active",     6L),
+                                     n_inactive = getOption("sfn_max_print_inactive", 3L),
+                                     ...
+                                     ) {
   # Capture ... arguments.
   args = list(...)
   # Truncate data.
-  n = if (active) 6 else 3
+  n = if (active) n_active else n_inactive
   x = do.call(trunc_mat, modifyList(args, list(x = data, n = n)))
   # Write summary.
   x$summary[1] = paste(x$summary[1], if (active) "(active)" else "")
