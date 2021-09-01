@@ -59,7 +59,7 @@ as.linnet.sfnetwork = function(X, ...) {
   check_spatstat("spatstat.linnet")
 
   # Extract the vertices of the sfnetwork.
-  X_vertices_ppp = spatstat.geom::as.ppp(nodes_as_sf(X))
+  X_vertices_ppp = spatstat.geom::as.ppp(node_geom(X))
   # Extract the edge list.
   X_edge_list = as.matrix(
     (as.data.frame(activate(X, "edges")))[, c("from", "to")]
