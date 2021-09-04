@@ -5,7 +5,7 @@
 \alias{as_s2_geography.sfnetwork}
 \title{s2 methods for sfnetworks}
 \usage{
-\method{as_s2_geography}{sfnetwork}(x, ...)
+as_s2_geography.sfnetwork(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}

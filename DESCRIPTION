@@ -1,6 +1,6 @@
 Package: sfnetworks
 Title: Tidy Geospatial Networks
-Version: 0.5.2
+Version: 0.5.2.900
 Authors@R:
     c(person(given = "Lucas",
              family = "van der Meer",
@@ -52,13 +52,13 @@ Suggests:
     ggplot2 (>= 3.0.0),
     knitr,
     rmarkdown,
-    s2 (>= 1.0.1),
     spatstat.geom,
     spatstat.linnet,
     spatstat (>= 2.0.0),
     testthat,
     tidyverse,
-    TSP
+    TSP,
+    s2 (>= 1.0.1)
 VignetteBuilder:
     knitr
 ByteCompile: true
