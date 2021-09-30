@@ -6,7 +6,6 @@
 [![Codecov test coverage](https://codecov.io/gh/luukvdmeer/sfnetworks/branch/master/graph/badge.svg)](https://codecov.io/gh/luukvdmeer/sfnetworks/)
 [![CRAN](http://www.r-pkg.org/badges/version/sfnetworks)](https://cran.r-project.org/package=sfnetworks)
 [![Downloads](https://cranlogs.r-pkg.org/badges/sfnetworks?color=orange)](https://cran.r-project.org/package=sfnetworks)
-[![R-CMD-check](https://github.com/luukvdmeer/sfnetworks/workflows/R-CMD-check/badge.svg)](https://github.com/luukvdmeer/sfnetworks/actions)
 <!-- badges: end -->
 
 `sfnetworks` is an R package for analysis of geospatial networks. It connects the functionalities of the `tidygraph` package for network analysis and the `sf` package for spatial data science.
