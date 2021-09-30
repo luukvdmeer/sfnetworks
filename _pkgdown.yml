@@ -33,6 +33,13 @@ reference:
       - sf
       - sf_attr
       - as_tibble.sfnetwork
+  - title: Integration with other packages
+    desc: >
+      The packages implements basic functions to coerce sfnetwork objects into
+      other formats.
+    contents:
+      - as.linnet
+      - s2
   - title: Visualization
     desc: >
       The package offers basic plot methods. For more advanced plotting, the
@@ -48,8 +55,8 @@ articles:
 - title: Vignettes
   navbar: ~
   contents:
-      - structure
-      - preprocess_and_clean
-      - join_filter
-      - routing
-      - morphers
+      - sfn01_structure
+      - sfn02_preprocess_clean
+      - sfn03_join_filter
+      - sfn04_routing
+      - sfn05_morphers
