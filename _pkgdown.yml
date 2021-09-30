@@ -55,8 +55,8 @@ articles:
 - title: Vignettes
   navbar: ~
   contents:
-      - sfn01
-      - sfn02
-      - sfn03
-      - sfn04
-      - sfn05
+      - sfn01_structure
+      - sfn02_preprocess_clean
+      - sfn03_join_filter
+      - sfn04_routing
+      - sfn05_morphers
