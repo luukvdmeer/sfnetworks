@@ -45,7 +45,7 @@ jobs:
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
-          remotes::install_cran("pkgdown")
+          remotes::install_github("r-lib/pkgdown")
         shell: Rscript {0}
 
       - name: Install package
