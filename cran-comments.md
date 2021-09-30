@@ -1,14 +1,14 @@
 In this release I have made the following changes:
 
-- Compatibility with the `s2` package for spherical geometry operations by adding a `s2::as_s2_geography()` method for sfnetwork objects. In the new version of `sf` (one of our core dependencies), the `s2` package will be used for geometric operations involving longitude-latitude coordinates, see https://github.com/r-spatial/sf/issues/1649.
+- Addition of `n_active` and `n_inactive` arguments to the print method of an sfnetwork object. The arguments define how many rows are printed for respectively the active and inactive network element. The values of these arguments can also be set globally by running e.g. `options(sfn_max_print_active = 1, sfn_max_print_inactive = 2)`.
 
-- Minor bug fixes:
-  - When setting `length_as_weight = TRUE` in the sfnetwork construction function, the added weight column now preserves specification of units.
-  - `st_network_blend()` now internally uses `sf::st_cast()` instead of `sfheaders::sfc_cast()` to avoid errors with some CRS specifications.
+- The example dataset `Roxel` is updated to comply with recent updates on the way a CRS is specified in an sf object
 
-- Documentation improvements:
-  - Extended function documentation for the shortest paths functions.
-  - Updated vignettes.
+- GitHub Actions workflows are updated to comply with new developments.
+
+- Documentation updates:
+  - Vignette file names are updated such that the appear in correct order on CRAN.
+  - Example section of the plot method for sfnetwork objects now includes an example of how to add graticules and axes.
 
 ## R CMD check results
 
