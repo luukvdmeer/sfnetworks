@@ -88,7 +88,7 @@ as a user, you can disable this behaviour by setting spatial = FALSE." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.3</span>
       </span>
     </div>
 
@@ -111,19 +111,19 @@ as a user, you can disable this behaviour by setting spatial = FALSE." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/structure.html">1. The sfnetwork data structure</a>
+      <a href="../articles/sfn01_structure.html">1. The sfnetwork data structure</a>
     </li>
     <li>
-      <a href="../articles/preprocess_and_clean.html">2. Network pre-processing and cleaning</a>
+      <a href="../articles/sfn02_preprocess_clean.html">2. Network pre-processing and cleaning</a>
     </li>
     <li>
-      <a href="../articles/join_filter.html">3. Spatial joins and filters</a>
+      <a href="../articles/sfn03_join_filter.html">3. Spatial joins and filters</a>
     </li>
     <li>
-      <a href="../articles/routing.html">4. Routing</a>
+      <a href="../articles/sfn04_routing.html">4. Routing</a>
     </li>
     <li>
-      <a href="../articles/morphers.html">5. Spatial morphers</a>
+      <a href="../articles/sfn05_morphers.html">5. Spatial morphers</a>
     </li>
   </ul>
 </li>
@@ -213,7 +213,7 @@ column. Defaults to <code>TRUE</code>.</p></td>
 #&gt; Dimension:     XY
 #&gt; Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
 #&gt; Geodetic CRS:  WGS 84
-#&gt; <span style='color: #949494;'># A tibble: 701 x 1</span>
+#&gt; <span style='color: #949494;'># A tibble: 701 × 1</span>
 #&gt;               geometry
 #&gt;            <span style='color: #949494; font-style: italic;'>&lt;POINT [°]&gt;</span>
 #&gt; <span style='color: #BCBCBC;'> 1</span> (7.533722 51.95556)
@@ -234,23 +234,23 @@ column. Defaults to <code>TRUE</code>.</p></td>
 #&gt; Dimension:     XY
 #&gt; Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
 #&gt; Geodetic CRS:  WGS 84
-#&gt; <span style='color: #949494;'># A tibble: 851 x 5</span>
-#&gt;     from    to name         type                                        geometry
-#&gt;    <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>        <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                               <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [°]&gt;</span>
-#&gt; <span style='color: #BCBCBC;'> 1</span>     1     2 Havixbecker… reside…       (7.533722 51.95556, 7.533461 51.95576)
-#&gt; <span style='color: #BCBCBC;'> 2</span>     3     4 Pienersallee second… (7.532442 51.95422, 7.53236 51.95377, 7.532…
-#&gt; <span style='color: #BCBCBC;'> 3</span>     5     6 Schulte-Ber… reside… (7.532709 51.95209, 7.532823 51.95239, 7.53…
-#&gt; <span style='color: #BCBCBC;'> 4</span>     7     8 <span style='color: #BB0000;'>NA</span>           path    (7.540063 51.94468, 7.539696 51.94479, 7.53…
-#&gt; <span style='color: #BCBCBC;'> 5</span>     9    10 Welsingheide reside…        (7.537673 51.9475, 7.537614 51.94562)
-#&gt; <span style='color: #BCBCBC;'> 6</span>    11    12 <span style='color: #BB0000;'>NA</span>           footway (7.543791 51.94733, 7.54369 51.94686, 7.543…
-#&gt; <span style='color: #BCBCBC;'> 7</span>    13    14 <span style='color: #BB0000;'>NA</span>           footway        (7.54012 51.94478, 7.539931 51.94514)
-#&gt; <span style='color: #BCBCBC;'> 8</span>     8    10 <span style='color: #BB0000;'>NA</span>           path    (7.53822 51.94546, 7.538131 51.94549, 7.538…
-#&gt; <span style='color: #BCBCBC;'> 9</span>     7    15 <span style='color: #BB0000;'>NA</span>           track   (7.540063 51.94468, 7.540338 51.94468, 7.54…
-#&gt; <span style='color: #BCBCBC;'>10</span>    16    17 <span style='color: #BB0000;'>NA</span>           track   (7.5424 51.94599, 7.54205 51.94629, 7.54196…
+#&gt; <span style='color: #949494;'># A tibble: 851 × 5</span>
+#&gt;     from    to name                  type                               geometry
+#&gt;    <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                 <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                      <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [°]&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 1</span>     1     2 Havixbecker Strasse   residential (7.533722 51.95556, 7.533461 5…
+#&gt; <span style='color: #BCBCBC;'> 2</span>     3     4 Pienersallee          secondary   (7.532442 51.95422, 7.53236 51…
+#&gt; <span style='color: #BCBCBC;'> 3</span>     5     6 Schulte-Bernd-Strasse residential (7.532709 51.95209, 7.532823 5…
+#&gt; <span style='color: #BCBCBC;'> 4</span>     7     8 <span style='color: #BB0000;'>NA</span>                    path        (7.540063 51.94468, 7.539696 5…
+#&gt; <span style='color: #BCBCBC;'> 5</span>     9    10 Welsingheide          residential (7.537673 51.9475, 7.537614 51…
+#&gt; <span style='color: #BCBCBC;'> 6</span>    11    12 <span style='color: #BB0000;'>NA</span>                    footway     (7.543791 51.94733, 7.54369 51…
+#&gt; <span style='color: #BCBCBC;'> 7</span>    13    14 <span style='color: #BB0000;'>NA</span>                    footway     (7.54012 51.94478, 7.539931 51…
+#&gt; <span style='color: #BCBCBC;'> 8</span>     8    10 <span style='color: #BB0000;'>NA</span>                    path        (7.53822 51.94546, 7.538131 51…
+#&gt; <span style='color: #BCBCBC;'> 9</span>     7    15 <span style='color: #BB0000;'>NA</span>                    track       (7.540063 51.94468, 7.540338 5…
+#&gt; <span style='color: #BCBCBC;'>10</span>    16    17 <span style='color: #BB0000;'>NA</span>                    track       (7.5424 51.94599, 7.54205 51.9…
 #&gt; <span style='color: #949494;'># … with 841 more rows</span></div><div class='input'>
 <span class='co'># Extract the active network element as a regular tibble.</span>
 <span class='fu'>as_tibble</span><span class='op'>(</span><span class='va'>net</span>, spatial <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 701 x 1</span>
+</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 701 × 1</span>
 #&gt;               geometry
 #&gt;            <span style='color: #949494; font-style: italic;'>&lt;POINT [°]&gt;</span>
 #&gt; <span style='color: #BCBCBC;'> 1</span> (7.533722 51.95556)

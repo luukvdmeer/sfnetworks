@@ -2,10 +2,10 @@ pandoc: 2.7.3
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
-  join_filter: join_filter.html
-  morphers: morphers.html
-  preprocess_and_clean: preprocess_and_clean.html
-  routing: routing.html
-  structure: structure.html
-last_built: 2021-06-11T09:52Z
+  sfn01_structure: sfn01_structure.html
+  sfn02_preprocess_clean: sfn02_preprocess_clean.html
+  sfn03_join_filter: sfn03_join_filter.html
+  sfn04_routing: sfn04_routing.html
+  sfn05_morphers: sfn05_morphers.html
+last_built: 2021-10-07T13:24Z
 

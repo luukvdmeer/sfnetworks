@@ -87,7 +87,7 @@ the features given in y." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.3</span>
       </span>
     </div>
 
@@ -110,19 +110,19 @@ the features given in y." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/structure.html">1. The sfnetwork data structure</a>
+      <a href="../articles/sfn01_structure.html">1. The sfnetwork data structure</a>
     </li>
     <li>
-      <a href="../articles/preprocess_and_clean.html">2. Network pre-processing and cleaning</a>
+      <a href="../articles/sfn02_preprocess_clean.html">2. Network pre-processing and cleaning</a>
     </li>
     <li>
-      <a href="../articles/join_filter.html">3. Spatial joins and filters</a>
+      <a href="../articles/sfn03_join_filter.html">3. Spatial joins and filters</a>
     </li>
     <li>
-      <a href="../articles/routing.html">4. Routing</a>
+      <a href="../articles/sfn04_routing.html">4. Routing</a>
     </li>
     <li>
-      <a href="../articles/morphers.html">5. Spatial morphers</a>
+      <a href="../articles/sfn05_morphers.html">5. Spatial morphers</a>
     </li>
   </ul>
 </li>
@@ -261,7 +261,7 @@ with edge lengths as weights argument.</p>
 #&gt; #
 #&gt; # A directed multigraph with 14 components with spatially explicit edges
 #&gt; #
-#&gt; </span><span style='color: #949494;'># Node Data:     701 x 2 (active)</span>
+#&gt; </span><span style='color: #949494;'># Node Data:     701 × 2 (active)</span>
 #&gt; <span style='color: #949494;'># Geometry type: POINT</span>
 #&gt; <span style='color: #949494;'># Dimension:     XY</span>
 #&gt; <span style='color: #949494;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
@@ -275,15 +275,15 @@ with edge lengths as weights argument.</p>
 #&gt; <span style='color: #BCBCBC;'>6</span> TRUE   (4151421 3207592)
 #&gt; <span style='color: #949494;'># … with 695 more rows</span>
 #&gt; <span style='color: #555555;'>#
-#&gt; </span><span style='color: #949494;'># Edge Data:     851 x 5</span>
+#&gt; </span><span style='color: #949494;'># Edge Data:     851 × 5</span>
 #&gt; <span style='color: #949494;'># Geometry type: LINESTRING</span>
 #&gt; <span style='color: #949494;'># Dimension:     XY</span>
 #&gt; <span style='color: #949494;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
-#&gt;    from    to name            type                                      geometry
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>           <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                             <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [m]&gt;</span>
-#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 Havixbecker St… resident…       (4151491 3207923, 4151474 3207946)
-#&gt; <span style='color: #BCBCBC;'>2</span>     3     4 Pienersallee    secondary (4151398 3207777, 4151390 3207727, 4151…
-#&gt; <span style='color: #BCBCBC;'>3</span>     5     6 Schulte-Bernd-… resident… (4151408 3207539, 4151417 3207573, 4151…
+#&gt;    from    to name                  type                                geometry
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                 <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                       <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [m]&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 Havixbecker Strasse   residential (4151491 3207923, 4151474 32079…
+#&gt; <span style='color: #BCBCBC;'>2</span>     3     4 Pienersallee          secondary   (4151398 3207777, 4151390 32077…
+#&gt; <span style='color: #BCBCBC;'>3</span>     5     6 Schulte-Bernd-Strasse residential (4151408 3207539, 4151417 32075…
 #&gt; <span style='color: #949494;'># … with 848 more rows</span></div><div class='input'>
 </div></pre>
   </div>

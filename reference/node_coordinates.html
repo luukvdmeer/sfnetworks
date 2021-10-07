@@ -81,7 +81,7 @@ geometries of the nodes." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.3</span>
       </span>
     </div>
 
@@ -104,19 +104,19 @@ geometries of the nodes." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/structure.html">1. The sfnetwork data structure</a>
+      <a href="../articles/sfn01_structure.html">1. The sfnetwork data structure</a>
     </li>
     <li>
-      <a href="../articles/preprocess_and_clean.html">2. Network pre-processing and cleaning</a>
+      <a href="../articles/sfn02_preprocess_clean.html">2. Network pre-processing and cleaning</a>
     </li>
     <li>
-      <a href="../articles/join_filter.html">3. Spatial joins and filters</a>
+      <a href="../articles/sfn03_join_filter.html">3. Spatial joins and filters</a>
     </li>
     <li>
-      <a href="../articles/routing.html">4. Routing</a>
+      <a href="../articles/sfn04_routing.html">4. Routing</a>
     </li>
     <li>
-      <a href="../articles/morphers.html">5. Spatial morphers</a>
+      <a href="../articles/sfn05_morphers.html">5. Spatial morphers</a>
     </li>
   </ul>
 </li>
@@ -209,7 +209,7 @@ will be returned.</p>
 #&gt; #
 #&gt; # A directed multigraph with 14 components with spatially explicit edges
 #&gt; #
-#&gt; </span><span style='color: #949494;'># Node Data:     701 x 3 (active)</span>
+#&gt; </span><span style='color: #949494;'># Node Data:     701 × 3 (active)</span>
 #&gt; <span style='color: #949494;'># Geometry type: POINT</span>
 #&gt; <span style='color: #949494;'># Dimension:     XY</span>
 #&gt; <span style='color: #949494;'># Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
@@ -223,15 +223,15 @@ will be returned.</p>
 #&gt; <span style='color: #BCBCBC;'>6</span> (7.532869 51.95257)  7.53  52.0
 #&gt; <span style='color: #949494;'># … with 695 more rows</span>
 #&gt; <span style='color: #555555;'>#
-#&gt; </span><span style='color: #949494;'># Edge Data:     851 x 5</span>
+#&gt; </span><span style='color: #949494;'># Edge Data:     851 × 5</span>
 #&gt; <span style='color: #949494;'># Geometry type: LINESTRING</span>
 #&gt; <span style='color: #949494;'># Dimension:     XY</span>
 #&gt; <span style='color: #949494;'># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
-#&gt;    from    to name           type                                       geometry
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>          <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                              <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [°]&gt;</span>
-#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 Havixbecker S… residen…     (7.533722 51.95556, 7.533461 51.95576)
-#&gt; <span style='color: #BCBCBC;'>2</span>     3     4 Pienersallee   seconda… (7.532442 51.95422, 7.53236 51.95377, 7.5…
-#&gt; <span style='color: #BCBCBC;'>3</span>     5     6 Schulte-Bernd… residen… (7.532709 51.95209, 7.532823 51.95239, 7.…
+#&gt;    from    to name                  type                                geometry
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                 <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                       <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [°]&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 Havixbecker Strasse   residential (7.533722 51.95556, 7.533461 51…
+#&gt; <span style='color: #BCBCBC;'>2</span>     3     4 Pienersallee          secondary   (7.532442 51.95422, 7.53236 51.…
+#&gt; <span style='color: #BCBCBC;'>3</span>     5     6 Schulte-Bernd-Strasse residential (7.532709 51.95209, 7.532823 51…
 #&gt; <span style='color: #949494;'># … with 848 more rows</span></div><div class='input'>
 </div></pre>
   </div>

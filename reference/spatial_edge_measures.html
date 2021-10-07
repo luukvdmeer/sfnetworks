@@ -82,7 +82,7 @@ tidygraph." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.3</span>
       </span>
     </div>
 
@@ -105,19 +105,19 @@ tidygraph." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/structure.html">1. The sfnetwork data structure</a>
+      <a href="../articles/sfn01_structure.html">1. The sfnetwork data structure</a>
     </li>
     <li>
-      <a href="../articles/preprocess_and_clean.html">2. Network pre-processing and cleaning</a>
+      <a href="../articles/sfn02_preprocess_clean.html">2. Network pre-processing and cleaning</a>
     </li>
     <li>
-      <a href="../articles/join_filter.html">3. Spatial joins and filters</a>
+      <a href="../articles/sfn03_join_filter.html">3. Spatial joins and filters</a>
     </li>
     <li>
-      <a href="../articles/routing.html">4. Routing</a>
+      <a href="../articles/sfn04_routing.html">4. Routing</a>
     </li>
     <li>
-      <a href="../articles/morphers.html">5. Spatial morphers</a>
+      <a href="../articles/sfn05_morphers.html">5. Spatial morphers</a>
     </li>
   </ul>
 </li>
@@ -221,21 +221,21 @@ boundary nodes of an edge, as calculated by <code><a href='https://r-spatial.git
 #&gt; #
 #&gt; # A directed multigraph with 14 components with spatially explicit edges
 #&gt; #
-#&gt; </span><span style='color: #949494;'># Edge Data:     851 x 6 (active)</span>
+#&gt; </span><span style='color: #949494;'># Edge Data:     851 × 6 (active)</span>
 #&gt; <span style='color: #949494;'># Geometry type: LINESTRING</span>
 #&gt; <span style='color: #949494;'># Dimension:     XY</span>
 #&gt; <span style='color: #949494;'># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
-#&gt;    from    to name       type                                   geometry azimuth
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                          <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [°]&gt;</span>   <span style='color: #949494;'>[rad]</span>
-#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 Havixbeck… reside…  (7.533722 51.95556, 7.533461 51.95576)  -<span style='color: #BB0000;'>0.670</span>
-#&gt; <span style='color: #BCBCBC;'>2</span>     3     4 Pienersal… second… (7.532442 51.95422, 7.53236 51.95377, …  -<span style='color: #BB0000;'>2.91</span> 
-#&gt; <span style='color: #BCBCBC;'>3</span>     5     6 Schulte-B… reside… (7.532709 51.95209, 7.532823 51.95239,…   0.203
-#&gt; <span style='color: #BCBCBC;'>4</span>     7     8 <span style='color: #BB0000;'>NA</span>         path    (7.540063 51.94468, 7.539696 51.94479,…  -<span style='color: #BB0000;'>0.968</span>
-#&gt; <span style='color: #BCBCBC;'>5</span>     9    10 Welsinghe… reside…   (7.537673 51.9475, 7.537614 51.94562)  -<span style='color: #BB0000;'>3.12</span> 
-#&gt; <span style='color: #BCBCBC;'>6</span>    11    12 <span style='color: #BB0000;'>NA</span>         footway (7.543791 51.94733, 7.54369 51.94686, …  -<span style='color: #BB0000;'>3.10</span> 
+#&gt;    from    to name                  type                         geometry azimuth
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                 <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [°]&gt;</span>   <span style='color: #949494;'>[rad]</span>
+#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 Havixbecker Strasse   residential (7.533722 51.95556, 7.53…  -<span style='color: #BB0000;'>0.670</span>
+#&gt; <span style='color: #BCBCBC;'>2</span>     3     4 Pienersallee          secondary   (7.532442 51.95422, 7.53…  -<span style='color: #BB0000;'>2.91</span> 
+#&gt; <span style='color: #BCBCBC;'>3</span>     5     6 Schulte-Bernd-Strasse residential (7.532709 51.95209, 7.53…   0.203
+#&gt; <span style='color: #BCBCBC;'>4</span>     7     8 <span style='color: #BB0000;'>NA</span>                    path        (7.540063 51.94468, 7.53…  -<span style='color: #BB0000;'>0.968</span>
+#&gt; <span style='color: #BCBCBC;'>5</span>     9    10 Welsingheide          residential (7.537673 51.9475, 7.537…  -<span style='color: #BB0000;'>3.12</span> 
+#&gt; <span style='color: #BCBCBC;'>6</span>    11    12 <span style='color: #BB0000;'>NA</span>                    footway     (7.543791 51.94733, 7.54…  -<span style='color: #BB0000;'>3.10</span> 
 #&gt; <span style='color: #949494;'># … with 845 more rows</span>
 #&gt; <span style='color: #555555;'>#
-#&gt; </span><span style='color: #949494;'># Node Data:     701 x 1</span>
+#&gt; </span><span style='color: #949494;'># Node Data:     701 × 1</span>
 #&gt; <span style='color: #949494;'># Geometry type: POINT</span>
 #&gt; <span style='color: #949494;'># Dimension:     XY</span>
 #&gt; <span style='color: #949494;'># Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
@@ -254,21 +254,21 @@ boundary nodes of an edge, as calculated by <code><a href='https://r-spatial.git
 #&gt; #
 #&gt; # A directed multigraph with 14 components with spatially explicit edges
 #&gt; #
-#&gt; </span><span style='color: #949494;'># Edge Data:     851 x 6 (active)</span>
+#&gt; </span><span style='color: #949494;'># Edge Data:     851 × 6 (active)</span>
 #&gt; <span style='color: #949494;'># Geometry type: LINESTRING</span>
 #&gt; <span style='color: #949494;'># Dimension:     XY</span>
 #&gt; <span style='color: #949494;'># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
-#&gt;    from    to name       type                                  geometry circuity
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                         <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [°]&gt;</span>      <span style='color: #949494;'>[1]</span>
-#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 Havixbeck… resid…  (7.533722 51.95556, 7.533461 51.95576)     1.00
-#&gt; <span style='color: #BCBCBC;'>2</span>     3     4 Pienersal… secon… (7.532442 51.95422, 7.53236 51.95377, …     1.01
-#&gt; <span style='color: #BCBCBC;'>3</span>     5     6 Schulte-B… resid… (7.532709 51.95209, 7.532823 51.95239,…     1.00
-#&gt; <span style='color: #BCBCBC;'>4</span>     7     8 <span style='color: #BB0000;'>NA</span>         path   (7.540063 51.94468, 7.539696 51.94479,…     1.01
-#&gt; <span style='color: #BCBCBC;'>5</span>     9    10 Welsinghe… resid…   (7.537673 51.9475, 7.537614 51.94562)     1.00
-#&gt; <span style='color: #BCBCBC;'>6</span>    11    12 <span style='color: #BB0000;'>NA</span>         footw… (7.543791 51.94733, 7.54369 51.94686, …     1.02
+#&gt;    from    to name                  type                         geometry circuity
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                 <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [°]&gt;</span>      <span style='color: #949494;'>[1]</span>
+#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 Havixbecker Strasse   residential (7.533722 51.95556, 7.53…     1.00
+#&gt; <span style='color: #BCBCBC;'>2</span>     3     4 Pienersallee          secondary   (7.532442 51.95422, 7.53…     1.01
+#&gt; <span style='color: #BCBCBC;'>3</span>     5     6 Schulte-Bernd-Strasse residential (7.532709 51.95209, 7.53…     1.00
+#&gt; <span style='color: #BCBCBC;'>4</span>     7     8 <span style='color: #BB0000;'>NA</span>                    path        (7.540063 51.94468, 7.53…     1.01
+#&gt; <span style='color: #BCBCBC;'>5</span>     9    10 Welsingheide          residential (7.537673 51.9475, 7.537…     1.00
+#&gt; <span style='color: #BCBCBC;'>6</span>    11    12 <span style='color: #BB0000;'>NA</span>                    footway     (7.543791 51.94733, 7.54…     1.02
 #&gt; <span style='color: #949494;'># … with 845 more rows</span>
 #&gt; <span style='color: #555555;'>#
-#&gt; </span><span style='color: #949494;'># Node Data:     701 x 1</span>
+#&gt; </span><span style='color: #949494;'># Node Data:     701 × 1</span>
 #&gt; <span style='color: #949494;'># Geometry type: POINT</span>
 #&gt; <span style='color: #949494;'># Dimension:     XY</span>
 #&gt; <span style='color: #949494;'># Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
@@ -287,21 +287,21 @@ boundary nodes of an edge, as calculated by <code><a href='https://r-spatial.git
 #&gt; #
 #&gt; # A directed multigraph with 14 components with spatially explicit edges
 #&gt; #
-#&gt; </span><span style='color: #949494;'># Edge Data:     851 x 6 (active)</span>
+#&gt; </span><span style='color: #949494;'># Edge Data:     851 × 6 (active)</span>
 #&gt; <span style='color: #949494;'># Geometry type: LINESTRING</span>
 #&gt; <span style='color: #949494;'># Dimension:     XY</span>
 #&gt; <span style='color: #949494;'># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
-#&gt;    from    to name       type                                    geometry length
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                           <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [°]&gt;</span>    <span style='color: #949494;'>[m]</span>
-#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 Havixbeck… reside…   (7.533722 51.95556, 7.533461 51.95576)   28.8
-#&gt; <span style='color: #BCBCBC;'>2</span>     3     4 Pienersal… second… (7.532442 51.95422, 7.53236 51.95377, 7…  108. 
-#&gt; <span style='color: #BCBCBC;'>3</span>     5     6 Schulte-B… reside… (7.532709 51.95209, 7.532823 51.95239, …   54.3
-#&gt; <span style='color: #BCBCBC;'>4</span>     7     8 <span style='color: #BB0000;'>NA</span>         path    (7.540063 51.94468, 7.539696 51.94479, …  155. 
-#&gt; <span style='color: #BCBCBC;'>5</span>     9    10 Welsinghe… reside…    (7.537673 51.9475, 7.537614 51.94562)  209. 
-#&gt; <span style='color: #BCBCBC;'>6</span>    11    12 <span style='color: #BB0000;'>NA</span>         footway (7.543791 51.94733, 7.54369 51.94686, 7…   63.0
+#&gt;    from    to name                  type                         geometry length
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                 <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [°]&gt;</span>    <span style='color: #949494;'>[m]</span>
+#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 Havixbecker Strasse   residential (7.533722 51.95556, 7.53…   28.8
+#&gt; <span style='color: #BCBCBC;'>2</span>     3     4 Pienersallee          secondary   (7.532442 51.95422, 7.53…  108. 
+#&gt; <span style='color: #BCBCBC;'>3</span>     5     6 Schulte-Bernd-Strasse residential (7.532709 51.95209, 7.53…   54.3
+#&gt; <span style='color: #BCBCBC;'>4</span>     7     8 <span style='color: #BB0000;'>NA</span>                    path        (7.540063 51.94468, 7.53…  155. 
+#&gt; <span style='color: #BCBCBC;'>5</span>     9    10 Welsingheide          residential (7.537673 51.9475, 7.537…  209. 
+#&gt; <span style='color: #BCBCBC;'>6</span>    11    12 <span style='color: #BB0000;'>NA</span>                    footway     (7.543791 51.94733, 7.54…   63.0
 #&gt; <span style='color: #949494;'># … with 845 more rows</span>
 #&gt; <span style='color: #555555;'>#
-#&gt; </span><span style='color: #949494;'># Node Data:     701 x 1</span>
+#&gt; </span><span style='color: #949494;'># Node Data:     701 × 1</span>
 #&gt; <span style='color: #949494;'># Geometry type: POINT</span>
 #&gt; <span style='color: #949494;'># Dimension:     XY</span>
 #&gt; <span style='color: #949494;'># Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
@@ -320,21 +320,21 @@ boundary nodes of an edge, as calculated by <code><a href='https://r-spatial.git
 #&gt; #
 #&gt; # A directed multigraph with 14 components with spatially explicit edges
 #&gt; #
-#&gt; </span><span style='color: #949494;'># Edge Data:     851 x 6 (active)</span>
+#&gt; </span><span style='color: #949494;'># Edge Data:     851 × 6 (active)</span>
 #&gt; <span style='color: #949494;'># Geometry type: LINESTRING</span>
 #&gt; <span style='color: #949494;'># Dimension:     XY</span>
 #&gt; <span style='color: #949494;'># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
-#&gt;    from    to name      type                               geometry displacement
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                      <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [°]&gt;</span>          <span style='color: #949494;'>[m]</span>
-#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 Havixbec… resid… (7.533722 51.95556, 7.533461 51.955…         28.8
-#&gt; <span style='color: #BCBCBC;'>2</span>     3     4 Pienersa… secon… (7.532442 51.95422, 7.53236 51.9537…        107. 
-#&gt; <span style='color: #BCBCBC;'>3</span>     5     6 Schulte-… resid… (7.532709 51.95209, 7.532823 51.952…         54.3
-#&gt; <span style='color: #BCBCBC;'>4</span>     7     8 <span style='color: #BB0000;'>NA</span>        path   (7.540063 51.94468, 7.539696 51.944…        154. 
-#&gt; <span style='color: #BCBCBC;'>5</span>     9    10 Welsingh… resid… (7.537673 51.9475, 7.537614 51.9456…        209. 
-#&gt; <span style='color: #BCBCBC;'>6</span>    11    12 <span style='color: #BB0000;'>NA</span>        footw… (7.543791 51.94733, 7.54369 51.9468…         61.7
+#&gt;    from    to name                  type                         geometry displacement
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                 <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [°]&gt;</span>          <span style='color: #949494;'>[m]</span>
+#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 Havixbecker Strasse   residential (7.533722 51.95556, 7.53…         28.8
+#&gt; <span style='color: #BCBCBC;'>2</span>     3     4 Pienersallee          secondary   (7.532442 51.95422, 7.53…        107. 
+#&gt; <span style='color: #BCBCBC;'>3</span>     5     6 Schulte-Bernd-Strasse residential (7.532709 51.95209, 7.53…         54.3
+#&gt; <span style='color: #BCBCBC;'>4</span>     7     8 <span style='color: #BB0000;'>NA</span>                    path        (7.540063 51.94468, 7.53…        154. 
+#&gt; <span style='color: #BCBCBC;'>5</span>     9    10 Welsingheide          residential (7.537673 51.9475, 7.537…        209. 
+#&gt; <span style='color: #BCBCBC;'>6</span>    11    12 <span style='color: #BB0000;'>NA</span>                    footway     (7.543791 51.94733, 7.54…         61.7
 #&gt; <span style='color: #949494;'># … with 845 more rows</span>
 #&gt; <span style='color: #555555;'>#
-#&gt; </span><span style='color: #949494;'># Node Data:     701 x 1</span>
+#&gt; </span><span style='color: #949494;'># Node Data:     701 × 1</span>
 #&gt; <span style='color: #949494;'># Geometry type: POINT</span>
 #&gt; <span style='color: #949494;'># Dimension:     XY</span>
 #&gt; <span style='color: #949494;'># Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>

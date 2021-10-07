@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.3</span>
       </span>
     </div>
 
@@ -102,19 +102,19 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/structure.html">1. The sfnetwork data structure</a>
+      <a href="../articles/sfn01_structure.html">1. The sfnetwork data structure</a>
     </li>
     <li>
-      <a href="../articles/preprocess_and_clean.html">2. Network pre-processing and cleaning</a>
+      <a href="../articles/sfn02_preprocess_clean.html">2. Network pre-processing and cleaning</a>
     </li>
     <li>
-      <a href="../articles/join_filter.html">3. Spatial joins and filters</a>
+      <a href="../articles/sfn03_join_filter.html">3. Spatial joins and filters</a>
     </li>
     <li>
-      <a href="../articles/routing.html">4. Routing</a>
+      <a href="../articles/sfn04_routing.html">4. Routing</a>
     </li>
     <li>
-      <a href="../articles/morphers.html">5. Spatial morphers</a>
+      <a href="../articles/sfn05_morphers.html">5. Spatial morphers</a>
     </li>
   </ul>
 </li>
@@ -146,6 +146,26 @@
       <small>Source: <a href='https://github.com/luukvdmeer/sfnetworks/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="sfnetworks-v053" class="section level1">
+<h1 class="page-header" data-toc-text="0.5.3">
+<a href="#sfnetworks-v053" class="anchor"></a>sfnetworks v0.5.3<small> Unreleased </small>
+</h1>
+<ul>
+<li>Addition of the <code>n_active</code> and <code>n_inactive</code> arguments to the print method of an sfnetwork object. The arguments define how many rows are printed for respectively the active and inactive network element. The values of these arguments can also be set globally by running e.g. <code><a href="https://rdrr.io/r/base/options.html">options(sfn_max_print_active = 1, sfn_max_print_inactive = 2)</a></code>. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/157"><a href='https://github.com/luukvdmeer/sfnetworks/issues/157'>#157</a></a>
+</li>
+<li>The example dataset <code>Roxel</code> is updated to comply with recent updates on the way a CRS is specified in an sf object. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/167"><a href='https://github.com/luukvdmeer/sfnetworks/issues/167'>#167</a></a>
+</li>
+<li>GitHub Actions workflows are updated to comply with new developments.</li>
+<li>Documentation updates:
+<ul>
+<li>Vignette file names are updated such that the appear in correct order on CRAN. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/162"><a href='https://github.com/luukvdmeer/sfnetworks/issues/162'>#162</a></a>
+</li>
+<li>Example section of the plot method for sfnetwork objects now includes an example of how to add graticules and axes. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/159"><a href='https://github.com/luukvdmeer/sfnetworks/issues/159'>#159</a></a>
+</li>
+</ul>
+</li>
+</ul>
+</div>
     <div id="sfnetworks-v052" class="section level1">
 <h1 class="page-header" data-toc-text="0.5.2">
 <a href="#sfnetworks-v052" class="anchor"></a>sfnetworks v0.5.2<small> 2021-05-13 </small>
