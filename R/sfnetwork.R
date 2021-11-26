@@ -92,6 +92,10 @@
 #' # Store edge lenghts in a weight column.
 #' sfnetwork(nodes, edges, length_as_weight = TRUE)
 #'
+#' # Change number of features printed for active and inactive geoms
+#' options(sfn_max_print_active = 0L, sfn_max_print_inactive = 0L)
+#' sfnetwork(nodes, edges)
+#'
 #' @importFrom sf st_as_sf st_length
 #' @importFrom tidygraph tbl_graph
 #' @export
