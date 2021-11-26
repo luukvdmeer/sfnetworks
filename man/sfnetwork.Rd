@@ -110,4 +110,9 @@ sfnetwork(nodes, edges, edges_as_lines = FALSE)
 # Store edge lenghts in a weight column.
 sfnetwork(nodes, edges, length_as_weight = TRUE)
 
+# Adjust the number of features printed by active and inactive components
+oldoptions = options(sfn_max_print_active = 1, sfn_max_print_inactive = 2)
+sfnetwork(nodes, edges)
+options(oldoptions)
+
 }
