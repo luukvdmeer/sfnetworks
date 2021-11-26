@@ -580,13 +580,13 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
   # For each set of connected pseudo nodes:
   # --> Find the indices of the adjacent junction node(s).
   # --> Find the indices of the edges that need to be merged.
-  find_edges = function(G) {
-    # Retrieve the original node indices of the pseudo nodes in this set.
-    # Retrieve the original edge indices of the edges that connect them.
-    N = vertex_attr(G, ".tidygraph_node_index")
-    E = edge_attr(G, ".tidygraph_edge_index")
-    # Find all required node and edge indices.
-    if (directed) {
+  # The workflow for this is different for directed and undirected networks.
+  if (directed) {
+    find_edges = function(G) {
+      # Retrieve the original node indices of the pseudo nodes in this set.
+      # Retrieve the original edge indices of the edges that connect them.
+      N = vertex_attr(G, ".tidygraph_node_index")
+      E = edge_attr(G, ".tidygraph_edge_index")
       # Find the following:
       # --> The index of the pseudo node where an edge comes into the set.
       # --> The index of the pseudo node where an edge goes out of the set.
@@ -610,18 +610,42 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
       # We'll call this the target node and target edge of the set.
       trg_node = as.integer(adjacent_vertices(x, n_o, mode = "out"))
       trg_edge = get.edge.ids(x, c(n_o, trg_node))
-    } else {
+      # List all edge indices in the path.
+      edge_idxs = c(src_edge, E, trg_edge)
+      # Return all retrieved information in a list.
+      list(from = src_node, to = trg_node, .tidygraph_edge_index = edge_idxs)
+    }
+  } else {
+    find_edges_undirected = function(G) {
+      # Retrieve the original node indices of the pseudo nodes in this set.
+      # Retrieve the original edge indices of the edges that connect them.
+      N = vertex_attr(G, ".tidygraph_node_index")
+      E = edge_attr(G, ".tidygraph_edge_index")
       # In an undirected network there is no in or out. Instead, we find:
-      # --> As source: The node with the lowest index connected to the set.
-      # --> As target: The node with the highest index connected to the set.
+      # --> The two adjacent junction nodes to the set.
+      # --> The edges that connect these nodes to the set.
       if (length(N) == 1) {
         # When we have a single pseudo node that forms a set:
         # --> It will be adjacent to the source and target.
-        con_nodes = as.integer(adjacent_vertices(x, N)[[1]])
-        src_node = min(con_nodes)
-        src_edge = get.edge.ids(x, c(src_node, N))
-        trg_node = max(con_nodes)
-        trg_edge = get.edge.ids(x, c(N, trg_node))
+        adjacent = as.integer(adjacent_vertices(x, N)[[1]])
+        if (length(adjacent) == 1) {
+          # If there is only one adjacent node:
+          # --> The source and target node are the same node.
+          # --> We only have to query for connecting edges ones.
+          connects = get.edge.ids(x, c(adjacent, N))
+          src_node = adjacent
+          src_edge = connects[1]
+          trg_node = adjacent
+          trg_edge = connects[2]
+        } else {
+          # If there are two adjacent nodes:
+          # --> The one with the lowest index will be source node.
+          # --> The one with the highest index will be target node.
+          src_node = min(adjacent)
+          src_edge = get.edge.ids(x, c(src_node, N))
+          trg_node = max(adjacent)
+          trg_edge = get.edge.ids(x, c(N, trg_node))
+        }
       } else {
         # When we have a set of multiple pseudo nodes:
         # --> There are two pseudo nodes that form the boundary of the set.
@@ -633,36 +657,29 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
         # --> Hence, there is no need to create a new edge.
         # --> Therefore we should not return a path.
         if (length(N_b) == 0) return (NULL)
-        # Find the source/target node connected to the first set boundary.
-        # --> Its adjacent nodes will be one pseudo node and a source/target.
-        # --> The source/target node is the one not present in the pseudo set.
-        n_1 = N_b[1]
-        adj_nodes = as.integer(adjacent_vertices(x, n_1)[[1]])
-        con_node_1 = adj_nodes[!(adj_nodes %in% N)]
-        # Find the source/target node connected to the second set boundary.
-        # --> Its adjacent nodes will be a pseudo node and a source/target.
-        # --> The source/target node is the one not present in the pseudo set.
-        n_2 = N_b[2]
-        adj_nodes = as.integer(adjacent_vertices(x, n_2)[[1]])
-        con_node_2 = adj_nodes[!(adj_nodes %in% N)]
-        # Define which of found nodes is the source and which the target.
-        if (con_node_1 < con_node_2) {
-          src_node = con_node_1
-          src_edge = get.edge.ids(x, c(src_node, n_1))
-          trg_node = con_node_2
-          trg_edge = get.edge.ids(x, c(trg_node, n_2))
-        } else {
-          src_node = con_node_2
-          src_edge = get.edge.ids(x, c(src_node, n_2))
-          trg_node = con_node_1
-          trg_edge = get.edge.ids(x, c(trg_node, n_1))
+        # Find the junction nodes connected to the boundaries of the set.
+        # These are the adjacent nodes of the set.
+        # We find them iteratively for the two different set boundary nodes.
+        # --> A boundary connects to one pseudo node and one junction node.
+        # --> The junction node is the one not present in the pseudo set.
+        find_junction = function(n) {
+          all = as.integer(adjacent_vertices(x, n)[[1]])
+          all[!(all %in% N)]
         }
+        adjacent = do.call("c", lapply(N_b, find_junction))
+        # The adjacent node with the lowest index will be source node.
+        # The adjacent node with the highest index will be target node.
+        N_b = N_b[order(adjacent)]
+        src_node = min(adjacent)
+        src_edge = get.edge.ids(x, c(src_node, N_b[1]))
+        trg_node = max(adjacent)
+        trg_edge = get.edge.ids(x, c(N_b[2], trg_node))
       }
+      # List all edge indices in the path.
+      edge_idxs = c(src_edge, E, trg_edge)
+      # Return all retrieved information in a list.
+      list(from = src_node, to = trg_node, .tidygraph_edge_index = edge_idxs)
     }
-    # List all edge indices in the path.
-    edge_idxs = c(src_edge, E, trg_edge)
-    # Return all retrieved information in a list.
-    list(from = src_node, to = trg_node, .tidygraph_edge_index = edge_idxs)
   }
   new_edge_list = lapply(x_pseudo, find_edges)
   new_edge_list = new_edge_list[lengths(new_edge_list) != 0] # Remove NULLs.
