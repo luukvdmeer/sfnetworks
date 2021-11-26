@@ -412,6 +412,37 @@ to be converted into an <code><a href='https://r-spatial.github.io/sf/reference/
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>2</span>     1     3     (7 51, 8 52) <span style='text-decoration: underline;'>130</span>977.</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>3</span>     3     2     (8 52, 7 52)  <span style='text-decoration: underline;'>68</span>458.</span>
 <span class='r-in'></span>
+<span class='r-in'><span class='co'># Adjust the number of features printed by active and inactive components</span></span>
+<span class='r-in'><span class='va'>oldoptions</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span>sfn_max_print_active <span class='op'>=</span> <span class='fl'>1</span>, sfn_max_print_inactive <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>sfnetwork</span><span class='op'>(</span><span class='va'>nodes</span>, <span class='va'>edges</span><span class='op'>)</span></span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Checking if spatial network structure is valid...</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Spatial network structure is valid</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'># A sfnetwork with</span> <span style='color: #555555;'>3</span> <span style='color: #555555;'>nodes and</span> <span style='color: #555555;'>3</span> <span style='color: #555555;'>edges</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'># CRS: </span> <span style='color: #555555;'>EPSG:4326</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'># A directed acyclic simple graph with 1 component with spatially explicit edges</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Node Data:     3 × 2 (active)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Geometry type: POINT</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Dimension:     XY</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             x name </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   <span style='color: #949494; font-style: italic;'>&lt;POINT [°]&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>1</span>      (7 51) city </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 2 more rows</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Edge Data:     3 × 3</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Geometry type: LINESTRING</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Dimension:     XY</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    from    to                x</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [°]&gt;</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>1</span>     1     2     (7 51, 7 52)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>2</span>     1     3     (7 51, 8 52)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 1 more row</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>oldoptions</span><span class='op'>)</span></span>
+<span class='r-in'></span>
 </pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

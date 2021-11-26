@@ -502,8 +502,8 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; <span style="color: #555555;"># A tibble: 2 × 6</span>
 #&gt;    from    to name         type                                   geometry  flow
 #&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #555555; font-style: italic;">&lt;fct&gt;</span>                          <span style="color: #555555; font-style: italic;">&lt;LINESTRING [m]&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>
-#&gt; <span style="color: #555555;">1</span>   118   119 <span style="color: #BB0000;">NA</span>           service (4150716 3207080, 4150715 3207108, 415…    75
-#&gt; <span style="color: #555555;">2</span>   118   119 Pienersallee service      (4150716 3207080, 4150752 3207067)    39
+#&gt; <span style="color: #555555;">1</span>   118   119 <span style="color: #BB0000;">NA</span>           service (4150716 3207080, 4150715 3207108, 415…    32
+#&gt; <span style="color: #555555;">2</span>   118   119 Pienersallee service      (4150716 3207080, 4150752 3207067)     3
 </code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Simplify the network.</span>
@@ -528,7 +528,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; <span style="color: #555555;"># A tibble: 1 × 7</span>
 #&gt;    from    to name  type                         geometry  flow .tidygraph_edge…
 #&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span> <span style="color: #555555; font-style: italic;">&lt;fct&gt;</span>                <span style="color: #555555; font-style: italic;">&lt;LINESTRING [m]&gt;</span> <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #555555; font-style: italic;">&lt;list&gt;</span>          
-#&gt; <span style="color: #555555;">1</span>   118   119 <span style="color: #BB0000;">NA</span>    service (4150716 3207080, 4150715 32…   114 <span style="color: #555555;">&lt;int [2]&gt;</span>
+#&gt; <span style="color: #555555;">1</span>   118   119 <span style="color: #BB0000;">NA</span>    service (4150716 3207080, 4150715 32…    35 <span style="color: #555555;">&lt;int [2]&gt;</span>
 </code></pre>
 </div>
 <div id="to_spatial_smooth" class="section level3">
@@ -637,7 +637,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt;            geometry building post_code
 #&gt;         <span style="color: #555555; font-style: italic;">&lt;POINT [m]&gt;</span> <span style="color: #555555; font-style: italic;">&lt;lgl&gt;</span>        <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span>
 #&gt; <span style="color: #555555;">1</span> (4151491 3207923) TRUE          <span style="text-decoration: underline;">1</span>020
-#&gt; <span style="color: #555555;">2</span> (4151474 3207946) FALSE           <span style="color: #BB0000;">NA</span>
+#&gt; <span style="color: #555555;">2</span> (4151474 3207946) TRUE          <span style="text-decoration: underline;">1</span>020
 #&gt; <span style="color: #555555;">3</span> (4151398 3207777) TRUE          <span style="text-decoration: underline;">1</span>020
 #&gt; <span style="color: #555555;">4</span> (4151370 3207673) TRUE          <span style="text-decoration: underline;">1</span>020
 #&gt; <span style="color: #555555;">5</span> (4151408 3207539) TRUE          <span style="text-decoration: underline;">1</span>020
@@ -704,7 +704,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt;            geometry building
 #&gt;         <span style="color: #555555; font-style: italic;">&lt;POINT [m]&gt;</span> <span style="color: #555555; font-style: italic;">&lt;lgl&gt;</span>   
 #&gt; <span style="color: #555555;">1</span> (4151491 3207923) TRUE    
-#&gt; <span style="color: #555555;">2</span> (4151474 3207946) FALSE   
+#&gt; <span style="color: #555555;">2</span> (4151474 3207946) TRUE    
 #&gt; <span style="color: #555555;">3</span> (4151398 3207777) TRUE    
 #&gt; <span style="color: #555555;"># … with 698 more rows</span>
 </code></pre>
