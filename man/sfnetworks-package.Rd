@@ -8,10 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
 
-Provides a tidy approach to spatial network
-    analysis, in the form of classes and functions that enable a seamless
-    interaction between the network analysis package 'tidygraph' and the
-    spatial analysis package 'sf'.
+Provides a tidy approach to spatial network analysis, in the form of classes and functions that enable a seamless interaction between the network analysis package 'tidygraph' and the spatial analysis package 'sf'.
 }
 \seealso{
 Useful links:
