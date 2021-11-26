@@ -151,7 +151,7 @@
 <a href="#sfnetworks-v053" class="anchor"></a>sfnetworks v0.5.3<small> Unreleased </small>
 </h1>
 <ul>
-<li>Addition of the <code>n_active</code> and <code>n_inactive</code> arguments to the print method of an sfnetwork object. The arguments define how many rows are printed for respectively the active and inactive network element. The values of these arguments can also be set globally by running e.g. <code><a href="https://rdrr.io/r/base/options.html">options(sfn_max_print_active = 1, sfn_max_print_inactive = 2)</a></code>. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/157"><a href='https://github.com/luukvdmeer/sfnetworks/issues/157'>#157</a></a>
+<li>Addition of the <code>n_active</code> and <code>n_inactive</code> arguments to the print method of an sfnetwork object. The arguments define how many rows are printed for respectively the active and inactive network element. The values of these arguments can also be set globally by running e.g. <code>options(sfn_max_print_active = 1, sfn_max_print_inactive = 2)</code>. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/157"><a href='https://github.com/luukvdmeer/sfnetworks/issues/157'>#157</a></a>
 </li>
 <li>The example dataset <code>Roxel</code> is updated to comply with recent updates on the way a CRS is specified in an sf object. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/167"><a href='https://github.com/luukvdmeer/sfnetworks/issues/167'>#167</a></a>
 </li>
@@ -320,7 +320,7 @@
 <li>Functions that split edges now give a warning that attributes are assumed to be constant. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/84"><a href='https://github.com/luukvdmeer/sfnetworks/issues/84'>#84</a></a>
 </li>
 <li>The <code><a href="../reference/spatial_edge_measures.html">edge_length()</a></code> function can now also be applied to spatially implicit edges.</li>
-<li>The sfnetwork methods for <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">sf::st_as_sf()</a></code>, <code><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">sf::st_geometry()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/st_agr.html">sf::st_agr()</a></code> now have an argument <code>active</code> to directly retrieve information from a network element without activating it. Use as <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf(x, active = "nodes")</a></code>, et cetera.</li>
+<li>The sfnetwork methods for <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">sf::st_as_sf()</a></code>, <code><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">sf::st_geometry()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/st_agr.html">sf::st_agr()</a></code> now have an argument <code>active</code> to directly retrieve information from a network element without activating it. Use as <code>st_as_sf(x, active = "nodes")</code>, et cetera.</li>
 <li>Character encoded node names can now be provided as from and to locations to the shortest path functions.</li>
 </ul>
 </li>

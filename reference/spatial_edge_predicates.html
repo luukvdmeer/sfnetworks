@@ -160,7 +160,7 @@ the features given in y." />
 other geospatial features directly inside <code><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></code>
 and <code><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></code> calls. All functions return a logical
 vector of the same length as the number of edges in the network. Element i
-in that vector is <code>TRUE</code> whenever <code><a href='https://rdrr.io/r/base/any.html'>any(predicate(x[i], y[j]))</a></code> is
+in that vector is <code>TRUE</code> whenever <code>any(predicate(x[i], y[j]))</code> is
 <code>TRUE</code>. Hence, in the case of using <code>edge_intersects</code>, element i
 in the returned vector is <code>TRUE</code> when edge i intersects with any of
 the features given in y.</p>
@@ -226,70 +226,72 @@ set the context temporarily while the algorithm is being evaluated.</p>
 'as-the-crow-flies' distance, and not on distances over the network.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidygraph.data-imaginist.com'>tidygraph</a></span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-
-<span class='co'># Create a network.</span>
-<span class='va'>net</span> <span class='op'>=</span> <span class='fu'><a href='as_sfnetwork.html'>as_sfnetwork</a></span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_transform.html'>st_transform</a></span><span class='op'>(</span><span class='fl'>3035</span><span class='op'>)</span>
-
-<span class='co'># Create a geometry to test against.</span>
-<span class='va'>p1</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151358</span>, <span class='fl'>3208045</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>p2</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151340</span>, <span class='fl'>3207520</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>p3</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151756</span>, <span class='fl'>3207506</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>p4</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151774</span>, <span class='fl'>3208031</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='va'>poly</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_multipoint</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>p1</span>, <span class='va'>p2</span>, <span class='va'>p3</span>, <span class='va'>p4</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_cast.html'>st_cast</a></span><span class='op'>(</span><span class='st'>'POLYGON'</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/sfc.html'>st_sfc</a></span><span class='op'>(</span>crs <span class='op'>=</span> <span class='fl'>3035</span><span class='op'>)</span>
-
-<span class='co'># Use predicate query function in a filter call.</span>
-<span class='va'>intersects</span> <span class='op'>=</span> <span class='va'>net</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://tidygraph.data-imaginist.com/reference/activate.html'>activate</a></span><span class='op'>(</span><span class='va'>edges</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='fu'>edge_intersects</span><span class='op'>(</span><span class='va'>poly</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='va'>oldpar</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>no.readonly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"edges"</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='input'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>intersects</span>, <span class='st'>"edges"</span><span class='op'>)</span>, col <span class='op'>=</span> <span class='st'>"red"</span>, lwd <span class='op'>=</span> <span class='fl'>2</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-</div><div class='img'><img src='spatial_edge_predicates-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='va'>oldpar</span><span class='op'>)</span>
-
-<span class='co'># Use predicate query function in a mutate call.</span>
-<span class='va'>net</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://tidygraph.data-imaginist.com/reference/activate.html'>activate</a></span><span class='op'>(</span><span class='va'>edges</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>disjoint <span class='op'>=</span> <span class='fu'>edge_is_disjoint</span><span class='op'>(</span><span class='va'>poly</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>disjoint</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span style='color: #555555;'># A sfnetwork with</span> <span style='color: #555555;'>701</span> <span style='color: #555555;'>nodes and</span> <span style='color: #555555;'>851</span> <span style='color: #555555;'>edges
-#&gt; #
-#&gt; # CRS: </span> <span style='color: #555555;'>EPSG:3035</span> <span style='color: #555555;'>
-#&gt; #
-#&gt; # A directed multigraph with 14 components with spatially explicit edges
-#&gt; #
-#&gt; </span><span style='color: #949494;'># Edge Data:     851 × 4 (active)</span>
-#&gt; <span style='color: #949494;'># Geometry type: LINESTRING</span>
-#&gt; <span style='color: #949494;'># Dimension:     XY</span>
-#&gt; <span style='color: #949494;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
-#&gt;    from    to disjoint                                                  geometry
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;lgl&gt;</span>                                             <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [m]&gt;</span>
-#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 FALSE                           (4151491 3207923, 4151474 3207946)
-#&gt; <span style='color: #BCBCBC;'>2</span>     3     4 FALSE          (4151398 3207777, 4151390 3207727, 4151370 3207673)
-#&gt; <span style='color: #BCBCBC;'>3</span>     5     6 FALSE          (4151408 3207539, 4151417 3207573, 4151421 3207592)
-#&gt; <span style='color: #BCBCBC;'>4</span>     7     8 TRUE     (4151885 3206698, 4151861 3206711, 4151845 3206725, 4151…
-#&gt; <span style='color: #BCBCBC;'>5</span>     9    10 TRUE                            (4151732 3207017, 4151721 3206809)
-#&gt; <span style='color: #BCBCBC;'>6</span>    11    12 TRUE           (4152152 3206984, 4152143 3206932, 4152147 3206923)
-#&gt; <span style='color: #949494;'># … with 845 more rows</span>
-#&gt; <span style='color: #555555;'>#
-#&gt; </span><span style='color: #949494;'># Node Data:     701 × 1</span>
-#&gt; <span style='color: #949494;'># Geometry type: POINT</span>
-#&gt; <span style='color: #949494;'># Dimension:     XY</span>
-#&gt; <span style='color: #949494;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
-#&gt;            geometry
-#&gt;         <span style='color: #949494; font-style: italic;'>&lt;POINT [m]&gt;</span>
-#&gt; <span style='color: #BCBCBC;'>1</span> (4151491 3207923)
-#&gt; <span style='color: #BCBCBC;'>2</span> (4151474 3207946)
-#&gt; <span style='color: #BCBCBC;'>3</span> (4151398 3207777)
-#&gt; <span style='color: #949494;'># … with 698 more rows</span></div><div class='input'>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidygraph.data-imaginist.com'>tidygraph</a></span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Create a network.</span></span>
+<span class='r-in'><span class='va'>net</span> <span class='op'>=</span> <span class='fu'><a href='as_sfnetwork.html'>as_sfnetwork</a></span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_transform.html'>st_transform</a></span><span class='op'>(</span><span class='fl'>3035</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Create a geometry to test against.</span></span>
+<span class='r-in'><span class='va'>p1</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151358</span>, <span class='fl'>3208045</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>p2</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151340</span>, <span class='fl'>3207520</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>p3</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151756</span>, <span class='fl'>3207506</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>p4</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151774</span>, <span class='fl'>3208031</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>poly</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_multipoint</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>p1</span>, <span class='va'>p2</span>, <span class='va'>p3</span>, <span class='va'>p4</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_cast.html'>st_cast</a></span><span class='op'>(</span><span class='st'>'POLYGON'</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/sfc.html'>st_sfc</a></span><span class='op'>(</span>crs <span class='op'>=</span> <span class='fl'>3035</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Use predicate query function in a filter call.</span></span>
+<span class='r-in'><span class='va'>intersects</span> <span class='op'>=</span> <span class='va'>net</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'><a href='https://tidygraph.data-imaginist.com/reference/activate.html'>activate</a></span><span class='op'>(</span><span class='va'>edges</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='fu'>edge_intersects</span><span class='op'>(</span><span class='va'>poly</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>oldpar</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>no.readonly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"edges"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>intersects</span>, <span class='st'>"edges"</span><span class='op'>)</span>, col <span class='op'>=</span> <span class='st'>"red"</span>, lwd <span class='op'>=</span> <span class='fl'>2</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='spatial_edge_predicates-1.png' alt='' width='700' height='433' /></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='va'>oldpar</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Use predicate query function in a mutate call.</span></span>
+<span class='r-in'><span class='va'>net</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'><a href='https://tidygraph.data-imaginist.com/reference/activate.html'>activate</a></span><span class='op'>(</span><span class='va'>edges</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>disjoint <span class='op'>=</span> <span class='fu'>edge_is_disjoint</span><span class='op'>(</span><span class='va'>poly</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>disjoint</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'># A sfnetwork with</span> <span style='color: #555555;'>701</span> <span style='color: #555555;'>nodes and</span> <span style='color: #555555;'>851</span> <span style='color: #555555;'>edges</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'># CRS: </span> <span style='color: #555555;'>EPSG:3035</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'># A directed multigraph with 14 components with spatially explicit edges</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Edge Data:     851 × 4 (active)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Geometry type: LINESTRING</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Dimension:     XY</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    from    to disjoint                                                  geometry</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;lgl&gt;</span>                                             <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [m]&gt;</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>1</span>     1     2 FALSE                           (4151491 3207923, 4151474 3207946)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>2</span>     3     4 FALSE          (4151398 3207777, 4151390 3207727, 4151370 3207673)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>3</span>     5     6 FALSE          (4151408 3207539, 4151417 3207573, 4151421 3207592)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>4</span>     7     8 TRUE     (4151885 3206698, 4151861 3206711, 4151845 3206725, 4151…</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>5</span>     9    10 TRUE                            (4151732 3207017, 4151721 3206809)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>6</span>    11    12 TRUE           (4152152 3206984, 4152143 3206932, 4152147 3206923)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 845 more rows</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Node Data:     701 × 1</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Geometry type: POINT</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Dimension:     XY</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>            geometry</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         <span style='color: #949494; font-style: italic;'>&lt;POINT [m]&gt;</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>1</span> (4151491 3207923)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>2</span> (4151474 3207946)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>3</span> (4151398 3207777)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 698 more rows</span></span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

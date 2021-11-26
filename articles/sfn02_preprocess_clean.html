@@ -103,7 +103,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>2. Network pre-processing and cleaning</h1>
             
-            <h4 class="date">2021-10-07</h4>
+            <h4 class="date">2021-11-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/vignettes/sfn02_preprocess_clean.Rmd"><code>vignettes/sfn02_preprocess_clean.Rmd</code></a></small>
       <div class="hidden name"><code>sfn02_preprocess_clean.Rmd</code></div>
@@ -172,8 +172,8 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 </code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Round coordinates to 0 digits.</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html">st_sfc</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co"># The edges are connected.</span>
@@ -326,9 +326,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>A network may contain sets of edges that connect the same pair of nodes. Such edges can be called <em>multiple edges</em>. Also, it may contain an edge that starts and ends at the same node. Such an edge can be called a <em>loop edge</em>.</p>
 <p>In graph theory, a <em>simple graph</em> is defined as a graph that does <em>not</em> contain multiple edges nor loop edges. To obtain a simple version of our network, we can remove multiple edges and loop edges by calling tidygraphs edge filter functions <code><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">tidygraph::edge_is_multiple()</a></code> and <code><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">tidygraph::edge_is_loop()</a></code>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">simple</span> <span class="op">=</span> <span class="va">net</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">edge_is_multiple</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<code class="sourceCode R"><span class="va">simple</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">edge_is_multiple</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">edge_is_loop</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
@@ -338,10 +338,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p><img src="sfn02_preprocess_clean_files/figure-html/unnamed-chunk-6-1.png" width="50%"><img src="sfn02_preprocess_clean_files/figure-html/unnamed-chunk-6-2.png" width="50%"></p>
 <p>Note that removing multiple edges in that way always <em>keeps</em> the <em>first</em> edge in each set of multiple edges, and drops all the other members of the set. Hence, the resulting network does not contain multiple edges anymore, but the connections between the nodes are preserved. Which of the multiple edges is the first one in a set depends on the order of the edges in the edges table. That is, by re-arranging the edges table before applying the filter you can influence which edges are kept whenever sets of multiple edges are detected. For example, you might want to always keep the edge with the shortest distance in the set.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">simple</span> <span class="op">=</span> <span class="va">net</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">edge_is_multiple</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<code class="sourceCode R"><span class="va">simple</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">edge_is_multiple</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">edge_is_loop</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 
 <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
@@ -365,9 +365,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="va">foo</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span>
 <span class="va">bar</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="va">letters</span>, <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span>
 
-<span class="va">net</span> <span class="op">=</span> <span class="va">net</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">net</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>flow <span class="op">=</span> <span class="va">flows</span>, type <span class="op">=</span> <span class="va">types</span>, foo <span class="op">=</span> <span class="va">foo</span>, bar <span class="op">=</span> <span class="va">bar</span><span class="op">)</span>
 
 <span class="va">net</span></code></pre></div>
@@ -383,12 +383,12 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; <span style="color: #555555;"># Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span>
 #&gt;    from    to              x  flow type    foo bar  
 #&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>   <span style="color: #555555; font-style: italic;">&lt;LINESTRING&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>
-#&gt; <span style="color: #555555;">1</span>    10     9 (6 1.2, 5.8 1)     2 path      4 k    
-#&gt; <span style="color: #555555;">2</span>    11    10 (6.2 1, 6 1.2)     1 path      2 z    
-#&gt; <span style="color: #555555;">3</span>     9    12 (5.8 1, 6 0.8)     2 road      3 s    
-#&gt; <span style="color: #555555;">4</span>    12    11 (6 0.8, 6.2 1)     2 road      5 d    
-#&gt; <span style="color: #555555;">5</span>    11    15   (6.2 1, 7 1)     9 road     14 h    
-#&gt; <span style="color: #555555;">6</span>    10    13   (6 1.2, 6 2)     3 road      9 i    
+#&gt; <span style="color: #555555;">1</span>    10     9 (6 1.2, 5.8 1)     2 path     13 a    
+#&gt; <span style="color: #555555;">2</span>    11    10 (6.2 1, 6 1.2)     6 road      5 t    
+#&gt; <span style="color: #555555;">3</span>     9    12 (5.8 1, 6 0.8)     4 path      7 p    
+#&gt; <span style="color: #555555;">4</span>    12    11 (6 0.8, 6.2 1)     1 path      6 v    
+#&gt; <span style="color: #555555;">5</span>    11    15   (6.2 1, 7 1)     3 road     11 g    
+#&gt; <span style="color: #555555;">6</span>    10    13   (6 1.2, 6 2)     1 path     12 r    
 #&gt; <span style="color: #555555;"># … with 9 more rows</span>
 #&gt; <span style="color: #555555;">#
 #&gt; # Node Data:     15 × 1</span>
@@ -405,9 +405,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># We know from before that our example network has one set of multiple edges.</span>
 <span class="co"># Lets look at them.</span>
-<span class="va">net</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">edge_is_between</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">edge_is_between</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; Simple feature collection with 2 features and 6 fields
 #&gt; Geometry type: LINESTRING
@@ -417,8 +417,8 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; <span style="color: #555555;"># A tibble: 2 × 7</span>
 #&gt;    from    to               x  flow type    foo bar  
 #&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span>    <span style="color: #555555; font-style: italic;">&lt;LINESTRING&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>
-#&gt; <span style="color: #555555;">1</span>     6     7      (4 3, 4 2)     8 road     13 g    
-#&gt; <span style="color: #555555;">2</span>     6     7 (4 3, 5 2, 4 2)     2 road     15 w
+#&gt; <span style="color: #555555;">1</span>     6     7      (4 3, 4 2)     6 road      1 u    
+#&gt; <span style="color: #555555;">2</span>     6     7 (4 3, 5 2, 4 2)    10 road      9 m
 </code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Define how we want to combine the attributes.</span>
@@ -438,9 +438,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="va">simple</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html">convert</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">to_spatial_simple</span>, summarise_attributes <span class="op">=</span> <span class="va">combinations</span><span class="op">)</span>
 
 <span class="co"># Inspect our merged set of multiple edges.</span>
-<span class="va">simple</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">edge_is_between</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">simple</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html">edge_is_between</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; Simple feature collection with 1 feature and 5 fields
 #&gt; Geometry type: LINESTRING
@@ -450,7 +450,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; <span style="color: #555555;"># A tibble: 1 × 6</span>
 #&gt;    from    to            x  flow type  .tidygraph_edge_index
 #&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;LINESTRING&gt;</span> <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span> <span style="color: #555555; font-style: italic;">&lt;list&gt;</span>               
-#&gt; <span style="color: #555555;">1</span>     6     7   (4 3, 4 2)    10 road  <span style="color: #555555;">&lt;int [2]&gt;</span>
+#&gt; <span style="color: #555555;">1</span>     6     7   (4 3, 4 2)    16 road  <span style="color: #555555;">&lt;int [2]&gt;</span>
 </code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
@@ -523,8 +523,8 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>Grouping variables are internally forwarded to <code><a href="https://dplyr.tidyverse.org/reference/group_by.html">dplyr::group_by()</a></code>. That means you can group the nodes based on any (combination of) attribute(s). However, in this case, we want to group the nodes spatially, such that nodes that are very close to each other in space will form a group and get contracted. To do so, we can use any spatial clustering algorithm. In this example, we apply the well-known DBSCAN algorithm as implemented in the R package <code>dbscan</code>.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Retrieve the coordinates of the nodes.</span>
-<span class="va">node_coords</span> <span class="op">=</span> <span class="va">smoothed</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">node_coords</span> <span class="op">=</span> <span class="va">smoothed</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="op">)</span>
 
 <span class="co"># Cluster the nodes with the DBSCAN spatial clustering algorithm.</span>
@@ -535,12 +535,12 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="va">clusters</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/dbscan/man/dbscan.html">dbscan</a></span><span class="op">(</span><span class="va">node_coords</span>, eps <span class="op">=</span> <span class="fl">0.5</span>, minPts <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">$</span><span class="va">cluster</span>
 
 <span class="co"># Add the cluster information to the nodes of the network.</span>
-<span class="va">clustered</span> <span class="op">=</span> <span class="va">smoothed</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">clustered</span> <span class="op">=</span> <span class="va">smoothed</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>cls <span class="op">=</span> <span class="va">clusters</span><span class="op">)</span></code></pre></div>
 <p>Now we have assigned each node to a spatial cluster. However, we forgot one important point. When simplifying intersections, it is not only important that the contracted nodes are close to each other in space. They should also be <em>connected</em>. Two nodes that are close to each other but <em>not</em> connected, can never be part of the same intersection. Hence, a group of nodes to be contracted should in this case be located in the same <em>component</em> of the network. We can use <code><a href="https://tidygraph.data-imaginist.com/reference/group_graph.html">tidygraph::group_components()</a></code> to assign a component index to each node. Note that in our example network this is not so much of use, since the whole network forms a single connected component. But for the sake of completeness, we will still show it:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">clustered</span> <span class="op">=</span> <span class="va">clustered</span> <span class="op">%&gt;%</span>
+<code class="sourceCode R"><span class="va">clustered</span> <span class="op">=</span> <span class="va">clustered</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>cmp <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/group_graph.html">group_components</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 
 <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">clustered</span>, <span class="va">cls</span>, <span class="va">cmp</span><span class="op">)</span></code></pre></div>
@@ -570,9 +570,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; <span style="color: #555555;"># Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span>
 #&gt;    from    to            x  flow type  .tidygraph_edge_index
 #&gt;   <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;LINESTRING&gt;</span> <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span> <span style="color: #555555; font-style: italic;">&lt;list&gt;</span>               
-#&gt; <span style="color: #555555;">1</span>     2     3   (3 1, 4 1)    10 path  <span style="color: #555555;">&lt;int [1]&gt;</span>            
-#&gt; <span style="color: #555555;">2</span>     3     4 (4 1, 5.8 1)     2 path  <span style="color: #555555;">&lt;int [1]&gt;</span>            
-#&gt; <span style="color: #555555;">3</span>     5     2   (3 2, 3 1)     6 road  <span style="color: #555555;">&lt;int [1]&gt;</span>            
+#&gt; <span style="color: #555555;">1</span>     2     3   (3 1, 4 1)     2 path  <span style="color: #555555;">&lt;int [1]&gt;</span>            
+#&gt; <span style="color: #555555;">2</span>     3     4 (4 1, 5.8 1)     8 path  <span style="color: #555555;">&lt;int [1]&gt;</span>            
+#&gt; <span style="color: #555555;">3</span>     5     2   (3 2, 3 1)     3 road  <span style="color: #555555;">&lt;int [1]&gt;</span>            
 #&gt; <span style="color: #555555;"># … with 11 more rows</span>
 </code></pre>
 <p>The combination of the cluster index and the component index can now be used to define the groups of nodes to be contracted. Nodes that form a group on their own will remain unchanged.</p>
@@ -593,8 +593,8 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>One thing we did not mention yet: in the same way as <code><a href="../reference/spatial_morphers.html">to_spatial_simple()</a></code> allowed you to combine attributes of multiple edges, <code><a href="../reference/spatial_morphers.html">to_spatial_contracted()</a></code> allows you to combine attributes of contracted nodes. It works exactly the same: on a per-attribute basis you can specify how the attribute values of the new node should be inferred from those of the original nodes in the group. An example:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Add some additional attribute columns to the nodes table.</span>
-<span class="va">clustered</span> <span class="op">=</span> <span class="va">clustered</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">clustered</span> <span class="op">=</span> <span class="va">clustered</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>is_priority <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span>
     <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>,
     <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gorder.html">vcount</a></span><span class="op">(</span><span class="va">clustered</span><span class="op">)</span>,
@@ -603,9 +603,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 
 <span class="co"># We know from before there is one group with several close, connected nodes.</span>
 <span class="co"># Lets look at them.</span>
-<span class="va">clustered</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">cls</span> <span class="op">==</span> <span class="fl">4</span> <span class="op">&amp;</span> <span class="va">cmp</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">clustered</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">cls</span> <span class="op">==</span> <span class="fl">4</span> <span class="op">&amp;</span> <span class="va">cmp</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; Simple feature collection with 4 features and 4 fields
 #&gt; Geometry type: POINT
@@ -615,7 +615,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 #&gt; <span style="color: #555555;"># A tibble: 4 × 5</span>
 #&gt;         x .tidygraph_node_index   cls   cmp is_priority
 #&gt;   <span style="color: #555555; font-style: italic;">&lt;POINT&gt;</span>                 <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;int&gt;</span> <span style="color: #555555; font-style: italic;">&lt;lgl&gt;</span>      
-#&gt; <span style="color: #555555;">1</span> (5.8 1)                     5     4     1 TRUE       
+#&gt; <span style="color: #555555;">1</span> (5.8 1)                     5     4     1 FALSE      
 #&gt; <span style="color: #555555;">2</span> (6 0.8)                    11     4     1 TRUE       
 #&gt; <span style="color: #555555;">3</span> (6 1.2)                    12     4     1 TRUE       
 #&gt; <span style="color: #555555;">4</span> (6.2 1)                    14     4     1 FALSE
@@ -641,9 +641,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="op">)</span>
 
 <span class="co"># Inspect our contracted group of nodes.</span>
-<span class="va">contracted</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">contracted</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre class="fansi fansi-output"><code>#&gt; Simple feature collection with 1 feature and 2 fields
 #&gt; Geometry type: POINT

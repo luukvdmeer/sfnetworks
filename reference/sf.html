@@ -273,169 +273,190 @@ See the <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a><
     <p>See the <code><a href='https://r-spatial.github.io/sf/reference/sf.html'>sf</a></code> documentation.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-
-<span class='va'>net</span> <span class='op'>=</span> <span class='fu'><a href='as_sfnetwork.html'>as_sfnetwork</a></span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span>
-
-<span class='co'># Extract the active network element.</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; Simple feature collection with 701 features and 0 fields
-#&gt; Geometry type: POINT
-#&gt; Dimension:     XY
-#&gt; Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
-#&gt; Geodetic CRS:  WGS 84
-#&gt; <span style='color: #949494;'># A tibble: 701 × 1</span>
-#&gt;               geometry
-#&gt;            <span style='color: #949494; font-style: italic;'>&lt;POINT [°]&gt;</span>
-#&gt; <span style='color: #BCBCBC;'> 1</span> (7.533722 51.95556)
-#&gt; <span style='color: #BCBCBC;'> 2</span> (7.533461 51.95576)
-#&gt; <span style='color: #BCBCBC;'> 3</span> (7.532442 51.95422)
-#&gt; <span style='color: #BCBCBC;'> 4</span>  (7.53209 51.95328)
-#&gt; <span style='color: #BCBCBC;'> 5</span> (7.532709 51.95209)
-#&gt; <span style='color: #BCBCBC;'> 6</span> (7.532869 51.95257)
-#&gt; <span style='color: #BCBCBC;'> 7</span> (7.540063 51.94468)
-#&gt; <span style='color: #BCBCBC;'> 8</span>  (7.53822 51.94546)
-#&gt; <span style='color: #BCBCBC;'> 9</span>  (7.537673 51.9475)
-#&gt; <span style='color: #BCBCBC;'>10</span> (7.537614 51.94562)
-#&gt; <span style='color: #949494;'># … with 691 more rows</span></div><div class='input'>
-<span class='co'># Extract any network element.</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"edges"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; Simple feature collection with 851 features and 4 fields
-#&gt; Geometry type: LINESTRING
-#&gt; Dimension:     XY
-#&gt; Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
-#&gt; Geodetic CRS:  WGS 84
-#&gt; <span style='color: #949494;'># A tibble: 851 × 5</span>
-#&gt;     from    to name                  type                               geometry
-#&gt;    <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                 <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                      <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [°]&gt;</span>
-#&gt; <span style='color: #BCBCBC;'> 1</span>     1     2 Havixbecker Strasse   residential (7.533722 51.95556, 7.533461 5…
-#&gt; <span style='color: #BCBCBC;'> 2</span>     3     4 Pienersallee          secondary   (7.532442 51.95422, 7.53236 51…
-#&gt; <span style='color: #BCBCBC;'> 3</span>     5     6 Schulte-Bernd-Strasse residential (7.532709 51.95209, 7.532823 5…
-#&gt; <span style='color: #BCBCBC;'> 4</span>     7     8 <span style='color: #BB0000;'>NA</span>                    path        (7.540063 51.94468, 7.539696 5…
-#&gt; <span style='color: #BCBCBC;'> 5</span>     9    10 Welsingheide          residential (7.537673 51.9475, 7.537614 51…
-#&gt; <span style='color: #BCBCBC;'> 6</span>    11    12 <span style='color: #BB0000;'>NA</span>                    footway     (7.543791 51.94733, 7.54369 51…
-#&gt; <span style='color: #BCBCBC;'> 7</span>    13    14 <span style='color: #BB0000;'>NA</span>                    footway     (7.54012 51.94478, 7.539931 51…
-#&gt; <span style='color: #BCBCBC;'> 8</span>     8    10 <span style='color: #BB0000;'>NA</span>                    path        (7.53822 51.94546, 7.538131 51…
-#&gt; <span style='color: #BCBCBC;'> 9</span>     7    15 <span style='color: #BB0000;'>NA</span>                    track       (7.540063 51.94468, 7.540338 5…
-#&gt; <span style='color: #BCBCBC;'>10</span>    16    17 <span style='color: #BB0000;'>NA</span>                    track       (7.5424 51.94599, 7.54205 51.9…
-#&gt; <span style='color: #949494;'># … with 841 more rows</span></div><div class='input'>
-<span class='co'># Get geometry of the active network element.</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; Geometry set for 701 features 
-#&gt; Geometry type: POINT
-#&gt; Dimension:     XY
-#&gt; Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
-#&gt; Geodetic CRS:  WGS 84
-#&gt; First 5 geometries:</div><div class='output co'>#&gt; <span class='message'>POINT (7.533722 51.95556)</span></div><div class='output co'>#&gt; <span class='message'>POINT (7.533461 51.95576)</span></div><div class='output co'>#&gt; <span class='message'>POINT (7.532442 51.95422)</span></div><div class='output co'>#&gt; <span class='message'>POINT (7.53209 51.95328)</span></div><div class='output co'>#&gt; <span class='message'>POINT (7.532709 51.95209)</span></div><div class='input'>
-<span class='co'># Get geometry of any network element.</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"edges"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; Geometry set for 851 features 
-#&gt; Geometry type: LINESTRING
-#&gt; Dimension:     XY
-#&gt; Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612
-#&gt; Geodetic CRS:  WGS 84
-#&gt; First 5 geometries:</div><div class='output co'>#&gt; <span class='message'>LINESTRING (7.533722 51.95556, 7.533461 51.95576)</span></div><div class='output co'>#&gt; <span class='message'>LINESTRING (7.532442 51.95422, 7.53236 51.95377...</span></div><div class='output co'>#&gt; <span class='message'>LINESTRING (7.532709 51.95209, 7.532823 51.9523...</span></div><div class='output co'>#&gt; <span class='message'>LINESTRING (7.540063 51.94468, 7.539696 51.9447...</span></div><div class='output co'>#&gt; <span class='message'>LINESTRING (7.537673 51.9475, 7.537614 51.94562)</span></div><div class='input'>
-<span class='co'># Get bbox of the active network element.</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_bbox.html'>st_bbox</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;      xmin      ymin      xmax      ymax 
-#&gt;  7.522622 51.941512  7.546705 51.961203 </div><div class='input'>
-<span class='co'># Get CRS of the network.</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_crs.html'>st_crs</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; Coordinate Reference System:
-#&gt;   User input: EPSG:4326 
-#&gt;   wkt:
-#&gt; GEOGCRS["WGS 84",
-#&gt;     DATUM["World Geodetic System 1984",
-#&gt;         ELLIPSOID["WGS 84",6378137,298.257223563,
-#&gt;             LENGTHUNIT["metre",1]]],
-#&gt;     PRIMEM["Greenwich",0,
-#&gt;         ANGLEUNIT["degree",0.0174532925199433]],
-#&gt;     CS[ellipsoidal,2],
-#&gt;         AXIS["geodetic latitude (Lat)",north,
-#&gt;             ORDER[1],
-#&gt;             ANGLEUNIT["degree",0.0174532925199433]],
-#&gt;         AXIS["geodetic longitude (Lon)",east,
-#&gt;             ORDER[2],
-#&gt;             ANGLEUNIT["degree",0.0174532925199433]],
-#&gt;     USAGE[
-#&gt;         SCOPE["Horizontal component of 3D system."],
-#&gt;         AREA["World."],
-#&gt;         BBOX[-90,-180,90,180]],
-#&gt;     ID["EPSG",4326]]</div><div class='input'>
-<span class='co'># Get agr factor of the active network element.</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_agr.html'>st_agr</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; factor(0)
-#&gt; Levels: constant aggregate identity</div><div class='input'>
-<span class='co'># Get agr factor of any network element.</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_agr.html'>st_agr</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"edges"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; from   to name type 
-#&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; 
-#&gt; Levels: constant aggregate identity</div><div class='input'>
-<span class='co'># Spatial join applied to the active network element.</span>
-<span class='va'>net</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_transform.html'>st_transform</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='fl'>3035</span><span class='op'>)</span>
-<span class='va'>codes</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_make_grid.html'>st_make_grid</a></span><span class='op'>(</span><span class='va'>net</span>, n <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>codes</span><span class='op'>$</span><span class='va'>post_code</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>1000</span>, <span class='fl'>1000</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>codes</span><span class='op'>)</span> <span class='op'>*</span> <span class='fl'>10</span> <span class='op'>-</span> <span class='fl'>10</span>, <span class='fl'>10</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='va'>joined</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_join.html'>st_join</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='va'>codes</span>, join <span class='op'>=</span> <span class='va'>st_intersects</span><span class='op'>)</span>
-<span class='va'>joined</span>
-</div><div class='output co'>#&gt; <span style='color: #555555;'># A sfnetwork with</span> <span style='color: #555555;'>701</span> <span style='color: #555555;'>nodes and</span> <span style='color: #555555;'>851</span> <span style='color: #555555;'>edges
-#&gt; #
-#&gt; # CRS: </span> <span style='color: #555555;'>EPSG:3035</span> <span style='color: #555555;'>
-#&gt; #
-#&gt; # A directed multigraph with 14 components with spatially explicit edges
-#&gt; #
-#&gt; </span><span style='color: #949494;'># Node Data:     701 × 2 (active)</span>
-#&gt; <span style='color: #949494;'># Geometry type: POINT</span>
-#&gt; <span style='color: #949494;'># Dimension:     XY</span>
-#&gt; <span style='color: #949494;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
-#&gt;            geometry post_code
-#&gt;         <span style='color: #949494; font-style: italic;'>&lt;POINT [m]&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>    
-#&gt; <span style='color: #BCBCBC;'>1</span> (4151491 3207923) 1020     
-#&gt; <span style='color: #BCBCBC;'>2</span> (4151474 3207946) 1020     
-#&gt; <span style='color: #BCBCBC;'>3</span> (4151398 3207777) 1020     
-#&gt; <span style='color: #BCBCBC;'>4</span> (4151370 3207673) 1020     
-#&gt; <span style='color: #BCBCBC;'>5</span> (4151408 3207539) 1020     
-#&gt; <span style='color: #BCBCBC;'>6</span> (4151421 3207592) 1020     
-#&gt; <span style='color: #949494;'># … with 695 more rows</span>
-#&gt; <span style='color: #555555;'>#
-#&gt; </span><span style='color: #949494;'># Edge Data:     851 × 5</span>
-#&gt; <span style='color: #949494;'># Geometry type: LINESTRING</span>
-#&gt; <span style='color: #949494;'># Dimension:     XY</span>
-#&gt; <span style='color: #949494;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
-#&gt;    from    to name                  type                                geometry
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                 <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                       <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [m]&gt;</span>
-#&gt; <span style='color: #BCBCBC;'>1</span>     1     2 Havixbecker Strasse   residential (4151491 3207923, 4151474 32079…
-#&gt; <span style='color: #BCBCBC;'>2</span>     3     4 Pienersallee          secondary   (4151398 3207777, 4151390 32077…
-#&gt; <span style='color: #BCBCBC;'>3</span>     5     6 Schulte-Bernd-Strasse residential (4151408 3207539, 4151417 32075…
-#&gt; <span style='color: #949494;'># … with 848 more rows</span></div><div class='input'>
-<span class='va'>oldpar</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>no.readonly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, mfrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>net</span>, col <span class='op'>=</span> <span class='st'>"grey"</span><span class='op'>)</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>codes</span>, col <span class='op'>=</span> <span class='cn'>NA</span>, border <span class='op'>=</span> <span class='st'>"red"</span>, lty <span class='op'>=</span> <span class='fl'>4</span>, lwd <span class='op'>=</span> <span class='fl'>4</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/text.html'>text</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_coordinates.html'>st_coordinates</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/geos_unary.html'>st_centroid</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>codes</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>, <span class='va'>codes</span><span class='op'>$</span><span class='va'>post_code</span><span class='op'>)</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>joined</span>, <span class='st'>"edges"</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='input'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='va'>joined</span>, <span class='st'>"nodes"</span><span class='op'>)</span>, pch <span class='op'>=</span> <span class='fl'>20</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-</div><div class='img'><img src='sf-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='va'>oldpar</span><span class='op'>)</span>
-<span class='co'># Spatial filter applied to the active network element.</span>
-<span class='va'>p1</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151358</span>, <span class='fl'>3208045</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>p2</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151340</span>, <span class='fl'>3207520</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>p3</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151756</span>, <span class='fl'>3207506</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>p4</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151774</span>, <span class='fl'>3208031</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='va'>poly</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_multipoint</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>p1</span>, <span class='va'>p2</span>, <span class='va'>p3</span>, <span class='va'>p4</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_cast.html'>st_cast</a></span><span class='op'>(</span><span class='st'>'POLYGON'</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/sfc.html'>st_sfc</a></span><span class='op'>(</span>crs <span class='op'>=</span> <span class='fl'>3035</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='op'>)</span>
-
-<span class='va'>filtered</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_join.html'>st_filter</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='va'>poly</span>, .pred <span class='op'>=</span> <span class='va'>st_intersects</span><span class='op'>)</span>
-
-<span class='va'>oldpar</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>no.readonly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, mfrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>net</span>, col <span class='op'>=</span> <span class='st'>"grey"</span><span class='op'>)</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>poly</span>, border <span class='op'>=</span> <span class='st'>"red"</span>, lty <span class='op'>=</span> <span class='fl'>4</span>, lwd <span class='op'>=</span> <span class='fl'>4</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>filtered</span><span class='op'>)</span>
-</div><div class='img'><img src='sf-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='va'>oldpar</span><span class='op'>)</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>net</span> <span class='op'>=</span> <span class='fu'><a href='as_sfnetwork.html'>as_sfnetwork</a></span><span class='op'>(</span><span class='va'>roxel</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Extract the active network element.</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simple feature collection with 701 features and 0 fields</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Geometry type: POINT</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Dimension:     XY</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Geodetic CRS:  WGS 84</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># A tibble: 701 × 1</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>               geometry</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>            <span style='color: #949494; font-style: italic;'>&lt;POINT [°]&gt;</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 1</span> (7.533722 51.95556)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 2</span> (7.533461 51.95576)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 3</span> (7.532442 51.95422)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 4</span>  (7.53209 51.95328)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 5</span> (7.532709 51.95209)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 6</span> (7.532869 51.95257)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 7</span> (7.540063 51.94468)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 8</span>  (7.53822 51.94546)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 9</span>  (7.537673 51.9475)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>10</span> (7.537614 51.94562)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 691 more rows</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Extract any network element.</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"edges"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Simple feature collection with 851 features and 4 fields</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Geometry type: LINESTRING</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Dimension:     XY</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Geodetic CRS:  WGS 84</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># A tibble: 851 × 5</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     from    to name                  type                               geometry</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                 <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                      <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [°]&gt;</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 1</span>     1     2 Havixbecker Strasse   residential (7.533722 51.95556, 7.533461 5…</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 2</span>     3     4 Pienersallee          secondary   (7.532442 51.95422, 7.53236 51…</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 3</span>     5     6 Schulte-Bernd-Strasse residential (7.532709 51.95209, 7.532823 5…</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 4</span>     7     8 <span style='color: #BB0000;'>NA</span>                    path        (7.540063 51.94468, 7.539696 5…</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 5</span>     9    10 Welsingheide          residential (7.537673 51.9475, 7.537614 51…</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 6</span>    11    12 <span style='color: #BB0000;'>NA</span>                    footway     (7.543791 51.94733, 7.54369 51…</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 7</span>    13    14 <span style='color: #BB0000;'>NA</span>                    footway     (7.54012 51.94478, 7.539931 51…</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 8</span>     8    10 <span style='color: #BB0000;'>NA</span>                    path        (7.53822 51.94546, 7.538131 51…</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'> 9</span>     7    15 <span style='color: #BB0000;'>NA</span>                    track       (7.540063 51.94468, 7.540338 5…</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>10</span>    16    17 <span style='color: #BB0000;'>NA</span>                    track       (7.5424 51.94599, 7.54205 51.9…</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 841 more rows</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Get geometry of the active network element.</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Geometry set for 701 features </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Geometry type: POINT</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Dimension:     XY</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Geodetic CRS:  WGS 84</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> First 5 geometries:</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> POINT (7.533722 51.95556)</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> POINT (7.533461 51.95576)</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> POINT (7.532442 51.95422)</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> POINT (7.53209 51.95328)</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> POINT (7.532709 51.95209)</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Get geometry of any network element.</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"edges"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Geometry set for 851 features </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Geometry type: LINESTRING</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Dimension:     XY</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Geodetic CRS:  WGS 84</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> First 5 geometries:</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> LINESTRING (7.533722 51.95556, 7.533461 51.95576)</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> LINESTRING (7.532442 51.95422, 7.53236 51.95377...</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> LINESTRING (7.532709 51.95209, 7.532823 51.9523...</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> LINESTRING (7.540063 51.94468, 7.539696 51.9447...</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> LINESTRING (7.537673 51.9475, 7.537614 51.94562)</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Get bbox of the active network element.</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_bbox.html'>st_bbox</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      xmin      ymin      xmax      ymax </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  7.522622 51.941512  7.546705 51.961203 </span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Get CRS of the network.</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_crs.html'>st_crs</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Coordinate Reference System:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   User input: EPSG:4326 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   wkt:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> GEOGCRS["WGS 84",</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     DATUM["World Geodetic System 1984",</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         ELLIPSOID["WGS 84",6378137,298.257223563,</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             LENGTHUNIT["metre",1]]],</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     PRIMEM["Greenwich",0,</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         ANGLEUNIT["degree",0.0174532925199433]],</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     CS[ellipsoidal,2],</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         AXIS["geodetic latitude (Lat)",north,</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             ORDER[1],</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             ANGLEUNIT["degree",0.0174532925199433]],</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         AXIS["geodetic longitude (Lon)",east,</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             ORDER[2],</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             ANGLEUNIT["degree",0.0174532925199433]],</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     USAGE[</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         SCOPE["Horizontal component of 3D system."],</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         AREA["World."],</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         BBOX[-90,-180,90,180]],</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     ID["EPSG",4326]]</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Get agr factor of the active network element.</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_agr.html'>st_agr</a></span><span class='op'>(</span><span class='va'>net</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> factor(0)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Levels: constant aggregate identity</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Get agr factor of any network element.</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_agr.html'>st_agr</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"edges"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> from   to name type </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Levels: constant aggregate identity</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Spatial join applied to the active network element.</span></span>
+<span class='r-in'><span class='va'>net</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_transform.html'>st_transform</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='fl'>3035</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>codes</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_make_grid.html'>st_make_grid</a></span><span class='op'>(</span><span class='va'>net</span>, n <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>2</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>codes</span><span class='op'>$</span><span class='va'>post_code</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>1000</span>, <span class='fl'>1000</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>codes</span><span class='op'>)</span> <span class='op'>*</span> <span class='fl'>10</span> <span class='op'>-</span> <span class='fl'>10</span>, <span class='fl'>10</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>joined</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_join.html'>st_join</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='va'>codes</span>, join <span class='op'>=</span> <span class='va'>st_intersects</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>joined</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'># A sfnetwork with</span> <span style='color: #555555;'>701</span> <span style='color: #555555;'>nodes and</span> <span style='color: #555555;'>851</span> <span style='color: #555555;'>edges</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'># CRS: </span> <span style='color: #555555;'>EPSG:3035</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'># A directed multigraph with 14 components with spatially explicit edges</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Node Data:     701 × 2 (active)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Geometry type: POINT</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Dimension:     XY</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>            geometry post_code</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>         <span style='color: #949494; font-style: italic;'>&lt;POINT [m]&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>    </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>1</span> (4151491 3207923) 1020     </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>2</span> (4151474 3207946) 1020     </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>3</span> (4151398 3207777) 1020     </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>4</span> (4151370 3207673) 1020     </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>5</span> (4151408 3207539) 1020     </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>6</span> (4151421 3207592) 1020     </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 695 more rows</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Edge Data:     851 × 5</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Geometry type: LINESTRING</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Dimension:     XY</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    from    to name                  type                                geometry</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                 <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>                       <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [m]&gt;</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>1</span>     1     2 Havixbecker Strasse   residential (4151491 3207923, 4151474 32079…</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>2</span>     3     4 Pienersallee          secondary   (4151398 3207777, 4151390 32077…</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>3</span>     5     6 Schulte-Bernd-Strasse residential (4151408 3207539, 4151417 32075…</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 848 more rows</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>oldpar</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>no.readonly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, mfrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>net</span>, col <span class='op'>=</span> <span class='st'>"grey"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>codes</span>, col <span class='op'>=</span> <span class='cn'>NA</span>, border <span class='op'>=</span> <span class='st'>"red"</span>, lty <span class='op'>=</span> <span class='fl'>4</span>, lwd <span class='op'>=</span> <span class='fl'>4</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/text.html'>text</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_coordinates.html'>st_coordinates</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/geos_unary.html'>st_centroid</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>codes</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>, <span class='va'>codes</span><span class='op'>$</span><span class='va'>post_code</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>joined</span>, <span class='st'>"edges"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='va'>joined</span>, <span class='st'>"nodes"</span><span class='op'>)</span>, pch <span class='op'>=</span> <span class='fl'>20</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='sf-1.png' alt='' width='700' height='433' /></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='va'>oldpar</span><span class='op'>)</span></span>
+<span class='r-in'><span class='co'># Spatial filter applied to the active network element.</span></span>
+<span class='r-in'><span class='va'>p1</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151358</span>, <span class='fl'>3208045</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>p2</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151340</span>, <span class='fl'>3207520</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>p3</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151756</span>, <span class='fl'>3207506</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>p4</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4151774</span>, <span class='fl'>3208031</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>poly</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_multipoint</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>p1</span>, <span class='va'>p2</span>, <span class='va'>p3</span>, <span class='va'>p4</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_cast.html'>st_cast</a></span><span class='op'>(</span><span class='st'>'POLYGON'</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/sfc.html'>st_sfc</a></span><span class='op'>(</span>crs <span class='op'>=</span> <span class='fl'>3035</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>filtered</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_join.html'>st_filter</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='va'>poly</span>, .pred <span class='op'>=</span> <span class='va'>st_intersects</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>oldpar</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>no.readonly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, mfrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>net</span>, col <span class='op'>=</span> <span class='st'>"grey"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>poly</span>, border <span class='op'>=</span> <span class='st'>"red"</span>, lty <span class='op'>=</span> <span class='fl'>4</span>, lwd <span class='op'>=</span> <span class='fl'>4</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>filtered</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='sf-2.png' alt='' width='700' height='433' /></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='va'>oldpar</span><span class='op'>)</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

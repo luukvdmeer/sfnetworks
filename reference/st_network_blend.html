@@ -210,118 +210,121 @@ recommended to set the tolerance to a very small number (for example 1e-5)
 even if you only want to blend points that intersect the line.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-
-<span class='co'># Create a network and a set of points to blend.</span>
-<span class='va'>n11</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>n12</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>e1</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/sfc.html'>st_sfc</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_linestring</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>n11</span>, <span class='va'>n12</span><span class='op'>)</span><span class='op'>)</span>, crs <span class='op'>=</span> <span class='fl'>3857</span><span class='op'>)</span>
-
-<span class='va'>n21</span> <span class='op'>=</span> <span class='va'>n12</span>
-<span class='va'>n22</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>e2</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/sfc.html'>st_sfc</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_linestring</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>n21</span>, <span class='va'>n22</span><span class='op'>)</span><span class='op'>)</span>, crs <span class='op'>=</span> <span class='fl'>3857</span><span class='op'>)</span>
-
-<span class='va'>n31</span> <span class='op'>=</span> <span class='va'>n22</span>
-<span class='va'>n32</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>e3</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/sfc.html'>st_sfc</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_linestring</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>n31</span>, <span class='va'>n32</span><span class='op'>)</span><span class='op'>)</span>, crs <span class='op'>=</span> <span class='fl'>3857</span><span class='op'>)</span>
-
-<span class='va'>net</span> <span class='op'>=</span> <span class='fu'><a href='as_sfnetwork.html'>as_sfnetwork</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>e1</span>,<span class='va'>e2</span>,<span class='va'>e3</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='va'>pts</span> <span class='op'>=</span> <span class='va'>net</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_bbox.html'>st_bbox</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sfc.html'>st_as_sfc</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_sample.html'>st_sample</a></span><span class='op'>(</span><span class='fl'>10</span>, type <span class='op'>=</span> <span class='st'>"random"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_crs.html'>st_set_crs</a></span><span class='op'>(</span><span class='fl'>3857</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_cast.html'>st_cast</a></span><span class='op'>(</span><span class='st'>'POINT'</span><span class='op'>)</span>
-
-<span class='co'># Blend points into the network.</span>
-<span class='co'># --&gt; By default tolerance is set to Inf</span>
-<span class='co'># --&gt; Meaning that all points get blended</span>
-<span class='va'>b1</span> <span class='op'>=</span> <span class='fu'>st_network_blend</span><span class='op'>(</span><span class='va'>net</span>, <span class='va'>pts</span><span class='op'>)</span>
-<span class='va'>b1</span>
-</div><div class='output co'>#&gt; <span style='color: #555555;'># A sfnetwork with</span> <span style='color: #555555;'>12</span> <span style='color: #555555;'>nodes and</span> <span style='color: #555555;'>11</span> <span style='color: #555555;'>edges
-#&gt; #
-#&gt; # CRS: </span> <span style='color: #555555;'>EPSG:3857</span> <span style='color: #555555;'>
-#&gt; #
-#&gt; # A rooted tree with spatially explicit edges
-#&gt; #
-#&gt; </span><span style='color: #949494;'># Node Data:     12 × 1 (active)</span>
-#&gt; <span style='color: #949494;'># Geometry type: POINT</span>
-#&gt; <span style='color: #949494;'># Dimension:     XY</span>
-#&gt; <span style='color: #949494;'># Bounding box:  xmin: -1 ymin: 0 xmax: 1 ymax: 2</span>
-#&gt;                       x
-#&gt;             <span style='color: #949494; font-style: italic;'>&lt;POINT [m]&gt;</span>
-#&gt; <span style='color: #BCBCBC;'>1</span>                 (0 0)
-#&gt; <span style='color: #BCBCBC;'>2</span>                 (1 1)
-#&gt; <span style='color: #BCBCBC;'>3</span>                 (0 2)
-#&gt; <span style='color: #BCBCBC;'>4</span>                (-1 1)
-#&gt; <span style='color: #BCBCBC;'>5</span> (0.2129865 0.2129865)
-#&gt; <span style='color: #BCBCBC;'>6</span> (0.2825198 0.2825198)
-#&gt; <span style='color: #949494;'># … with 6 more rows</span>
-#&gt; <span style='color: #555555;'>#
-#&gt; </span><span style='color: #949494;'># Edge Data:     11 × 3</span>
-#&gt; <span style='color: #949494;'># Geometry type: LINESTRING</span>
-#&gt; <span style='color: #949494;'># Dimension:     XY</span>
-#&gt; <span style='color: #949494;'># Bounding box:  xmin: -1 ymin: 0 xmax: 1 ymax: 2</span>
-#&gt;    from    to                                          x
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>                           <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [m]&gt;</span>
-#&gt; <span style='color: #BCBCBC;'>1</span>     1     5                 (0 0, 0.2129865 0.2129865)
-#&gt; <span style='color: #BCBCBC;'>2</span>     5     6 (0.2129865 0.2129865, 0.2825198 0.2825198)
-#&gt; <span style='color: #BCBCBC;'>3</span>     6     7 (0.2825198 0.2825198, 0.3112431 0.3112431)
-#&gt; <span style='color: #949494;'># … with 8 more rows</span></div><div class='input'>
-<span class='co'># Blend points with a tolerance.</span>
-<span class='va'>tol</span> <span class='op'>=</span> <span class='fu'>units</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/units/man/units.html'>set_units</a></span><span class='op'>(</span><span class='fl'>0.2</span>, <span class='st'>"m"</span><span class='op'>)</span>
-<span class='va'>b2</span> <span class='op'>=</span> <span class='fu'>st_network_blend</span><span class='op'>(</span><span class='va'>net</span>, <span class='va'>pts</span>, tolerance <span class='op'>=</span> <span class='va'>tol</span><span class='op'>)</span>
-<span class='va'>b2</span>
-</div><div class='output co'>#&gt; <span style='color: #555555;'># A sfnetwork with</span> <span style='color: #555555;'>6</span> <span style='color: #555555;'>nodes and</span> <span style='color: #555555;'>5</span> <span style='color: #555555;'>edges
-#&gt; #
-#&gt; # CRS: </span> <span style='color: #555555;'>EPSG:3857</span> <span style='color: #555555;'>
-#&gt; #
-#&gt; # A rooted tree with spatially explicit edges
-#&gt; #
-#&gt; </span><span style='color: #949494;'># Node Data:     6 × 1 (active)</span>
-#&gt; <span style='color: #949494;'># Geometry type: POINT</span>
-#&gt; <span style='color: #949494;'># Dimension:     XY</span>
-#&gt; <span style='color: #949494;'># Bounding box:  xmin: -1 ymin: 0 xmax: 1 ymax: 2</span>
-#&gt;                       x
-#&gt;             <span style='color: #949494; font-style: italic;'>&lt;POINT [m]&gt;</span>
-#&gt; <span style='color: #BCBCBC;'>1</span>                 (0 0)
-#&gt; <span style='color: #BCBCBC;'>2</span>                 (1 1)
-#&gt; <span style='color: #BCBCBC;'>3</span>                 (0 2)
-#&gt; <span style='color: #BCBCBC;'>4</span>                (-1 1)
-#&gt; <span style='color: #BCBCBC;'>5</span> (0.3112431 0.3112431)
-#&gt; <span style='color: #BCBCBC;'>6</span>  (0.7104781 1.289522)
-#&gt; <span style='color: #555555;'>#
-#&gt; </span><span style='color: #949494;'># Edge Data:     5 × 3</span>
-#&gt; <span style='color: #949494;'># Geometry type: LINESTRING</span>
-#&gt; <span style='color: #949494;'># Dimension:     XY</span>
-#&gt; <span style='color: #949494;'># Bounding box:  xmin: -1 ymin: 0 xmax: 1 ymax: 2</span>
-#&gt;    from    to                          x
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>           <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [m]&gt;</span>
-#&gt; <span style='color: #BCBCBC;'>1</span>     1     5 (0 0, 0.3112431 0.3112431)
-#&gt; <span style='color: #BCBCBC;'>2</span>     5     2 (0.3112431 0.3112431, 1 1)
-#&gt; <span style='color: #BCBCBC;'>3</span>     2     6  (1 1, 0.7104781 1.289522)
-#&gt; <span style='color: #949494;'># … with 2 more rows</span></div><div class='input'>
-<span class='co'>## Plot results.</span>
-<span class='co'># Initial network and points.</span>
-<span class='va'>oldpar</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>no.readonly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, mfrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>net</span>, cex <span class='op'>=</span> <span class='fl'>2</span>, main <span class='op'>=</span> <span class='st'>"Network + set of points"</span><span class='op'>)</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>pts</span>, cex <span class='op'>=</span> <span class='fl'>2</span>, col <span class='op'>=</span> <span class='st'>"red"</span>, pch <span class='op'>=</span> <span class='fl'>20</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-
-<span class='co'># Blend with no tolerance</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>b1</span>, cex <span class='op'>=</span> <span class='fl'>2</span>, main <span class='op'>=</span> <span class='st'>"Blend with tolerance = Inf"</span><span class='op'>)</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>pts</span>, cex <span class='op'>=</span> <span class='fl'>2</span>, col <span class='op'>=</span> <span class='st'>"red"</span>, pch <span class='op'>=</span> <span class='fl'>20</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-
-<span class='co'># Blend with tolerance.</span>
-<span class='va'>within</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/geos_binary_pred.html'>st_is_within_distance</a></span><span class='op'>(</span><span class='va'>pts</span>, <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"edges"</span><span class='op'>)</span>, <span class='va'>tol</span><span class='op'>)</span>
-<span class='va'>pts_within</span> <span class='op'>=</span> <span class='va'>pts</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/lengths.html'>lengths</a></span><span class='op'>(</span><span class='va'>within</span><span class='op'>)</span> <span class='op'>&gt;</span> <span class='fl'>0</span><span class='op'>]</span>
-<span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>b2</span>, cex <span class='op'>=</span> <span class='fl'>2</span>, main <span class='op'>=</span> <span class='st'>"Blend with tolerance = 0.2 m"</span><span class='op'>)</span>
-</div><div class='input'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>pts</span>, cex <span class='op'>=</span> <span class='fl'>2</span>, col <span class='op'>=</span> <span class='st'>"grey"</span>, pch <span class='op'>=</span> <span class='fl'>20</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-</div><div class='input'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>pts_within</span>, cex <span class='op'>=</span> <span class='fl'>2</span>, col <span class='op'>=</span> <span class='st'>"red"</span>, pch <span class='op'>=</span> <span class='fl'>20</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-</div><div class='img'><img src='st_network_blend-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='va'>oldpar</span><span class='op'>)</span>
-
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Create a network and a set of points to blend.</span></span>
+<span class='r-in'><span class='va'>n11</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fl'>0</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>n12</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>e1</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/sfc.html'>st_sfc</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_linestring</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>n11</span>, <span class='va'>n12</span><span class='op'>)</span><span class='op'>)</span>, crs <span class='op'>=</span> <span class='fl'>3857</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>n21</span> <span class='op'>=</span> <span class='va'>n12</span></span>
+<span class='r-in'><span class='va'>n22</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>e2</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/sfc.html'>st_sfc</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_linestring</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>n21</span>, <span class='va'>n22</span><span class='op'>)</span><span class='op'>)</span>, crs <span class='op'>=</span> <span class='fl'>3857</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>n31</span> <span class='op'>=</span> <span class='va'>n22</span></span>
+<span class='r-in'><span class='va'>n32</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_point</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>e3</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/sfc.html'>st_sfc</a></span><span class='op'>(</span><span class='fu'><a href='https://r-spatial.github.io/sf/reference/st.html'>st_linestring</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>n31</span>, <span class='va'>n32</span><span class='op'>)</span><span class='op'>)</span>, crs <span class='op'>=</span> <span class='fl'>3857</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>net</span> <span class='op'>=</span> <span class='fu'><a href='as_sfnetwork.html'>as_sfnetwork</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>e1</span>,<span class='va'>e2</span>,<span class='va'>e3</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>pts</span> <span class='op'>=</span> <span class='va'>net</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_bbox.html'>st_bbox</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_as_sfc.html'>st_as_sfc</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_sample.html'>st_sample</a></span><span class='op'>(</span><span class='fl'>10</span>, type <span class='op'>=</span> <span class='st'>"random"</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_crs.html'>st_set_crs</a></span><span class='op'>(</span><span class='fl'>3857</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span class='r-in'>  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_cast.html'>st_cast</a></span><span class='op'>(</span><span class='st'>'POINT'</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Blend points into the network.</span></span>
+<span class='r-in'><span class='co'># --&gt; By default tolerance is set to Inf</span></span>
+<span class='r-in'><span class='co'># --&gt; Meaning that all points get blended</span></span>
+<span class='r-in'><span class='va'>b1</span> <span class='op'>=</span> <span class='fu'>st_network_blend</span><span class='op'>(</span><span class='va'>net</span>, <span class='va'>pts</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>b1</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'># A sfnetwork with</span> <span style='color: #555555;'>12</span> <span style='color: #555555;'>nodes and</span> <span style='color: #555555;'>11</span> <span style='color: #555555;'>edges</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'># CRS: </span> <span style='color: #555555;'>EPSG:3857</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'># A rooted tree with spatially explicit edges</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Node Data:     12 × 1 (active)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Geometry type: POINT</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Dimension:     XY</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Bounding box:  xmin: -1 ymin: 0 xmax: 1 ymax: 2</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                       x</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             <span style='color: #949494; font-style: italic;'>&lt;POINT [m]&gt;</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>1</span>                 (0 0)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>2</span>                 (1 1)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>3</span>                 (0 2)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>4</span>                (-1 1)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>5</span> (0.2129865 0.2129865)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>6</span> (0.2825198 0.2825198)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 6 more rows</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Edge Data:     11 × 3</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Geometry type: LINESTRING</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Dimension:     XY</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Bounding box:  xmin: -1 ymin: 0 xmax: 1 ymax: 2</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    from    to                                          x</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>                           <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [m]&gt;</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>1</span>     1     5                 (0 0, 0.2129865 0.2129865)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>2</span>     5     6 (0.2129865 0.2129865, 0.2825198 0.2825198)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>3</span>     6     7 (0.2825198 0.2825198, 0.3112431 0.3112431)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 8 more rows</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Blend points with a tolerance.</span></span>
+<span class='r-in'><span class='va'>tol</span> <span class='op'>=</span> <span class='fu'>units</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/units/man/units.html'>set_units</a></span><span class='op'>(</span><span class='fl'>0.2</span>, <span class='st'>"m"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>b2</span> <span class='op'>=</span> <span class='fu'>st_network_blend</span><span class='op'>(</span><span class='va'>net</span>, <span class='va'>pts</span>, tolerance <span class='op'>=</span> <span class='va'>tol</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>b2</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'># A sfnetwork with</span> <span style='color: #555555;'>6</span> <span style='color: #555555;'>nodes and</span> <span style='color: #555555;'>5</span> <span style='color: #555555;'>edges</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'># CRS: </span> <span style='color: #555555;'>EPSG:3857</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'># A rooted tree with spatially explicit edges</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Node Data:     6 × 1 (active)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Geometry type: POINT</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Dimension:     XY</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Bounding box:  xmin: -1 ymin: 0 xmax: 1 ymax: 2</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                       x</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             <span style='color: #949494; font-style: italic;'>&lt;POINT [m]&gt;</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>1</span>                 (0 0)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>2</span>                 (1 1)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>3</span>                 (0 2)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>4</span>                (-1 1)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>5</span> (0.3112431 0.3112431)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>6</span>  (0.7104781 1.289522)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #555555;'>#</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Edge Data:     5 × 3</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Geometry type: LINESTRING</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Dimension:     XY</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># Bounding box:  xmin: -1 ymin: 0 xmax: 1 ymax: 2</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    from    to                          x</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>           <span style='color: #949494; font-style: italic;'>&lt;LINESTRING [m]&gt;</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>1</span>     1     5 (0 0, 0.3112431 0.3112431)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>2</span>     5     2 (0.3112431 0.3112431, 1 1)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #BCBCBC;'>3</span>     2     6  (1 1, 0.7104781 1.289522)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #949494;'># … with 2 more rows</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Plot results.</span></span>
+<span class='r-in'><span class='co'># Initial network and points.</span></span>
+<span class='r-in'><span class='va'>oldpar</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>no.readonly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span>mar <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, mfrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>net</span>, cex <span class='op'>=</span> <span class='fl'>2</span>, main <span class='op'>=</span> <span class='st'>"Network + set of points"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>pts</span>, cex <span class='op'>=</span> <span class='fl'>2</span>, col <span class='op'>=</span> <span class='st'>"red"</span>, pch <span class='op'>=</span> <span class='fl'>20</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Blend with no tolerance</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>b1</span>, cex <span class='op'>=</span> <span class='fl'>2</span>, main <span class='op'>=</span> <span class='st'>"Blend with tolerance = Inf"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>pts</span>, cex <span class='op'>=</span> <span class='fl'>2</span>, col <span class='op'>=</span> <span class='st'>"red"</span>, pch <span class='op'>=</span> <span class='fl'>20</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Blend with tolerance.</span></span>
+<span class='r-in'><span class='va'>within</span> <span class='op'>=</span> <span class='fu'><a href='https://r-spatial.github.io/sf/reference/geos_binary_pred.html'>st_is_within_distance</a></span><span class='op'>(</span><span class='va'>pts</span>, <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='op'>(</span><span class='va'>net</span>, <span class='st'>"edges"</span><span class='op'>)</span>, <span class='va'>tol</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>pts_within</span> <span class='op'>=</span> <span class='va'>pts</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/lengths.html'>lengths</a></span><span class='op'>(</span><span class='va'>within</span><span class='op'>)</span> <span class='op'>&gt;</span> <span class='fl'>0</span><span class='op'>]</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>b2</span>, cex <span class='op'>=</span> <span class='fl'>2</span>, main <span class='op'>=</span> <span class='st'>"Blend with tolerance = 0.2 m"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>pts</span>, cex <span class='op'>=</span> <span class='fl'>2</span>, col <span class='op'>=</span> <span class='st'>"grey"</span>, pch <span class='op'>=</span> <span class='fl'>20</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>pts_within</span>, cex <span class='op'>=</span> <span class='fl'>2</span>, col <span class='op'>=</span> <span class='st'>"red"</span>, pch <span class='op'>=</span> <span class='fl'>20</span>, add <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-plt img'><img src='st_network_blend-1.png' alt='' width='700' height='433' /></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/par.html'>par</a></span><span class='op'>(</span><span class='va'>oldpar</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
