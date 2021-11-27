@@ -1,3 +1,5 @@
+skip_if_not(sf::sf_extSoftVersion()["PROJ"] >= "7.0.0")
+
 library(sf)
 library(dplyr)
 
