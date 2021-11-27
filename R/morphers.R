@@ -561,8 +561,8 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
     pseudo = degree(x) == 2
   }
   if (! any(pseudo)) return (x)
-  ## ========================================
-  # STEP II: INITIALIZE THE REPLACEMENT EDGES
+  ## ====================================
+  # STEP II: INITIALIZE REPLACEMENT EDGES
   # When removing pseudo nodes their incident edges get removed to.
   # To preserve the network connectivity we need to:
   # --> Find the two adjacent nodes of a pseudo node.
@@ -572,7 +572,7 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
   # --> Find connected sets of pseudo nodes.
   # --> Find the adjacent non-pseudo nodes (junction or terminal) to that set.
   # --> Connect them by merging the edges in the set plus its incident edges.
-  ## ========================================
+  ## ====================================
   # Subset x to only contain pseudo nodes and the edges between them.
   # Decompose this subgraph to find connected sets of pseudo nodes.
   pseudo_sets = decompose(induced_subgraph(x, pseudo))
@@ -730,12 +730,12 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
     new_edges[geom_colname] = list(new_geoms)
     new_edges = st_as_sf(new_edges, sf_column_name = geom_colname)
   }
-  ## ========================================
-  # STEP IV: ADD MERGED EDGES TO THE NETWORK
+  ## ============================================
+  # STEP IV: ADD REPLACEMENT EDGES TO THE NETWORK
   # The newly created edges should be added to the original network.
   # This must happen before removing the pseudo nodes.
-  # Otherwise, the source and sink indices do not match their nodes anymore.
-  ## ========================================
+  # Otherwise their from and to values do not match the correct node indices.
+  ## ============================================
   # Bind the original and new edges.
   edges$.tidygraph_edge_index = as.list(edges$.tidygraph_edge_index)
   all_edges = bind_rows(edges, new_edges)
@@ -746,6 +746,7 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
   # Remove all the detected pseudo nodes from the original network.
   # This will automatically also remove their incident edges.
   # Remember that their replacement edges have already been added in step IV.
+  # From and to indices will be updated automatically.
   ## ============================================
   x_new = delete_vertices(x_new, pseudo) %preserve_all_attrs% x
   ## =============================================
