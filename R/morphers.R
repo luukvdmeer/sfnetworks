@@ -561,28 +561,27 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
     pseudo = degree(x) == 2
   }
   if (! any(pseudo)) return (x)
-  ## ===============================
-  # STEP II: FIND EDGES TO BE MERGED
-  # The connectivity of the network should be preserved.
-  # Therefore we need to:
-  # --> Find adjacent nodes of a pseudo node.
+  ## ========================================
+  # STEP II: INITIALIZE THE REPLACEMENT EDGES
+  # When removing pseudo nodes their incident edges get removed to.
+  # To preserve the network connectivity we need to:
+  # --> Find the two adjacent nodes of a pseudo node.
   # --> Connect these by merging the incident edges of the pseudo node.
-  # However, an adjacent node can also be another pseudo node.
-  # Then, we need to look further until we find a non-pseudo (junction) node.
-  # Hence, instead of processing each pseudo node on its own, we need to:
+  # An adjacent node of a pseudo node can also be another pseudo node.
+  # Instead of processing each pseudo node on its own, we will:
   # --> Find connected sets of pseudo nodes.
-  # --> Find the adjacent junction nodes to that set.
-  # --> Connect these by merging the edges in the set *and* its incident edges.
-  ## ===============================
+  # --> Find the adjacent non-pseudo nodes (junction or terminal) to that set.
+  # --> Connect them by merging the edges in the set plus its incident edges.
+  ## ========================================
   # Subset x to only contain pseudo nodes and the edges between them.
   # Decompose this subgraph to find connected sets of pseudo nodes.
-  x_pseudo = decompose(induced_subgraph(x, pseudo))
+  pseudo_sets = decompose(induced_subgraph(x, pseudo))
   # For each set of connected pseudo nodes:
-  # --> Find the indices of the adjacent junction node(s).
+  # --> Find the indices of the adjacent nodes.
   # --> Find the indices of the edges that need to be merged.
   # The workflow for this is different for directed and undirected networks.
   if (directed) {
-    find_edges = function(G) {
+    initialize_edges = function(G) {
       # Retrieve the original node indices of the pseudo nodes in this set.
       # Retrieve the original edge indices of the edges that connect them.
       N = vertex_attr(G, ".tidygraph_node_index")
@@ -600,51 +599,54 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
       if (length(n_i) == 0) return (NULL)
       # Find the following:
       # --> The index of the edge that comes in to the pseudo node set.
-      # --> The index of the node at the other end of that edge.
+      # --> The index of the non-pseudo node at the other end of that edge.
       # We'll call this the source node and source edge of the set.
-      src_node = as.integer(adjacent_vertices(x, n_i, mode = "in"))
-      src_edge = get.edge.ids(x, c(src_node, n_i))
+      source_node = as.integer(adjacent_vertices(x, n_i, mode = "in"))
+      source_edge = get.edge.ids(x, c(source_node, n_i))
       # Find the following:
       # --> The index of the edge that goes out of the pseudo node set.
-      # --> The index of the node at the other end of that edge.
-      # We'll call this the target node and target edge of the set.
-      trg_node = as.integer(adjacent_vertices(x, n_o, mode = "out"))
-      trg_edge = get.edge.ids(x, c(n_o, trg_node))
-      # List all edge indices in the path.
-      edge_idxs = c(src_edge, E, trg_edge)
+      # --> The index of the non-pseudo node at the other end of that edge.
+      # We'll call this the sink node and sink edge of the set.
+      sink_node = as.integer(adjacent_vertices(x, n_o, mode = "out"))
+      sink_edge = get.edge.ids(x, c(n_o, sink_node))
+      # List indices of all edges that will be merged into the replacement edge.
+      edge_idxs = c(source_edge, E, sink_edge)
       # Return all retrieved information in a list.
-      list(from = src_node, to = trg_node, .tidygraph_edge_index = edge_idxs)
+      list(from = source_node, to = sink_node, .tidygraph_edge_index = edge_idxs)
     }
   } else {
-    find_edges = function(G) {
+    initialize_edges = function(G) {
       # Retrieve the original node indices of the pseudo nodes in this set.
       # Retrieve the original edge indices of the edges that connect them.
       N = vertex_attr(G, ".tidygraph_node_index")
       E = edge_attr(G, ".tidygraph_edge_index")
-      # In an undirected network there is no in or out. Instead, we find:
-      # --> The two adjacent junction nodes to the set.
+      # Find the following:
+      # --> The two adjacent non-pseudo nodes to the set.
       # --> The edges that connect these nodes to the set.
+      # We'll call these the neighbour nodes and neighbour edges of the set.
+      # --> The neighbour node with the lowest index will be the source node.
+      # --> The neighbour node with the higest index will be the sink node.
       if (length(N) == 1) {
         # When we have a single pseudo node that forms a set:
-        # --> It will be adjacent to the source and target.
-        adjacent = as.integer(adjacent_vertices(x, N)[[1]])
-        if (length(adjacent) == 1) {
-          # If there is only one adjacent node:
-          # --> The source and target node are the same node.
-          # --> We only have to query for connecting edges ones.
-          connects = get.edge.ids(x, c(adjacent, N))
-          src_node = adjacent
-          src_edge = connects[1]
-          trg_node = adjacent
-          trg_edge = connects[2]
+        # --> It will be adjacent to both neighbour nodes.
+        neighbour_nodes = as.integer(adjacent_vertices(x, N)[[1]])
+        if (length(neighbour_nodes) == 1) {
+          # If there is only one adjacent node to the pseudo node:
+          # --> The two neighbour nodes are the same node.
+          # --> We only have to query for neigbour edges once.
+          neighbour_edges = get.edge.ids(x, c(neighbour_nodes, N))
+          source_node = neighbour_nodes
+          source_edge = neighbour_edges[1]
+          sink_node = neighbour_nodes
+          sink_edge = neighbour_edges[2]
         } else {
-          # If there are two adjacent nodes:
+          # If there are two adjacent nodes to the pseudo node:
           # --> The one with the lowest index will be source node.
-          # --> The one with the highest index will be target node.
-          src_node = min(adjacent)
-          src_edge = get.edge.ids(x, c(src_node, N))
-          trg_node = max(adjacent)
-          trg_edge = get.edge.ids(x, c(N, trg_node))
+          # --> The one with the highest index will be sink node.
+          source_node = min(neighbour_nodes)
+          source_edge = get.edge.ids(x, c(source_node, N))
+          sink_node = max(neighbour_nodes)
+          sink_edge = get.edge.ids(x, c(N, sink_node))
         }
       } else {
         # When we have a set of multiple pseudo nodes:
@@ -657,33 +659,33 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
         # --> Hence, there is no need to create a new edge.
         # --> Therefore we should not return a path.
         if (length(N_b) == 0) return (NULL)
-        # Find the junction nodes connected to the boundaries of the set.
-        # These are the adjacent nodes of the set.
-        # We find them iteratively for the two different set boundary nodes.
-        # --> A boundary connects to one pseudo node and one junction node.
-        # --> The junction node is the one not present in the pseudo set.
-        find_junction = function(n) {
+        # Find the neighbour nodes of the set.
+        # These are the adjacent non-pseudo nodes to the boundaries of the set.
+        # We find them iteratively for the two boundary nodes:
+        # --> A boundary connects to one pseudo node and one non-pseudo node.
+        # --> The non-pseudo node is the one not present in the pseudo set.
+        get_neighbour_node = function(n) {
           all = as.integer(adjacent_vertices(x, n)[[1]])
           all[!(all %in% N)]
         }
-        adjacent = do.call("c", lapply(N_b, find_junction))
-        # The adjacent node with the lowest index will be source node.
-        # The adjacent node with the highest index will be target node.
-        N_b = N_b[order(adjacent)]
-        src_node = min(adjacent)
-        src_edge = get.edge.ids(x, c(src_node, N_b[1]))
-        trg_node = max(adjacent)
-        trg_edge = get.edge.ids(x, c(N_b[2], trg_node))
+        neighbour_nodes = do.call("c", lapply(N_b, get_neighbour_node))
+        # The neighbour node with the lowest index will be source node.
+        # The neighbour node with the highest index will be sink node.
+        N_b = N_b[order(neighbour_nodes)]
+        source_node = min(neighbour_nodes)
+        source_edge = get.edge.ids(x, c(source_node, N_b[1]))
+        sink_node = max(neighbour_nodes)
+        sink_edge = get.edge.ids(x, c(N_b[2], sink_node))
       }
-      # List all edge indices in the path.
-      edge_idxs = c(src_edge, E, trg_edge)
+      # List indices of all edges that will be merged into the replacement edge.
+      edge_idxs = c(source_edge, E, sink_edge)
       # Return all retrieved information in a list.
-      list(from = src_node, to = trg_node, .tidygraph_edge_index = edge_idxs)
+      list(from = source_node, to = sink_node, .tidygraph_edge_index = edge_idxs)
     }
   }
-  new_edge_list = lapply(x_pseudo, find_edges)
+  new_edge_list = lapply(pseudo_sets, initialize_edges)
   new_edge_list = new_edge_list[lengths(new_edge_list) != 0] # Remove NULLs.
-  # Create a data frame with the merged edges.
+  # Create a data frame with the replacement edges.
   new_edges = data.frame(do.call("rbind", new_edge_list))
   new_edges$from = as.integer(new_edges$from)
   new_edges$to = as.integer(new_edges$to)
@@ -691,7 +693,7 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
   # STEP III: CONCATENATE EDGE GEOMETRIES
   # If the edges to be merged have geometries:
   # --> These geometries have to be concatenated into a single new geometry.
-  # --> The new geometry should go from the defined source to target node.
+  # --> The new geometry should go from the defined source to sink node.
   ## ====================================
   if (spatial) {
     # For each new edge:
@@ -703,21 +705,19 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
       orig_geoms = edge_geoms[orig_edges]
       new_geom = st_line_merge(st_combine(orig_geoms))
       # There is one situation where merging lines like this is problematic.
-      # That is when the source and target node of the new edge are the same.
+      # That is when the source and sink node of the new edge are the same.
       # Hence, the original edges to be merged form a closed loop.
       # Any original edge endpoint can then be the startpoint of the new edge.
       # st_line_merge chooses the point with the lowest x coordinate.
       # This is not necessarily the source node we defined.
       # This behaviour comes from third partly libs and can not be tuned.
       # Hence, we manually need to reorder the points in the merged line.
-      src = E$from
-      trg = E$to
-      if (src == trg && length(orig_edges) > 1) {
+      if (E$from == E$to && length(orig_edges) > 1) {
         pts = st_cast(new_geom, "POINT")
-        src_idx = st_equals(node_geoms[src], pts)[[1]]
-        if (length(src_idx) == 1) {
+        from_idx = st_equals(node_geoms[E$from], pts)[[1]]
+        if (length(from_idx) == 1) {
           n = length(pts)
-          ordered_pts = c(pts[c(src_idx:n)], pts[c(2:src_idx)])
+          ordered_pts = c(pts[c(from_idx:n)], pts[c(2:from_idx)])
           new_geom = st_cast(st_combine(ordered_pts), "LINESTRING")
         }
       }
@@ -734,7 +734,7 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
   # STEP IV: ADD MERGED EDGES TO THE NETWORK
   # The newly created edges should be added to the original network.
   # This must happen before removing the pseudo nodes.
-  # Otherwise, the source and target indices do not match their nodes anymore.
+  # Otherwise, the source and sink indices do not match their nodes anymore.
   ## ========================================
   # Bind the original and new edges.
   edges$.tidygraph_edge_index = as.list(edges$.tidygraph_edge_index)
