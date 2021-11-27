@@ -616,7 +616,7 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
       list(from = src_node, to = trg_node, .tidygraph_edge_index = edge_idxs)
     }
   } else {
-    find_edges_undirected = function(G) {
+    find_edges = function(G) {
       # Retrieve the original node indices of the pseudo nodes in this set.
       # Retrieve the original edge indices of the edges that connect them.
       N = vertex_attr(G, ".tidygraph_node_index")
