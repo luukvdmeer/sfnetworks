@@ -538,7 +538,8 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' edge_attr get.edge.ids induced_subgraph is_directed vertex_attr
 #' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_line_merge
 #' @export
-to_spatial_smooth = function(x, store_original_data = FALSE) {
+to_spatial_smooth = function(x, summarise_attributes = "ignore",
+                             store_original_data = FALSE) {
   # Retrieve nodes and edges from the network.
   nodes = nodes_as_sf(x)
   edges = edges_as_table(x)
@@ -689,12 +690,91 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
   new_edges = data.frame(do.call("rbind", new_edge_list))
   new_edges$from = as.integer(new_edges$from)
   new_edges$to = as.integer(new_edges$to)
-  ## ====================================
-  # STEP III: CONCATENATE EDGE GEOMETRIES
+  ## ===================================
+  # STEP III: SUMMARISE ATTRIBUTE VALUES
+  #
+  ## ===================================
+  # Make sure summarise_attributes parameter value is always a list.
+  if (is.function(summarise_attributes)) {
+    summarise_attributes = list(summarise_attributes)
+  } else {
+    summarise_attributes = as.list(summarise_attributes)
+  }
+  # If all attributes should be summarised by technique 'ignore':
+  # --> This means all attributes will be dropped for the replacement edges.
+  # --> We don't need to do anything and can just move on.
+  # If this it *not* the case:
+  # -->  We need to summarise certain attributes using a specified technique.
+  if (! all(summarise_attributes == "ignore")) {
+    # Obtain the names of all attributes.
+    geom_names = attr(edges, "sf_column")
+    idxs_names = c("from", "to", ".tidygraph_edge_index")
+    attr_names = setdiff(names(edges), c(geom_names, idxs_names))
+    # Obtain the values of all attributes.
+    attr_values = edge.attributes(x)[attr_names]
+    # Obtain the summarise function to use for each attribute.
+    map_value_to_function = function(value) {
+      if (is.function(value)) {
+        value
+      } else {
+        switch(
+          value,
+          ignore = function(x) NA,
+          sum = function(x) sum(x),
+          prod = function(x) prod(x),
+          min = function(x) min(x),
+          max = function(x) max(x),
+          random = function(x) sample(x, 1),
+          first = function(x) utils::head(x, 1),
+          last = function(x) utils::tail(x, 1),
+          mean = function(x) mean(x),
+          median = function(x) median(x),
+          concat = function(x) c(x),
+          raise_unknown_input(value)
+        )
+      }
+    }
+    if (length(summarise_attributes) == 1) {
+      # The same function will be used for each attribute.
+      attr_funcs = map_value_to_function(summarise_attributes[[1]])
+      apply_summarise_function = function(col, rows) {
+        attr_funcs(attr_values[[col]][rows])
+      }
+    } else {
+      # We need to obtain the summarise function for each attribute separately.
+      get_summarise_function = function(attr) {
+        value = summarise_attributes[[attr]]
+        if (is.null(value)) {
+          idx = which(names(summarise_attributes) == "")[1]
+          value = summarise_attributes[[idx]]
+        }
+        map_value_to_function(value)
+      }
+      attr_funcs = lapply(attr_names, get_summarise_function)
+      names(attr_funcs) = attr_names
+      apply_summarise_function = function(col, rows) {
+        attr_funcs[[col]](attr_values[[col]][rows])
+      }
+    }
+    # For each new edge and each attribute:
+    # --> Merge all original attribute values into a single value.
+    # --> Using the specified summarise function for that attribute.
+    merge_attrs = function(E) {
+      orig_edges = E$.tidygraph_edge_index
+      new_attrs = lapply(attr_names, apply_summarise_function, orig_edges)
+      names(new_attrs) = attr_names
+      data.frame(new_attrs)
+    }
+    new_attrs = do.call("rbind", lapply(new_edge_list, merge_attrs))
+    # Add the attributes to the new edges data frame.
+    new_edges = cbind(new_edges, new_attrs)
+  }
+  ## ===================================
+  # STEP VI: CONCATENATE EDGE GEOMETRIES
   # If the edges to be merged have geometries:
   # --> These geometries have to be concatenated into a single new geometry.
   # --> The new geometry should go from the defined source to sink node.
-  ## ====================================
+  ## ===================================
   if (spatial) {
     # For each new edge:
     # --> Merge all original edge geometries into a single geometry.
@@ -731,7 +811,7 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
     new_edges = st_as_sf(new_edges, sf_column_name = geom_colname)
   }
   ## ============================================
-  # STEP IV: ADD REPLACEMENT EDGES TO THE NETWORK
+  # STEP V: ADD REPLACEMENT EDGES TO THE NETWORK
   # The newly created edges should be added to the original network.
   # This must happen before removing the pseudo nodes.
   # Otherwise their from and to values do not match the correct node indices.
@@ -742,20 +822,20 @@ to_spatial_smooth = function(x, store_original_data = FALSE) {
   # Recreate an sfnetwork.
   x_new = sfnetwork_(nodes, all_edges, directed = directed)
   ## ============================================
-  # STEP V: REMOVE PSEUDO NODES FROM THE NETWORK
+  # STEP VI: REMOVE PSEUDO NODES FROM THE NETWORK
   # Remove all the detected pseudo nodes from the original network.
   # This will automatically also remove their incident edges.
   # Remember that their replacement edges have already been added in step IV.
   # From and to indices will be updated automatically.
   ## ============================================
   x_new = delete_vertices(x_new, pseudo) %preserve_all_attrs% x
-  ## =============================================
-  # STEP VI: STORE ORIGINAL EDGE DATA IF REQUESTED
+  ## ==============================================
+  # STEP VII: STORE ORIGINAL EDGE DATA IF REQUESTED
   # Users can request to store the data of original edges in a special column.
   # This column will - by tidygraph design - be named .orig_data.
   # The value in this column is for each edge a tibble containing:
   # --> The data of the original edges that were merged into the new edge.
-  ## =============================================
+  ## ==============================================
   if (store_original_data) {
     # Store the original edge data in a .orig_data column.
     new_edges = edges_as_sf(x_new)
