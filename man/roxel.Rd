@@ -25,4 +25,9 @@ Roxel, a neighborhood in the city of Münster, Germany. The data are taken
 from OpenStreetMap, querying by key = 'highway'. The topology is cleaned with
 the v.clean tool in GRASS GIS.
 }
+\details{
+Dataset was created using PROJ>=7.0.0 and hence needs to get tje CRS reassigned
+when working with other PROJ versions as:
+\code{sf::st_crs(roxel) = sf::st_crs('EPSG:4326')}
+}
 \keyword{datasets}

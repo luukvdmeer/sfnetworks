@@ -27,6 +27,11 @@ the networks. The \code{from} and \code{to} columns in the edge data are
 updated such that they match the new node indices of the resulting network.
 }
 \examples{
+## Need to add this line to set roxel CRS again
+## to comply with different PROJ versions
+if(sf::sf_extSoftVersion()["PROJ"] < "7.0.0"){
+  sf::st_crs(roxel) = sf::st_crs('EPSG:4326')
+}
 library(sf, quietly = TRUE)
 
 node1 = st_point(c(0, 0))

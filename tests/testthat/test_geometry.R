@@ -1,6 +1,8 @@
-## Need to add this line to set Roxel CRS again
+## Need to add this line to set roxel CRS again
 ## to comply with different PROJ versions
-sf::st_crs(roxel) = "EPSG:4326"
+if(sf::sf_extSoftVersion()["PROJ"] < "7.0.0"){
+  sf::st_crs(roxel) = sf::st_crs('EPSG:4326')
+}
 
 test_that("st_set_geometry(NULL) for activated nodes changes the class to
           tbl_graph", {

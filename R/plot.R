@@ -17,9 +17,11 @@
 #' and others.
 #'
 #' @examples
-#' ## This line sets roxel CRS again
+#' ## Need to add this line to set roxel CRS again
 #' ## to comply with different PROJ versions
-#' sf::st_crs(roxel) = "EPSG:4326"
+#' if(sf::sf_extSoftVersion()["PROJ"] < "7.0.0"){
+#'   sf::st_crs(roxel) = sf::st_crs('EPSG:4326')
+#' }
 #'
 #' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1), mfrow = c(1,1))

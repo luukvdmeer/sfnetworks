@@ -1,5 +1,10 @@
-library(sf)
+## Need to add this line to set roxel CRS again
+## to comply with different PROJ versions
+if(sf::sf_extSoftVersion()["PROJ"] < "7.0.0"){
+  sf::st_crs(roxel) = sf::st_crs('EPSG:4326')
+}
 
+library(sf)
 test_that("st_network_bbox combines the bounding box of nodes and edges", {
   rdm_rox = roxel[sample(nrow(roxel), 50), ]
   net = as_sfnetwork(rdm_rox)

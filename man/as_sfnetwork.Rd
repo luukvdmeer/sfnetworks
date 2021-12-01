@@ -57,6 +57,12 @@ edges sequentially. Hence, point 1 to point 2, point 2 to point 3, etc.
 }}
 
 \examples{
+## Need to add this line to set roxel CRS again
+## to comply with different PROJ versions
+if(sf::sf_extSoftVersion()["PROJ"] < "7.0.0"){
+  sf::st_crs(roxel) = sf::st_crs('EPSG:4326')
+}
+
 # From an sf object.
 library(sf, quietly = TRUE)
 

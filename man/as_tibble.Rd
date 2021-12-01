@@ -36,6 +36,12 @@ using the corresponding \code{\link[sf]{sf}} method if present. When using
 as a user, you can disable this behaviour by setting \code{spatial = FALSE}.
 }
 \examples{
+## Need to add this line to set roxel CRS again
+## to comply with different PROJ versions
+if(sf::sf_extSoftVersion()["PROJ"] < "7.0.0"){
+  sf::st_crs(roxel) = sf::st_crs('EPSG:4326')
+}
+
 library(tibble, quietly = TRUE)
 
 net = as_sfnetwork(roxel)

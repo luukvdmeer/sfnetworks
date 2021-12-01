@@ -5,6 +5,10 @@
 #' from OpenStreetMap, querying by key = 'highway'. The topology is cleaned with
 #' the v.clean tool in GRASS GIS.
 #'
+#' Dataset was created using PROJ>=7.0.0 and hence needs to get tje CRS reassigned
+#' when working with other PROJ versions as:
+#' \code{sf::st_crs(roxel) = sf::st_crs('EPSG:4326')}
+#'
 #' @format An object of class \code{\link[sf]{sf}} with \code{LINESTRING}
 #' geometries, containing 851 features and three columns:
 #' \describe{

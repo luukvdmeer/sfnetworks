@@ -38,6 +38,12 @@
 #' even if you only want to blend points that intersect the line.
 #'
 #' @examples
+#' ## Need to add this line to set roxel CRS again
+#' ## to comply with different PROJ versions
+#' if(sf::sf_extSoftVersion()["PROJ"] < "7.0.0"){
+#'   sf::st_crs(roxel) = sf::st_crs('EPSG:4326')
+#' }
+#'
 #' library(sf, quietly = TRUE)
 #'
 #' # Create a network and a set of points to blend.

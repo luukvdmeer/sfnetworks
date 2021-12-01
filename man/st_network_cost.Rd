@@ -94,6 +94,12 @@ nearest node will be reduced to one by selecting only the first of these
 features.
 }
 \examples{
+## Need to add this line to set roxel CRS again
+## to comply with different PROJ versions
+if(sf::sf_extSoftVersion()["PROJ"] < "7.0.0"){
+  sf::st_crs(roxel) = sf::st_crs('EPSG:4326')
+}
+
 library(sf, quietly = TRUE)
 library(tidygraph, quietly = TRUE)
 

@@ -1,8 +1,10 @@
 if (requireNamespace("spatstat") && packageVersion("spatstat") >= "2.0.1") {
-  library(spatstat)
-  ## Need to add this line to set Roxel CRS again
+  ## Need to add this line to set roxel CRS again
   ## to comply with different PROJ versions
-  st_crs(roxel) = "EPSG:4326"
+  if(sf::sf_extSoftVersion()["PROJ"] < "7.0.0"){
+    sf::st_crs(roxel) = sf::st_crs('EPSG:4326')
+  }
+  library(spatstat)
   test_that("Converting sfnetwork to linnet works with projected coords", {
     roxel_sfn <- as_sfnetwork(roxel) %>% st_transform(3857)
     # I added suppressWarnings since as.linnet returns a few warning messages

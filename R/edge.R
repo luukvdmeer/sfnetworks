@@ -23,6 +23,12 @@ NULL
 #' the edge startpoint and the edge endpoint. Calculated with
 #' \code{\link[lwgeom]{st_geod_azimuth}}. Requires a geographic CRS.
 #' @examples
+#' ## Need to add this line to set roxel CRS again
+#' ## to comply with different PROJ versions
+#' if(sf::sf_extSoftVersion()["PROJ"] < "7.0.0"){
+#'   sf::st_crs(roxel) = sf::st_crs('EPSG:4326')
+#' }
+#'
 #' library(sf, quietly = TRUE)
 #' library(tidygraph, quietly = TRUE)
 #'
@@ -153,6 +159,12 @@ straight_line_distance = function(x) {
 #' 'as-the-crow-flies' distance, and not on distances over the network.
 #'
 #' @examples
+#' ## Need to add this line to set roxel CRS again
+#' ## to comply with different PROJ versions
+#' if(sf::sf_extSoftVersion()["PROJ"] < "7.0.0"){
+#'   sf::st_crs(roxel) = sf::st_crs('EPSG:4326')
+#' }
+#'
 #' library(sf, quietly = TRUE)
 #' library(tidygraph, quietly = TRUE)
 #'
