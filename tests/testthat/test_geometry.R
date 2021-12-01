@@ -1,3 +1,7 @@
+## Need to add this line to set Roxel CRS again
+## to comply with different PROJ versions
+sf::st_crs(roxel) = "EPSG:4326"
+
 test_that("st_set_geometry(NULL) for activated nodes changes the class to
           tbl_graph", {
   net = roxel %>% as_sfnetwork()
@@ -15,7 +19,6 @@ test_that("st_set_geometry gives an error when replacing edges geometry
 })
 
 test_that("st_set_geometry gives an error when replacing edges geometry CRS", {
-  skip_if_not(sf::sf_extSoftVersion()["PROJ"] >= "7.0.0")
   net = roxel %>% as_sfnetwork()
   new_geom = st_geometry(st_transform(roxel, 3035))
   expect_error(activate(net, "edges") %>% sf::st_set_geometry(new_geom))

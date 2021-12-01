@@ -1,8 +1,12 @@
-skip_if_not(sf::sf_extSoftVersion()["PROJ"] >= "7.0.0")
 library(sf)
 library(dplyr)
 library(igraph)
 library(tidygraph)
+
+## Need to add this line to set Roxel CRS again
+## to comply with different PROJ versions
+st_crs(roxel) = "EPSG:4326"
+
 net = as_sfnetwork(roxel, directed = FALSE) %>%
   st_transform(3035)
 sub1 = net %>%

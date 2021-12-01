@@ -1,7 +1,9 @@
 library(sf)
+## Need to add this line to set Roxel CRS again
+## to comply with different PROJ versions
+st_crs(roxel) = "EPSG:4326"
 
 test_that("st_set_crs sets the crs for edges and nodes", {
-  skip_if_not(sf::sf_extSoftVersion()["PROJ"] >= "7.0.0")
   net = as_sfnetwork(roxel) %>%
     st_set_crs(NA)
   expect_equal(st_crs(activate(net, "nodes")), st_crs(activate(net, "edges")))

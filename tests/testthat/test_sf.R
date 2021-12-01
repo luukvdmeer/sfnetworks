@@ -1,7 +1,8 @@
-skip_if_not(sf::sf_extSoftVersion()["PROJ"] >= "7.0.0")
-
 library(sf)
 library(dplyr)
+## Need to add this line to set Roxel CRS again
+## to comply with different PROJ versions
+st_crs(roxel) = "EPSG:4326"
 
 rect = roxel %>%
   st_union() %>%

@@ -1,8 +1,11 @@
-skip_if_not(sf::sf_extSoftVersion()["PROJ"] >= "7.0.0")
 library(sf)
 library(tidygraph)
 library(igraph)
 library(dplyr)
+
+## Need to add this line to set Roxel CRS again
+## to comply with different PROJ versions
+st_crs(roxel) = "EPSG:4326"
 
 # Toy sfnetwork
 p1 = st_point(c(0, 1))
