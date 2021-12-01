@@ -17,6 +17,10 @@
 #' and others.
 #'
 #' @examples
+#' ## Need to add this line to set Roxel CRS again
+#' ## to comply with different PROJ versions
+#' st_crs(roxel) = "EPSG:4326"
+#'
 #' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1), mfrow = c(1,1))
 #' net = as_sfnetwork(roxel)
