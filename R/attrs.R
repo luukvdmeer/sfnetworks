@@ -192,3 +192,33 @@ edge_spatial_attribute_names = function(x) {
   edge_attr(x) = as.list(value[, !names(value) %in% c("from", "to")])
   x
 }
+
+#' Get an attribute summary function
+#'
+#' @param label A character string referring to the summary function.
+#'
+#' @return Definition of a function that takes a vector of attribute values as
+#' input and returns a single value.
+#'
+#' @noRd
+attribute_summary_function = function(label) {
+  if (is.function(label)) {
+    label
+  } else {
+    switch(
+      label,
+      ignore = function(x) NA,
+      sum = function(x) sum(x),
+      prod = function(x) prod(x),
+      min = function(x) min(x),
+      max = function(x) max(x),
+      random = function(x) sample(x, 1),
+      first = function(x) utils::head(x, 1),
+      last = function(x) utils::tail(x, 1),
+      mean = function(x) mean(x),
+      median = function(x) median(x),
+      concat = function(x) c(x),
+      raise_unknown_input(label)
+    )
+  }
+}

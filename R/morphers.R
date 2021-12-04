@@ -571,7 +571,7 @@ to_spatial_smooth = function(x, summarise_attributes = "ignore",
   # An adjacent node of a pseudo node can also be another pseudo node.
   # Instead of processing each pseudo node on its own, we will:
   # --> Find connected sets of pseudo nodes.
-  # --> Find the adjacent non-pseudo nodes (junction or terminal) to that set.
+  # --> Find the adjacent non-pseudo nodes (junction or pendant) to that set.
   # --> Connect them by merging the edges in the set plus its incident edges.
   ## ====================================
   # Subset x to only contain pseudo nodes and the edges between them.
@@ -582,16 +582,16 @@ to_spatial_smooth = function(x, summarise_attributes = "ignore",
   # --> Find the indices of the edges that need to be merged.
   # The workflow for this is different for directed and undirected networks.
   if (directed) {
-    initialize_edges = function(G) {
+    initialize_replacement_edge = function(S) {
       # Retrieve the original node indices of the pseudo nodes in this set.
       # Retrieve the original edge indices of the edges that connect them.
-      N = vertex_attr(G, ".tidygraph_node_index")
-      E = edge_attr(G, ".tidygraph_edge_index")
+      N = vertex_attr(S, ".tidygraph_node_index")
+      E = edge_attr(S, ".tidygraph_edge_index")
       # Find the following:
       # --> The index of the pseudo node where an edge comes into the set.
       # --> The index of the pseudo node where an edge goes out of the set.
-      n_i = N[degree(G, mode = "in") == 0]
-      n_o = N[degree(G, mode = "out") == 0]
+      n_i = N[degree(S, mode = "in") == 0]
+      n_o = N[degree(S, mode = "out") == 0]
       # If these nodes do not exists:
       # --> We are dealing with a loop of connected pseudo nodes.
       # --> The loop is by definition not connected to the rest of the network.
@@ -616,66 +616,66 @@ to_spatial_smooth = function(x, summarise_attributes = "ignore",
       list(from = source_node, to = sink_node, .tidygraph_edge_index = edge_idxs)
     }
   } else {
-    initialize_edges = function(G) {
+    initialize_replacement_edge = function(S) {
       # Retrieve the original node indices of the pseudo nodes in this set.
       # Retrieve the original edge indices of the edges that connect them.
-      N = vertex_attr(G, ".tidygraph_node_index")
-      E = edge_attr(G, ".tidygraph_edge_index")
+      N = vertex_attr(S, ".tidygraph_node_index")
+      E = edge_attr(S, ".tidygraph_edge_index")
       # Find the following:
       # --> The two adjacent non-pseudo nodes to the set.
       # --> The edges that connect these nodes to the set.
-      # We'll call these the neighbour nodes and neighbour edges of the set.
-      # --> The neighbour node with the lowest index will be the source node.
-      # --> The neighbour node with the higest index will be the sink node.
+      # We'll call these the adjacent nodes and incident edges of the set.
+      # --> The adjacent node with the lowest index will be the source node.
+      # --> The adjacent node with the higest index will be the sink node.
       if (length(N) == 1) {
         # When we have a single pseudo node that forms a set:
-        # --> It will be adjacent to both neighbour nodes.
-        neighbour_nodes = as.integer(adjacent_vertices(x, N)[[1]])
-        if (length(neighbour_nodes) == 1) {
+        # --> It will be adjacent to both adjacent nodes of the set.
+        adjacent = as.integer(adjacent_vertices(x, N)[[1]])
+        if (length(adjacent) == 1) {
           # If there is only one adjacent node to the pseudo node:
-          # --> The two neighbour nodes are the same node.
-          # --> We only have to query for neigbour edges once.
-          neighbour_edges = get.edge.ids(x, c(neighbour_nodes, N))
-          source_node = neighbour_nodes
-          source_edge = neighbour_edges[1]
-          sink_node = neighbour_nodes
-          sink_edge = neighbour_edges[2]
+          # --> The two adjacent nodes of the set are the same node.
+          # --> We only have to query for incident edges of the set once.
+          incident = get.edge.ids(x, c(adjacent, N))
+          source_node = adjacent
+          source_edge = incident[1]
+          sink_node = adjacent
+          sink_edge = incident[2]
         } else {
           # If there are two adjacent nodes to the pseudo node:
           # --> The one with the lowest index will be source node.
           # --> The one with the highest index will be sink node.
-          source_node = min(neighbour_nodes)
+          source_node = min(adjacent)
           source_edge = get.edge.ids(x, c(source_node, N))
-          sink_node = max(neighbour_nodes)
+          sink_node = max(adjacent)
           sink_edge = get.edge.ids(x, c(N, sink_node))
         }
       } else {
         # When we have a set of multiple pseudo nodes:
         # --> There are two pseudo nodes that form the boundary of the set.
         # --> These are the ones connected to only one other pseudo node.
-        N_b = N[degree(G) == 1]
+        N_b = N[degree(S) == 1]
         # If these boundaries do not exist:
         # --> We are dealing with a loop of connected pseudo nodes.
         # --> The loop is by definition not connected to the rest of the network.
         # --> Hence, there is no need to create a new edge.
         # --> Therefore we should not return a path.
         if (length(N_b) == 0) return (NULL)
-        # Find the neighbour nodes of the set.
+        # Find the adjacent nodes of the set.
         # These are the adjacent non-pseudo nodes to the boundaries of the set.
-        # We find them iteratively for the two boundary nodes:
+        # We find them iteratively for the two boundary nodes of the set:
         # --> A boundary connects to one pseudo node and one non-pseudo node.
         # --> The non-pseudo node is the one not present in the pseudo set.
-        get_neighbour_node = function(n) {
+        get_set_neighbour = function(n) {
           all = as.integer(adjacent_vertices(x, n)[[1]])
           all[!(all %in% N)]
         }
-        neighbour_nodes = do.call("c", lapply(N_b, get_neighbour_node))
-        # The neighbour node with the lowest index will be source node.
-        # The neighbour node with the highest index will be sink node.
-        N_b = N_b[order(neighbour_nodes)]
-        source_node = min(neighbour_nodes)
+        adjacent = do.call("c", lapply(N_b, get_set_neighbour))
+        # The adjacent node with the lowest index will be source node.
+        # The adjacent node with the highest index will be sink node.
+        N_b = N_b[order(adjacent)]
+        source_node = min(adjacent)
         source_edge = get.edge.ids(x, c(source_node, N_b[1]))
-        sink_node = max(neighbour_nodes)
+        sink_node = max(adjacent)
         sink_edge = get.edge.ids(x, c(N_b[2], sink_node))
       }
       # List indices of all edges that will be merged into the replacement edge.
@@ -684,109 +684,140 @@ to_spatial_smooth = function(x, summarise_attributes = "ignore",
       list(from = source_node, to = sink_node, .tidygraph_edge_index = edge_idxs)
     }
   }
-  new_edge_list = lapply(pseudo_sets, initialize_edges)
+  new_edge_list = lapply(pseudo_sets, initialize_replacement_edge)
   new_edge_list = new_edge_list[lengths(new_edge_list) != 0] # Remove NULLs.
   # Create a data frame with the replacement edges.
   new_edges = data.frame(do.call("rbind", new_edge_list))
   new_edges$from = as.integer(new_edges$from)
   new_edges$to = as.integer(new_edges$to)
   ## ===================================
-  # STEP III: SUMMARISE ATTRIBUTE VALUES
-  #
-  ## ===================================
-  # Make sure summarise_attributes parameter value is always a list.
-  if (is.function(summarise_attributes)) {
-    summarise_attributes = list(summarise_attributes)
-  } else {
-    summarise_attributes = as.list(summarise_attributes)
-  }
+  # STEP III: SUMMARISE EDGE ATTRIBUTES
+  # Each replacement edge replaces multiple original edges.
+  # Their attributes should all be summarised in a single value.
+  # The summary techniques to be used are given as summarise_attributes.
   # If all attributes should be summarised by technique 'ignore':
   # --> This means all attributes will be dropped for the replacement edges.
   # --> We don't need to do anything and can just move on.
   # If this it *not* the case:
-  # -->  We need to summarise certain attributes using a specified technique.
-  if (! all(summarise_attributes == "ignore")) {
-    # Obtain the names of all attributes.
-    geom_names = attr(edges, "sf_column")
-    idxs_names = c("from", "to", ".tidygraph_edge_index")
-    attr_names = setdiff(names(edges), c(geom_names, idxs_names))
-    # Obtain the values of all attributes.
-    attr_values = edge.attributes(x)[attr_names]
-    # Obtain the summarise function to use for each attribute.
-    map_value_to_function = function(value) {
-      if (is.function(value)) {
-        value
-      } else {
-        switch(
-          value,
-          ignore = function(x) NA,
-          sum = function(x) sum(x),
-          prod = function(x) prod(x),
-          min = function(x) min(x),
-          max = function(x) max(x),
-          random = function(x) sample(x, 1),
-          first = function(x) utils::head(x, 1),
-          last = function(x) utils::tail(x, 1),
-          mean = function(x) mean(x),
-          median = function(x) median(x),
-          concat = function(x) c(x),
-          raise_unknown_input(value)
-        )
-      }
-    }
+  # -->  We need to summarise certain attributes using a given function.
+  ## ===================================
+  if (! summarise_attributes == "ignore") {
+    # Obtain the attribute values of all original edges in the network.
+    # For igraph the geometries and original edge indices are also attributes.
+    # However they should not be summarised in this way.
+    exclude = c(".tidygraph_edge_index", attr(edges, "sf_column"))
+    edge_attrs = edge.attributes(x)
+    edge_attrs = edge_attrs[!(names(edge_attrs) %in% exclude)]
+    # Define a function that:
+    # --> Obtains the attribute summary function for a specific attribute.
     if (length(summarise_attributes) == 1) {
-      # The same function will be used for each attribute.
-      attr_funcs = map_value_to_function(summarise_attributes[[1]])
-      apply_summarise_function = function(col, rows) {
-        attr_funcs(attr_values[[col]][rows])
+      # The same summary function will be used for each attribute.
+      func = attribute_summary_function(summarise_attributes[[1]])
+      get_summary_function = function(a) {
+        func
       }
     } else {
-      # We need to obtain the summarise function for each attribute separately.
-      get_summarise_function = function(attr) {
-        value = summarise_attributes[[attr]]
-        if (is.null(value)) {
-          idx = which(names(summarise_attributes) == "")[1]
-          value = summarise_attributes[[idx]]
+      # Different summary functions may be used for different attributes.
+      # --> For some attributes a summary function is explicitly specified.
+      # --> The other attributes use the specified default summary function.
+      funcs = lapply(summarise_attributes, attribute_summary_function)
+      get_summary_function = function(a) {
+        func = funcs[[a]]
+        if (is.null(func)) {
+          func = funcs[[which(names(funcs) == "")[1]]]
         }
-        map_value_to_function(value)
-      }
-      attr_funcs = lapply(attr_names, get_summarise_function)
-      names(attr_funcs) = attr_names
-      apply_summarise_function = function(col, rows) {
-        attr_funcs[[col]](attr_values[[col]][rows])
+        func
       }
     }
-    # For each new edge and each attribute:
-    # --> Merge all original attribute values into a single value.
-    # --> Using the specified summarise function for that attribute.
+    # For each replacement edge:
+    # --> Summarise the attributes of the edges it replaces into single values.
     merge_attrs = function(E) {
       orig_edges = E$.tidygraph_edge_index
-      new_attrs = lapply(attr_names, apply_summarise_function, orig_edges)
-      names(new_attrs) = attr_names
-      data.frame(new_attrs)
+      orig_attrs = lapply(edge_attrs, `[`, orig_edges)
+      apply_summary_function = function(a) {
+        get_summary_function(a)(orig_attrs[[a]])
+      }
+      new_attrs = lapply(names(orig_attrs), apply_summary_function)
+      names(new_attrs) = names(orig_attrs)
+      new_attrs
     }
     new_attrs = do.call("rbind", lapply(new_edge_list, merge_attrs))
-    # Add the attributes to the new edges data frame.
+    # Add the summarised attribute values to the new edges data frame.
     new_edges = cbind(new_edges, new_attrs)
   }
+  # # Make sure summarise_attributes parameter value is always a list.
+  # if (is.function(summarise_attributes)) {
+  #   summarise_attributes = list(summarise_attributes)
+  # } else {
+  #   summarise_attributes = as.list(summarise_attributes)
+  # }
+  # # If all attributes should be summarised by technique 'ignore':
+  # # --> This means all attributes will be dropped for the replacement edges.
+  # # --> We don't need to do anything and can just move on.
+  # # If this it *not* the case:
+  # # -->  We need to summarise certain attributes using a given function.
+  # if (! all(summarise_attributes == "ignore")) {
+  #   # Obtain the names of all attributes.
+  #   geom_names = attr(edges, "sf_column")
+  #   idxs_names = c("from", "to", ".tidygraph_edge_index")
+  #   attr_names = setdiff(names(edges), c(geom_names, idxs_names))
+  #   # Obtain the values of all attributes.
+  #   attr_values = edge.attributes(x)[attr_names]
+  #   # Obtain the summarise function to use for each attribute.
+  #   if (length(summarise_attributes) == 1) {
+  #     # The same function will be used for each attribute.
+  #     attr_funcs = attribute_summary_function(summarise_attributes[[1]])
+  #     apply_summarise_function = function(col, rows) {
+  #       attr_funcs(attr_values[[col]][rows])
+  #     }
+  #   } else {
+  #     # We need to obtain the summarise function for each attribute separately.
+  #     get_summarise_function = function(attr) {
+  #       value = summarise_attributes[[attr]]
+  #       if (is.null(value)) {
+  #         idx = which(names(summarise_attributes) == "")[1]
+  #         value = summarise_attributes[[idx]]
+  #       }
+  #       attribute_summary_function(value)
+  #     }
+  #     attr_funcs = lapply(attr_names, get_summarise_function)
+  #     names(attr_funcs) = attr_names
+  #     apply_summarise_function = function(col, rows) {
+  #       attr_funcs[[col]](attr_values[[col]][rows])
+  #     }
+  #   }
+  #   # For each new edge and each attribute:
+  #   # --> Merge all original attribute values into a single value.
+  #   # --> Using the specified summarise function for that attribute.
+  #   merge_attrs = function(E) {
+  #     orig_edges = E$.tidygraph_edge_index
+  #     new_attrs = lapply(attr_names, apply_summarise_function, orig_edges)
+  #     names(new_attrs) = attr_names
+  #     data.frame(new_attrs)
+  #   }
+  #   new_attrs = do.call("rbind", lapply(new_edge_list, merge_attrs))
+  #   # Add the attributes to the new edges data frame.
+  #   new_edges = cbind(new_edges, new_attrs)
+  # }
   ## ===================================
   # STEP VI: CONCATENATE EDGE GEOMETRIES
-  # If the edges to be merged have geometries:
+  # If the edges to be replaced have geometries:
   # --> These geometries have to be concatenated into a single new geometry.
   # --> The new geometry should go from the defined source to sink node.
   ## ===================================
   if (spatial) {
-    # For each new edge:
-    # --> Merge all original edge geometries into a single geometry.
+    # Obtain geometries of all original edges and nodes in the network.
     edge_geoms = st_geometry(edges)
     node_geoms = st_geometry(nodes)
+    # For each replacement edge:
+    # --> Merge geometries of the edges it replaces into a single geometry.
     merge_geoms = function(E) {
       orig_edges = E$.tidygraph_edge_index
       orig_geoms = edge_geoms[orig_edges]
       new_geom = st_line_merge(st_combine(orig_geoms))
       # There is one situation where merging lines like this is problematic.
       # That is when the source and sink node of the new edge are the same.
-      # Hence, the original edges to be merged form a closed loop.
+      # Hence, the original edges to be replaced form a closed loop.
       # Any original edge endpoint can then be the startpoint of the new edge.
       # st_line_merge chooses the point with the lowest x coordinate.
       # This is not necessarily the source node we defined.
