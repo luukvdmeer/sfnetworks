@@ -97,7 +97,7 @@ features.
 library(sf, quietly = TRUE)
 library(tidygraph, quietly = TRUE)
 
-# Create a network with edge lenghts as weights.
+# Create a network with edge lengths as weights.
 # These weights will be used automatically in shortest paths calculation.
 net = as_sfnetwork(roxel, directed = FALSE) \%>\%
   st_transform(3035) \%>\%
