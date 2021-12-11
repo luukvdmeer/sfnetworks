@@ -299,7 +299,7 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' library(sf, quietly = TRUE)
 #' library(tidygraph, quietly = TRUE)
 #'
-#' # Create a network with edge lenghts as weights.
+#' # Create a network with edge lengths as weights.
 #' # These weights will be used automatically in shortest paths calculation.
 #' net = as_sfnetwork(roxel, directed = FALSE) %>%
 #'   st_transform(3035) %>%
@@ -339,31 +339,36 @@ st_network_cost = function(x, from = igraph::V(x), to = igraph::V(x),
 #' @importFrom igraph distances V
 #' @export
 st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
-                                     weights = NULL, Inf_as_NaN = FALSE, ...) {
+                                       weights = NULL, Inf_as_NaN = FALSE, ...) {
   # If 'from' and/or 'to' points are given as simple feature geometries:
   # --> Convert them to node indices.
   if (is.sf(from) | is.sfc(from)) from = set_path_endpoints(x, from)
   if (is.sf(to) | is.sfc(to)) to = set_path_endpoints(x, to)
   # Igraph does not support NA values in 'from' and 'to' nodes.
   if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
-  # Igraph does not support duplicated 'to' nodes.
-  # This can happen without the user knowing when POINT geometries
-  # are given to the 'to' argument that happen to snap to a same node.
-  if (any(duplicated(to))) {
-    warning(
-      "Duplicated values in argument 'to' were removed.",
-      call. = FALSE
-    )
-    to = unique(to)
-  }
   # Set weights.
   weights = set_path_weights(x, weights)
-  # Call igraph function.
-  matrix = distances(x, from, to, weights = weights, ...)
-  # Convert Inf to NaN if requested.
-  if (Inf_as_NaN) matrix[matrix == Inf] = NaN
-  # Return the matrix.
-  matrix
+  # Igraph does not support duplicated 'to' nodes.
+  if(any(duplicated(to))) {
+    # --> Obtain unique 'to' nodes to pass to igraph.
+    to_unique = unique(to)
+    # --> Find which 'to' nodes are duplicated.
+    match = match(to, to_unique)
+    # Call igraph function.
+    matrix = distances(x, from, to_unique, weights = weights, ...)
+    # Convert Inf to NaN if requested.
+    if (Inf_as_NaN) matrix[matrix == Inf] = NaN
+    # Return the matrix
+    # --> With duplicated 'to' nodes included.
+    matrix[,match]
+  } else {
+    # Call igraph function.
+    matrix = igraph::distances(x, from, to, weights = weights, ...)
+    # Convert Inf to NaN if requested.
+    if (Inf_as_NaN) matrix[matrix == Inf] = NaN
+    # Return the matrix.
+    matrix
+  }
 }
 
 #' @importFrom sf st_geometry st_nearest_feature
