@@ -351,7 +351,7 @@ st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
     if (Inf_as_NaN) matrix[matrix == Inf] = NaN
     # Return the matrix
     # --> With duplicated 'to' nodes included.
-    matrix[,match]
+    matrix[, match, drop=FALSE]
   } else {
     # Call igraph function.
     matrix = igraph::distances(x, from, to, weights = weights, ...)
@@ -372,7 +372,7 @@ set_path_endpoints = function(x, p) {
 set_path_weights = function(x, weights) {
   if (is.character(weights) & length(weights) == 1) {
     # Case 1: Weights is a character pointing to a column in the edges table.
-    # --> Use the values of that column as weight values (if it exsists).
+    # --> Use the values of that column as weight values (if it exists).
     values = edge_attr(x, weights)
     if (is.null(values)) {
       stop(
