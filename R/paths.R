@@ -235,9 +235,8 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' calculated. By default, all nodes in the network are included.
 #'
 #' @param to The (set of) geospatial point(s) to which the shortest paths will
-#' be calculated. Can be an object of  class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}. Features with duplicated nearest node indices will be
-#' removed before calculating the cost matrix.
+#' be calculated. Can be an object of class \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}.
 #' Alternatively it can be a numeric vector containing the indices of the nodes
 #' to which the shortest paths will be calculated, or a character vector
 #' containing the names of the nodes to which the shortest paths will be
@@ -284,16 +283,8 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' \code{mode = "out"} to consider only outbound edges, or \code{mode = "in"}
 #' to consider only inbound edges.
 #'
-#' Furthermore, \code{\link[igraph]{distances}} does not allow duplicated
-#' values in the \code{to} argument. This also means that when providing
-#' spatial features, sets of multiple features that happen to have the same
-#' nearest node will be reduced to one by selecting only the first of these
-#' features.
-#'
 #' @return An n times m numeric matrix where n is the length of the \code{from}
-#' argument, and m is the length of unique values in the \code{to} argument.
-#' When the \code{to} argument contains spatial features that have the same
-#' nearest node, these features are considered duplicates.
+#' argument, and m is the length of the \code{to} argument.
 #'
 #' @examples
 #' library(sf, quietly = TRUE)
