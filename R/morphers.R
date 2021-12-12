@@ -161,7 +161,7 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
   }
   # Update the nodes table of the contracted network.
   new_nodes = st_as_sf(new_nodes, sf_column_name = geom_colname)
-  node_graph_attributes(x_new) = new_nodes
+  node_attribute_values(x_new) = new_nodes
   # Convert in a sfnetwork.
   x_new = tbg_to_sfn(x_new)
   ## ===============================================================
@@ -291,11 +291,11 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
     new_edge_geoms[E3] = geoms
     # Update the edges table of the contracted network.
     st_geometry(new_edges) = new_edge_geoms
-    edge_graph_attributes(x_new) = new_edges
+    edge_attribute_values(x_new) = new_edges
   }
   # Return in a list.
   list(
-    contracted = x_new %preserve_graph_attrs% x
+    contracted = x_new %preserve_network_attrs% x
   )
 }
 
@@ -328,7 +328,7 @@ to_spatial_directed = function(x) {
   x_new = sfnetwork_(nodes, edges, directed = TRUE)
   # Return in a list.
   list(
-    directed = x_new %preserve_graph_attrs% x
+    directed = x_new %preserve_network_attrs% x
   )
 }
 
@@ -351,7 +351,7 @@ to_spatial_explicit = function(x, ...) {
     edges = edges_as_table(x)
     new_edges = st_as_sf(edges, ...)
     x_new = x
-    edge_graph_attributes(x_new) = new_edges
+    edge_attribute_values(x_new) = new_edges
   } else {
     x_new = explicitize_edges(x)
   }
@@ -499,7 +499,7 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
     remove.multiple = remove_multiple,
     remove.loops = remove_loops,
     edge.attr.comb = summarise_attributes
-  ) %preserve_graph_attrs% x
+  ) %preserve_network_attrs% x
   # Igraph does not know about geometry list columns.
   # Summarizing them results in a list of sfg objects.
   # We should reconstruct the sfc geometry list column out of that.
@@ -508,7 +508,7 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
     new_edges[geom_colname] = list(st_sfc(new_edges[[geom_colname]]))
     new_edges = st_as_sf(new_edges, sf_column_name = geom_colname)
     st_crs(new_edges) = st_crs(x)
-    edge_graph_attributes(x_new) = new_edges
+    edge_attribute_values(x_new) = new_edges
   }
   # If requested, original edge data should be stored in a .orig_data column.
   if (store_original_data) {
@@ -517,7 +517,7 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
     new_edges = edges_as_table(x_new)
     copy_data = function(i) edges[i, , drop = FALSE]
     new_edges$.orig_data = lapply(new_edges$.tidygraph_edge_index, copy_data)
-    edge_graph_attributes(x_new) = new_edges
+    edge_attribute_values(x_new) = new_edges
   }
   # Return in a list.
   list(
@@ -848,7 +848,7 @@ to_spatial_smooth = function(x, summarise_attributes = "ignore",
     edges$.tidygraph_edge_index = NULL
     copy_data = function(i) edges[i, , drop = FALSE]
     new_edges$.orig_data = lapply(new_edges$.tidygraph_edge_index, copy_data)
-    edge_graph_attributes(x_new) = new_edges
+    edge_attribute_values(x_new) = new_edges
   }
   # Return in a list.
   list(
@@ -1031,7 +1031,7 @@ to_spatial_subdivision = function(x) {
   x_new = sfnetwork_(new_nodes, new_edges, directed = directed)
   # Return in a list.
   list(
-    subdivision = x_new %preserve_graph_attrs% x
+    subdivision = x_new %preserve_network_attrs% x
   )
 }
 

@@ -36,22 +36,29 @@ sf_attr = function(x, name, active = NULL) {
 #'
 #' @param orig An object of class \code{\link{sfnetwork}}.
 #'
-#' @details All attributes include the graph attributes *and* the attributes
-#' of its element objects (i.e. nodes and edges). Graph attributes always
-#' contain the class of the object and the name of the active element. Users
-#' can also add their own attributes to the network. Element attributes
-#' contain the name of the geometry list column and the agr factor of the
-#' element. Note that we talk about the attributes of the element *objects*.
-#' Hence, attributes attached to the object that stores the elements data.
-#' This is *not* the same as the attribute columns *in* the element data.
+#' @details All attributes include the network attributes *and* the sf specific
+#' attributes of its element objects (i.e. the nodes and edges tables).
+#'
+#' The network attributes always contain the class of the network and the name
+#' of the active element. Users can also add their own attributes to the
+#' network.
+#'
+#' The sf specific element attributes contain the name of the geometry list
+#' column and the agr factor of the element. In a spatially implicit network
+#' these attributes will be \code{NULL} for the edges table. Note that we talk
+#' about the attributes of the element *objects*. Hence, attributes attached to
+#' the table that stores the elements data. This is *not* the same as the
+#' attribute columns *in* the element table.
 #'
 #' @importFrom igraph graph_attr graph_attr<-
 #' @noRd
 `%preserve_all_attrs%` = function(new, orig) {
   graph_attr(new) = graph_attr(orig)
   attributes(new) = attributes(orig)
-  attributes(vertex_attr(new)) = attributes(vertex_attr(orig))
-  attributes(edge_attr(new)) = attributes(edge_attr(orig))
+  node_geom_colname(new) = node_geom_colname(orig)
+  node_agr(new) = node_geom_colname(orig)
+  edge_geom_colname(new) = edge_geom_colname(orig)
+  edge_agr(new) = edge_geom_colname(orig)
   new
 }
 
@@ -61,17 +68,40 @@ sf_attr = function(x, name, active = NULL) {
 #'
 #' @param orig An object of class \code{\link{sfnetwork}}.
 #'
-#' @details The graph attributes are the attributes directly attached to
+#' @details The network attributes are the attributes directly attached to
 #' the network object as a whole. Hence, this does *not* include attributes
-#' belonging to the element objects (i.e. the nodes table or the edges table).
-#' Graph attributes always includes the class of the object and the name of the
-#' active element. Users can also add their own attributes to the network.
+#' belonging to the element objects (i.e. the nodes and the edges tables). The
+#' network attributes always contain the class of the network and the name of
+#' the active element. Users can also add their own attributes to the network.
 #'
 #' @importFrom igraph graph_attr graph_attr<-
 #' @noRd
-`%preserve_graph_attrs%` = function(new, orig) {
+`%preserve_network_attrs%` = function(new, orig) {
   graph_attr(new) = graph_attr(orig)
   attributes(new) = attributes(orig)
+  new
+}
+
+#' Preserve the sf specific attributes of the nodes and edges tables
+#'
+#' @param new An object of class \code{\link{sfnetwork}}.
+#'
+#' @param orig An object of class \code{\link{sfnetwork}}.
+#'
+#' @details The sf specific attributes of the network elements (i.e. the nodes
+#' and edges tables) contain the name of the geometry list column and the agr
+#' factor of the element. In a spatially implicit network these attributes will
+#' be \code{NULL} for the edges table. Note that we talk about the attributes
+#' of the element *objects*. Hence, attributes attached to the table that
+#' stores the elements data. This is *not* the same as the attribute columns
+#' *in* the element table.
+#'
+#' @noRd
+`%preserve_sf_attrs%` = function(new, orig) {
+  node_geom_colname(new) = node_geom_colname(orig)
+  node_agr(new) = node_geom_colname(orig)
+  edge_geom_colname(new) = edge_geom_colname(orig)
+  edge_agr(new) = edge_geom_colname(orig)
   new
 }
 
@@ -84,63 +114,79 @@ sf_attr = function(x, name, active = NULL) {
 #'
 #' @return A character vector.
 #'
-#' @details From the graph point of view, the geometry is considered an
-#' attribute of a node or edge, and the indices of the start and end nodes
-#' of an edge are not considered attributes of that edge. From the spatial
-#' point of view, the geometry is never considered an attribute, but the
-#' indices of start and end nodes of an edge are. Hence, the function
-#' \code{graph_attribute_names} will return a vector of names that includes
-#' the name of the geometry column, but - when active = 'edges' - not the
-#' names of the to and from columns. The function
-#' \code{spatial_attribute_names} will return a vector of names that does not
-#' include the name of the geometry column, but - when active = 'edges' - does
-#' include the names of the to and from colums.
+#' @details Which columns in the nodes or edges table of the network are
+#' considered attribute columns can be different depending on our perspective.
+#'
+#' From the graph-centric point of view, the geometry is considered an
+#' attribute of a node or edge. Edges are defined by the nodes they connect,
+#' and hence the from and to columns in the edges table define the edges,
+#' rather than being attributes of them. Therefore, the function
+#' \code{attribute_names} will return a vector of names that includes the name
+#' of the geometry column, but - when \code{active = "edges"} - not the names
+#' of the to and from columns.
+#'
+#' However, when we take a geometry-centric point of view, the geometries are
+#' spatial features that contain attributes. Such a feature is defined by its
+#' geometry, and hence the geometry list-column is not considered an attribute
+#' column. The indices of the start and end nodes, however, are considered
+#' attributes of the edge linestring features. Therefore, the function
+#' \code{feature_attribute_names} will return a vector of names that does not
+#' include the name of the geometry column, but - when \code{active = "edges"}
+#' - does include the names of the to and from columns.
 #'
 #' @name attr_names
 #' @noRd
-graph_attribute_names = function(x, active = NULL) {
+attribute_names = function(x, active = NULL) {
   if (is.null(active)) {
     active = attr(x, "active")
   }
   switch(
     active,
-    nodes = node_graph_attribute_names(x),
-    edges = edge_graph_attribute_names(x),
+    nodes = node_attribute_names(x),
+    edges = edge_attribute_names(x),
     raise_unknown_input(active)
   )
 }
 
+#' @name attr_names
+#' @noRd
 #' @importFrom igraph vertex_attr_names
-node_graph_attribute_names = function(x) {
+node_attribute_names = function(x) {
   vertex_attr_names(x)
 }
 
+#' @name attr_names
+#' @noRd
 #' @importFrom igraph edge_attr_names
-edge_graph_attribute_names = function(x) {
+edge_attribute_names = function(x) {
   edge_attr_names(x)
 }
 
 #' @name attr_names
 #' @noRd
-spatial_attribute_names = function(x, active = NULL) {
+feature_attribute_names = function(x, active = NULL) {
   if (is.null(active)) {
     active = attr(x, "active")
   }
   switch(
     active,
-    nodes = node_spatial_attribute_names(x),
-    edges = edge_spatial_attribute_names(x),
+    nodes = node_feature_attribute_names(x),
+    edges = edge_feature_attribute_names(x),
     raise_unknown_input(active)
   )
 }
 
-node_spatial_attribute_names = function(x) {
-  g_attrs = node_graph_attribute_names(x)
+#' @name attr_names
+#' @noRd
+node_feature_attribute_names = function(x) {
+  g_attrs = node_attribute_names(x)
   g_attrs[g_attrs != node_geom_colname(x)]
 }
 
-edge_spatial_attribute_names = function(x) {
-  g_attrs = edge_graph_attribute_names(x)
+#' @name attr_names
+#' @noRd
+edge_feature_attribute_names = function(x) {
+  g_attrs = edge_attribute_names(x)
   geom_colname = edge_geom_colname(x)
   if (is.null(geom_colname)) {
     character(0)
@@ -149,7 +195,7 @@ edge_spatial_attribute_names = function(x) {
   }
 }
 
-#' Set the attributes of the active element of a sfnetwork
+#' Set or replace attribute column values of the active element of a sfnetwork
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -163,32 +209,36 @@ edge_spatial_attribute_names = function(x) {
 #'
 #' @return An object of class \code{\link{sfnetwork}} with updated attributes.
 #'
-#' @details From the graph point of view, the geometry is considered an
-#' attribute of a node or edge, and the indices of the start and end nodes
+#' @details From the network-centric point of view, the geometry is considered
+#' an attribute of a node or edge, and the indices of the start and end nodes
 #' of an edge are not considered attributes of that edge.
 #'
-#' @name graph_attributes
+#' @name attr_values
 #' @noRd
-`graph_attributes<-` = function(x, active = NULL, value) {
+`attribute_values<-` = function(x, active = NULL, value) {
   if (is.null(active)) {
     active = attr(x, "active")
   }
   switch(
     active,
-    nodes = `node_graph_attributes<-`(x, value),
-    edges = `edge_graph_attributes<-`(x, value),
+    nodes = `node_attribute_values<-`(x, value),
+    edges = `edge_attribute_values<-`(x, value),
     raise_unknown_input(active)
   )
 }
 
+#' @name attr_values
+#' @noRd
 #' @importFrom igraph vertex_attr<-
-`node_graph_attributes<-` = function(x, value) {
+`node_attribute_values<-` = function(x, value) {
   vertex_attr(x) = as.list(value)
   x
 }
 
+#' @name attr_values
+#' @noRd
 #' @importFrom igraph edge_attr<-
-`edge_graph_attributes<-` = function(x, value) {
+`edge_attribute_values<-` = function(x, value) {
   edge_attr(x) = as.list(value[, !names(value) %in% c("from", "to")])
   x
 }
