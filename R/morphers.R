@@ -543,11 +543,13 @@ to_spatial_smooth = function(x, summarise_attributes = "ignore",
   # Retrieve nodes and edges from the network.
   nodes = nodes_as_sf(x)
   edges = edges_as_table(x)
-  # Check whether:
-  # --> x is directed.
-  # --> x has spatially explicit edges.
+  # For later use:
+  # --> Check if x is directed.
+  # --> Check if x has spatially explicit edges.
+  # --> Retrieve the name of the geometry column of the edges in x.
   directed = is_directed(x)
   spatial = is.sf(edges)
+  geom_colname = attr(edges, "sf_column")
   ## ==========================
   # STEP I: DETECT PSEUDO NODES
   # The first step is to detect which nodes in x are pseudo nodes.
@@ -602,16 +604,16 @@ to_spatial_smooth = function(x, summarise_attributes = "ignore",
       # --> The index of the edge that comes in to the pseudo node set.
       # --> The index of the non-pseudo node at the other end of that edge.
       # We'll call this the source node and source edge of the set.
-      source_node = as.integer(adjacent_vertices(x, n_i, mode = "in"))
+      source_node = as.integer(adjacent_vertices(x, n_i, mode = "in")[[1]])
       source_edge = get.edge.ids(x, c(source_node, n_i))
       # Find the following:
       # --> The index of the edge that goes out of the pseudo node set.
       # --> The index of the non-pseudo node at the other end of that edge.
       # We'll call this the sink node and sink edge of the set.
-      sink_node = as.integer(adjacent_vertices(x, n_o, mode = "out"))
+      sink_node = as.integer(adjacent_vertices(x, n_o, mode = "out")[[1]])
       sink_edge = get.edge.ids(x, c(n_o, sink_node))
       # List indices of all edges that will be merged into the replacement edge.
-      edge_idxs = c(source_edge, E, sink_edge)
+      edge_idxs = as.integer(c(source_edge, E, sink_edge))
       # Return all retrieved information in a list.
       list(from = source_node, to = sink_node, .tidygraph_edge_index = edge_idxs)
     }
@@ -679,7 +681,7 @@ to_spatial_smooth = function(x, summarise_attributes = "ignore",
         sink_edge = get.edge.ids(x, c(N_b[2], sink_node))
       }
       # List indices of all edges that will be merged into the replacement edge.
-      edge_idxs = c(source_edge, E, sink_edge)
+      edge_idxs = as.integer(c(source_edge, E, sink_edge))
       # Return all retrieved information in a list.
       list(from = source_node, to = sink_node, .tidygraph_edge_index = edge_idxs)
     }
@@ -699,68 +701,65 @@ to_spatial_smooth = function(x, summarise_attributes = "ignore",
   # If this it *not* the case:
   # -->  We need to summarise certain attributes using a given function.
   ## ===================================
-  # Make sure summarise_attributes parameter value is always a list.
-  if (is.function(summarise_attributes)) {
-    summarise_attributes = list(summarise_attributes)
+  # Obtain the attribute values of all original edges in the network.
+  # For igraph the geometries and original edge indices are also attributes.
+  # However they should not be summarised in this way.
+  exclude = c(".tidygraph_edge_index", geom_colname)
+  edge_attrs = edge.attributes(x)
+  edge_attrs = edge_attrs[!(names(edge_attrs) %in% exclude)]
+  # Define a function that:
+  # --> Obtains the attribute summary function for a specific attribute.
+  if (length(summarise_attributes) == 1) {
+    # The same summary function will be used for each attribute.
+    func = attribute_summary_function(summarise_attributes[[1]])
+    get_summary_function = function(i) {
+      func
+    }
   } else {
-    summarise_attributes = as.list(summarise_attributes)
-  }
-  if (! all(summarise_attributes == "ignore")) {
-    # Obtain the attribute values of all original edges in the network.
-    # For igraph the geometries and original edge indices are also attributes.
-    # However they should not be summarised in this way.
-    exclude = c(".tidygraph_edge_index", attr(edges, "sf_column"))
-    edge_attrs = edge.attributes(x)
-    edge_attrs = edge_attrs[!(names(edge_attrs) %in% exclude)]
-    # Define a function that:
-    # --> Obtains the attribute summary function for a specific attribute.
-    if (length(summarise_attributes) == 1) {
-      # The same summary function will be used for each attribute.
-      func = attribute_summary_function(summarise_attributes[[1]])
-      get_summary_function = function(i) {
-        func
-      }
-    } else {
-      # Different summary functions may be used for different attributes.
-      # --> For some attributes a summary function is explicitly specified.
-      # --> The other attributes use the specified default summary function.
-      funcs = lapply(summarise_attributes, attribute_summary_function)
-      get_summary_function = function(i) {
-        func = funcs[[i]]
-        if (is.null(func)) {
-          func = funcs[[which(names(funcs) == "")[1]]]
+    # Different summary functions may be used for different attributes.
+    # --> For some attributes a summary function is explicitly specified.
+    # --> The other attributes use the specified default summary function.
+    funcs = lapply(summarise_attributes, attribute_summary_function)
+    get_summary_function = function(i) {
+      func = funcs[[i]]
+      if (is.null(func)) {
+        default = which(names(funcs) == "")
+        if (length(default) > 0) {
+          func = funcs[[default[1]]]
+        } else {
+          func = attribute_summary_function("ignore")
         }
-        func
       }
+      func
     }
-    # For each replacement edge:
-    # --> Summarise the attributes of the edges it replaces into single values.
-    merge_attrs = function(E) {
-      orig_edges = E$.tidygraph_edge_index
-      orig_attrs = lapply(edge_attrs, `[`, orig_edges)
-      apply_summary_function = function(i) {
-        # Store return value in a list.
-        # This prevents automatic type promotion when rowbinding later on.
-        list(get_summary_function(i)(orig_attrs[[i]]))
-      }
-      new_attrs = lapply(names(orig_attrs), apply_summary_function)
-      names(new_attrs) = names(orig_attrs)
-      new_attrs
-    }
-    new_attrs_list = lapply(new_edge_list, merge_attrs)
-    # Bind all attribute values together into a data frame.
-    # All attribute values for an edge are lists.
-    # This is to prevent automatic type promotion when rowbinding.
-    # After coercing to data frame we need to unlist them.
-    # NOTE:
-    # --> Easier and faster to use data.table::rbindlist for everything here.
-    # --> Then the whole type promotion thing would not be an issue either.
-    # --> But we need to depend on data.table.
-    new_attrs = data.frame(do.call("rbind", new_attrs_list))
-    new_attrs = list2DF(lapply(new_attrs, unlist, recursive = FALSE))
-    # Add the summarised attributes to the replacement edges.
-    new_edges = cbind(new_edges, new_attrs)
   }
+  # For each replacement edge:
+  # --> Summarise the attributes of the edges it replaces into single values.
+  merge_attrs = function(E) {
+    orig_edges = E$.tidygraph_edge_index
+    orig_attrs = lapply(edge_attrs, `[`, orig_edges)
+    apply_summary_function = function(i) {
+      # Store return value in a list.
+      # This prevents automatic type promotion when rowbinding later on.
+      list(get_summary_function(i)(orig_attrs[[i]]))
+    }
+    new_attrs = lapply(names(orig_attrs), apply_summary_function)
+    names(new_attrs) = names(orig_attrs)
+    new_attrs
+  }
+  new_attrs_list = lapply(new_edge_list, merge_attrs)
+  # Bind all attribute values together into a data frame.
+  # All attribute values for an edge are lists.
+  # This is to prevent automatic type promotion when rowbinding.
+  # After coercing to data frame we need to unlist them.
+  # NOTE:
+  # --> Easier and faster to use data.table::rbindlist for everything here.
+  # --> Then the whole type promotion thing would not be an issue either.
+  # --> But we need to depend on data.table.
+  new_attrs = data.frame(do.call("rbind", new_attrs_list))
+  new_attrs = list2DF(lapply(new_attrs, unlist, recursive = FALSE))
+  # Add the summarised attributes to the replacement edges.
+  new_edges = cbind(new_edges, new_attrs)
   ## ===================================
   # STEP VI: CONCATENATE EDGE GEOMETRIES
   # If the edges to be replaced have geometries:
@@ -799,7 +798,6 @@ to_spatial_smooth = function(x, summarise_attributes = "ignore",
     new_geoms = do.call("c", lapply(new_edge_list, merge_geoms))
     # Add the geometries to the new edges data frame.
     # Use the same geometry column name as in the original edges data frame.
-    geom_colname = attr(edges, "sf_column")
     new_edges[geom_colname] = list(new_geoms)
     #new_edges = st_as_sf(new_edges, sf_column_name = geom_colname)
   }
@@ -821,7 +819,7 @@ to_spatial_smooth = function(x, summarise_attributes = "ignore",
   edges = list2DF(lapply(edges, as.list))
   all_edges = bind_rows(edges, new_edges)
   unlist_column = function(i) {
-    if (sum(lengths(i)) == nrow(all_edges)) unlist(i) else i
+    if (all(lengths(i) < 2)) unlist(i) else i
   }
   all_edges = list2DF(lapply(all_edges, unlist_column))
   if (spatial) all_edges = st_as_sf(all_edges, sf_column_name = geom_colname)
