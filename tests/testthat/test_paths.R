@@ -51,13 +51,12 @@ test_that("NA indices for in from and/or to arguments give an error", {
   ), "NA values present")
 })
 
-test_that("Duplicated to nodes are removed from st_network_cost calculations
-          with a warning", {
-    expect_warning(
-      costmat <- st_network_cost(net, 1, c(3, 2, 3)),
-      "Duplicated values in argument 'to' were removed"
-    )
-    expect_equal(ncol(costmat), 2)
+test_that("st_network_cost calculates distance matrix including duplicated 'to' nodes", {
+    from_idx = c(1,2)
+    to_idx = c(3,2,3)
+    costmat = st_network_cost(net, from_idx, to_idx)
+    expect_equal(ncol(costmat), length(to_idx))
+    expect_equal(nrow(costmat), length(from_idx))
     # Test with duplicated sf to points that have same nearest node
     p1 = st_geometry(net, "nodes")[1]
     p2 = st_geometry(net, "nodes")[9]
@@ -66,11 +65,9 @@ test_that("Duplicated to nodes are removed from st_network_cost calculations
     p5 = st_sfc(p2[[1]] + st_point(c(-500, -500)), crs = st_crs(p2))
     pts1 = c(p1, p5)
     pts2 = c(p2, p3, p4)
-    expect_warning(
-      costmatsf <- st_network_cost(net, pts1, pts2),
-      "Duplicated values in argument 'to' were removed"
-    )
-    expect_equal(ncol(costmatsf), 2)
+    costmatsf = st_network_cost(net, pts1, pts2)
+    expect_equal(ncol(costmatsf), length(pts2))
+    expect_equal(nrow(costmatsf), length(pts1))
 })
 
 test_that("st_network_paths weights argument is passed implicitly,
