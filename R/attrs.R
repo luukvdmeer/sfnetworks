@@ -56,9 +56,9 @@ sf_attr = function(x, name, active = NULL) {
   graph_attr(new) = graph_attr(orig)
   attributes(new) = attributes(orig)
   node_geom_colname(new) = node_geom_colname(orig)
-  node_agr(new) = node_geom_colname(orig)
+  node_agr(new) = node_agr(orig)
   edge_geom_colname(new) = edge_geom_colname(orig)
-  edge_agr(new) = edge_geom_colname(orig)
+  edge_agr(new) = edge_agr(orig)
   new
 }
 
@@ -99,9 +99,9 @@ sf_attr = function(x, name, active = NULL) {
 #' @noRd
 `%preserve_sf_attrs%` = function(new, orig) {
   node_geom_colname(new) = node_geom_colname(orig)
-  node_agr(new) = node_geom_colname(orig)
+  node_agr(new) = node_agr(orig)
   edge_geom_colname(new) = edge_geom_colname(orig)
-  edge_agr(new) = edge_geom_colname(orig)
+  edge_agr(new) = edge_agr(orig)
   new
 }
 
