@@ -51,12 +51,18 @@ test_that("NA indices for in from and/or to arguments give an error", {
   ), "NA values present")
 })
 
-test_that("st_network_cost calculates distance matrix including duplicated 'to' nodes", {
+test_that("st_network_cost calculates distance matrix
+          including duplicated 'to' nodes", {
     from_idx = c(1,2)
     to_idx = c(3,2,3)
+    # Test with duplicated to nodes and multiple from nodes
     costmat = st_network_cost(net, from_idx, to_idx)
-    expect_equal(ncol(costmat), length(to_idx))
     expect_equal(nrow(costmat), length(from_idx))
+    expect_equal(ncol(costmat), length(to_idx))
+    # Test with unique to nodes and single from node
+    costmat = st_network_cost(net, from_idx[1], to_idx[1:2])
+    expect_equal(nrow(costmat), length(from_idx[1]))
+    expect_equal(ncol(costmat), length(to_idx[1:2]))
     # Test with duplicated sf to points that have same nearest node
     p1 = st_geometry(net, "nodes")[1]
     p2 = st_geometry(net, "nodes")[9]
@@ -69,6 +75,32 @@ test_that("st_network_cost calculates distance matrix including duplicated 'to' 
     expect_equal(ncol(costmatsf), length(pts2))
     expect_equal(nrow(costmatsf), length(pts1))
 })
+
+test_that("st_network_cost handles Inf_as_Nan correctly", {
+    costmat1 = st_network_cost(net, Inf_as_NaN = FALSE)
+    costmat2 = st_network_cost(net, Inf_as_NaN = TRUE)
+    costmat3 = st_network_cost(net, 1, c(377,378,377), Inf_as_NaN = FALSE)
+    costmat4 = st_network_cost(net, 1, c(377,378,377), Inf_as_NaN = TRUE)
+    # Test that matrix contains Inf values instead of NaN
+    expect_gt(length(costmat1[is.infinite(costmat1)]), 0)
+    expect_equal(length(costmat1[is.nan(costmat1)]), 0)
+    expect_gt(length(costmat3[is.infinite(costmat3)]), 0)
+    expect_equal(length(costmat3[is.nan(costmat3)]), 0)
+    # Test that matrix contains NaN values instead of Inf
+    expect_gt(length(costmat2[is.nan(costmat2)]), 0)
+    expect_equal(length(costmat2[is.infinite(costmat2)]), 0)
+    expect_gt(length(costmat4[is.nan(costmat4)]), 0)
+    expect_equal(length(costmat4[is.infinite(costmat4)]), 0)
+    # Test that all Inf values are NaN values
+    expect_equal(
+      length(costmat1[is.infinite(costmat1)]),
+      length(costmat2[is.nan(costmat2)])
+    )
+    expect_equal(
+      length(costmat3[is.infinite(costmat3)]),
+      length(costmat4[is.nan(costmat4)])
+    )
+  })
 
 test_that("st_network_paths weights argument is passed implicitly,
           explicitly and automatically", {
