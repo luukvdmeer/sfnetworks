@@ -24,10 +24,20 @@
 #' column named \code{.orig_data}. This is in line with the design principles
 #' of \code{tidygraph}. Defaults to \code{FALSE}.
 #'
+#' @param check_attributes Whenever multiple features (i.e. nodes and/or edges)
+#' may be merged into a single feature during morphing, which attributes should
+#' be checked for equality before merging the features? If the values of these
+#' attributes are not equal among the features, they will never be merged.
+#' Defaults to \code{NULL}, meaning that none of the attributes are checked for
+#' equality. Equality tests are evaluated using the \code{==} operator.
+#'
 #' @param summarise_attributes Whenever multiple features (i.e. nodes and/or
 #' edges) are merged into a single feature during morphing, how should their
 #' attributes be combined? Several options are possible, see
-#' \code{\link[igraph]{igraph-attribute-combination}} for details.
+#' \code{\link[igraph]{igraph-attribute-combination}} for details. Attributes
+#' listed in \code{check_attributes} are not considered, since they are
+#' guaranteed to be equal among the merged features and hence do not have to
+#' be summarised.
 #'
 #' @return Either a \code{morphed_sfnetwork}, which is a list of one or more
 #' \code{\link{sfnetwork}} objects, or a \code{morphed_tbl_graph}, which is a
@@ -529,7 +539,9 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' iteratively removing pseudo nodes, while preserving the connectivity of the
 #' network. In the case of directed networks, pseudo nodes are those nodes that
 #' have only one incoming and one outgoing edge. In undirected networks, pseudo
-#' nodes are those nodes that have two incident edges. Connectivity of the
+#' nodes are those nodes that have two incident edges. Equality of attribute
+#' values among the two edges can be defined as an additional requirement by
+#' setting the \code{check_attributes} parameter. Connectivity of the
 #' network is preserved by concatenating the incident edges of each removed
 #' pseudo node. Returns a \code{morphed_sfnetwork} containing a single element
 #' of class \code{\link{sfnetwork}}.
@@ -538,8 +550,17 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' edge_attr get.edge.ids induced_subgraph is_directed vertex_attr
 #' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_line_merge
 #' @export
-to_spatial_smooth = function(x, summarise_attributes = "ignore",
+to_spatial_smooth = function(x,
+                             check_attributes = NULL,
+                             summarise_attributes = "ignore",
                              store_original_data = FALSE) {
+  # Change default igraph options.
+  # This prevents igraph returns node or edge indices as formateed sequences.
+  # We only need the "raw" integer indices.
+  # Changing this option can lead to quiet a performance improvement.
+  default_igraph_opt = igraph_opt("return.vs.es")
+  igraph_options(return.vs.es = FALSE)
+  on.exit(igraph_options(return.vs.es = default_igraph_opt))
   # Retrieve nodes and edges from the network.
   nodes = nodes_as_sf(x)
   edges = edges_as_table(x)
@@ -562,6 +583,59 @@ to_spatial_smooth = function(x, summarise_attributes = "ignore",
     pseudo = degree(x, mode = "in") == 1 & degree(x, mode = "out") == 1
   } else {
     pseudo = degree(x) == 2
+  }
+  if (! any(pseudo)) return (x)
+  ## ===========================
+  # STEP II: FILTER PSEUDO NODES
+  # Users can define additional requirements for a node to be smoothed:
+  # --> Its incident edges should have equal values for some attributes.
+  # In these cases we need to filter the set of detected pseudo nodes.
+  ## ===========================
+  # Check for equality of certain attributes between incident edges.
+  # Detected pseudo nodes that fail this check should be filtered out.
+  if (! is.null(check_attributes)) {
+    # Check if all listed attribute columns exists in the edges table of x.
+    attr_exists = check_attributes %in% edge_attribute_names(x)
+    if (! all(attr_exists)) {
+      missing = edge_attribute_names(x)[!attr_exists]
+      stop(
+        "Edge attribute(s) '", paste(missing, collapse = ", "), "' not found",
+        call. = FALSE
+      )
+    }
+    # Get the node indices of the detected pseudo nodes.
+    pseudo_idxs = which(pseudo)
+    # Get the edge indices of the incident edges of each pseudo node.
+    # Combine them into a single numerical vector.
+    # Note the + 1 since incident_edges returns indices starting from 0.
+    incident_idxs = incident_edges(x, pseudo_idxs, mode = "all")
+    incident_idxs = do.call("c", incident_idxs) + 1
+    # Define for each of the incident edges if they are incoming or outgoing.
+    # In undirected networks this can be read instead as "first or second".
+    is_in = seq(1, 2 * length(pseudo_idxs), by = 2)
+    is_out = seq(2, 2 * length(pseudo_idxs), by = 2)
+    # Obtain the attributes to be checked for each of the incident edges.
+    incident_attrs = edge.attributes(x, incident_idxs)[check_attributes]
+    # For each of these attributes:
+    # --> Check if its value is equal for both incident edges of a pseudo node.
+    check_equality = function(A) {
+      # Check equality for each pseudo node.
+      # NOTE:
+      # --> Operator == is used because element-wise comparisons are needed.
+      # --> Not sure if this approach works with identical() or all.equal().
+      are_equal = A[is_in] == A[is_out]
+      # If one of the two values is NA or NaN:
+      # --> The result of the element-wise comparison is always NA.
+      # --> This means the two elements are certainly not equal.
+      # --> Hence the result of this comparison can be set to FALSE.
+      are_equal[is.na(are_equal)] = FALSE
+      are_equal
+    }
+    tests = lapply(incident_attrs, check_equality)
+    # If one or more equality tests failed for a detected pseudo node:
+    # --> Mark this pseudo node as FALSE, i.e. not being a pseudo node.
+    failed = rowSums(do.call("cbind", tests)) != length(check_attributes)
+    pseudo[pseudo_idxs[failed]] = FALSE
   }
   if (! any(pseudo)) return (x)
   ## ====================================
@@ -604,13 +678,15 @@ to_spatial_smooth = function(x, summarise_attributes = "ignore",
       # --> The index of the edge that comes in to the pseudo node set.
       # --> The index of the non-pseudo node at the other end of that edge.
       # We'll call this the source node and source edge of the set.
-      source_node = as.integer(adjacent_vertices(x, n_i, mode = "in")[[1]])
+      # Note the + 1 since adjacent_vertices returns indices starting from 0.
+      source_node = adjacent_vertices(x, n_i, mode = "in")[[1]] + 1
       source_edge = get.edge.ids(x, c(source_node, n_i))
       # Find the following:
       # --> The index of the edge that goes out of the pseudo node set.
       # --> The index of the non-pseudo node at the other end of that edge.
       # We'll call this the sink node and sink edge of the set.
-      sink_node = as.integer(adjacent_vertices(x, n_o, mode = "out")[[1]])
+      # Note the + 1 since adjacent_vertices returns indices starting from 0.
+      sink_node = adjacent_vertices(x, n_o, mode = "out")[[1]] + 1
       sink_edge = get.edge.ids(x, c(n_o, sink_node))
       # List indices of all edges that will be merged into the replacement edge.
       edge_idxs = as.integer(c(source_edge, E, sink_edge))
@@ -632,7 +708,8 @@ to_spatial_smooth = function(x, summarise_attributes = "ignore",
       if (length(N) == 1) {
         # When we have a single pseudo node that forms a set:
         # --> It will be adjacent to both adjacent nodes of the set.
-        adjacent = as.integer(adjacent_vertices(x, N)[[1]])
+        # Note the + 1 since adjacent_vertices returns indices starting from 0.
+        adjacent = adjacent_vertices(x, N)[[1]] + 1
         if (length(adjacent) == 1) {
           # If there is only one adjacent node to the pseudo node:
           # --> The two adjacent nodes of the set are the same node.
@@ -667,8 +744,9 @@ to_spatial_smooth = function(x, summarise_attributes = "ignore",
         # We find them iteratively for the two boundary nodes of the set:
         # --> A boundary connects to one pseudo node and one non-pseudo node.
         # --> The non-pseudo node is the one not present in the pseudo set.
+        # Note the + 1 since adjacent_vertices returns indices starting from 0.
         get_set_neighbour = function(n) {
-          all = as.integer(adjacent_vertices(x, n)[[1]])
+          all = adjacent_vertices(x, n)[[1]] + 1
           all[!(all %in% N)]
         }
         adjacent = do.call("c", lapply(N_b, get_set_neighbour))
@@ -707,6 +785,12 @@ to_spatial_smooth = function(x, summarise_attributes = "ignore",
   exclude = c(".tidygraph_edge_index", geom_colname)
   edge_attrs = edge.attributes(x)
   edge_attrs = edge_attrs[!(names(edge_attrs) %in% exclude)]
+  # Attributes that where checked for equality should not be summarised either.
+  # We already know they are equal among all edges in the pseudo set.
+  # Hence for them we can simply take the value of the first edge.
+  if (! is.null(check_attributes)) {
+    for (i in check_attributes) summarise_attributes[i] = "first"
+  }
   # Define a function that:
   # --> Obtains the attribute summary function for a specific attribute.
   if (length(summarise_attributes) == 1) {
