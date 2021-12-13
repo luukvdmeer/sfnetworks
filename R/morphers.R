@@ -615,16 +615,19 @@ to_spatial_smooth = function(x,
       node_names = vertex_attr(x, "name")
       if (is.null(node_names)) {
         stop(
-          "Node attribute 'name' not found",
+          "Node names should be stored in an attribute column called ",
+          sQuote("name"),
           call. = FALSE
         )
       }
       # Match node names to node indices.
       matched_names = match(protect, node_names)
-      if (any(is.na(matched_names)) {
-        unmatched = protect[is.na(matched_names)]
+      if (any(is.na(matched_names))) {
         stop(
-          "Invalid node names: ", paste(unmatched, collapse = ", "),
+          "Unknown node names: ",
+          paste(sQuote(protect[is.na(matched_names)]), collapse = " and "),
+          ". Make sure node names are stored in an attribute column called ",
+          sQuote("name"),
           call. = FALSE
         )
       }
@@ -642,9 +645,9 @@ to_spatial_smooth = function(x,
     # Check if all listed attribute columns exists in the edges table of x.
     attr_exists = check_attributes %in% edge_attribute_names(x)
     if (! all(attr_exists)) {
-      missing = edge_attribute_names(x)[!attr_exists]
       stop(
-        "Edge attribute(s) '", paste(missing, collapse = ", "), "' not found",
+        "Unknown edge attributes: ",
+        paste(sQuote(check_attributes[!attr_exists]), collapse = " and "),
         call. = FALSE
       )
     }
