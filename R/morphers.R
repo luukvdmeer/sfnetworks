@@ -545,12 +545,22 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' network is preserved by concatenating the incident edges of each removed
 #' pseudo node. Returns a \code{morphed_sfnetwork} containing a single element
 #' of class \code{\link{sfnetwork}}.
+#'
+#' @param protect Nodes to be protected from being removed, no matter if they
+#' are a pseudo node or not. Can be given as a numeric vector containing node
+#' indices or a character vector containing node names. Can also be a set of
+#' geospatial features as object of class code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}. In that case, for each of these features its nearest
+#' node in the network will be protected. Defaults to \code{NULL}, meaning that
+#' none of the nodes is protected.
+#'
 #' @importFrom dplyr bind_rows
 #' @importFrom igraph adjacent_vertices decompose degree delete_vertices
 #' edge_attr get.edge.ids induced_subgraph is_directed vertex_attr
 #' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_line_merge
 #' @export
 to_spatial_smooth = function(x,
+                             protect = NULL,
                              check_attributes = NULL,
                              summarise_attributes = "ignore",
                              store_original_data = FALSE) {
@@ -588,9 +598,44 @@ to_spatial_smooth = function(x,
   ## ===========================
   # STEP II: FILTER PSEUDO NODES
   # Users can define additional requirements for a node to be smoothed:
+  # --> It should not be listed in the provided set of protected nodes.
   # --> Its incident edges should have equal values for some attributes.
   # In these cases we need to filter the set of detected pseudo nodes.
   ## ===========================
+  # Detected pseudo nodes that are protected should be filtered out.
+  if (! is.null(protect)) {
+    # Parse the protect parameter values.
+    # If protect is given as character vector:
+    # --> Find the node indices belonging to these node names.
+    # If protect is given as geospatial features:
+    # --> First find the nearest node to each of these features.
+    if (is.character(protect)) {
+      # Obtain node names.
+      # They should be stored in a node attribute column named "name".
+      node_names = vertex_attr(x, "name")
+      if (is.null(node_names)) {
+        stop(
+          "Node attribute 'name' not found",
+          call. = FALSE
+        )
+      }
+      # Match node names to node indices.
+      matched_names = match(protect, node_names)
+      if (any(is.na(matched_names)) {
+        unmatched = protect[is.na(matched_names)]
+        stop(
+          "Invalid node names: ", paste(unmatched, collapse = ", "),
+          call. = FALSE
+        )
+      }
+      protect = matched_names
+    } else if (is.sf(protect) | is.sfc(protect)) {
+      protect = set_path_endpoints(x, protect)
+    }
+    # Mark all protected nodes as not being a pseudo node.
+    pseudo[protect] = FALSE
+    if (! any(pseudo)) return (x)
+  }
   # Check for equality of certain attributes between incident edges.
   # Detected pseudo nodes that fail this check should be filtered out.
   if (! is.null(check_attributes)) {
@@ -636,8 +681,8 @@ to_spatial_smooth = function(x,
     # --> Mark this pseudo node as FALSE, i.e. not being a pseudo node.
     failed = rowSums(do.call("cbind", tests)) != length(check_attributes)
     pseudo[pseudo_idxs[failed]] = FALSE
+    if (! any(pseudo)) return (x)
   }
-  if (! any(pseudo)) return (x)
   ## ====================================
   # STEP II: INITIALIZE REPLACEMENT EDGES
   # When removing pseudo nodes their incident edges get removed to.
