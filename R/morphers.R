@@ -556,7 +556,8 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #'
 #' @importFrom dplyr bind_rows
 #' @importFrom igraph adjacent_vertices decompose degree delete_vertices
-#' edge_attr get.edge.ids induced_subgraph is_directed vertex_attr
+#' edge_attr edge.attributes get.edge.ids igraph_opt igraph_options
+#' incident_edges induced_subgraph is_directed vertex_attr
 #' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_line_merge
 #' @export
 to_spatial_smooth = function(x,
@@ -565,7 +566,7 @@ to_spatial_smooth = function(x,
                              summarise_attributes = "ignore",
                              store_original_data = FALSE) {
   # Change default igraph options.
-  # This prevents igraph returns node or edge indices as formateed sequences.
+  # This prevents igraph returns node or edge indices as formatted sequences.
   # We only need the "raw" integer indices.
   # Changing this option can lead to quiet a performance improvement.
   default_igraph_opt = igraph_opt("return.vs.es")

@@ -250,6 +250,9 @@ edge_feature_attribute_names = function(x) {
 #' @return Definition of a function that takes a vector of attribute values as
 #' input and returns a single value.
 #'
+#' @importFrom stats median
+#' @importFrom utils head tail
+#'
 #' @noRd
 attribute_summary_function = function(label) {
   if (is.function(label)) {
@@ -263,8 +266,8 @@ attribute_summary_function = function(label) {
       min = function(x) min(x),
       max = function(x) max(x),
       random = function(x) sample(x, 1),
-      first = function(x) utils::head(x, 1),
-      last = function(x) utils::tail(x, 1),
+      first = function(x) head(x, 1),
+      last = function(x) tail(x, 1),
       mean = function(x) mean(x),
       median = function(x) median(x),
       concat = function(x) c(x),
