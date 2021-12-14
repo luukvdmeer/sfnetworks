@@ -66,12 +66,7 @@ edge_circuity = function(Inf_as_NaN = FALSE) {
   # Calculate circuity.
   values = st_length(edge_geom(x)) / straight_line_distance(x)
   # Replace Inf values by NaN if requested.
-  if (Inf_as_NaN) {
-    # Units need to be dropped to run comparison '== Inf'.
-    raw_values = if (inherits(values, "units")) drop_units(values) else values
-    inf_values = raw_values == Inf
-    values[inf_values] = NaN
-  }
+  if (Inf_as_NaN) values[is.infinite(values)] = NaN
   values
 }
 

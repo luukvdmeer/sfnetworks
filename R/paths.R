@@ -348,7 +348,7 @@ st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
     # Call igraph function.
     matrix = distances(x, from, to_unique, weights = weights, ...)
     # Convert Inf to NaN if requested.
-    if (Inf_as_NaN) matrix[matrix == Inf] = NaN
+    if (Inf_as_NaN) matrix[is.infinite(matrix)] = NaN
     # Return the matrix
     # --> With duplicated 'to' nodes included.
     matrix[, match, drop = FALSE]
