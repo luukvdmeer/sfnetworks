@@ -328,6 +328,7 @@ st_network_cost = function(x, from = igraph::V(x), to = igraph::V(x),
 }
 
 #' @importFrom igraph distances V
+#' @importFrom units deparse_unit as_units
 #' @export
 st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
                                        weights = NULL, Inf_as_NaN = FALSE, ...) {
@@ -347,16 +348,21 @@ st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
     match = match(to, to_unique)
     # Call igraph function.
     matrix = distances(x, from, to_unique, weights = weights, ...)
-    # Convert Inf to NaN if requested.
-    if (Inf_as_NaN) matrix[is.infinite(matrix)] = NaN
     # Return the matrix
-    # --> With duplicated 'to' nodes included.
-    matrix[, match, drop = FALSE]
+    # --> With duplicated 'to' nodes included and corresponding unit.
+    matrix = matrix[, match, drop = FALSE]
   } else {
     # Call igraph function.
     matrix = igraph::distances(x, from, to, weights = weights, ...)
-    # Convert Inf to NaN if requested.
-    if (Inf_as_NaN) matrix[is.infinite(matrix)] = NaN
+  }
+  # Convert Inf to NaN if requested.
+  if (Inf_as_NaN) matrix[is.infinite(matrix)] = NaN
+  # # Fetch weight units to pass onto distance matrix.
+  if (inherits(weights, "units")) {
+    weights_units = deparse_unit(weights)
+    as_units(matrix, weights_units)
+    # Return matrix as units object
+  } else {
     # Return the matrix.
     matrix
   }

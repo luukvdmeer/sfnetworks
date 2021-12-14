@@ -261,7 +261,7 @@ round(cost_matrix, 0)
 By passing the cost matrix to the solver `TSP::solve_TSP()` we obtain an object of class `TOUR`. This object contains a named vector specifying the indices of the provided locations in the optimal order of visit.
 
 ```{r}
-tour = solve_TSP(TSP(cost_matrix))
+tour = solve_TSP(TSP(units::drop_units(cost_matrix)))
 tour_idxs = as.numeric(names(tour))
 tour_idxs
 
