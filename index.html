@@ -29,6 +29,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -41,18 +43,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.4</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
@@ -86,7 +82,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/luukvdmeer/sfnetworks/">
+  <a href="https://github.com/luukvdmeer/sfnetworks/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -103,119 +99,128 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="tidy-geospatial-networks-in-r-" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#tidy-geospatial-networks-in-r-" class="anchor"></a>Tidy Geospatial Networks in R <img src="reference/figures/logo.png" align="right" width="120">
+<div class="section level1">
+<div class="page-header"><h1 id="tidy-geospatial-networks-in-r-">Tidy Geospatial Networks in R <img src="reference/figures/logo.png" align="right" width="120"><a class="anchor" aria-label="anchor" href="#tidy-geospatial-networks-in-r-"></a>
 </h1></div>
 <!-- badges: start -->
 
 <p><code>sfnetworks</code> is an R package for analysis of geospatial networks. It connects the functionalities of the <code>tidygraph</code> package for network analysis and the <code>sf</code> package for spatial data science.</p>
-<div id="background" class="section level2">
-<h2 class="hasAnchor">
-<a href="#background" class="anchor"></a>Background</h2>
+<div class="section level2">
+<h2 id="background">Background<a class="anchor" aria-label="anchor" href="#background"></a>
+</h2>
 <p>Geospatial networks are graphs embedded in geographical space. That means that both the nodes and edges in the graph can be represented as geographic features: the nodes most commonly as points, and the edges as linestrings. They play an important role in many different domains, ranging from transportation planning and logistics to ecology and epidemiology. The structure and characteristics of geospatial networks go beyond standard graph topology, and therefore it is crucial to explicitly take space into account when analyzing them.</p>
-<p>We created <code>sfnetworks</code> to facilitate such an integrated workflow. It combines the forces of two popular R packages: <a href="https://r-spatial.github.io/sf/">sf</a> for spatial data science and <a href="https://tidygraph.data-imaginist.com/index.html">tidygraph</a> for standard graph analysis. The core of the package is a dedicated data structure for geospatial networks, that can be provided as input to both the graph analytical functions of tidygraph as well as the spatial analytical functions of sf, without the need for conversion. Additionally, we implemented a set of geospatial network specific functions, such as routines for shortest path calculation, network cleaning and topology modification. <code>sfnetworks</code> is designed as a general-purpose package suitable for usage across different application domains, and can be seamlessly integrated in <a href="https://www.tidyverse.org/">tidyverse</a> workflows.</p>
+<p>We created <code>sfnetworks</code> to facilitate such an integrated workflow. It combines the forces of two popular R packages: <a href="https://r-spatial.github.io/sf/" class="external-link">sf</a> for spatial data science and <a href="https://tidygraph.data-imaginist.com/index.html" class="external-link">tidygraph</a> for standard graph analysis. The core of the package is a dedicated data structure for geospatial networks, that can be provided as input to both the graph analytical functions of tidygraph as well as the spatial analytical functions of sf, without the need for conversion. Additionally, we implemented a set of geospatial network specific functions, such as routines for shortest path calculation, network cleaning and topology modification. <code>sfnetworks</code> is designed as a general-purpose package suitable for usage across different application domains, and can be seamlessly integrated in <a href="https://www.tidyverse.org/" class="external-link">tidyverse</a> workflows.</p>
 </div>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
-<p>You can install the latest stable version of <code>sfnetworks</code> from <a href="https://cran.r-project.org/package=sfnetworks">CRAN</a> with:</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>You can install the latest stable version of <code>sfnetworks</code> from <a href="https://cran.r-project.org/package=sfnetworks" class="external-link">CRAN</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"sfnetworks"</span><span class="op">)</span></code></pre></div>
-<p>You can install the development version from <a href="https://github.com/luukvdmeer/sfnetworks">GitHub</a> with:</p>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"sfnetworks"</span><span class="op">)</span></code></pre></div>
+<p>You can install the development version from <a href="https://github.com/luukvdmeer/sfnetworks" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"luukvdmeer/sfnetworks"</span><span class="op">)</span></code></pre></div>
-<p><strong>Note:</strong> Two important dependencies of <code>sfnetworks</code>, the <code>sf</code> package for spatial data science and the <code>igraph</code> package for network analysis (which is the main “analysis backend” of <code>tidygraph</code>), require some low-level software libraries to be installed on your system. Depending on which operating system you use, this can mean that you have to install these system requirements first, before you can install <code>sfnetworks</code>. See the installation guides of <a href="https://github.com/r-spatial/sf#installing">sf</a> and <a href="https://github.com/igraph/rigraph#installation">igraph</a> for details.</p>
+<p><strong>Note:</strong> Two important dependencies of <code>sfnetworks</code>, the <code>sf</code> package for spatial data science and the <code>igraph</code> package for network analysis (which is the main “analysis backend” of <code>tidygraph</code>), require some low-level software libraries to be installed on your system. Depending on which operating system you use, this can mean that you have to install these system requirements first, before you can install <code>sfnetworks</code>. See the installation guides of <a href="https://github.com/r-spatial/sf#installing" class="external-link">sf</a> and <a href="https://github.com/igraph/rigraph#installation" class="external-link">igraph</a> for details.</p>
 </div>
-<div id="usage" class="section level2">
-<h2 class="hasAnchor">
-<a href="#usage" class="anchor"></a>Usage</h2>
+<div class="section level2">
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h2>
 <p>The main goal of <code>sfnetworks</code> is to connect the <code>tidygraph</code> package for network analysis and the <code>sf</code> package for spatial data science. To make the most out of it, it is recommended to make yourself familiar with these two ‘parent packages’ if you don’t know them yet.</p>
 <ul>
-<li><a href="https://r-spatial.github.io/sf/">sf documentation</a></li>
-<li><a href="https://tidygraph.data-imaginist.com/">tidygraph documentation</a></li>
+<li><a href="https://r-spatial.github.io/sf/" class="external-link">sf documentation</a></li>
+<li><a href="https://tidygraph.data-imaginist.com/" class="external-link">tidygraph documentation</a></li>
 </ul>
 <p>There are currently five vignettes that guide you through the functionalities of <code>sfnetworks</code>:</p>
 <ul>
-<li><a href="https://luukvdmeer.github.io/sfnetworks/articles/structure.html">The sfnetwork data structure</a></li>
-<li><a href="https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html">Network pre-processing and cleaning</a></li>
-<li><a href="https://luukvdmeer.github.io/sfnetworks/articles/join_filter.html">Spatial joins and filters</a></li>
-<li><a href="https://luukvdmeer.github.io/sfnetworks/articles/routing.html">Routing</a></li>
-<li><a href="https://luukvdmeer.github.io/sfnetworks/articles/morphers.html">Spatial morphers</a></li>
+<li><a href="https://luukvdmeer.github.io/sfnetworks/articles/structure.html" class="external-link">The sfnetwork data structure</a></li>
+<li><a href="https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html" class="external-link">Network pre-processing and cleaning</a></li>
+<li><a href="https://luukvdmeer.github.io/sfnetworks/articles/join_filter.html" class="external-link">Spatial joins and filters</a></li>
+<li><a href="https://luukvdmeer.github.io/sfnetworks/articles/routing.html" class="external-link">Routing</a></li>
+<li><a href="https://luukvdmeer.github.io/sfnetworks/articles/morphers.html" class="external-link">Spatial morphers</a></li>
 </ul>
 <p><img align="left" src="https://raw.githubusercontent.com/loreabad6/ggraph-spatial-examples/main/figs/sfnetworks-showcase.gif"></p>
-<p>(GIF (c) by <a href="https://github.com/loreabad6">Lore Abad</a>)</p>
+<p>(GIF (c) by <a href="https://github.com/loreabad6" class="external-link">Lore Abad</a>)</p>
 </div>
-<div id="contribution" class="section level2">
-<h2 class="hasAnchor">
-<a href="#contribution" class="anchor"></a>Contribution</h2>
-<p>We look very much forward to contributions to the package. See the <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/CONTRIBUTING.md">contributing guide</a> for further details.</p>
-<p>This project is released with a <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/CODE_OF_CONDUCT.md">Contributor Code of Conduct</a>. By participating in this project you agree to abide by its terms.</p>
+<div class="section level2">
+<h2 id="contribution">Contribution<a class="anchor" aria-label="anchor" href="#contribution"></a>
+</h2>
+<p>We look very much forward to contributions to the package. See the <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/CONTRIBUTING.md" class="external-link">contributing guide</a> for further details.</p>
+<p>This project is released with a <a href="https://github.com/luukvdmeer/sfnetworks/blob/master/CODE_OF_CONDUCT.md" class="external-link">Contributor Code of Conduct</a>. By participating in this project you agree to abide by its terms.</p>
 </div>
-<div id="acknowledgment" class="section level2">
-<h2 class="hasAnchor">
-<a href="#acknowledgment" class="anchor"></a>Acknowledgment</h2>
-<p>This project gratefully acknowledges financial <a href="https://www.r-consortium.org/projects">support</a> from the</p>
-<p><a href="https://www.r-consortium.org/projects/awarded-projects"> <img src="https://raw.githubusercontent.com/RConsortium/artwork/main/r_consortium/R_Consortium-logo-horizontal-color.png" width="300"></a></p>
+<div class="section level2">
+<h2 id="acknowledgment">Acknowledgment<a class="anchor" aria-label="anchor" href="#acknowledgment"></a>
+</h2>
+<p>This project gratefully acknowledges financial <a href="https://www.r-consortium.org/projects" class="external-link">support</a> from the</p>
+<p><a href="https://www.r-consortium.org/projects/awarded-projects" class="external-link"> <img src="https://raw.githubusercontent.com/RConsortium/artwork/main/r_consortium/R_Consortium-logo-horizontal-color.png" width="300"></a></p>
 </div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=sfnetworks">https://​cloud.r-project.org/​package=sfnetworks</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/luukvdmeer/sfnetworks/">https://​github.com/​luukvdmeer/​sfnetworks/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/luukvdmeer/sfnetworks/issues/">https://​github.com/​luukvdmeer/​sfnetworks/​issues/​</a>
-</li>
+<li><a href="https://cloud.r-project.org/package=sfnetworks" class="external-link">View on CRAN</a></li>
+<li><a href="https://github.com/luukvdmeer/sfnetworks/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/luukvdmeer/sfnetworks/issues/" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
 <li><small>Apache License (&gt;= 2)</small></li>
 </ul>
 </div>
+
 <div class="community">
-<h2>Community</h2>
+<h2 data-toc-skip>Community</h2>
 <ul class="list-unstyled">
 <li><a href="CONTRIBUTING.html">Contributing guide</a></li>
 <li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
 </ul>
 </div>
-<div class="developers">
-<h2>Developers</h2>
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li>Lucas van der Meer <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-6336-8628" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Lorena Abad <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-0554-734X" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Andrea Gilardi <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-9424-7439" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Robin Lovelace <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-5679-6536" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li><a href="authors.html#citation">Citing sfnetworks</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/luukvdmeer/sfnetworks/actions"><img src="https://github.com/luukvdmeer/sfnetworks/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
-<li><a href="https://app.codecov.io/gh/luukvdmeer/sfnetworks"><img src="https://codecov.io/gh/luukvdmeer/sfnetworks/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
-<li><a href="https://cran.r-project.org/package=sfnetworks"><img src="http://www.r-pkg.org/badges/version/sfnetworks" alt="CRAN"></a></li>
-<li><a href="https://cran.r-project.org/package=sfnetworks"><img src="https://cranlogs.r-pkg.org/badges/sfnetworks" alt="Downloads"></a></li>
+<li>Lucas van der Meer <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-6336-8628" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Lorena Abad <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-0554-734X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Andrea Gilardi <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-9424-7439" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Robin Lovelace <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-5679-6536" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
+
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/luukvdmeer/sfnetworks/actions" class="external-link"><img src="https://github.com/luukvdmeer/sfnetworks/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
+<li><a href="https://app.codecov.io/gh/luukvdmeer/sfnetworks" class="external-link"><img src="https://codecov.io/gh/luukvdmeer/sfnetworks/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://cran.r-project.org/package=sfnetworks" class="external-link"><img src="http://www.r-pkg.org/badges/version/sfnetworks" alt="CRAN"></a></li>
+<li><a href="https://cran.r-project.org/package=sfnetworks" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/sfnetworks" alt="Downloads"></a></li>
+</ul>
 </div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Lucas van der Meer, Lorena Abad, Andrea Gilardi, Robin Lovelace.</p>
+  <p></p>
+<p>Developed by Lucas van der Meer, Lorena Abad, Andrea Gilardi, Robin Lovelace.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -223,6 +228,8 @@
 
   
 
+
+  
 
   </body>
 </html>

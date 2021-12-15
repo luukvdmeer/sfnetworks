@@ -1,5 +1,5 @@
 pandoc: 2.7.3
-pkgdown: 1.6.1
+pkgdown: 2.0.1
 pkgdown_sha: ~
 articles:
   sfn01_structure: sfn01_structure.html
@@ -7,5 +7,5 @@ articles:
   sfn03_join_filter: sfn03_join_filter.html
   sfn04_routing: sfn04_routing.html
   sfn05_morphers: sfn05_morphers.html
-last_built: 2021-11-26T17:53Z
+last_built: 2021-12-15T18:34Z
 
