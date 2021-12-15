@@ -1,3 +1,8 @@
+# sfnetworks v0.5.4
+
+* A startup message is included to urge users of PROJ <= 6 to recreate the CRS for the `Roxel` dataset. Refs [#190](https://github.com/luukvdmeer/sfnetworks/issues/190) and fixed with [#193](https://github.com/luukvdmeer/sfnetworks/pull/193).
+* Example using GraphML in [vignette 1](https://luukvdmeer.github.io/sfnetworks/articles/sfn01_structure.html) has been removed provisionally to address [#194](https://github.com/luukvdmeer/sfnetworks/issues/194).
+
 # sfnetworks v0.5.3
 
 * Addition of the `n_active` and `n_inactive` arguments to the print method of an sfnetwork object. The arguments define how many rows are printed for respectively the active and inactive network element. The values of these arguments can also be set globally by running e.g. `options(sfn_max_print_active = 1, sfn_max_print_inactive = 2)`. Refs [#157](https://github.com/luukvdmeer/sfnetworks/issues/157)
