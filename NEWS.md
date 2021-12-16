@@ -70,7 +70,7 @@
 * Bug fixes:
   - `st_network_paths()` now correctly handles cases where an unexisting column is passed to the `weights` argument, by throwing an error. Fixes [#99](https://github.com/luukvdmeer/sfnetworks/issues/99)
   - The sfnetwork method for `sf::st_join()` now correctly handles inner joins (i.e. joins where `left = FALSE`).
-* Addition of extra examples to the [routing](https://luukvdmeer.github.io/sfnetworks/articles/routing.html) and [spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html) vignettes.
+* Addition of extra examples to the [routing](https://luukvdmeer.github.io/sfnetworks/articles/sfn04_routing.html) and [spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/sfn05_morphers.html) vignettes.
 * Test coverage increased to +/- 86%.
 
 # sfnetworks v0.4.0 "Hiltrup"
@@ -142,7 +142,7 @@
   - Relying on internally stored attributes rather than first extracting sf objects.
   - Option to plot without making edges explicit.
 * Improved function documentation.
-* An additional [vignette](https://luukvdmeer.github.io/sfnetworks/articles/extensions.html).
+* An additional vignette "Extensions" was included.
 
 # sfnetworks v0.2.0 "Neutor"
 

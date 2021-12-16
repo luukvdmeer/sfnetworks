@@ -107,7 +107,7 @@ activate(net, "edges")
 
 ## Network cleaning functions
 
-The `sfnetworks` package contains a set of spatial network specific cleaning functions. They are implemented as *spatial morpher functions*. To learn more about spatial morphers and what they are, see the [dedicated vignette](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html) for that. For now, it is sufficient to know that you can use any spatial morpher function inside the `tidygraph::convert()` verb to convert your network into a different state.
+The `sfnetworks` package contains a set of spatial network specific cleaning functions. They are implemented as *spatial morpher functions*. To learn more about spatial morphers and what they are, see the [dedicated vignette](https://luukvdmeer.github.io/sfnetworks/articles/sfn05_morphers.html) for that. For now, it is sufficient to know that you can use any spatial morpher function inside the `tidygraph::convert()` verb to convert your network into a different state.
 
 Before presenting the cleaning functions that are currently implemented, lets create a network to be cleaned.
 

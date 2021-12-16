@@ -41,11 +41,11 @@ The main goal of `sfnetworks` is to connect the `tidygraph` package for network 
 
 There are currently five vignettes that guide you through the functionalities of `sfnetworks`:
 
-- [The sfnetwork data structure](https://luukvdmeer.github.io/sfnetworks/articles/structure.html)
-- [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html)
-- [Spatial joins and filters](https://luukvdmeer.github.io/sfnetworks/articles/join_filter.html)
-- [Routing](https://luukvdmeer.github.io/sfnetworks/articles/routing.html)
-- [Spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html)
+- [The sfnetwork data structure](https://luukvdmeer.github.io/sfnetworks/articles/sfn01_structure.html)
+- [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/sfn02_preprocess_clean.html)
+- [Spatial joins and filters](https://luukvdmeer.github.io/sfnetworks/articles/sfn03_join_filter.html)
+- [Routing](https://luukvdmeer.github.io/sfnetworks/articles/sfn04_routing.html)
+- [Spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/sfn05_morphers.html)
 
 <img align="left" src="https://raw.githubusercontent.com/loreabad6/ggraph-spatial-examples/main/figs/sfnetworks-showcase.gif" >
 
