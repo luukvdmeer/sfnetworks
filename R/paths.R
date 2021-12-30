@@ -252,11 +252,11 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' If set to \code{NA}, no weights are used, even if the edges have a
 #' \code{weight} column.
 #'
-#' @param direction The direction of travel to calculate the shortest
-#'                  paths. Defaults to \code{out}, where the shortest paths are
+#' @param direction The direction of travel to calculate the network cost.
+#'                  Defaults to \code{out}, where the costs are
 #'                  calculated \code{from} the nodes, i.e. considers only
 #'                  outbound edges. When \code{in}, it calculates
-#'                  the shortest paths \code{to} the nodes, i.e. considers
+#'                  the costs \code{to} the nodes, i.e. considers
 #'                  only inbound edges and when \code{all}
 #'                  then the network is considered undirected. This argument
 #'                  is ignored for undirected networks.
