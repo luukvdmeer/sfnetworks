@@ -9,6 +9,7 @@ st_network_cost(
   from = igraph::V(x),
   to = igraph::V(x),
   weights = NULL,
+  direction = "out",
   Inf_as_NaN = FALSE,
   ...
 )
@@ -41,6 +42,18 @@ will be used automatically, as long as this column is present. If not, the
 geographic edge lengths will be calculated internally and used as weights.
 If set to \code{NA}, no weights are used, even if the edges have a
 \code{weight} column.}
+
+\item{direction}{The direction of travel to calculate the network cost.
+Defaults to \code{out}, where the costs are
+calculated \code{from} the nodes, i.e. considers only
+outbound edges. When \code{in}, it calculates
+the costs \code{to} the nodes, i.e. considers
+only inbound edges and when \code{all}
+then the network is considered undirected. This argument
+is ignored for undirected networks.
+This argument is equivalent to \code{mode} in
+\code{\link[igraph]{distances}} and hence \code{mode} is
+ignored in this function.}
 
 \item{Inf_as_NaN}{Should the cost values of unconnected nodes be stored as
 \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.}
@@ -75,14 +88,6 @@ duplicates.
 
 For more details on the wrapped function from \code{\link[igraph]{igraph}}
 see the \code{\link[igraph]{distances}} documentation page.
-}
-\note{
-By default, \code{\link[igraph]{distances}} calculates costs by
-by allowing to travel each edge in both directions, hence by assuming an
-undirected network. This is the default even when the input network is
-directed! For directed networks, the behaviour can be changed by setting
-\code{mode = "out"} to consider only outbound edges, or \code{mode = "in"}
-to consider only inbound edges.
 }
 \examples{
 library(sf, quietly = TRUE)
