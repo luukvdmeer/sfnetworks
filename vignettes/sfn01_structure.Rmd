@@ -148,37 +148,6 @@ plot(net)
 
 Other methods to convert 'foreign' objects into a sfnetwork exists as well, e.g. for SpatialLinesNetwork objects from `stplanr` and linnet objects from `spatstat`. See [here](https://luukvdmeer.github.io/sfnetworks/reference/as_sfnetwork.html) for an overview.
 
-### From a network specific file type
-
-To create networks from spatial data file types, you can use the sf function `sf::st_read()` to read them into R and then construct a sfnetwork from the sf object(s) using either `sfnetwork()` or `as_sfnetwork()` as described above. To create networks from graph specific file types, you can use the igraph function `igraph::read_graph()` to read them into R, and then convert them to a sfnetwork using `as_sfnetwork()` if possible. Lets look at an example with a GraphML file. First, we will convert it to a tbl_graph after loading such that we can explore the data.
-
-```{r}
-url = "https://raw.githubusercontent.com/ComplexNetTSP/Power_grids/v1.0.0/Countries/Netherlands/graphml/Netherlands_highvoltage.graphml"
-
-igraph::read_graph(url, format = "graphml") %>%
-  as_tbl_graph()
-```
-
-We can see that the spatial geometries of nodes and edges are stored as WKT strings in columns named *wktsrid4326*. The sf function `sf::st_as_sf()` can easily convert such columns into the geometry list-column format that we need. Both `sfnetwork()` and `as_sfnetwork()` accept additional arguments as `...` that will be internally forwarded to convert the nodes into an sf object before creating the network structure. Hence, we can directly convert the igraph object into a sfnetwork.
-
-```{r}
-igraph::read_graph(url, format = "graphml") %>%
-  as_sfnetwork(wkt = "wktsrid4326", crs = 4326)
-```
-
-Forwarding of additional arguments to `sf::st_as_sf()` only affects the nodes table, since that is the one that by definition *has* to be an sf object. Therefore, it left the edges unaffected and created a network without a geometry list-column for the edges (i.e. a network with spatially implicit edges). We can 'spatially explicitize' the edges after construction by using a spatial morpher function named `to_spatial_explicit()`. To learn more about spatial morphers and what they are, see the [dedicated vignette](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html) for that. For now, it is sufficient to know that you can use any spatial morpher function inside the `tidygraph::convert()` verb to convert your network into a different state.
-
-The `to_spatial_explicit()` function also accepts `...` arguments that are forwarded to `sf::st_as_sf()`.
-
-```{r}
-graphml_net = igraph::read_graph(url, format = "graphml") %>%
-  as_sfnetwork(wkt = "wktsrid4326", crs = 4326) %>%
-  convert(to_spatial_explicit, wkt = "wktsrid4326", crs = 4326, .clean = TRUE)
-
-graphml_net
-plot(graphml_net)
-```
-
 ## Activation
 
 A sfnetwork is a multitable object in which the core network elements (i.e. nodes and edges) are embedded as sf objects. However, thanks to the neat structure of `tidygraph`, there is no need to first extract one of those elements before you are able to apply your favorite sf function or tidyverse verb. Instead, there is always one element at a time labeled as *active*. This active element is the target of data manipulation. All functions from sf and the tidyverse that are called on a sfnetwork, are internally applied to that active element. The active element can be changed with the `activate()` verb, i.e. by calling `activate("nodes")` or `activate("edges")`. For example, setting the geographical length of edges as edge weights and subsequently calculating the betweenness centrality of nodes can be done as shown below. Note that `tidygraph::centrality_betweenness()` does require you to *always* explicitly specifiy which column should be used as edge weights, and if the network should be treated as directed or not.
@@ -197,7 +166,7 @@ Some of the functions have effects also outside of the active element. For examp
 
 Neither all sf functions nor all tidyverse verbs can be directly applied to a sfnetwork as described above. That is because there is a clear limitation in the relational data structure that requires rows to maintain their identity. Hence, a verb like `dplyr::summarise()` has no clear application for a network. For sf functions, this means also that the valid spatial network structure should be maintained. That is, functions that summarise geometries, or (may) change their *type*, *shape* or *position*, are not supported directly. These are for example the [geometric binary operations](https://r-spatial.github.io/sf/reference/geos_binary_ops.html), most of the [geometric unary operations](https://r-spatial.github.io/sf/reference/geos_unary.html), `sf::st_union()`, `sf::st_combine()`, `sf::st_cast()`, and `sf::st_jitter()`.
 
-These functions cannot be directly applied to a sfnetwork, but no need to panic! The active element of the network can at any time be extracted with `sf::st_as_sf()` (or `tibble::as_tibble()`). This allows you to continue a specific part of your analysis *outside* of the network structure, using a regular sf object. Afterwards you could join inferred information back into the network. See the vignette about [spatial joins](https://luukvdmeer.github.io/sfnetworks/articles/join_filter.html) for more details.
+These functions cannot be directly applied to a sfnetwork, but no need to panic! The active element of the network can at any time be extracted with `sf::st_as_sf()` (or `tibble::as_tibble()`). This allows you to continue a specific part of your analysis *outside* of the network structure, using a regular sf object. Afterwards you could join inferred information back into the network. See the vignette about [spatial joins](https://luukvdmeer.github.io/sfnetworks/articles/sfn03_join_filter.html) for more details.
 
 ```{r}
 net %>%

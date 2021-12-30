@@ -85,4 +85,15 @@ s3_register = function(generic, class, method = NULL) {
 
   invisible()
 }
+
+.onAttach = function(libname, pkgname) {
+  if (sf::sf_extSoftVersion()["PROJ"] < "6.0.0" || sf::sf_extSoftVersion()["proj.4"] < "6.0.0") {
+    packageStartupMessage(paste0(
+      'Warning: It seems that you are using an old version of PROJ. If you ',
+      'use the built-in roxel dataset, please remember to reassign its CRS, ',
+      'i.e. sf::st_crs(roxel) = sf::st_crs("EPSG:4326"), before running any ',
+      'example.'
+    ))
+  }
+}
 # nocov end

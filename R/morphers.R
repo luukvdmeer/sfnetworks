@@ -38,7 +38,7 @@
 #' of \code{\link[tidygraph]{morph}} for the requirements for custom morphers.
 #'
 #' @seealso The vignette on
-#' \href{https://luukvdmeer.github.io/sfnetworks/articles/morphers.html}{spatial morphers}.
+#' \href{https://luukvdmeer.github.io/sfnetworks/articles/sfn05_morphers.html}{spatial morphers}.
 #'
 #' @examples
 #' library(sf, quietly = TRUE)

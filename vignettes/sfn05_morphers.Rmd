@@ -141,7 +141,7 @@ A lot of morpher functions are offered by `tidygraph`. See the overview of them 
 
 The `to_spatial_contracted()` morpher groups nodes based on given grouping variables, and merges each group of nodes into a single, new node. The geometry of this new node will be the centroid of the geometries of all group members. Edges that were incidents to any of the group members are updated such that they are now incident to the new node. Their boundaries are updated accordingly to preserve the valid spatial network structure. The morphed state contains a single sfnetwork.
 
-To create the groups of nodes, the morpher accepts grouping variables as `...` argument. These will be evaluated in the same way as arguments to `dplyr::group_by()`. That means you can group the nodes based on any (combination of) attribute(s). For an example of grouping based on a spatial clustering algorithm, see the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html#simplify-intersections) vignette.
+To create the groups of nodes, the morpher accepts grouping variables as `...` argument. These will be evaluated in the same way as arguments to `dplyr::group_by()`. That means you can group the nodes based on any (combination of) attribute(s). For an example of grouping based on a spatial clustering algorithm, see the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/sfn02_preprocess_clean.html#simplify-intersections) vignette.
 
 A point of attention is that contraction introduces new *multiple edges* and/or *loop edges*. Multiple edges are introduced by contraction when there are several connections between the same groups of nodes. Loop edges are introduced by contraction when there are connections within a group. Setting `simplify = TRUE` will remove the multiple and loop edges after contraction. However, note that this also removes multiple and loop edges that already existed before contraction.
 
@@ -246,7 +246,7 @@ plot(p, pch = 8, cex = 2, lwd = 2, add = TRUE)
 
 ### to_spatial_shortest_paths
 
-The `to_spatial_shortest_paths()` morpher limits the original network to those nodes and edges that are part of the shortest path between two nodes. Just as with the other shortest path calculation functionalities presented in the [Routing](https://luukvdmeer.github.io/sfnetworks/articles/routing.html) vignette, besides node indices or names, any geospatial point (as sf or sfc object) can be provided as *from* and *to* node. Internally, such points will be snapped to their nearest node before calculating the shortest path.
+The `to_spatial_shortest_paths()` morpher limits the original network to those nodes and edges that are part of the shortest path between two nodes. Just as with the other shortest path calculation functionalities presented in the [Routing](https://luukvdmeer.github.io/sfnetworks/articles/sfn04_routing.html) vignette, besides node indices or names, any geospatial point (as sf or sfc object) can be provided as *from* and *to* node. Internally, such points will be snapped to their nearest node before calculating the shortest path.
 
 The morpher only accepts a single *from* node. If also a single *to* node is provided, the morphed state of the network contains a single sfnetwork. However, it is also possible to provide multiple *to* nodes. Then, the morphed state of the network contains multiple sfnetworks, one for each from-to combination.
 
@@ -283,7 +283,7 @@ new_net %>%
 
 ### to_spatial_simple
 
-The `to_spatial_simple()` morpher removes loop edges from the network and merges multiple edges into one. Loop edges are edges that start and end at the same node. Multiple edges are sets of edges that connect the same pair of nodes. The morphed state contains a single sfnetwork. See the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html#simplify-network) vignette for more details and examples.
+The `to_spatial_simple()` morpher removes loop edges from the network and merges multiple edges into one. Loop edges are edges that start and end at the same node. Multiple edges are sets of edges that connect the same pair of nodes. The morphed state contains a single sfnetwork. See the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/sfn02_preprocess_clean.html#simplify-network) vignette for more details and examples.
 
 In the same way as `to_spatial_contracted()`, the `to_spatial_simple()` morpher gives the option to specify how attributes from merged edges should be inferred from the attributes of the set members. The geometry of a merged edge however is always equal to the geometry of the first set member.
 
@@ -322,7 +322,7 @@ simple_net %>%
 ### to_spatial_smooth
 
 The `to_spatial_smooth()` morpher creates a smoothed version of the original network by iteratively removing pseudo nodes. In the case of directed networks, pseudo nodes are those nodes that have only one incoming and one outgoing edge. In undirected networks, pseudo nodes are those nodes that have two incident edges. Connectivity of the
-network is preserved by concatenating the incident edges of each removed pseudo node. The morphed state contains a single sfnetwork. See the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html#smooth-pseudo-nodes) vignette for more details and examples.
+network is preserved by concatenating the incident edges of each removed pseudo node. The morphed state contains a single sfnetwork. See the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/sfn02_preprocess_clean.html#smooth-pseudo-nodes) vignette for more details and examples.
 
 ```{r, fig.show='hold', out.width = '50%'}
 smoothed_net = convert(net, to_spatial_smooth)
@@ -334,7 +334,7 @@ plot(smoothed_net, col = "grey", add = TRUE)
 
 ### to_spatial_subdivision
 
-The `to_spatial_subdivision()` morpher creates a subdivision of the original network by subdividing edges at each interior point that is equal to any other interior or boundary point of other edges. Interior points in this sense are those points that are included in a linestring geometry feature but are not endpoints of it, while boundary points are the endpoints of the linestrings. The network is reconstructed after subdivision such that connections are created at the points of subdivision. The morphed state contains a single sfnetwork. See the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/preprocess_and_clean.html#subdivide-edges) vignette for more details and examples.
+The `to_spatial_subdivision()` morpher creates a subdivision of the original network by subdividing edges at each interior point that is equal to any other interior or boundary point of other edges. Interior points in this sense are those points that are included in a linestring geometry feature but are not endpoints of it, while boundary points are the endpoints of the linestrings. The network is reconstructed after subdivision such that connections are created at the points of subdivision. The morphed state contains a single sfnetwork. See the [Network pre-processing and cleaning](https://luukvdmeer.github.io/sfnetworks/articles/sfn02_preprocess_clean.html#subdivide-edges) vignette for more details and examples.
 
 ```{r}
 subdivided_net = convert(net, to_spatial_subdivision)

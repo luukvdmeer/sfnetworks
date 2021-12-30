@@ -130,7 +130,7 @@ paths %>%
 plot(c(p1, p2, p3), col = colors, pch = 8, cex = 2, lwd = 2, add = TRUE)
 ```
 
-Simply finding the nearest node to given points is not always the best way to go. For example: when a provided point is close to a location on an edge linestring, but relatively far from any node, it gives better results when the routing does not start at its nearest node, but at that nearby location on the edge linestring. To accommodate this, you can first *blend* your input points into the network, and then proceed as normal. Blending is the name we gave to the combined process of snapping a point to its nearest point on its nearest edge, splitting the edge there, and adding the snapped point as node to the network. It is implement in the function `st_network_blend()`. See the vignette on [spatial joins and filters](https://luukvdmeer.github.io/sfnetworks/articles/join_filter.html#blending-points-into-a-network) for more details.
+Simply finding the nearest node to given points is not always the best way to go. For example: when a provided point is close to a location on an edge linestring, but relatively far from any node, it gives better results when the routing does not start at its nearest node, but at that nearby location on the edge linestring. To accommodate this, you can first *blend* your input points into the network, and then proceed as normal. Blending is the name we gave to the combined process of snapping a point to its nearest point on its nearest edge, splitting the edge there, and adding the snapped point as node to the network. It is implement in the function `st_network_blend()`. See the vignette on [spatial joins and filters](https://luukvdmeer.github.io/sfnetworks/articles/sfn03_join_filter.html#blending-points-into-a-network) for more details.
 
 Another issue may arise wen your network consists of multiple components that are not connected to each other. In that case, it is possible that the nearest node to a provided point is located in a tiny component and only a few other nodes can be reached from it. In such cases it might be good to first reduce the network to its largest (or *n* largest) component(s) before calculating shortest paths. The tidygraph function `tidygraph::group_components()` can help with this. It assigns an integer to each node identifying the component it is in, with `1` being the largest component in the network, `2` the second largest, and so on.
 
@@ -146,7 +146,7 @@ plot(net, col = colors[2])
 plot(connected_net, cex = 1.1, lwd = 1.1, add = TRUE)
 ```
 
-Another way to calculate shortest paths, which fits nicely in the tidygraph style of working, is by using the `to_spatial_shortest_paths()` morpher function. This will subset the original network to only contain those nodes and edges that appear in a shortest path between two nodes. See the vignette on [Spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html#to_spatial_shortest_paths) for details.
+Another way to calculate shortest paths, which fits nicely in the tidygraph style of working, is by using the `to_spatial_shortest_paths()` morpher function. This will subset the original network to only contain those nodes and edges that appear in a shortest path between two nodes. See the vignette on [Spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/sfn05_morphers.html#to_spatial_shortest_paths) for details.
 
 ## Retrieving an OD cost matrix
 
@@ -365,7 +365,7 @@ plot(iso, col = colors[2], add = TRUE)
 plot(p, col = colors[1], pch = 8, cex = 2, lwd = 2, add = TRUE)
 ```
 
-The workflow presented above is generalized in a spatial morpher function `to_spatial_neighborhood()`, which can be used inside the `tidygraph::convert()` verb to filter only those nodes that can be reached within a given travel cost from the given origin node. See the vignette on [Spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/morphers.html#to_spatial_neighborhood) for details.
+The workflow presented above is generalized in a spatial morpher function `to_spatial_neighborhood()`, which can be used inside the `tidygraph::convert()` verb to filter only those nodes that can be reached within a given travel cost from the given origin node. See the vignette on [Spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/sfn05_morphers.html#to_spatial_neighborhood) for details.
 
 ### Custom routing
 
