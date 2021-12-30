@@ -252,6 +252,18 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' If set to \code{NA}, no weights are used, even if the edges have a
 #' \code{weight} column.
 #'
+#' @param direction The direction of travel to calculate the shortest
+#'                  paths. Defaults to \code{out}, where the shortest paths are
+#'                  calculated \code{from} the nodes, i.e. considers only
+#'                  outbound edges. When \code{in}, it calculates
+#'                  the shortest paths \code{to} the nodes, i.e. considers
+#'                  only inbound edges and when \code{all}
+#'                  then the network is considered undirected. This argument
+#'                  is ignored for undirected networks.
+#'                  This argument is equivalent to \code{mode} in
+#'                  \code{\link[igraph]{distances}} and hence \code{mode} is
+#'                  ignored in this function.
+#'
 #' @param Inf_as_NaN Should the cost values of unconnected nodes be stored as
 #' \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.
 #'
@@ -275,13 +287,6 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' see the \code{\link[igraph]{distances}} documentation page.
 #'
 #' @seealso \code{\link{st_network_paths}}
-#'
-#' @note By default, \code{\link[igraph]{distances}} calculates costs by
-#' by allowing to travel each edge in both directions, hence by assuming an
-#' undirected network. This is the default even when the input network is
-#' directed! For directed networks, the behaviour can be changed by setting
-#' \code{mode = "out"} to consider only outbound edges, or \code{mode = "in"}
-#' to consider only inbound edges.
 #'
 #' @return An n times m numeric matrix where n is the length of the \code{from}
 #' argument, and m is the length of the \code{to} argument.
@@ -323,7 +328,8 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' @importFrom igraph V
 #' @export
 st_network_cost = function(x, from = igraph::V(x), to = igraph::V(x),
-                           weights = NULL, Inf_as_NaN = FALSE, ...) {
+                           weights = NULL, direction = "out",
+                           Inf_as_NaN = FALSE, ...) {
   UseMethod("st_network_cost")
 }
 
@@ -331,7 +337,8 @@ st_network_cost = function(x, from = igraph::V(x), to = igraph::V(x),
 #' @importFrom units deparse_unit as_units
 #' @export
 st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
-                                       weights = NULL, Inf_as_NaN = FALSE, ...) {
+                                     weights = NULL, direction = "out",
+                                     Inf_as_NaN = FALSE, ...) {
   # If 'from' and/or 'to' points are given as simple feature geometries:
   # --> Convert them to node indices.
   if (is.sf(from) | is.sfc(from)) from = set_path_endpoints(x, from)
@@ -340,6 +347,17 @@ st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
   if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
   # Set weights.
   weights = set_path_weights(x, weights)
+  # Check for mode argument passed to ...
+  args = list(...)
+  # If mode argument present, ignore it and return a warning
+  if (!is.null(args$mode)) {
+    args$mode = NULL
+    warning(
+      "'mode' argument ignored. ",
+      "Please set the 'direction' argument instead.",
+      call. = FALSE
+    )
+  }
   # Igraph does not support duplicated 'to' nodes.
   if(any(duplicated(to))) {
     # --> Obtain unique 'to' nodes to pass to igraph.
@@ -347,21 +365,26 @@ st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
     # --> Find which 'to' nodes are duplicated.
     match = match(to, to_unique)
     # Call igraph function.
-    matrix = distances(x, from, to_unique, weights = weights, ...)
+    matrix = do.call(igraph::distances,
+                     c(list(x, from, to_unique, weights = weights,
+                            mode = direction), args))
     # Return the matrix
-    # --> With duplicated 'to' nodes included and corresponding unit.
+    # --> With duplicated 'to' nodes included.
     matrix = matrix[, match, drop = FALSE]
   } else {
     # Call igraph function.
-    matrix = igraph::distances(x, from, to, weights = weights, ...)
+    matrix = do.call(igraph::distances,
+                     c(list(x, from, to, weights = weights,
+                            mode = direction), args))
   }
   # Convert Inf to NaN if requested.
   if (Inf_as_NaN) matrix[is.infinite(matrix)] = NaN
-  # # Fetch weight units to pass onto distance matrix.
+  # Check if weights parameter inherits units.
   if (inherits(weights, "units")) {
+    # Fetch weight units to pass onto distance matrix.
     weights_units = deparse_unit(weights)
-    as_units(matrix, weights_units)
     # Return matrix as units object
+    as_units(matrix, weights_units)
   } else {
     # Return the matrix.
     matrix
