@@ -146,6 +146,46 @@ test_that("All simple paths wrapper gives a known number of paths", {
   )
 })
 
+p1 = st_point(c(7, 51))
+p2 = st_point(c(7, 52))
+p3 = st_point(c(8, 52))
+p4 = st_point(c(8, 51.5))
+
+l1 = st_sfc(st_linestring(c(p1, p2)))
+l2 = st_sfc(st_linestring(c(p1, p4, p3)))
+l3 = st_sfc(st_linestring(c(p3, p2)))
+
+edges = st_as_sf(c(l1, l2, l3), crs = 4326)
+nodes = st_as_sf(c(st_sfc(p1), st_sfc(p2), st_sfc(p3)), crs = 4326)
+
+edges$from = c(1, 1, 3)
+edges$to = c(2, 3, 2)
+
+net_unnamed = sfnetwork(nodes, edges)
+
+paths_unnamed = st_network_paths(net_unnamed, 1, c(2,3))
+
+nodes$name = c("city", "village", "farm")
+edges$from = c("city", "city", "farm")
+edges$to = c("village", "farm", "village")
+
+net_named = sfnetwork(nodes, edges)
+
+paths_named = st_network_paths(net_named, "city", c("farm","village"))
+
+test_that("st_network_paths returns a named vector or not
+          when node_key is set or not", {
+  expect_named(paths_named$node_paths[[1]], c("city", "farm"))
+  expect_named(paths_named$node_paths[[2]], c("city", "village"))
+  expect_named(paths_named$edge_paths[[1]], c("city|farm"))
+  expect_named(paths_named$edge_paths[[2]], c("city|village"))
+  expect_named(paths_unnamed$node_paths[[1]], NULL)
+  expect_named(paths_unnamed$node_paths[[2]], NULL)
+  expect_named(paths_unnamed$edge_paths[[1]], NULL)
+  expect_named(paths_unnamed$edge_paths[[2]], NULL)
+})
+
+
 sub1_c1 = c(0, 2, 3, 1, 2, 2, 0, 1, 1, 2, 3, 1, 0, 2, 3, 1, 1, 2, 0, 1,
            2, 2, 3, 1, 0)
 sub2_c1 = c(0, 1, Inf, Inf, Inf, 1, 0, Inf, Inf, Inf, Inf, Inf, 0, 1, Inf,
