@@ -184,12 +184,24 @@ get_shortest_paths = function(x, from, to, weights, ...) {
   # Set weights.
   weights = set_path_weights(x, weights)
   # Call igraph function.
-  paths = shortest_paths(x, from, to, weights = weights, output = "both", ...)
+  paths = igraph::shortest_paths(x, from, to,
+                                 weights = weights, output = "both", ...)
   # Extract paths of node indices and edge indices.
-  npaths = lapply(paths[[1]], as.integer)
-  epaths = lapply(paths[[2]], as.integer)
+  if (!is.null(unlist(lapply(paths[[1]], attr, 'names')))) {
+    # If nodes are named then return a named vector
+    npaths_int = lapply(paths[[1]], as.integer)
+    npaths_nms = lapply(paths[[1]], attr, 'names')
+    npaths = mapply(setNames, npaths_int, npaths_nms, SIMPLIFY = FALSE)
+    epaths_int = lapply(paths[[2]], as.integer)
+    epaths_nms = lapply(paths[[2]], attr, 'vnames')
+    epaths = mapply(setNames, epaths_int, epaths_nms, SIMPLIFY = FALSE)
+  } else {
+    npaths = lapply(paths[[1]], as.integer)
+    epaths = lapply(paths[[2]], as.integer)
+  }
   # Return as columns in a tibble.
-  as_tibble(do.call(cbind, list(node_paths = npaths, edge_paths = epaths)))
+  tibble::as_tibble(do.call(cbind, list(node_paths = npaths,
+                                        edge_paths = epaths)))
 }
 
 #' @importFrom igraph all_shortest_paths
@@ -198,22 +210,36 @@ get_all_shortest_paths = function(x, from, to, weights, ...) {
   # Set weights.
   weights = set_path_weights(x, weights)
   # Call igraph function.
-  paths = all_shortest_paths(x, from, to, weights = weights, ...)
+  paths = igraph::all_shortest_paths(x, from, to, weights = weights, ...)
   # Extract paths of node indices.
-  npaths = lapply(paths[[1]], as.integer)
+  if (!is.null(unlist(lapply(paths[[1]], attr, 'names')))) {
+    # If nodes are named then return a named vector
+    npaths_int = lapply(paths[[1]], as.integer)
+    npaths_nms = lapply(paths[[1]], attr, 'names')
+    npaths = mapply(setNames, npaths_int, npaths_nms, SIMPLIFY = FALSE)
+  } else {
+    npaths = lapply(paths[[1]], as.integer)
+  }
   # Return as column in a tibble.
-  as_tibble(do.call(cbind, list(node_paths = npaths)))
+  tibble::as_tibble(do.call(cbind, list(node_paths = npaths)))
 }
 
 #' @importFrom igraph all_simple_paths
 #' @importFrom tibble as_tibble
 get_all_simple_paths = function(x, from, to, ...) {
   # Call igraph function.
-  paths = all_simple_paths(x, from, to, ...)
+  paths = igraph::all_simple_paths(x, from, to, ...)
   # Extract paths of node indices.
-  npaths = lapply(paths, as.integer)
+  if (!is.null(unlist(lapply(paths, attr, 'names')))) {
+    # If nodes are named then return a named vector
+    npaths_int = lapply(paths, as.integer)
+    npaths_nms = lapply(paths, attr, 'names')
+    npaths = mapply(setNames, npaths_int, npaths_nms, SIMPLIFY = FALSE)
+  } else {
+    npaths = lapply(paths, as.integer)
+  }
   # Return as column in a tibble.
-  as_tibble(do.call(cbind, list(node_paths = npaths)))
+  tibble::as_tibble(do.call(cbind, list(node_paths = npaths)))
 }
 
 #' Compute a cost matrix of a spatial network
