@@ -444,8 +444,8 @@ to_spatial_shortest_paths = function(x, ...) {
   orig_edge_idxs = edge_attr(x, ".tidygraph_edge_index")
   # Subset the network for each computed shortest path.
   get_single_path = function(i) {
-    edge_idxs = as.integer(paths$edge_paths[[i]])
     node_idxs = as.integer(paths$node_paths[[i]])
+    edge_idxs = as.integer(paths$edge_paths[[i]])
     x_new = delete_edges(x, orig_edge_idxs[-edge_idxs])
     x_new = delete_vertices(x_new, orig_node_idxs[-node_idxs])
     x_new = x_new %preserve_all_attrs% x

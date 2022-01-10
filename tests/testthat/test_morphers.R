@@ -174,6 +174,40 @@ test_that("to_spatial_shortest_paths morphs the sfnetwork into a new network
   expect_equal(count_components(shpt_u), 1)
 })
 
+test_that("to_spatial_shortest_paths outputs expected path_node_order and
+          path_edge_order", {
+  path_node_order_d = shpt_d %>%
+    arrange(path_node_order) %>%
+    pull(.tidygraph_node_index)
+  path_node_order_d_paths =
+    st_network_paths(net_d, B, A) %>%
+    pull(node_paths)
+  expect_setequal(path_node_order_d, path_node_order_d_paths[[1]])
+  path_node_order_u = shpt_u %>%
+    arrange(path_node_order) %>%
+    pull(.tidygraph_node_index)
+  path_node_order_u_paths =
+    st_network_paths(net_u, B, A) %>%
+    pull(node_paths)
+  expect_setequal(path_node_order_u, path_node_order_u_paths[[1]])
+  path_edge_order_d = shpt_d %>%
+    activate("edges") %>%
+    arrange(path_edge_order) %>%
+    pull(.tidygraph_edge_index)
+  path_edge_order_d_paths =
+    st_network_paths(net_d, B, A) %>%
+    pull(edge_paths)
+  expect_setequal(path_edge_order_d, path_edge_order_d_paths[[1]])
+  path_edge_order_u = shpt_u %>%
+    activate("edges") %>%
+    arrange(path_edge_order) %>%
+    pull(.tidygraph_edge_index)
+  path_edge_order_u_paths =
+    st_network_paths(net_u, B, A) %>%
+    pull(edge_paths)
+  expect_setequal(path_edge_order_u, path_edge_order_u_paths[[1]])
+})
+
 test_that("to_spatial_subdivision morphs the sfnetwork into a new network
           with the expected number of nodes, edges and components", {
   expect_equal(vcount(subd_l), 9)
