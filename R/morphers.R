@@ -448,7 +448,16 @@ to_spatial_shortest_paths = function(x, ...) {
     node_idxs = as.integer(paths$node_paths[[i]])
     x_new = delete_edges(x, orig_edge_idxs[-edge_idxs])
     x_new = delete_vertices(x_new, orig_node_idxs[-node_idxs])
-    x_new %preserve_all_attrs% x
+    x_new = x_new %preserve_all_attrs% x
+    vertex_attr(x_new, "path_node_order") = match(
+      vertex_attr(x_new, ".tidygraph_node_index"),
+      node_idxs
+    )
+    edge_attr(x_new, "path_edge_order") = match(
+      edge_attr(x_new, ".tidygraph_edge_index"),
+      edge_idxs
+    )
+    x_new
   }
   lapply(seq_len(nrow(paths)), get_single_path)
 }
