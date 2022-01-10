@@ -180,6 +180,7 @@ st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
 
 #' @importFrom igraph shortest_paths
 #' @importFrom tibble as_tibble
+#' @importFrom rlang set_names
 get_shortest_paths = function(x, from, to, weights, ...) {
   # Set weights.
   weights = set_path_weights(x, weights)
@@ -191,10 +192,10 @@ get_shortest_paths = function(x, from, to, weights, ...) {
     # If nodes are named then return a named vector
     npaths_int = lapply(paths[[1]], as.integer)
     npaths_nms = lapply(paths[[1]], attr, 'names')
-    npaths = mapply(setNames, npaths_int, npaths_nms, SIMPLIFY = FALSE)
+    npaths = mapply(set_names, npaths_int, npaths_nms, SIMPLIFY = FALSE)
     epaths_int = lapply(paths[[2]], as.integer)
     epaths_nms = lapply(paths[[2]], attr, 'vnames')
-    epaths = mapply(setNames, epaths_int, epaths_nms, SIMPLIFY = FALSE)
+    epaths = mapply(set_names, epaths_int, epaths_nms, SIMPLIFY = FALSE)
   } else {
     npaths = lapply(paths[[1]], as.integer)
     epaths = lapply(paths[[2]], as.integer)
@@ -206,6 +207,7 @@ get_shortest_paths = function(x, from, to, weights, ...) {
 
 #' @importFrom igraph all_shortest_paths
 #' @importFrom tibble as_tibble
+#' @importFrom rlang set_names
 get_all_shortest_paths = function(x, from, to, weights, ...) {
   # Set weights.
   weights = set_path_weights(x, weights)
@@ -216,7 +218,7 @@ get_all_shortest_paths = function(x, from, to, weights, ...) {
     # If nodes are named then return a named vector
     npaths_int = lapply(paths[[1]], as.integer)
     npaths_nms = lapply(paths[[1]], attr, 'names')
-    npaths = mapply(setNames, npaths_int, npaths_nms, SIMPLIFY = FALSE)
+    npaths = mapply(set_names, npaths_int, npaths_nms, SIMPLIFY = FALSE)
   } else {
     npaths = lapply(paths[[1]], as.integer)
   }
@@ -226,6 +228,7 @@ get_all_shortest_paths = function(x, from, to, weights, ...) {
 
 #' @importFrom igraph all_simple_paths
 #' @importFrom tibble as_tibble
+#' @importFrom rlang set_names
 get_all_simple_paths = function(x, from, to, ...) {
   # Call igraph function.
   paths = igraph::all_simple_paths(x, from, to, ...)
@@ -234,7 +237,7 @@ get_all_simple_paths = function(x, from, to, ...) {
     # If nodes are named then return a named vector
     npaths_int = lapply(paths, as.integer)
     npaths_nms = lapply(paths, attr, 'names')
-    npaths = mapply(setNames, npaths_int, npaths_nms, SIMPLIFY = FALSE)
+    npaths = mapply(set_names, npaths_int, npaths_nms, SIMPLIFY = FALSE)
   } else {
     npaths = lapply(paths, as.integer)
   }
