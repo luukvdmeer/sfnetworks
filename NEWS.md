@@ -1,3 +1,8 @@
+# sfnetworks v0.5.5
+
+* Adjusted the code used to check the version of PROJ on attach. In particular, the new approach tests only `sf::sf_extSoftVersion()["proj.4"]` since `sf::sf_extSoftVersion()["PROJ"]` might not be defined for sf < 1.0. Refs [#198](https://github.com/luukvdmeer/sfnetworks/issues/198) and [#200](https://github.com/luukvdmeer/sfnetworks/issues/200). 
+* Adjusted one of the vignettes following the changes in `dplyr` 1.0.8. Ref [#202](https://github.com/luukvdmeer/sfnetworks/pull/202). Thanks @romainfrancois. 
+  
 # sfnetworks v0.5.4
 
 * A startup message is included to urge users of PROJ <= 6 to recreate the CRS for the `Roxel` dataset. Refs [#190](https://github.com/luukvdmeer/sfnetworks/issues/190) and fixed with [#193](https://github.com/luukvdmeer/sfnetworks/pull/193).
