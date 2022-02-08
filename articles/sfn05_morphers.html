@@ -99,7 +99,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>5. Spatial morphers</h1>
             
-            <h4 data-toc-skip class="date">2021-12-16</h4>
+            <h4 data-toc-skip class="date">2022-02-08</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/HEAD/vignettes/sfn05_morphers.Rmd" class="external-link"><code>vignettes/sfn05_morphers.Rmd</code></a></small>
       <div class="hidden name"><code>sfn05_morphers.Rmd</code></div>
@@ -321,7 +321,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>bc_dir <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/centrality.html" class="external-link">centrality_betweenness</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html" class="external-link">unmorph</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>bc_diff <span class="op">=</span> <span class="va">bc_dir</span> <span class="op">-</span> <span class="va">bc_undir</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">bc_diff</span>, <span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">bc_diff</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre class="fansi fansi-output"><code><span class="co">#&gt; # A sfnetwork with 701 nodes and 851 edges</span>
 <span class="co">#&gt; #</span>
 <span class="co">#&gt; # CRS:  EPSG:3035 </span>
@@ -334,12 +334,12 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 <span class="co">#&gt;            geometry bc_undir bc_dir bc_diff</span>
 <span class="co">#&gt;         &lt;POINT [m]&gt;    &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;</span>
-<span class="co">#&gt; 1 (4151721 3206809)   39283.  7596  -31687.</span>
-<span class="co">#&gt; 2 (4151732 3207017)   33800.  4376. -29424.</span>
-<span class="co">#&gt; 3 (4151702 3207456)   70243. 42322. -27920.</span>
-<span class="co">#&gt; 4 (4151771 3207186)   45365. 18909. -26456.</span>
-<span class="co">#&gt; 5 (4151599 3207942)   30698.  4908  -25790.</span>
-<span class="co">#&gt; 6 (4151617 3207870)   30574.  5254  -25320.</span>
+<span class="co">#&gt; 1 (4152048 3207854)    1159. 38279.  37120.</span>
+<span class="co">#&gt; 2 (4152205 3207787)    1259. 38104.  36845.</span>
+<span class="co">#&gt; 3 (4152057 3207685)   15129. 51935.  36806.</span>
+<span class="co">#&gt; 4 (4152035 3207851)    1794. 37512.  35719.</span>
+<span class="co">#&gt; 5 (4152207 3207791)    2453. 37754.  35301.</span>
+<span class="co">#&gt; 6 (4152085 3207577)   17974. 52110.  34136.</span>
 <span class="co">#&gt; # … with 695 more rows</span>
 <span class="co">#&gt; #</span>
 <span class="co">#&gt; # Edge Data:     851 × 5</span>
@@ -348,9 +348,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 <span class="co">#&gt;    from    to name                  type                                geometry</span>
 <span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;                 &lt;fct&gt;                       &lt;LINESTRING [m]&gt;</span>
-<span class="co">#&gt; 1   202   536 Havixbecker Strasse   residential (4151491 3207923, 4151474 32079…</span>
-<span class="co">#&gt; 2    14    96 Pienersallee          secondary   (4151398 3207777, 4151390 32077…</span>
-<span class="co">#&gt; 3    38    95 Schulte-Bernd-Strasse residential (4151408 3207539, 4151417 32075…</span>
+<span class="co">#&gt; 1   166   500 Havixbecker Strasse   residential (4151491 3207923, 4151474 32079…</span>
+<span class="co">#&gt; 2   606   688 Pienersallee          secondary   (4151398 3207777, 4151390 32077…</span>
+<span class="co">#&gt; 3   607   664 Schulte-Bernd-Strasse residential (4151408 3207539, 4151417 32075…</span>
 <span class="co">#&gt; # … with 848 more rows</span></code></pre>
 </div>
 <div class="section level3">
@@ -493,8 +493,8 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="co">#&gt; # A tibble: 2 × 6</span>
 <span class="co">#&gt;    from    to name         type                                   geometry  flow</span>
 <span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;        &lt;fct&gt;                          &lt;LINESTRING [m]&gt; &lt;int&gt;</span>
-<span class="co">#&gt; 1   118   119 NA           service (4150716 3207080, 4150715 3207108, 415…    27</span>
-<span class="co">#&gt; 2   118   119 Pienersallee service      (4150716 3207080, 4150752 3207067)    41</span></code></pre>
+<span class="co">#&gt; 1   118   119 NA           service (4150716 3207080, 4150715 3207108, 415…    29</span>
+<span class="co">#&gt; 2   118   119 Pienersallee service      (4150716 3207080, 4150752 3207067)     6</span></code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Simplify the network.</span>
 <span class="co"># We summarise the flow attribute by taking the sum of the merged edge flows.</span>
@@ -518,7 +518,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="co">#&gt; # A tibble: 1 × 7</span>
 <span class="co">#&gt;    from    to name  type                         geometry  flow .tidygraph_edge…</span>
 <span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;fct&gt;                &lt;LINESTRING [m]&gt; &lt;dbl&gt; &lt;list&gt;          </span>
-<span class="co">#&gt; 1   118   119 NA    service (4150716 3207080, 4150715 32…    68 &lt;int [2]&gt;</span></code></pre>
+<span class="co">#&gt; 1   118   119 NA    service (4150716 3207080, 4150715 32…    35 &lt;int [2]&gt;</span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="to_spatial_smooth">to_spatial_smooth<a class="anchor" aria-label="anchor" href="#to_spatial_smooth"></a>
@@ -624,10 +624,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 <span class="co">#&gt;            geometry building post_code</span>
 <span class="co">#&gt;         &lt;POINT [m]&gt; &lt;lgl&gt;        &lt;dbl&gt;</span>
-<span class="co">#&gt; 1 (4151491 3207923) FALSE           NA</span>
-<span class="co">#&gt; 2 (4151474 3207946) TRUE          1020</span>
-<span class="co">#&gt; 3 (4151398 3207777) FALSE           NA</span>
-<span class="co">#&gt; 4 (4151370 3207673) FALSE           NA</span>
+<span class="co">#&gt; 1 (4151491 3207923) TRUE          1020</span>
+<span class="co">#&gt; 2 (4151474 3207946) FALSE           NA</span>
+<span class="co">#&gt; 3 (4151398 3207777) TRUE          1020</span>
+<span class="co">#&gt; 4 (4151370 3207673) TRUE          1020</span>
 <span class="co">#&gt; 5 (4151408 3207539) TRUE          1020</span>
 <span class="co">#&gt; 6 (4151421 3207592) TRUE          1020</span>
 <span class="co">#&gt; # … with 695 more rows</span>
@@ -653,9 +653,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>azimuth <span class="op">=</span> <span class="fu"><a href="../reference/spatial_edge_measures.html">edge_azimuth</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-error"><code><span class="co">#&gt; Error: Problem with `mutate()` column `azimuth`.</span>
-<span class="co">#&gt; ℹ `azimuth = edge_azimuth()`.</span>
-<span class="co">#&gt; ✖ st_is_longlat(x) is not TRUE</span></code></pre>
+<pre class="fansi fansi-error"><code><span class="co">#&gt; Error in `stopifnot()`:</span>
+<span class="co">#&gt; ! Problem while computing `azimuth = edge_azimuth()`.</span>
+<span class="co">#&gt; Caused by error in `st_geod_azimuth()`:</span>
+<span class="co">#&gt; ! st_is_longlat(x) is not TRUE</span></code></pre>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># We make it work by temporarily transforming to a different CRS.</span>
 <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
@@ -689,9 +690,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 <span class="co">#&gt;            geometry building</span>
 <span class="co">#&gt;         &lt;POINT [m]&gt; &lt;lgl&gt;   </span>
-<span class="co">#&gt; 1 (4151491 3207923) FALSE   </span>
-<span class="co">#&gt; 2 (4151474 3207946) TRUE    </span>
-<span class="co">#&gt; 3 (4151398 3207777) FALSE   </span>
+<span class="co">#&gt; 1 (4151491 3207923) TRUE    </span>
+<span class="co">#&gt; 2 (4151474 3207946) FALSE   </span>
+<span class="co">#&gt; 3 (4151398 3207777) TRUE    </span>
 <span class="co">#&gt; # … with 698 more rows</span></code></pre>
 </div>
 </div>
@@ -714,7 +715,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
