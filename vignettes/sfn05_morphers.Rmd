@@ -194,7 +194,7 @@ net %>%
   mutate(bc_dir = centrality_betweenness()) %>%
   unmorph() %>%
   mutate(bc_diff = bc_dir - bc_undir) %>%
-  arrange(bc_diff, desc())
+  arrange(desc(bc_diff))
 ```
 
 ### to_spatial_explicit
