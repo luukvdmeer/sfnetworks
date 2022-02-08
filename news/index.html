@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.5</span>
       </span>
     </div>
 
@@ -69,6 +69,11 @@
       <small>Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.5.5" id="sfnetworks-v055">sfnetworks v0.5.5<a class="anchor" aria-label="anchor" href="#sfnetworks-v055"></a></h2>
+<ul><li>Adjusted the code used to check the version of PROJ on attach. In particular, the new approach tests only <code>sf::sf_extSoftVersion()["proj.4"]</code> since <code>sf::sf_extSoftVersion()["PROJ"]</code> might not be defined for sf &lt; 1.0. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/198" class="external-link">#198</a> and <a href="https://github.com/luukvdmeer/sfnetworks/issues/200" class="external-link">#200</a>.</li>
+<li>Adjusted one of the vignettes following the changes in <code>dplyr</code> 1.0.8. Ref <a href="https://github.com/luukvdmeer/sfnetworks/pull/202" class="external-link">#202</a>. Thanks <a href="https://github.com/romainfrancois" class="external-link">@romainfrancois</a>.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.4" id="sfnetworks-v054">sfnetworks v0.5.4<small>2021-12-17</small><a class="anchor" aria-label="anchor" href="#sfnetworks-v054"></a></h2>
 <ul><li>A startup message is included to urge users of PROJ &lt;= 6 to recreate the CRS for the <code>Roxel</code> dataset. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/190" class="external-link">#190</a> and fixed with <a href="https://github.com/luukvdmeer/sfnetworks/pull/193" class="external-link">#193</a>.</li>

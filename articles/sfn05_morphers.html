@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.5</span>
       </span>
     </div>
 
@@ -493,8 +493,8 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="co">#&gt; # A tibble: 2 × 6</span>
 <span class="co">#&gt;    from    to name         type                                   geometry  flow</span>
 <span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;        &lt;fct&gt;                          &lt;LINESTRING [m]&gt; &lt;int&gt;</span>
-<span class="co">#&gt; 1   118   119 NA           service (4150716 3207080, 4150715 3207108, 415…    29</span>
-<span class="co">#&gt; 2   118   119 Pienersallee service      (4150716 3207080, 4150752 3207067)     6</span></code></pre>
+<span class="co">#&gt; 1   118   119 NA           service (4150716 3207080, 4150715 3207108, 415…    35</span>
+<span class="co">#&gt; 2   118   119 Pienersallee service      (4150716 3207080, 4150752 3207067)    43</span></code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Simplify the network.</span>
 <span class="co"># We summarise the flow attribute by taking the sum of the merged edge flows.</span>
@@ -518,7 +518,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="co">#&gt; # A tibble: 1 × 7</span>
 <span class="co">#&gt;    from    to name  type                         geometry  flow .tidygraph_edge…</span>
 <span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;fct&gt;                &lt;LINESTRING [m]&gt; &lt;dbl&gt; &lt;list&gt;          </span>
-<span class="co">#&gt; 1   118   119 NA    service (4150716 3207080, 4150715 32…    35 &lt;int [2]&gt;</span></code></pre>
+<span class="co">#&gt; 1   118   119 NA    service (4150716 3207080, 4150715 32…    78 &lt;int [2]&gt;</span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="to_spatial_smooth">to_spatial_smooth<a class="anchor" aria-label="anchor" href="#to_spatial_smooth"></a>
@@ -624,7 +624,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 <span class="co">#&gt;            geometry building post_code</span>
 <span class="co">#&gt;         &lt;POINT [m]&gt; &lt;lgl&gt;        &lt;dbl&gt;</span>
-<span class="co">#&gt; 1 (4151491 3207923) TRUE          1020</span>
+<span class="co">#&gt; 1 (4151491 3207923) FALSE           NA</span>
 <span class="co">#&gt; 2 (4151474 3207946) FALSE           NA</span>
 <span class="co">#&gt; 3 (4151398 3207777) TRUE          1020</span>
 <span class="co">#&gt; 4 (4151370 3207673) TRUE          1020</span>
@@ -690,7 +690,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
 <span class="co">#&gt;            geometry building</span>
 <span class="co">#&gt;         &lt;POINT [m]&gt; &lt;lgl&gt;   </span>
-<span class="co">#&gt; 1 (4151491 3207923) TRUE    </span>
+<span class="co">#&gt; 1 (4151491 3207923) FALSE   </span>
 <span class="co">#&gt; 2 (4151474 3207946) FALSE   </span>
 <span class="co">#&gt; 3 (4151398 3207777) TRUE    </span>
 <span class="co">#&gt; # … with 698 more rows</span></code></pre>
