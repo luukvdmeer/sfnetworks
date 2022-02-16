@@ -44,9 +44,8 @@ edge_azimuth = function() {
 
 #' @describeIn spatial_edge_measures The ratio of the length of an edge
 #' linestring geometry versus the straight-line distance between its boundary
-#' nodes, as described in
-#' \href{https://journals.sagepub.com/doi/10.1068/b130131p}{Giacomin &
-#' Levinson, 2015}.
+#' nodes, as described in Giacomin &
+#' Levinson, 2015 \doi{10.1068/b130131p}.
 #'
 #' @param Inf_as_NaN Should the circuity values of loop edges be stored as
 #' \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.
