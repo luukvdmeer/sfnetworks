@@ -1,6 +1,6 @@
 Package: sfnetworks
 Title: Tidy Geospatial Networks
-Version: 0.5.5
+Version: 0.5.5.900
 Authors@R:
     c(person(given = "Lucas",
              family = "van der Meer",
