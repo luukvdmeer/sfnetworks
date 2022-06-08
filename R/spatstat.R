@@ -53,6 +53,9 @@ check_spatstat = function(pkg) {
 #' \code{\link{sfnetwork}}.
 #'
 #' @name as.linnet
+#'
+#' @examples
+#' #TODO
 as.linnet.sfnetwork = function(X, ...) {
   # Check the presence and the version of spatstat.geom and spatstat.linnet
   check_spatstat("spatstat.geom")

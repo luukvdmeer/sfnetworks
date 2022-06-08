@@ -12,6 +12,7 @@
 \alias{to_spatial_subdivision}
 \alias{to_spatial_subset}
 \alias{to_spatial_transformed}
+\alias{to_spatial_dump_segments}
 \title{Spatial morphers for sfnetworks}
 \usage{
 to_spatial_contracted(
@@ -45,6 +46,8 @@ to_spatial_subdivision(x)
 to_spatial_subset(x, ..., subset_by = NULL)
 
 to_spatial_transformed(x, ...)
+
+to_spatial_dump_segments(x)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
@@ -211,6 +214,15 @@ network into a different coordinate reference system. \code{...} is
 evaluated in the same manner as \code{\link[sf]{st_transform}}.
 Returns a \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}.
+
+\item \code{to_spatial_dump_segments}: Transform the edges of the input object
+extracting all segments that compose each LINESTRING geometry. These
+segments represent the edges of the ouput network. The nodes of the network
+are adjusted accordingly. See also the examples in
+\code{\link{as.linnet.sfnetwork}} to see how this morpher can be used to
+adjust an \code{\link{sfnetwork}} object before converting it into
+\code{\link[spatstat.linnet]{linnet}}. Returns a \code{morphed_sfnetwork}
+format containing a single element of class \code{\link{sfnetwork}}.
 }}
 
 \examples{

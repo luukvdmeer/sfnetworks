@@ -969,3 +969,82 @@ to_spatial_transformed = function(x, ...) {
     transformed = st_transform(x, ...)
   )
 }
+
+#' @describeIn spatial_morphers Transform the edges of the input object
+#'   extracting all segments that compose each LINESTRING geometry. These
+#'   segments represent the edges of the ouput network. The nodes of the network
+#'   are adjusted accordingly. See also the examples in
+#'   \code{\link{as.linnet.sfnetwork}} to see how this morpher can be used to
+#'   adjust an \code{\link{sfnetwork}} object before converting it into
+#'   \code{\link[spatstat.linnet]{linnet}}. Returns a \code{morphed_sfnetwork}
+#'   format containing a single element of class \code{\link{sfnetwork}}.
+#' @export
+#' @importFrom sfheaders sf_to_df sf_linestring
+#' @importFrom sf st_geometry st_drop_geometry st_set_crs st_crs
+#'   st_set_precision st_precision st_agr
+to_spatial_dump_segments = function(x) {
+  # The following follows the same ideas as in to_spatial_subdivision so I start
+  # from the same point
+  require_spatially_explicit_edges(x)
+  if (will_assume_constant(x)) raise_assume_constant("to_spatial_subdivision")
+  edges = edges_as_sf(x)
+  directed = is_directed(x)
+
+  # Now we need to extract the points that compose each LINESTRING and check
+  # them to determine whether they are boundary or internal points (since we
+  # want to split and create a new segment at each internal point).
+  edge_pts = sf_to_df(edges)
+  edge_idxs = edge_pts[["linestring_id"]]
+  is_startpoint = !duplicated(edge_idxs)
+  is_endpoint = !duplicated(edge_idxs, fromLast = TRUE)
+  is_internal = !is_startpoint & !is_endpoint
+
+  # Each internal point will become the the startpoint and endpoint of a new
+  # segment, so I need to duplicate the internal points. Therefore, now I create
+  # a vector of integers that denotes the multiplicity of each point (i.e. 1 for
+  # boundary points and 2 for internal).
+  multiplicity = 1L + is_internal
+  idx_duplications = rep(seq_len(nrow(edge_pts)), times = multiplicity)
+
+  # Now I have to:
+  # 1. extract the coordinates of each point in the "edges" object;
+  edge_coords = edge_pts[names(edge_pts) %in% c("x", "y", "z", "m")]
+  # 2. duplicate each internal/boundary point according to its multiplicity;
+  new_edge_pts = edge_coords[idx_duplications, ]
+  # 3. create an id for each segment. In fact, the output network will be
+  # composed by one edge for each segment included in the input network, so each
+  # pair of subsequent points defines a new LINESTRING geometry.
+  new_edge_pts[["linestring_id"]] = rep(seq_len(nrow(new_edge_pts) / 2L), each = 2L)
+  new_edges_geom = sf_linestring(new_edge_pts, linestring_id = "linestring_id")
+
+  # Extract only the geometry and set CRS and precision
+  new_edges_geom = st_geometry(new_edges_geom)
+  new_edges_geom = st_set_crs(new_edges_geom, st_crs(edges))
+  new_edges_geom = st_set_precision(new_edges_geom, st_precision(edges))
+
+  # Finally, we can rebuild the edges table (and hopefully preserve the agr
+  # structure). The object "idx_segments" is used to create a map between the
+  # fields included in the input edges and the new geometries, creating the new
+  # edges table. In fact, we will need to duplicate the original edges for n_i -
+  # 1 times (where n_i denotes the number of points composing the ith input
+  # LINESTRING).
+  idx_segments <- rep(seq_len(nrow(edges)), times = table(edge_idxs) - 1L)
+  new_edges = st_as_sf(
+    st_drop_geometry(edges)[idx_segments, -c(1, 2), drop = FALSE],
+    # Remove the first two columns since they just include the "from" and "to"
+    # vectors. I can safely apply this operation since the previous code will
+    # always return a "tibble" object with the correct number of rows and
+    # possibly 0 columns (where there is no input field).
+    geometry = new_edges_geom,
+    agr = st_agr(x, "edges")
+  )
+
+  # Rebuild the sfn
+  new_sfn = as_sfnetwork(new_edges, directed = directed)
+
+  # Return in a list.
+  list(
+    dump_segments = new_sfn %preserve_graph_attrs% x
+  )
+
+}

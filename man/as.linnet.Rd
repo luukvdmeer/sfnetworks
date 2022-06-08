@@ -22,6 +22,9 @@ interoperability between \code{sfnetworks} and \code{spatstat}. Use
 this method without the .sfnetwork suffix and after loading the
 \code{spatstat} package.
 }
+\examples{
+#TODO
+}
 \seealso{
 \code{\link{as_sfnetwork}} to convert objects of class
 \code{\link[spatstat.linnet]{linnet}} into objects of class
