@@ -813,59 +813,19 @@ to_spatial_smooth = function(x,
       list(from = source_node, to = sink_node, .tidygraph_edge_index = edge_idxs)
     }
   }
-  new_edge_list = lapply(pseudo_sets, initialize_replacement_edge)
-  new_edge_list = new_edge_list[lengths(new_edge_list) != 0] # Remove NULLs.
-  # Bind all replacement edges together into a data frame.
-  new_edges = data.frame(do.call("rbind", new_edge_list))
+  new_idxs = lapply(pseudo_sets, initialize_replacement_edge)
+  new_idxs = new_idxs[lengths(new_idxs) != 0] # Remove NULLs.
   ## ===================================
   # STEP III: SUMMARISE EDGE ATTRIBUTES
   # Each replacement edge replaces multiple original edges.
   # Their attributes should all be summarised in a single value.
   # The summary techniques to be used are given as summarise_attributes.
-  # If all attributes should be summarised by technique 'ignore':
-  # --> This means all attributes will be dropped for the replacement edges.
-  # --> We don't need to do anything and can just move on.
-  # If this it *not* the case:
-  # -->  We need to summarise certain attributes using a given function.
   ## ===================================
   # Obtain the attribute values of all original edges in the network.
-  # For igraph the geometries and original edge indices are also attributes.
-  # However they should not be summarised in this way.
+  # These should not include the geometries and original edge indices.
   exclude = c(".tidygraph_edge_index", geom_colname)
   edge_attrs = edge.attributes(x)
   edge_attrs = edge_attrs[!(names(edge_attrs) %in% exclude)]
-  # Attributes that where checked for equality should not be summarised either.
-  # We already know they are equal among all edges in the pseudo set.
-  # Hence for them we can simply take the value of the first edge.
-  if (! is.null(check_attributes)) {
-    for (i in check_attributes) summarise_attributes[i] = "first"
-  }
-  # Define a function that:
-  # --> Obtains the attribute summary function for a specific attribute.
-  if (length(summarise_attributes) == 1) {
-    # The same summary function will be used for each attribute.
-    func = attribute_summary_function(summarise_attributes[[1]])
-    get_summary_function = function(i) {
-      func
-    }
-  } else {
-    # Different summary functions may be used for different attributes.
-    # --> For some attributes a summary function is explicitly specified.
-    # --> The other attributes use the specified default summary function.
-    funcs = lapply(summarise_attributes, attribute_summary_function)
-    get_summary_function = function(i) {
-      func = funcs[[i]]
-      if (is.null(func)) {
-        default = which(names(funcs) == "")
-        if (length(default) > 0) {
-          func = funcs[[default[1]]]
-        } else {
-          func = attribute_summary_function("ignore")
-        }
-      }
-      func
-    }
-  }
   # For each replacement edge:
   # --> Summarise the attributes of the edges it replaces into single values.
   merge_attrs = function(E) {
@@ -874,25 +834,13 @@ to_spatial_smooth = function(x,
     apply_summary_function = function(i) {
       # Store return value in a list.
       # This prevents automatic type promotion when rowbinding later on.
-      list(get_summary_function(i)(orig_attrs[[i]]))
+      list(get_summary_function(i, summarise_attributes)(orig_attrs[[i]]))
     }
     new_attrs = lapply(names(orig_attrs), apply_summary_function)
     names(new_attrs) = names(orig_attrs)
     new_attrs
   }
-  new_attrs_list = lapply(new_edge_list, merge_attrs)
-  # Bind all attribute values together into a data frame.
-  # All attribute values for an edge are lists.
-  # This is to prevent automatic type promotion when rowbinding.
-  # After coercing to data frame we need to unlist them.
-  # NOTE:
-  # --> Easier and faster to use data.table::rbindlist for everything here.
-  # --> Then the whole type promotion thing would not be an issue either.
-  # --> But we need to depend on data.table.
-  new_attrs = data.frame(do.call("rbind", new_attrs_list))
-  new_attrs = list2DF(lapply(new_attrs, unlist, recursive = FALSE))
-  # Add the summarised attributes to the replacement edges.
-  new_edges = cbind(new_edges, new_attrs)
+  new_attrs = lapply(new_idxs, merge_attrs)
   ## ===================================
   # STEP VI: CONCATENATE EDGE GEOMETRIES
   # If the edges to be replaced have geometries:
@@ -928,11 +876,7 @@ to_spatial_smooth = function(x,
       }
       new_geom
     }
-    new_geoms = do.call("c", lapply(new_edge_list, merge_geoms))
-    # Add the geometries to the new edges data frame.
-    # Use the same geometry column name as in the original edges data frame.
-    new_edges[geom_colname] = list(new_geoms)
-    #new_edges = st_as_sf(new_edges, sf_column_name = geom_colname)
+    new_geoms = do.call("c", lapply(new_idxs, merge_geoms))
   }
   ## ============================================
   # STEP V: ADD REPLACEMENT EDGES TO THE NETWORK
@@ -940,21 +884,22 @@ to_spatial_smooth = function(x,
   # This must happen before removing the pseudo nodes.
   # Otherwise their from and to values do not match the correct node indices.
   ## ============================================
-  # Bind the original and new edges.
-  # Since the new edges have one or more original attributes in list columns:
-  # --> bind_rows will not be able to combine original type with type list.
-  # --> We first need to force columns in the original edges table to be lists.
-  # --> After binding we need to unlist those that should not be list columns.
-  # NOTE:
-  # --> Easier and faster to use data.table::rbindlist for everything here.
-  # --> Then the whole type promotion thing would not be an issue.
-  # --> But we need to depend on data.table.
-  edges = list2DF(lapply(edges, as.list))
-  all_edges = bind_rows(edges, new_edges)
-  unlist_column = function(i) {
-    if (all(lengths(i) < 2)) unlist(i) else i
+  # Create the data frame for the new edges.
+  new_edges = cbind(
+    data.frame(do.call("rbind", new_idxs)),
+    data.frame(do.call("rbind", new_attrs))
+  )
+  new_edges[geom_colname] = list(new_geoms)
+  # Bind together with the original edges.
+  # Merged edges may have list-columns for some attributes.
+  # This requires a bit more complicated rowbinding.
+  rowbind = function(...) {
+    ins = lapply(list(...), function(x) list2DF(lapply(x, as.list)))
+    out = bind_rows(ins)
+    is_listcol = vapply(out, function(x) all(lengths(x) > 1), logical(1))
+    mutate(out, across(which(!is_listcol), unlist))
   }
-  all_edges = list2DF(lapply(all_edges, unlist_column))
+  all_edges = rowbind(edges, new_edges)
   if (spatial) all_edges = st_as_sf(all_edges, sf_column_name = geom_colname)
   # Recreate an sfnetwork.
   x_new = sfnetwork_(nodes, all_edges, directed = directed)

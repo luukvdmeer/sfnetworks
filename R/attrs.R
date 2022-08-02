@@ -243,35 +243,52 @@ edge_feature_attribute_names = function(x) {
   x
 }
 
-#' Get an attribute summary function
+#' Get the specified summary function for an attribute column.
 #'
-#' @param label A character string referring to the summary function.
+#' @param attr Name of the attribute.
 #'
-#' @return Definition of a function that takes a vector of attribute values as
-#' input and returns a single value.
+#' @param spec Specification of the summary function belonging to each
+#' attribute.
 #'
-#' @importFrom stats median
-#' @importFrom utils head tail
+#' @return A function that takes a vector of attribute values as input and
+#' returns a single value.
 #'
 #' @noRd
-attribute_summary_function = function(label) {
-  if (is.function(label)) {
-    label
+get_summary_function = function(attr, spec) {
+  if (length(spec) == 1) {
+    func = summariser(spec[1])
   } else {
-    switch(
-      label,
-      ignore = function(x) NA,
-      sum = function(x) sum(x),
-      prod = function(x) prod(x),
-      min = function(x) min(x),
-      max = function(x) max(x),
-      random = function(x) sample(x, 1),
-      first = function(x) head(x, 1),
-      last = function(x) tail(x, 1),
-      mean = function(x) mean(x),
-      median = function(x) median(x),
-      concat = function(x) c(x),
-      raise_unknown_input(label)
+    func = tryCatch(
+      summariser(spec[[attr]]),
+      error = function(e) {
+        default = which(names(spec) == "")
+        if (length(default) > 0) {
+          summariser(spec[[default]])
+        } else {
+          summariser("ignore")
+        }
+      }
     )
   }
+  func
+}
+
+#' @importFrom stats median
+#' @importFrom utils head tail
+summariser = function(name) {
+  switch(
+    name,
+    ignore = function(x) NA,
+    sum = function(x) sum(x),
+    prod = function(x) prod(x),
+    min = function(x) min(x),
+    max = function(x) max(x),
+    random = function(x) sample(x, 1),
+    first = function(x) head(x, 1),
+    last = function(x) tail(x, 1),
+    mean = function(x) mean(x),
+    median = function(x) median(x),
+    concat = function(x) c(x),
+    raise_unknown_input(name)
+  )
 }
