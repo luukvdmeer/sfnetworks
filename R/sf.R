@@ -457,7 +457,7 @@ spatial_join_nodes = function(x, y, ...) {
   }
   # Create a new network with the updated data.
   n_new$.sfnetwork_index = NULL
-  node_graph_attributes(x) = n_new
+  node_attribute_values(x) = n_new
   x
 }
 
@@ -472,7 +472,7 @@ spatial_join_edges = function(x, y, ...) {
   e_new = st_join(x_sf, y_sf, ...)
   # Create a new network with the updated data.
   x_new = sfnetwork_(nodes_as_sf(x), e_new, directed = is_directed(x))
-  x_new %preserve_graph_attrs% x
+  x_new %preserve_network_attrs% x
 }
 
 #' @name sf
@@ -588,7 +588,7 @@ spatial_crop_edges = function(x, y, ...) {
   e_new$from = bound_idxs[seq(1, bound_count - 1, 2)]
   e_new$to = bound_idxs[seq(2, bound_count, 2)]
   # Create a new network with the updated nodes and edges.
-  sfnetwork_(n_new, e_new) %preserve_graph_attrs% x
+  sfnetwork_(n_new, e_new) %preserve_network_attrs% x
 }
 
 #' @name sf

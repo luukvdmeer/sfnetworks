@@ -501,5 +501,5 @@ blend_ = function(x, y, tolerance) {
   # Use the new nodes data and the new edges data to create the new network.
   ## ============================
   x_new = sfnetwork_(new_nodes, new_edges, directed = directed)
-  x_new %preserve_graph_attrs% x
+  x_new %preserve_network_attrs% x
 }

@@ -36,7 +36,7 @@ node_geom_colname = function(x) {
 #' @importFrom igraph edge_attr edge_attr_names
 edge_geom_colname = function(x) {
   col = attr(edge_attr(x), "sf_column")
-  if (has_spatially_explicit_edges(x) && is.null(col)) {
+  if (is.null(col) && has_spatially_explicit_edges(x)) {
     # Take the name of the first sfc column.
     sfc_idx = which(vapply(edge_attr(x), is.sfc, FUN.VALUE = logical(1)))[1]
     col = edge_attr_names(x)[sfc_idx]
@@ -103,7 +103,7 @@ mutate_geom = function(x, y, active = NULL) {
 mutate_node_geom = function(x, y) {
   nodes = nodes_as_sf(x)
   st_geometry(nodes) = y
-  node_graph_attributes(x) = nodes
+  node_attribute_values(x) = nodes
   x
 }
 
@@ -112,7 +112,7 @@ mutate_node_geom = function(x, y) {
 mutate_edge_geom = function(x, y) {
   edges = edges_as_table(x)
   st_geometry(edges) = y
-  edge_graph_attributes(x) = edges
+  edge_attribute_values(x) = edges
   x
 }
 

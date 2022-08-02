@@ -67,5 +67,5 @@ spatial_join_network = function(x, y, ...) {
     by = structure(names = x_geom_colname, .Data = y_geom_colname),
     ...
   )
-  x_new %preserve_graph_attrs% x
+  x_new %preserve_network_attrs% x
 }

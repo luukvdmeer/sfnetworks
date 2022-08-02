@@ -120,10 +120,11 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
     )
   }
   # Prepare edges.
-  # If edges is an sf object:
+  # If edges is an sf object (i.e. edges are spatially explicit):
   # --> Tidygraph cannot handle it due to sticky geometry.
   # --> Therefore it has to be converted into a regular data frame (or tibble).
-  if (is.sf(edges)) {
+  edges_are_explicit = is.sf(edges)
+  if (edges_are_explicit) {
     edges_df = structure(edges, class = setdiff(class(edges), "sf"))
     if (is.null(edges_as_lines)) edges_as_lines = TRUE
   } else {
@@ -131,26 +132,36 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
     if (is.null(edges_as_lines)) edges_as_lines = FALSE
   }
   # Create network.
-  # Store sf attributes of the nodes and edges in a special graph attribute.
   x_tbg = tbl_graph(nodes, edges_df, directed, node_key)
   x_sfn = structure(x_tbg, class = c("sfnetwork", class(x_tbg)))
-  # Post-process network.
+  # Post-process network. This includes:
+  # --> Checking if the network has a valid spatial network structure.
+  # --> Making edges spatially explicit or implicit if requested.
+  # --> Adding additional attributes if requested.
   if (is.null(edges)) {
-    # Run validity check for nodes and return the network.
+    # Run validity check for nodes only and return the network.
     if (! force) require_valid_network_structure(x_sfn, message = TRUE)
     return (x_sfn)
   }
-  # Set edge attributes again.
-  # This ensures correct forwarding of sf specific attributes such as agr.
-  edge_graph_attributes(x_sfn) = edges
   if (edges_as_lines) {
     # Run validity check before explicitizing edges.
     if (! force) require_valid_network_structure(x_sfn, message = TRUE)
     # Add edge geometries if needed.
-    x_sfn = explicitize_edges(x_sfn)
+    if (edges_are_explicit) {
+      # Edges already have geometries, we don't need to add them.
+      # We do need to add sf specific attributes to the edges table.
+      # These got lost when converting edges to regular data frame.
+      edge_geom_colname(x_sfn) = attr(edges, "sf_column")
+      edge_agr(x_sfn) = attr(edges, "agr")
+    } else {
+      # Add linestring geometries between nodes.
+      x_sfn = explicitize_edges(x_sfn)
+    }
   } else {
     # Remove edge geometries if needed.
-    x_sfn = implicitize_edges(x_sfn)
+    if (edges_are_explicit) {
+      x_sfn = implicitize_edges(x_sfn)
+    }
     # Run validity check after implicitizing edges.
     if (! force) require_valid_network_structure(x_sfn, message = TRUE)
   }
@@ -160,7 +171,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
       raise_overwrite("weight")
     }
     edges$weight = st_length(edges)
-    edge_graph_attributes(x_sfn) = edges
+    edge_attribute_values(x_sfn) = edges
   }
   x_sfn
 }
@@ -177,7 +188,10 @@ sfnetwork_ = function(nodes, edges = NULL, directed = TRUE) {
     edges_df = edges
   }
   x_tbg = tbl_graph(nodes, edges_df, directed)
-  if (! is.null(edges)) edge_graph_attributes(x_tbg) = edges
+  if (! is.null(edges)) {
+    edge_geom_colname = attr(edges, "sf_column")
+    edge_agr = attr(edges, "agr")
+  }
   structure(x_tbg, class = c("sfnetwork", class(x_tbg)))
 }
 
