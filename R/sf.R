@@ -760,4 +760,12 @@ st_nearest_points.sfnetwork = function(x, y, ...) {
   st_nearest_points(pull_geom(x), st_geometry(y), ...)
 }
 
+#' @name sf
+#' @importFrom sf st_area
+#' @export
+st_area.sfnetwork = function(x, ...) {
+  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
+  st_area(pull_geom(x), ...)
+}
+
 

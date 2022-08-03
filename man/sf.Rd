@@ -35,6 +35,7 @@
 \alias{st_intersects.sfnetwork}
 \alias{st_sample.sfnetwork}
 \alias{st_nearest_points.sfnetwork}
+\alias{st_area.sfnetwork}
 \title{sf methods for sfnetworks}
 \usage{
 \method{st_as_sf}{sfnetwork}(x, active = NULL, ...)
@@ -102,6 +103,8 @@ st_precision.sfnetwork(x) <- value
 \method{st_sample}{sfnetwork}(x, size, ...)
 
 \method{st_nearest_points}{sfnetwork}(x, y, ...)
+
+\method{st_area}{sfnetwork}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
