@@ -376,23 +376,6 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
 }
 
 # =============================================================================
-# Geometric binary predicates
-# =============================================================================
-
-# Geometric binary predicates internally are applied to the geometry of the
-# given object. Since there is a st_geometry.sfnetwork method, they work
-# automatically on sfnetwork objects too. However, st_intersects is the only
-# generic, and thus an sfnetwork method needs to be created for it.
-
-#' @name sf
-#' @importFrom sf st_as_sf st_intersects
-#' @export
-st_intersects.sfnetwork = function(x, y = x, ...) {
-  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  st_intersects(st_as_sf(x), st_as_sf(y), ...)
-}
-
-# =============================================================================
 # Geometric unary operations
 # =============================================================================
 
@@ -748,3 +731,35 @@ spatial_filter_edges = function(x, y, ...) {
 find_indices_to_remove = function(orig_idxs, keep_idxs) {
   if (length(keep_idxs) == 0) orig_idxs else orig_idxs[-keep_idxs]
 }
+
+# =============================================================================
+# Other
+# =============================================================================
+
+# All analytical functions in sf that do not modify the sf object itself, but
+# instead return only a vector or an sfc object, should work on sfnetwork
+# objects. For most of them this is already true, because they are non-generic
+# functions that internally just call st_geometry() before applying the
+# function itself.
+
+# However, sf is sometimes inconsistent in deciding which functions are
+# generics and which functions are not. For example:
+# --> All geometric binary predicates are non-generics except st_intersects.
+# --> st_combine is non-generic but st_union is a generic.
+# --> st_length is non-generic but st_area is a generic.
+
+# When these functions are generics they will not work on sfnetwork objects no
+# matter if they internally just call st_geometry(). Therefore we need to
+# create specific sfnetwork methods for these functions in order to make them
+# work as expected.
+
+#' @name sf
+#' @importFrom sf st_as_sf st_intersects
+#' @export
+st_intersects.sfnetwork = function(x, y = x, ...) {
+  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
+  st_intersects(st_as_sf(x), st_as_sf(y), ...)
+}
+
+
+
