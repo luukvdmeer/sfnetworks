@@ -5,6 +5,7 @@
 \alias{st_as_sf.sfnetwork}
 \alias{st_geometry.sfnetwork}
 \alias{st_geometry<-.sfnetwork}
+\alias{st_drop_geometry.sfnetwork}
 \alias{st_bbox.sfnetwork}
 \alias{st_coordinates.sfnetwork}
 \alias{st_is.sfnetwork}
@@ -38,6 +39,8 @@
 \method{st_geometry}{sfnetwork}(x, active = NULL, ...)
 
 \method{st_geometry}{sfnetwork}(x) <- value
+
+\method{st_drop_geometry}{sfnetwork}(x, active = NULL, ...)
 
 \method{st_bbox}{sfnetwork}(x, active = NULL, ...)
 

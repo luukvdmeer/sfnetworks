@@ -123,6 +123,13 @@ st_geometry.sfnetwork = function(x, active = NULL, ...) {
 }
 
 #' @name sf
+#' @importFrom sf st_drop_geometry
+#' @export
+st_drop_geometry.sfnetwork = function(x, active = NULL, ...) {
+  drop_geom(x, active)
+}
+
+#' @name sf
 #' @examples
 #' # Get bbox of the active network element.
 #' st_bbox(net)
