@@ -752,5 +752,12 @@ st_sample.sfnetwork = function(x, size, ...) {
   st_sample(st_as_sf(x), size, ...)
 }
 
+#' @name sf
+#' @importFrom sf st_geometry st_nearest_points
+#' @export
+st_nearest_points.sfnetwork = function(x, y, ...) {
+  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
+  st_nearest_points(pull_geom(x), st_geometry(y), ...)
+}
 
 
