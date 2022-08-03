@@ -177,6 +177,14 @@ st_is.sfnetwork = function(x, ...) {
   st_is(st_geometry(x), ...)
 }
 
+#' @name sf
+#' @importFrom sf st_geometry st_is_valid
+#' @export
+st_is_valid.sfnetwork = function(x, ...) {
+  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
+  st_is(st_geometry(x), ...)
+}
+
 # =============================================================================
 # Coordinates
 # =============================================================================
