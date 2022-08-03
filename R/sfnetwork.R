@@ -392,6 +392,10 @@ print.sfnetwork = function(x, ...) {
   cat_subtle(c("# A sfnetwork with", nN, "nodes and", nE, "edges\n"))
   cat_subtle("#\n")
   cat_subtle(c("# CRS: ", st_crs(x)$input, "\n"))
+  precision = st_precision(x)
+  if (precision != 0.0) {
+    cat_subtle(c("# Precision: ", precision, "\n"))
+  }
   cat_subtle("#\n")
   cat_subtle("#", describe_graph(as_tbl_graph(x)))
   if (has_spatially_explicit_edges(x)) {

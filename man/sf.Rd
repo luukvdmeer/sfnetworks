@@ -8,8 +8,12 @@
 \alias{st_bbox.sfnetwork}
 \alias{st_coordinates.sfnetwork}
 \alias{st_is.sfnetwork}
+\alias{st_is_valid.sfnetwork}
 \alias{st_crs.sfnetwork}
 \alias{st_crs<-.sfnetwork}
+\alias{st_precision.sfnetwork}
+\alias{st_precision<-.sfnetwork}
+\alias{st_set_precision.sfnetwork}
 \alias{st_shift_longitude.sfnetwork}
 \alias{st_transform.sfnetwork}
 \alias{st_wrap_dateline.sfnetwork}
@@ -41,9 +45,17 @@
 
 \method{st_is}{sfnetwork}(x, ...)
 
+\method{st_is_valid}{sfnetwork}(x, ...)
+
 \method{st_crs}{sfnetwork}(x, ...)
 
 \method{st_crs}{sfnetwork}(x) <- value
+
+\method{st_precision}{sfnetwork}(x, ...)
+
+st_precision.sfnetwork(x) <- value
+
+\method{st_set_precision}{sfnetwork}(x, value)
 
 \method{st_shift_longitude}{sfnetwork}(x, ...)
 

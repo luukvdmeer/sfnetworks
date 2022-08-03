@@ -215,6 +215,34 @@ st_crs.sfnetwork = function(x, ...) {
 }
 
 #' @name sf
+#' @importFrom sf st_precision
+#' @export
+st_precision.sfnetwork = function(x, ...) {
+  st_precision(node_geom(x), ...)
+}
+
+#' @name sf
+#' @importFrom sf st_precision<- st_precision st_set_precision
+#' @export
+`st_precision<-.sfnetwork` = function(x, value) {
+  st_set_precision(x, value)
+}
+
+#' @name sf
+#' @importFrom sf st_set_precision st_precision
+#' @export
+st_set_precision.sfnetwork = function(x, value) {
+  if (has_spatially_explicit_edges(x)) {
+    geom = edge_geom(x)
+    st_precision(geom) = value
+    x = mutate_edge_geom(x, geom)
+  }
+  geom = node_geom(x)
+  st_precision(geom) = value
+  mutate_node_geom(x, geom)
+}
+
+#' @name sf
 #' @importFrom sf st_shift_longitude
 #' @export
 st_shift_longitude.sfnetwork = function(x, ...) {
