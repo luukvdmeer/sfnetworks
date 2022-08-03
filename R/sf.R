@@ -91,6 +91,22 @@ edges_as_sf = function(x, ...) {
   )
 }
 
+#' @name sf
+#' @importFrom sf st_as_s2
+#' @export
+st_as_s2.sfnetwork = function(x, active = NULL, ...) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  if (active == "edges") expect_spatially_explicit_edges(x)
+  switch(
+    active,
+    nodes = st_as_s2(pull_node_geom(x), ...),
+    edges = st_as_s2(pull_edge_geom(x), ...),
+    raise_unknown_input(active)
+  )
+}
+
 # =============================================================================
 # Geometries
 # =============================================================================

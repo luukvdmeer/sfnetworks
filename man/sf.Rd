@@ -3,6 +3,7 @@
 \name{sf}
 \alias{sf}
 \alias{st_as_sf.sfnetwork}
+\alias{st_as_s2.sfnetwork}
 \alias{st_geometry.sfnetwork}
 \alias{st_geometry<-.sfnetwork}
 \alias{st_drop_geometry.sfnetwork}
@@ -39,6 +40,8 @@
 \title{sf methods for sfnetworks}
 \usage{
 \method{st_as_sf}{sfnetwork}(x, active = NULL, ...)
+
+\method{st_as_s2}{sfnetwork}(x, active = NULL, ...)
 
 \method{st_geometry}{sfnetwork}(x, active = NULL, ...)
 
