@@ -125,8 +125,8 @@ st_geometry.sfnetwork = function(x, active = NULL, ...) {
 #' @name sf
 #' @importFrom sf st_drop_geometry
 #' @export
-st_drop_geometry.sfnetwork = function(x, active = NULL, ...) {
-  drop_geom(x, active)
+st_drop_geometry.sfnetwork = function(x, ...) {
+  drop_geom(x)
 }
 
 #' @name sf
@@ -166,35 +166,19 @@ st_coordinates.sfnetwork = function(x, active = NULL, ...) {
 }
 
 #' @name sf
-#' @importFrom sf st_geometry st_is
+#' @importFrom sf st_is
 #' @export
-st_is.sfnetwork = function(x, active = NULL, ...) {
-  if (is.null(active)) {
-    active = attr(x, "active")
-  }
-  if (active == "edges") expect_spatially_explicit_edges(x)
-  switch(
-    active,
-    nodes = st_is(pull_node_geom(x), ...),
-    edges = st_is(pull_edge_geom(x), ...),
-    raise_unknown_input(active)
-  )
+st_is.sfnetwork = function(x, ...) {
+  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
+  st_is(pull_geom(x), ...)
 }
 
 #' @name sf
-#' @importFrom sf st_geometry st_is_valid
+#' @importFrom sf st_is_valid
 #' @export
-st_is_valid.sfnetwork = function(x, active = NULL, ...) {
-  if (is.null(active)) {
-    active = attr(x, "active")
-  }
-  if (active == "edges") expect_spatially_explicit_edges(x)
-  switch(
-    active,
-    nodes = st_is_valid(pull_node_geom(x), ...),
-    edges = st_is_valid(pull_edge_geom(x), ...),
-    raise_unknown_input(active)
-  )
+st_is_valid.sfnetwork = function(x, ...) {
+  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
+  st_is_valid(pull_geom(x), ...)
 }
 
 # =============================================================================
