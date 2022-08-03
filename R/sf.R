@@ -744,5 +744,13 @@ st_intersects.sfnetwork = function(x, y, ...) {
   }
 }
 
+#' @name sf
+#' @importFrom sf st_as_sf st_sample
+#' @export
+st_sample.sfnetwork = function(x, size, ...) {
+  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
+  st_sample(st_as_sf(x), size, ...)
+}
+
 
 

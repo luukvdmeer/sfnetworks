@@ -33,6 +33,7 @@
 \alias{st_filter.sfnetwork}
 \alias{st_filter.morphed_sfnetwork}
 \alias{st_intersects.sfnetwork}
+\alias{st_sample.sfnetwork}
 \title{sf methods for sfnetworks}
 \usage{
 \method{st_as_sf}{sfnetwork}(x, active = NULL, ...)
@@ -96,6 +97,8 @@ st_precision.sfnetwork(x) <- value
 \method{st_filter}{morphed_sfnetwork}(x, y, ...)
 
 \method{st_intersects}{sfnetwork}(x, y, ...)
+
+\method{st_sample}{sfnetwork}(x, size, ...)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
