@@ -724,7 +724,7 @@ find_indices_to_remove = function(orig_idxs, keep_idxs) {
 # However, sf is sometimes inconsistent in deciding which functions are
 # generics and which functions are not. For example:
 # --> All geometric binary predicates are non-generics except st_intersects.
-# --> st_combine is non-generic but st_union is a generic.
+# --> st_line_sample is non-generic but st_sample is a generic.
 # --> st_length is non-generic but st_area is a generic.
 
 # When these functions are generics they will not work on sfnetwork objects no
@@ -735,9 +735,13 @@ find_indices_to_remove = function(orig_idxs, keep_idxs) {
 #' @name sf
 #' @importFrom sf st_geometry st_intersects
 #' @export
-st_intersects.sfnetwork = function(x, y = x, ...) {
+st_intersects.sfnetwork = function(x, y, ...) {
   if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  st_intersects(st_geometry(x), st_geometry(y), ...)
+  if (missing(y)) {
+    st_intersects(pull_geom(x), ...)
+  } else {
+    st_intersects(pull_geom(x), st_geometry(y), ...)
+  }
 }
 
 

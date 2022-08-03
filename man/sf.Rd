@@ -24,7 +24,6 @@
 \alias{st_z_range.sfnetwork}
 \alias{st_agr.sfnetwork}
 \alias{st_agr<-.sfnetwork}
-\alias{st_intersects.sfnetwork}
 \alias{st_reverse.sfnetwork}
 \alias{st_simplify.sfnetwork}
 \alias{st_join.sfnetwork}
@@ -33,6 +32,7 @@
 \alias{st_crop.morphed_sfnetwork}
 \alias{st_filter.sfnetwork}
 \alias{st_filter.morphed_sfnetwork}
+\alias{st_intersects.sfnetwork}
 \title{sf methods for sfnetworks}
 \usage{
 \method{st_as_sf}{sfnetwork}(x, active = NULL, ...)
@@ -41,15 +41,15 @@
 
 \method{st_geometry}{sfnetwork}(x) <- value
 
-\method{st_drop_geometry}{sfnetwork}(x, active = NULL, ...)
+\method{st_drop_geometry}{sfnetwork}(x, ...)
 
 \method{st_bbox}{sfnetwork}(x, active = NULL, ...)
 
 \method{st_coordinates}{sfnetwork}(x, active = NULL, ...)
 
-\method{st_is}{sfnetwork}(x, active = NULL, ...)
+\method{st_is}{sfnetwork}(x, ...)
 
-\method{st_is_valid}{sfnetwork}(x, active = NULL, ...)
+\method{st_is_valid}{sfnetwork}(x, ...)
 
 \method{st_crs}{sfnetwork}(x, ...)
 
@@ -79,8 +79,6 @@ st_precision.sfnetwork(x) <- value
 
 \method{st_agr}{sfnetwork}(x) <- value
 
-\method{st_intersects}{sfnetwork}(x, y = x, ...)
-
 \method{st_reverse}{sfnetwork}(x, ...)
 
 \method{st_simplify}{sfnetwork}(x, ...)
@@ -96,6 +94,8 @@ st_precision.sfnetwork(x) <- value
 \method{st_filter}{sfnetwork}(x, y, ...)
 
 \method{st_filter}{morphed_sfnetwork}(x, y, ...)
+
+\method{st_intersects}{sfnetwork}(x, y, ...)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
