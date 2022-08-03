@@ -58,3 +58,11 @@ raise_unknown_input = function(value) {
     call. = FALSE
   )
 }
+
+raise_invalid_sf_column = function() {
+  stop(
+    "Attribute 'sf_column' does not point to a geometry column.\n",
+    "Did you rename it, without setting st_geometry(x) = 'newname'?",
+    call. = FALSE
+  )
+}

@@ -63,7 +63,7 @@ edge_circuity = function(Inf_as_NaN = FALSE) {
   x = .G()
   require_spatially_explicit_edges(x)
   # Calculate circuity.
-  values = st_length(edge_geom(x)) / straight_line_distance(x)
+  values = st_length(pull_edge_geom(x)) / straight_line_distance(x)
   # Replace Inf values by NaN if requested.
   if (Inf_as_NaN) values[is.infinite(values)] = NaN
   values
@@ -82,7 +82,7 @@ edge_circuity = function(Inf_as_NaN = FALSE) {
 edge_length = function() {
   x = .G()
   if (has_spatially_explicit_edges(x)) {
-    st_length(edge_geom(x))
+    st_length(pull_edge_geom(x))
   } else {
     straight_line_distance(x)
   }
@@ -105,7 +105,7 @@ edge_displacement = function() {
 #' @importFrom sf st_distance
 straight_line_distance = function(x) {
   # Extract the nodes from the network.
-  nodes = node_geom(x)
+  nodes = pull_node_geom(x)
   # Get the indices of the boundary nodes of each edge.
   # Returns a matrix with source ids in column 1 and target ids in column 2.
   idxs = edge_boundary_node_indices(x, matrix = TRUE)
@@ -190,7 +190,7 @@ NULL
 edge_intersects = function(y, ...) {
   x = .G()
   require_spatially_explicit_edges(x)
-  lengths(st_intersects(edge_geom(x), y, ...)) > 0
+  lengths(st_intersects(pull_edge_geom(x), y, ...)) > 0
 }
 
 #' @name spatial_edge_predicates
@@ -199,7 +199,7 @@ edge_intersects = function(y, ...) {
 edge_is_disjoint = function(y, ...) {
   x = .G()
   require_spatially_explicit_edges(x)
-  lengths(st_disjoint(edge_geom(x), y, ...)) > 0
+  lengths(st_disjoint(pull_edge_geom(x), y, ...)) > 0
 }
 
 #' @name spatial_edge_predicates
@@ -208,7 +208,7 @@ edge_is_disjoint = function(y, ...) {
 edge_touches = function(y, ...) {
   x = .G()
   require_spatially_explicit_edges(x)
-  lengths(st_touches(edge_geom(x), y, ...)) > 0
+  lengths(st_touches(pull_edge_geom(x), y, ...)) > 0
 }
 
 #' @name spatial_edge_predicates
@@ -217,7 +217,7 @@ edge_touches = function(y, ...) {
 edge_crosses = function(y, ...) {
   x = .G()
   require_spatially_explicit_edges(x)
-  lengths(st_crosses(edge_geom(x), y, ...)) > 0
+  lengths(st_crosses(pull_edge_geom(x), y, ...)) > 0
 }
 
 #' @name spatial_edge_predicates
@@ -226,7 +226,7 @@ edge_crosses = function(y, ...) {
 edge_is_within = function(y, ...) {
   x = .G()
   require_spatially_explicit_edges(x)
-  lengths(st_within(edge_geom(x), y, ...)) > 0
+  lengths(st_within(pull_edge_geom(x), y, ...)) > 0
 }
 
 #' @name spatial_edge_predicates
@@ -235,7 +235,7 @@ edge_is_within = function(y, ...) {
 edge_contains = function(y, ...) {
   x = .G()
   require_spatially_explicit_edges(x)
-  lengths(st_contains(edge_geom(x), y, ...)) > 0
+  lengths(st_contains(pull_edge_geom(x), y, ...)) > 0
 }
 
 #' @name spatial_edge_predicates
@@ -244,7 +244,7 @@ edge_contains = function(y, ...) {
 edge_contains_properly = function(y, ...) {
   x = .G()
   require_spatially_explicit_edges(x)
-  lengths(st_contains_properly(edge_geom(x), y, ...)) > 0
+  lengths(st_contains_properly(pull_edge_geom(x), y, ...)) > 0
 }
 
 #' @name spatial_edge_predicates
@@ -253,7 +253,7 @@ edge_contains_properly = function(y, ...) {
 edge_overlaps = function(y, ...) {
   x = .G()
   require_spatially_explicit_edges(x)
-  lengths(st_overlaps(edge_geom(x), y, ...)) > 0
+  lengths(st_overlaps(pull_edge_geom(x), y, ...)) > 0
 }
 
 #' @name spatial_edge_predicates
@@ -262,7 +262,7 @@ edge_overlaps = function(y, ...) {
 edge_equals = function(y, ...) {
   x = .G()
   require_spatially_explicit_edges(x)
-  lengths(st_equals(edge_geom(x), y, ...)) > 0
+  lengths(st_equals(pull_edge_geom(x), y, ...)) > 0
 }
 
 #' @name spatial_edge_predicates
@@ -271,7 +271,7 @@ edge_equals = function(y, ...) {
 edge_covers = function(y, ...) {
   x = .G()
   require_spatially_explicit_edges(x)
-  lengths(st_covers(edge_geom(x), y, ...)) > 0
+  lengths(st_covers(pull_edge_geom(x), y, ...)) > 0
 }
 
 #' @name spatial_edge_predicates
@@ -280,7 +280,7 @@ edge_covers = function(y, ...) {
 edge_is_covered_by = function(y, ...) {
   x = .G()
   require_spatially_explicit_edges(x)
-  lengths(st_covered_by(edge_geom(x), y, ...)) > 0
+  lengths(st_covered_by(pull_edge_geom(x), y, ...)) > 0
 }
 
 #' @name spatial_edge_predicates
@@ -289,5 +289,5 @@ edge_is_covered_by = function(y, ...) {
 edge_is_within_distance = function(y, ...) {
   x = .G()
   require_spatially_explicit_edges(x)
-  lengths(st_is_within_distance(edge_geom(x), y, ...)) > 0
+  lengths(st_is_within_distance(pull_edge_geom(x), y, ...)) > 0
 }

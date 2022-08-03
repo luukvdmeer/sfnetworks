@@ -47,28 +47,28 @@ NULL
 #' @export
 node_X = function() {
   x = .G()
-  get_coords(node_geom(x), "X")
+  get_coords(pull_node_geom(x), "X")
 }
 
 #' @name node_coordinates
 #' @export
 node_Y = function() {
   x = .G()
-  get_coords(node_geom(x), "Y")
+  get_coords(pull_node_geom(x), "Y")
 }
 
 #' @name node_coordinates
 #' @export
 node_Z = function() {
   x = .G()
-  get_coords(node_geom(x), "Z")
+  get_coords(pull_node_geom(x), "Z")
 }
 
 #' @name node_coordinates
 #' @export
 node_M = function() {
   x = .G()
-  get_coords(node_geom(x), "M")
+  get_coords(pull_node_geom(x), "M")
 }
 
 #' @importFrom igraph vcount
@@ -166,7 +166,7 @@ NULL
 #' @export
 node_intersects = function(y, ...) {
   x = .G()
-  lengths(st_intersects(node_geom(x), y, ...)) > 0
+  lengths(st_intersects(pull_node_geom(x), y, ...)) > 0
 }
 
 #' @name spatial_node_predicates
@@ -174,7 +174,7 @@ node_intersects = function(y, ...) {
 #' @export
 node_is_disjoint = function(y, ...) {
   x = .G()
-  lengths(st_disjoint(node_geom(x), y, ...)) > 0
+  lengths(st_disjoint(pull_node_geom(x), y, ...)) > 0
 }
 
 #' @name spatial_node_predicates
@@ -182,7 +182,7 @@ node_is_disjoint = function(y, ...) {
 #' @export
 node_touches = function(y, ...) {
   x = .G()
-  lengths(st_touches(node_geom(x), y, ...)) > 0
+  lengths(st_touches(pull_node_geom(x), y, ...)) > 0
 }
 
 #' @name spatial_node_predicates
@@ -190,7 +190,7 @@ node_touches = function(y, ...) {
 #' @export
 node_is_within = function(y, ...) {
   x = .G()
-  lengths(st_within(node_geom(x), y, ...)) > 0
+  lengths(st_within(pull_node_geom(x), y, ...)) > 0
 }
 
 #' @name spatial_node_predicates
@@ -198,7 +198,7 @@ node_is_within = function(y, ...) {
 #' @export
 node_equals = function(y, ...) {
   x = .G()
-  lengths(st_equals(node_geom(x), y, ...)) > 0
+  lengths(st_equals(pull_node_geom(x), y, ...)) > 0
 }
 
 #' @name spatial_node_predicates
@@ -206,7 +206,7 @@ node_equals = function(y, ...) {
 #' @export
 node_is_covered_by = function(y, ...) {
   x = .G()
-  lengths(st_covered_by(node_geom(x), y, ...)) > 0
+  lengths(st_covered_by(pull_node_geom(x), y, ...)) > 0
 }
 
 #' @name spatial_node_predicates
@@ -214,5 +214,5 @@ node_is_covered_by = function(y, ...) {
 #' @export
 node_is_within_distance = function(y, ...) {
   x = .G()
-  lengths(st_is_within_distance(node_geom(x), y, ...)) > 0
+  lengths(st_is_within_distance(pull_node_geom(x), y, ...)) > 0
 }

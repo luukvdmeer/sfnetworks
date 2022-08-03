@@ -137,7 +137,7 @@ draw_lines = function(x, y) {
 #' @importFrom sf st_as_sf st_geometry
 #' @noRd
 edge_boundary_nodes = function(x) {
-  nodes = node_geom(x)
+  nodes = pull_node_geom(x)
   id_mat = ends(x, E(x), names = FALSE)
   id_vct = as.vector(t(id_mat))
   nodes[id_vct]
@@ -183,7 +183,7 @@ edge_boundary_node_indices = function(x, matrix = FALSE) {
 #' @importFrom sf st_as_sf
 #' @noRd
 edge_boundary_points = function(x) {
-  edges = edge_geom(x)
+  edges = pull_edge_geom(x)
   linestring_boundary_points(edges)
 }
 
@@ -206,7 +206,7 @@ edge_boundary_points = function(x) {
 #' @importFrom sf st_equals
 #' @noRd
 edge_boundary_point_indices = function(x, matrix = FALSE) {
-    nodes = node_geom(x)
+    nodes = pull_node_geom(x)
     edges = edges_as_sf(x)
     idxs_lst = st_equals(linestring_boundary_points(edges), nodes)
     idxs_vct = do.call("c", idxs_lst)
@@ -246,7 +246,7 @@ explicitize_edges = function(x) {
     x
   } else {
     # Extract the node geometries from the network.
-    nodes = node_geom(x)
+    nodes = pull_node_geom(x)
     # Get the indices of the boundary nodes of each edge.
     # Returns a matrix with source ids in column 1 and target ids in column 2.
     ids = edge_boundary_node_indices(x, matrix = TRUE)
