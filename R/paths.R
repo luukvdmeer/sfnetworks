@@ -235,9 +235,8 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' calculated. By default, all nodes in the network are included.
 #'
 #' @param to The (set of) geospatial point(s) to which the shortest paths will
-#' be calculated. Can be an object of  class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}. Features with duplicated nearest node indices will be
-#' removed before calculating the cost matrix.
+#' be calculated. Can be an object of class \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}.
 #' Alternatively it can be a numeric vector containing the indices of the nodes
 #' to which the shortest paths will be calculated, or a character vector
 #' containing the names of the nodes to which the shortest paths will be
@@ -252,6 +251,18 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' geographic edge lengths will be calculated internally and used as weights.
 #' If set to \code{NA}, no weights are used, even if the edges have a
 #' \code{weight} column.
+#'
+#' @param direction The direction of travel to calculate the network cost.
+#'                  Defaults to \code{out}, where the costs are
+#'                  calculated \code{from} the nodes, i.e. considers only
+#'                  outbound edges. When \code{in}, it calculates
+#'                  the costs \code{to} the nodes, i.e. considers
+#'                  only inbound edges and when \code{all}
+#'                  then the network is considered undirected. This argument
+#'                  is ignored for undirected networks.
+#'                  This argument is equivalent to \code{mode} in
+#'                  \code{\link[igraph]{distances}} and hence \code{mode} is
+#'                  ignored in this function.
 #'
 #' @param Inf_as_NaN Should the cost values of unconnected nodes be stored as
 #' \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.
@@ -277,29 +288,14 @@ get_all_simple_paths = function(x, from, to, ...) {
 #'
 #' @seealso \code{\link{st_network_paths}}
 #'
-#' @note By default, \code{\link[igraph]{distances}} calculates costs by
-#' by allowing to travel each edge in both directions, hence by assuming an
-#' undirected network. This is the default even when the input network is
-#' directed! For directed networks, the behaviour can be changed by setting
-#' \code{mode = "out"} to consider only outbound edges, or \code{mode = "in"}
-#' to consider only inbound edges.
-#'
-#' Furthermore, \code{\link[igraph]{distances}} does not allow duplicated
-#' values in the \code{to} argument. This also means that when providing
-#' spatial features, sets of multiple features that happen to have the same
-#' nearest node will be reduced to one by selecting only the first of these
-#' features.
-#'
 #' @return An n times m numeric matrix where n is the length of the \code{from}
-#' argument, and m is the length of unique values in the \code{to} argument.
-#' When the \code{to} argument contains spatial features that have the same
-#' nearest node, these features are considered duplicates.
+#' argument, and m is the length of the \code{to} argument.
 #'
 #' @examples
 #' library(sf, quietly = TRUE)
 #' library(tidygraph, quietly = TRUE)
 #'
-#' # Create a network with edge lenghts as weights.
+#' # Create a network with edge lengths as weights.
 #' # These weights will be used automatically in shortest paths calculation.
 #' net = as_sfnetwork(roxel, directed = FALSE) %>%
 #'   st_transform(3035) %>%
@@ -332,38 +328,67 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' @importFrom igraph V
 #' @export
 st_network_cost = function(x, from = igraph::V(x), to = igraph::V(x),
-                           weights = NULL, Inf_as_NaN = FALSE, ...) {
+                           weights = NULL, direction = "out",
+                           Inf_as_NaN = FALSE, ...) {
   UseMethod("st_network_cost")
 }
 
 #' @importFrom igraph distances V
+#' @importFrom units deparse_unit as_units
 #' @export
 st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
-                                     weights = NULL, Inf_as_NaN = FALSE, ...) {
+                                     weights = NULL, direction = "out",
+                                     Inf_as_NaN = FALSE, ...) {
   # If 'from' and/or 'to' points are given as simple feature geometries:
   # --> Convert them to node indices.
   if (is.sf(from) | is.sfc(from)) from = set_path_endpoints(x, from)
   if (is.sf(to) | is.sfc(to)) to = set_path_endpoints(x, to)
   # Igraph does not support NA values in 'from' and 'to' nodes.
   if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
-  # Igraph does not support duplicated 'to' nodes.
-  # This can happen without the user knowing when POINT geometries
-  # are given to the 'to' argument that happen to snap to a same node.
-  if (any(duplicated(to))) {
-    warning(
-      "Duplicated values in argument 'to' were removed.",
-      call. = FALSE
-    )
-    to = unique(to)
-  }
   # Set weights.
   weights = set_path_weights(x, weights)
-  # Call igraph function.
-  matrix = distances(x, from, to, weights = weights, ...)
+  # Check for mode argument passed to ...
+  args = list(...)
+  # If mode argument present, ignore it and return a warning
+  if (!is.null(args$mode)) {
+    args$mode = NULL
+    warning(
+      "'mode' argument ignored. ",
+      "Please set the 'direction' argument instead.",
+      call. = FALSE
+    )
+  }
+  # Igraph does not support duplicated 'to' nodes.
+  if(any(duplicated(to))) {
+    # --> Obtain unique 'to' nodes to pass to igraph.
+    to_unique = unique(to)
+    # --> Find which 'to' nodes are duplicated.
+    match = match(to, to_unique)
+    # Call igraph function.
+    matrix = do.call(igraph::distances,
+                     c(list(x, from, to_unique, weights = weights,
+                            mode = direction), args))
+    # Return the matrix
+    # --> With duplicated 'to' nodes included.
+    matrix = matrix[, match, drop = FALSE]
+  } else {
+    # Call igraph function.
+    matrix = do.call(igraph::distances,
+                     c(list(x, from, to, weights = weights,
+                            mode = direction), args))
+  }
   # Convert Inf to NaN if requested.
-  if (Inf_as_NaN) matrix[matrix == Inf] = NaN
-  # Return the matrix.
-  matrix
+  if (Inf_as_NaN) matrix[is.infinite(matrix)] = NaN
+  # Check if weights parameter inherits units.
+  if (inherits(weights, "units")) {
+    # Fetch weight units to pass onto distance matrix.
+    weights_units = deparse_unit(weights)
+    # Return matrix as units object
+    as_units(matrix, weights_units)
+  } else {
+    # Return the matrix.
+    matrix
+  }
 }
 
 #' @importFrom sf st_geometry st_nearest_feature
@@ -376,7 +401,7 @@ set_path_endpoints = function(x, p) {
 set_path_weights = function(x, weights) {
   if (is.character(weights) & length(weights) == 1) {
     # Case 1: Weights is a character pointing to a column in the edges table.
-    # --> Use the values of that column as weight values (if it exsists).
+    # --> Use the values of that column as weight values (if it exists).
     values = edge_attr(x, weights)
     if (is.null(values)) {
       stop(

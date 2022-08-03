@@ -4,8 +4,10 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{4. Routing}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -168,9 +170,36 @@ cost_matrix = st_network_cost(net)
 dim(cost_matrix)
 ```
 
-All `...` arguments are forwarded internally to `igraph::distances()`. Among other options, this means that you can define which algorithm is used for the paths calculation. By default, `igraph` will choose the most suitable algorithm based on characteristics of the request, such as the type of weights (e.g. only positive or also negative) and the number of given from locations. For details, see the [igraph documentation](https://igraph.org/r/doc/distances.html).
+In directed networks, `st_network_cost()` also gives you the possibility to define if you want to allow travel only over outbound edges (by setting `direction = "out"`, the default), only over inbound edges (by setting `direction = "in"`), or both (by setting `direction = "all"`, i.e. assume an undirected network).
+The `direction` argument is passed onto `igraph::distances()` to the `mode` argument, and hence, if one passes the `mode` argument, it will be ignored. For undirected networks the `direction` argument is ignored.
 
-In directed networks, it also gives you the possibility to define if you want to allow travel only over outbound edges (by setting `mode = "out"`), only over inbound edges (by setting `mode = "in"`), or both (by setting `mode = "all"`, i.e. assume an undirected network). It is important to note that even in directed networks the latter is the default!
+```{r}
+net %>% 
+  convert(to_spatial_directed) %>% 
+  st_network_cost(
+    from = c(p1, p2, p3),
+    to = c(p1, p2, p3),
+    direction = "in"
+  )
+
+net %>% 
+  convert(to_spatial_directed) %>% 
+  st_network_cost(
+    from = c(p1, p2, p3),
+    to = c(p1, p2, p3),
+    direction = "out"
+  )
+
+net %>% 
+  convert(to_spatial_directed) %>% 
+  st_network_cost(
+    from = c(p1, p2, p3),
+    to = c(p1, p2, p3),
+    direction = "all"
+  )
+```
+
+All `...` arguments are forwarded internally to `igraph::distances()`, except for the `mode` argument. Among other options, this means that you can define which algorithm is used for the paths calculation. By default, `igraph` will choose the most suitable algorithm based on characteristics of the request, such as the type of weights (e.g. only positive or also negative) and the number of given from locations. For details, see the [igraph documentation](https://igraph.org/r/doc/distances.html).
 
 ## Applications
 
@@ -261,7 +290,7 @@ round(cost_matrix, 0)
 By passing the cost matrix to the solver `TSP::solve_TSP()` we obtain an object of class `TOUR`. This object contains a named vector specifying the indices of the provided locations in the optimal order of visit.
 
 ```{r}
-tour = solve_TSP(TSP(cost_matrix))
+tour = solve_TSP(TSP(units::drop_units(cost_matrix)))
 tour_idxs = as.numeric(names(tour))
 tour_idxs
 
