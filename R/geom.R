@@ -80,8 +80,7 @@ edge_geom_colname = function(x) {
 #' @return An object of class \code{\link[sf]{sfc}}.
 #'
 #' @noRd
-#' @importFrom igraph vertex_attr
-st_geometry.sfnetwork = function(x, active = NULL) {
+pull_geom = function(x, active = NULL) {
   if (is.null(active)) {
     active = attr(x, "active")
   }
@@ -92,11 +91,9 @@ st_geometry.sfnetwork = function(x, active = NULL) {
     edges = pull_edge_geom(x),
     raise_unknown_input(active)
   )
-
-  }
-  x_geom
 }
 
+#' @importFrom igraph vertex_attr
 pull_node_geom = function(x) {
   geom = vertex_attr(x, node_geom_colname(x))
   if (! is.sfc(geom)) raise_invalid_sf_column()
