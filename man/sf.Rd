@@ -18,6 +18,7 @@
 \alias{st_shift_longitude.sfnetwork}
 \alias{st_transform.sfnetwork}
 \alias{st_wrap_dateline.sfnetwork}
+\alias{st_normalize.sfnetwork}
 \alias{st_zm.sfnetwork}
 \alias{st_m_range.sfnetwork}
 \alias{st_z_range.sfnetwork}
@@ -65,6 +66,8 @@ st_precision.sfnetwork(x) <- value
 \method{st_transform}{sfnetwork}(x, ...)
 
 \method{st_wrap_dateline}{sfnetwork}(x, ...)
+
+\method{st_normalize}{sfnetwork}(x, ...)
 
 \method{st_zm}{sfnetwork}(x, ...)
 

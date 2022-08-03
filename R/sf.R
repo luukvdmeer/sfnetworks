@@ -279,6 +279,14 @@ st_wrap_dateline.sfnetwork = function(x, ...) {
 }
 
 #' @name sf
+#' @importFrom sf st_normalize
+#' @export
+st_normalize.sfnetwork = function(x, ...) {
+  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
+  change_coords(x, op = st_normalize, ...)
+}
+
+#' @name sf
 #' @importFrom sf st_zm
 #' @export
 st_zm.sfnetwork = function(x, ...) {
