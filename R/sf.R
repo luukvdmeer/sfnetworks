@@ -242,7 +242,6 @@ st_set_precision.sfnetwork = function(x, value) {
 #' @importFrom sf st_shift_longitude
 #' @export
 st_shift_longitude.sfnetwork = function(x, ...) {
-  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
   change_coords(x, op = st_shift_longitude, ...)
 }
 
@@ -250,7 +249,6 @@ st_shift_longitude.sfnetwork = function(x, ...) {
 #' @importFrom sf st_transform
 #' @export
 st_transform.sfnetwork = function(x, ...) {
-  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
   change_coords(x, op = st_transform, ...)
 }
 
@@ -258,7 +256,6 @@ st_transform.sfnetwork = function(x, ...) {
 #' @importFrom sf st_wrap_dateline
 #' @export
 st_wrap_dateline.sfnetwork = function(x, ...) {
-  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
   change_coords(x, op = st_wrap_dateline, ...)
 }
 
@@ -266,7 +263,6 @@ st_wrap_dateline.sfnetwork = function(x, ...) {
 #' @importFrom sf st_normalize
 #' @export
 st_normalize.sfnetwork = function(x, ...) {
-  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
   change_coords(x, op = st_normalize, ...)
 }
 
@@ -274,7 +270,6 @@ st_normalize.sfnetwork = function(x, ...) {
 #' @importFrom sf st_zm
 #' @export
 st_zm.sfnetwork = function(x, ...) {
-  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
   change_coords(x, op = st_zm, ...)
 }
 
