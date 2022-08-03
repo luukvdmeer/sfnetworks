@@ -156,33 +156,65 @@ edge_geom = function(x) {
 #'
 #' @importFrom sf st_bbox st_geometry
 #' @export
-st_bbox.sfnetwork = function(x, ...) {
-  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  st_bbox(st_geometry(x), ...)
+st_bbox.sfnetwork = function(x, active = NULL, ...) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  if (active == "edges") expect_spatially_explicit_edges(x)
+  switch(
+    active,
+    nodes = st_bbox(node_geom(x), ...),
+    edges = st_bbox(edge_geom(x), ...),
+    raise_unknown_input(active)
+  )
 }
 
 #' @name sf
 #' @importFrom sf st_coordinates st_geometry
 #' @export
-st_coordinates.sfnetwork = function(x, ...) {
-  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  st_coordinates(st_geometry(x), ...)
+st_coordinates.sfnetwork = function(x, active = NULL, ...) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  if (active == "edges") expect_spatially_explicit_edges(x)
+  switch(
+    active,
+    nodes = st_coordinates(node_geom(x), ...),
+    edges = st_coordinates(edge_geom(x), ...),
+    raise_unknown_input(active)
+  )
 }
 
 #' @name sf
 #' @importFrom sf st_geometry st_is
 #' @export
-st_is.sfnetwork = function(x, ...) {
-  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  st_is(st_geometry(x), ...)
+st_is.sfnetwork = function(x, active = NULL, ...) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  if (active == "edges") expect_spatially_explicit_edges(x)
+  switch(
+    active,
+    nodes = st_is(node_geom(x), ...),
+    edges = st_is(edge_geom(x), ...),
+    raise_unknown_input(active)
+  )
 }
 
 #' @name sf
 #' @importFrom sf st_geometry st_is_valid
 #' @export
-st_is_valid.sfnetwork = function(x, ...) {
-  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  st_is(st_geometry(x), ...)
+st_is_valid.sfnetwork = function(x, active = NULL, ...) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  if (active == "edges") expect_spatially_explicit_edges(x)
+  switch(
+    active,
+    nodes = st_is_valid(node_geom(x), ...),
+    edges = st_is_valid(edge_geom(x), ...),
+    raise_unknown_input(active)
+  )
 }
 
 # =============================================================================
@@ -277,17 +309,33 @@ st_zm.sfnetwork = function(x, ...) {
 #' @name sf
 #' @importFrom sf st_geometry st_m_range
 #' @export
-st_m_range.sfnetwork = function(x, ...) {
-  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  st_m_range(st_geometry(x))
+st_m_range.sfnetwork = function(x, active = NULL, ...) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  if (active == "edges") expect_spatially_explicit_edges(x)
+  switch(
+    active,
+    nodes = st_m_range(node_geom(x), ...),
+    edges = st_m_range(edge_geom(x), ...),
+    raise_unknown_input(active)
+  )
 }
 
 #' @name sf
 #' @importFrom sf st_geometry st_z_range
 #' @export
-st_z_range.sfnetwork = function(x, ...) {
-  if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  st_z_range(st_geometry(x))
+st_z_range.sfnetwork = function(x, active = NULL, ...) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  if (active == "edges") expect_spatially_explicit_edges(x)
+  switch(
+    active,
+    nodes = st_z_range(node_geom(x), ...),
+    edges = st_z_range(edge_geom(x), ...),
+    raise_unknown_input(active)
+  )
 }
 
 change_coords = function(x, op, ...) {

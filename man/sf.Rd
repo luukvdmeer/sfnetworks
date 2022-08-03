@@ -39,13 +39,13 @@
 
 \method{st_geometry}{sfnetwork}(x) <- value
 
-\method{st_bbox}{sfnetwork}(x, ...)
+\method{st_bbox}{sfnetwork}(x, active = NULL, ...)
 
-\method{st_coordinates}{sfnetwork}(x, ...)
+\method{st_coordinates}{sfnetwork}(x, active = NULL, ...)
 
-\method{st_is}{sfnetwork}(x, ...)
+\method{st_is}{sfnetwork}(x, active = NULL, ...)
 
-\method{st_is_valid}{sfnetwork}(x, ...)
+\method{st_is_valid}{sfnetwork}(x, active = NULL, ...)
 
 \method{st_crs}{sfnetwork}(x, ...)
 
@@ -65,9 +65,9 @@ st_precision.sfnetwork(x) <- value
 
 \method{st_zm}{sfnetwork}(x, ...)
 
-\method{st_m_range}{sfnetwork}(x, ...)
+\method{st_m_range}{sfnetwork}(x, active = NULL, ...)
 
-\method{st_z_range}{sfnetwork}(x, ...)
+\method{st_z_range}{sfnetwork}(x, active = NULL, ...)
 
 \method{st_agr}{sfnetwork}(x, active = NULL, ...)
 
