@@ -733,11 +733,11 @@ find_indices_to_remove = function(orig_idxs, keep_idxs) {
 # work as expected.
 
 #' @name sf
-#' @importFrom sf st_as_sf st_intersects
+#' @importFrom sf st_geometry st_intersects
 #' @export
 st_intersects.sfnetwork = function(x, y = x, ...) {
   if (attr(x, "active") == "edges") expect_spatially_explicit_edges(x)
-  st_intersects(st_as_sf(x), st_as_sf(y), ...)
+  st_intersects(st_geometry(x), st_geometry(y), ...)
 }
 
 
