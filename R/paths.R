@@ -160,10 +160,10 @@ st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
                                       ...) {
   # If 'from' points are given as simple feature geometries:
   # --> Convert them to node indices.
-  if (is.sf(from) | is.sfc(from)) from = set_path_endpoints(x, from)
+  if (is.sf(from) | is.sfc(from)) from = get_nearest_node_index(x, from)
   # If 'to' points are given as simple feature geometries:
   # --> Convert them to node indices.
-  if (is.sf(to) | is.sfc(to)) to = set_path_endpoints(x, to)
+  if (is.sf(to) | is.sfc(to)) to = get_nearest_node_index(x, to)
   # Igraph does not support multiple 'from' nodes.
   if (length(from) > 1) raise_multiple_elements("from")
   # Igraph does not support NA values in 'from' and 'to' nodes.
@@ -252,22 +252,19 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' If set to \code{NA}, no weights are used, even if the edges have a
 #' \code{weight} column.
 #'
-#' @param direction The direction of travel to calculate the network cost.
-#'                  Defaults to \code{out}, where the costs are
-#'                  calculated \code{from} the nodes, i.e. considers only
-#'                  outbound edges. When \code{in}, it calculates
-#'                  the costs \code{to} the nodes, i.e. considers
-#'                  only inbound edges and when \code{all}
-#'                  then the network is considered undirected. This argument
-#'                  is ignored for undirected networks.
-#'                  This argument is equivalent to \code{mode} in
-#'                  \code{\link[igraph]{distances}} and hence \code{mode} is
-#'                  ignored in this function.
+#' @param direction The direction of travel. Defaults to \code{'out'}, meaning
+#' that the direction given by the network is followed and costs are calculated
+#' from the points given as argument \code{from}. May be set to \code{'in'},
+#' meaning that the opposite direction is followed an costs are calculated
+#' towards the points given as argument \code{from}. May also be set to
+#' \code{'all'}, meaning that the network is considered to be undirected. This
+#' argument is ignored for undirected networks.
 #'
 #' @param Inf_as_NaN Should the cost values of unconnected nodes be stored as
 #' \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.
 #'
-#' @param ... Arguments passed on to \code{\link[igraph]{distances}}.
+#' @param ... Arguments passed on to \code{\link[igraph]{distances}}. Argument
+#' \code{mode} is ignored. Use \code{direction} instead.
 #'
 #' @details Spatial features provided to the \code{from} and/or
 #' \code{to} argument don't necessarily have to be points. Internally, the
@@ -341,20 +338,19 @@ st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
                                      Inf_as_NaN = FALSE, ...) {
   # If 'from' and/or 'to' points are given as simple feature geometries:
   # --> Convert them to node indices.
-  if (is.sf(from) | is.sfc(from)) from = set_path_endpoints(x, from)
-  if (is.sf(to) | is.sfc(to)) to = set_path_endpoints(x, to)
+  if (is.sf(from) | is.sfc(from)) from = get_nearest_node_index(x, from)
+  if (is.sf(to) | is.sfc(to)) to = get_nearest_node_index(x, to)
   # Igraph does not support NA values in 'from' and 'to' nodes.
   if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
   # Set weights.
   weights = set_path_weights(x, weights)
   # Check for mode argument passed to ...
-  args = list(...)
-  # If mode argument present, ignore it and return a warning
-  if (!is.null(args$mode)) {
-    args$mode = NULL
+  dots = list(...)
+  # If mode argument present, ignore it and return a warning.
+  if (!is.null(dots$mode)) {
+    dots$mode = NULL
     warning(
-      "'mode' argument ignored. ",
-      "Please set the 'direction' argument instead.",
+      "Argument 'mode' is ignored. Use 'direction' instead",
       call. = FALSE
     )
   }
@@ -365,17 +361,15 @@ st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
     # --> Find which 'to' nodes are duplicated.
     match = match(to, to_unique)
     # Call igraph function.
-    matrix = do.call(igraph::distances,
-                     c(list(x, from, to_unique, weights = weights,
-                            mode = direction), args))
+    args = list(x, from, to_unique, weights = weights, mode = direction)
+    matrix = do.call(igraph::distances, c(args, dots))
     # Return the matrix
     # --> With duplicated 'to' nodes included.
     matrix = matrix[, match, drop = FALSE]
   } else {
     # Call igraph function.
-    matrix = do.call(igraph::distances,
-                     c(list(x, from, to, weights = weights,
-                            mode = direction), args))
+    args = list(x, from, to, weights = weights, mode = direction)
+    matrix = do.call(igraph::distances, c(args, dots))
   }
   # Convert Inf to NaN if requested.
   if (Inf_as_NaN) matrix[is.infinite(matrix)] = NaN
@@ -389,11 +383,6 @@ st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
     # Return the matrix.
     matrix
   }
-}
-
-#' @importFrom sf st_geometry st_nearest_feature
-set_path_endpoints = function(x, p) {
-  st_nearest_feature(st_geometry(p), nodes_as_sf(x))
 }
 
 #' @importFrom igraph edge_attr

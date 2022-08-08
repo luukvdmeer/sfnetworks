@@ -258,6 +258,40 @@ explicitize_edges = function(x) {
   }
 }
 
+#' Get the nearest node to a given feature
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param y A single spatial feature as object of class \code{\link[sf]{sf}}
+#' or \code{\link[sf]{sfc}}. If multiple features are given only the first one
+#' is considered.
+#'
+#' @return An object of class \code{\link[sf]{sf}} containing a single feature
+#' with \code{POINT} geometry.
+#'
+#' @importFrom sf st_geometry st_nearest_feature
+#' @noRd
+get_nearest_node = function(x, y) {
+  nodes = nodes_as_sf(x)
+  nodes[st_nearest_feature(st_geometry(y)[1], nodes), ]
+}
+
+#' Get the index of the nearest node to a given feature
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param y A single spatial feature as object of class \code{\link[sf]{sf}}
+#' or \code{\link[sf]{sfc}}. If multiple features are given only the first one
+#' is considered.
+#'
+#' @return An integer.
+#'
+#' @importFrom sf st_geometry st_nearest_feature
+#' @noRd
+get_nearest_node_index = function(x, y) {
+  st_nearest_feature(st_geometry(y)[1], nodes_as_sf(x))
+}
+
 #' Make edges spatially implicit
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.

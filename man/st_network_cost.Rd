@@ -43,22 +43,19 @@ geographic edge lengths will be calculated internally and used as weights.
 If set to \code{NA}, no weights are used, even if the edges have a
 \code{weight} column.}
 
-\item{direction}{The direction of travel to calculate the network cost.
-Defaults to \code{out}, where the costs are
-calculated \code{from} the nodes, i.e. considers only
-outbound edges. When \code{in}, it calculates
-the costs \code{to} the nodes, i.e. considers
-only inbound edges and when \code{all}
-then the network is considered undirected. This argument
-is ignored for undirected networks.
-This argument is equivalent to \code{mode} in
-\code{\link[igraph]{distances}} and hence \code{mode} is
-ignored in this function.}
+\item{direction}{The direction of travel. Defaults to \code{'out'}, meaning
+that the direction given by the network is followed and costs are calculated
+from the points given as argument \code{from}. May be set to \code{'in'},
+meaning that the opposite direction is followed an costs are calculated
+towards the points given as argument \code{from}. May also be set to
+\code{'all'}, meaning that the network is considered to be undirected. This
+argument is ignored for undirected networks.}
 
 \item{Inf_as_NaN}{Should the cost values of unconnected nodes be stored as
 \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.}
 
-\item{...}{Arguments passed on to \code{\link[igraph]{distances}}.}
+\item{...}{Arguments passed on to \code{\link[igraph]{distances}}. Argument
+\code{mode} is ignored. Use \code{direction} instead.}
 }
 \value{
 An n times m numeric matrix where n is the length of the \code{from}
