@@ -29,10 +29,14 @@
 \alias{st_simplify.sfnetwork}
 \alias{st_join.sfnetwork}
 \alias{st_join.morphed_sfnetwork}
-\alias{st_crop.sfnetwork}
-\alias{st_crop.morphed_sfnetwork}
 \alias{st_filter.sfnetwork}
 \alias{st_filter.morphed_sfnetwork}
+\alias{st_crop.sfnetwork}
+\alias{st_crop.morphed_sfnetwork}
+\alias{st_difference.sfnetwork}
+\alias{st_difference.morphed_sfnetwork}
+\alias{st_intersection.sfnetwork}
+\alias{st_intersection.morphed_sfnetwork}
 \alias{st_intersects.sfnetwork}
 \alias{st_sample.sfnetwork}
 \alias{st_nearest_points.sfnetwork}
@@ -93,13 +97,21 @@ st_precision.sfnetwork(x) <- value
 
 \method{st_join}{morphed_sfnetwork}(x, y, ...)
 
+\method{st_filter}{sfnetwork}(x, y, ...)
+
+\method{st_filter}{morphed_sfnetwork}(x, y, ...)
+
 \method{st_crop}{sfnetwork}(x, y, ...)
 
 \method{st_crop}{morphed_sfnetwork}(x, y, ...)
 
-\method{st_filter}{sfnetwork}(x, y, ...)
+\method{st_difference}{sfnetwork}(x, y, ...)
 
-\method{st_filter}{morphed_sfnetwork}(x, y, ...)
+\method{st_difference}{morphed_sfnetwork}(x, y, ...)
+
+\method{st_intersection}{sfnetwork}(x, y, ...)
+
+\method{st_intersection}{morphed_sfnetwork}(x, y, ...)
 
 \method{st_intersects}{sfnetwork}(x, y, ...)
 
