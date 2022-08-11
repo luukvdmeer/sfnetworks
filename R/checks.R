@@ -67,6 +67,23 @@ have_equal_crs = function(x, y) {
   st_crs(x) == st_crs(y)
 }
 
+#' Check if the precision of two objects is the same
+#'
+#' @param x An object of class \code{\link{sfnetwork}}, \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}.
+#'
+#' @param y An object of class \code{\link{sfnetwork}}, \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}.
+#'
+#' @return \code{TRUE} when the precision of x and y is the same, \code{FALSE}
+#' otherwise.
+#'
+#' @importFrom sf st_precision
+#' @noRd
+have_equal_precision = function(x, y) {
+  st_precision(x) == st_precision(y)
+}
+
 #' Check if two sfnetworks have the same type of edges
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
