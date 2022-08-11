@@ -36,6 +36,10 @@ NULL
 #'   activate("edges") %>%
 #'   mutate(azimuth = edge_azimuth())
 #'
+#' net %>%
+#'   activate("edges") %>%
+#'   mutate(azimuth = edge_azimuth(degrees = TRUE))
+#'
 #' @importFrom lwgeom st_geod_azimuth
 #' @importFrom tidygraph .G
 #' @importFrom units set_units
@@ -45,9 +49,7 @@ edge_azimuth = function(degrees = FALSE) {
   require_spatially_explicit_edges(x)
   bounds = edge_boundary_nodes(x)
   values = st_geod_azimuth(bounds)[seq(1, length(bounds), 2)]
-  if (degrees) {
-    values = set_units(values, "degrees")
-  }
+  if (degrees) values = set_units(values, "degrees")
   values
 }
 
