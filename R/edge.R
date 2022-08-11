@@ -110,7 +110,7 @@ straight_line_distance = function(x) {
   # Returns a matrix with source ids in column 1 and target ids in column 2.
   idxs = edge_boundary_node_indices(x, matrix = TRUE)
   # Calculate distances pairwise.
-  diag(st_distance(nodes[idxs[, 1]], nodes[idxs[, 2]]))
+  st_distance(nodes[idxs[, 1]], nodes[idxs[, 2]], by_element = TRUE)
 }
 
 #' Query edges with spatial predicates
