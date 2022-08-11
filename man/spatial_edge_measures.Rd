@@ -8,7 +8,7 @@
 \alias{edge_displacement}
 \title{Query spatial edge measures}
 \usage{
-edge_azimuth()
+edge_azimuth(degrees = FALSE)
 
 edge_circuity(Inf_as_NaN = FALSE)
 
@@ -17,6 +17,9 @@ edge_length()
 edge_displacement()
 }
 \arguments{
+\item{degrees}{Should the angle be returned in degrees instead of radians?
+Defaults to \code{FALSE}.}
+
 \item{Inf_as_NaN}{Should the circuity values of loop edges be stored as
 \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.}
 }

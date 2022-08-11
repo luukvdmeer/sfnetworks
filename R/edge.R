@@ -22,6 +22,10 @@ NULL
 #' line from the edge startpoint pointing north, and the straight line from
 #' the edge startpoint and the edge endpoint. Calculated with
 #' \code{\link[lwgeom]{st_geod_azimuth}}. Requires a geographic CRS.
+#'
+#' @param degrees Should the angle be returned in degrees instead of radians?
+#' Defaults to \code{FALSE}.
+#'
 #' @examples
 #' library(sf, quietly = TRUE)
 #' library(tidygraph, quietly = TRUE)
@@ -34,12 +38,17 @@ NULL
 #'
 #' @importFrom lwgeom st_geod_azimuth
 #' @importFrom tidygraph .G
+#' @importFrom units set_units
 #' @export
-edge_azimuth = function() {
+edge_azimuth = function(degrees = FALSE) {
   x = .G()
   require_spatially_explicit_edges(x)
   bounds = edge_boundary_nodes(x)
-  st_geod_azimuth(bounds)[seq(1, length(bounds), 2)]
+  values = st_geod_azimuth(bounds)[seq(1, length(bounds), 2)]
+  if (degrees) {
+    values = set_units(values, "degrees")
+  }
+  values
 }
 
 #' @describeIn spatial_edge_measures The ratio of the length of an edge
