@@ -36,7 +36,7 @@ node_geom_colname = function(x) {
 #' @importFrom igraph edge_attr edge_attr_names
 edge_geom_colname = function(x) {
   col = attr(edge_attr(x), "sf_column")
-  if (is.null(col) && has_spatially_explicit_edges(x)) {
+  if (is.null(col) && has_explicit_edges(x)) {
     # Take the name of the first sfc column.
     sfc_idx = which(vapply(edge_attr(x), is.sfc, FUN.VALUE = logical(1)))[1]
     col = edge_attr_names(x)[sfc_idx]
@@ -84,7 +84,6 @@ pull_geom = function(x, active = NULL) {
   if (is.null(active)) {
     active = attr(x, "active")
   }
-  if (active == "edges") expect_spatially_explicit_edges(x)
   switch(
     active,
     nodes = pull_node_geom(x),
@@ -102,6 +101,7 @@ pull_node_geom = function(x) {
 
 #' @importFrom igraph edge_attr
 pull_edge_geom = function(x) {
+  require_explicit_edges(x)
   geom = edge_attr(x, edge_geom_colname(x))
   if (! is.sfc(geom)) raise_invalid_sf_column()
   geom

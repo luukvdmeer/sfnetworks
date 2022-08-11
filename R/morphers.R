@@ -189,7 +189,7 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
     x_new = delete_edges(x_new, which(which_loop(x_new)))
     x_new = x_new %preserve_all_attrs% x_new
   }
-  if (has_spatially_explicit_edges(x)) {
+  if (has_explicit_edges(x)) {
     # Extract the edges and their geometries from the contracted network.
     new_edges = edges_as_sf(x_new)
     new_edge_geoms = st_geometry(new_edges)
@@ -320,7 +320,7 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
 #' @importFrom igraph is_directed
 #' @export
 to_spatial_directed = function(x) {
-  require_spatially_explicit_edges(x)
+  require_explicit_edges(x)
   if (is_directed(x)) return (x)
   # Retrieve the nodes and edges from the network.
   nodes = nodes_as_sf(x)
@@ -486,7 +486,7 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
                              store_original_data = FALSE) {
   # Define if the network has spatially explicit edges.
   # This influences some of the processes to come.
-  spatial = if (has_spatially_explicit_edges(x)) TRUE else FALSE
+  spatial = if (has_explicit_edges(x)) TRUE else FALSE
   # Update the attribute summary instructions.
   # In the summarise attributes only real attribute columns were referenced.
   # On top of those, we need to include:
@@ -947,7 +947,7 @@ to_spatial_smooth = function(x,
 #' @importFrom sfheaders sf_to_df sfc_linestring sfc_point
 #' @export
 to_spatial_subdivision = function(x) {
-  require_spatially_explicit_edges(x)
+  require_explicit_edges(x)
   if (will_assume_constant(x)) raise_assume_constant("to_spatial_subdivision")
   # Retrieve nodes and edges from the network.
   nodes = nodes_as_sf(x)

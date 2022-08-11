@@ -46,7 +46,7 @@ has_spatial_nodes = function(x) {
 #'
 #' @importFrom igraph edge_attr
 #' @noRd
-has_spatially_explicit_edges = function(x) {
+has_explicit_edges = function(x) {
   any(vapply(edge_attr(x), is.sfc, FUN.VALUE = logical(1)), na.rm = TRUE)
 }
 
@@ -96,10 +96,10 @@ have_equal_precision = function(x, y) {
 #' @noRd
 have_equal_edge_type = function(x, y) {
   both_explicit = function(x, y) {
-    has_spatially_explicit_edges(x) && has_spatially_explicit_edges(y)
+    has_explicit_edges(x) && has_explicit_edges(y)
   }
   both_implicit = function(x, y) {
-    !has_spatially_explicit_edges(x) && !has_spatially_explicit_edges(y)
+    !has_explicit_edges(x) && !has_explicit_edges(y)
   }
   both_explicit(x, y) || both_implicit(x, y)
 }

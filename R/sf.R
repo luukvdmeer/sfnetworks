@@ -58,7 +58,6 @@ is.sfg = function(x) {
 #' @export
 st_as_sf.sfnetwork = function(x, active = NULL, ...) {
   if (is.null(active)) active = attr(x, "active")
-  if (active == "edges") expect_spatially_explicit_edges(x)
   switch(
     active,
     nodes = nodes_as_sf(x, ...),
@@ -82,6 +81,7 @@ nodes_as_sf = function(x, ...) {
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph
 edges_as_sf = function(x, ...) {
+  require_explicit_edges(x)
   st_as_sf(
     as_tibble(as_tbl_graph(x), "edges"),
     agr = edge_agr(x),
@@ -94,7 +94,6 @@ edges_as_sf = function(x, ...) {
 #' @export
 st_as_s2.sfnetwork = function(x, active = NULL, ...) {
   if (is.null(active)) active = attr(x, "active")
-  if (active == "edges") expect_spatially_explicit_edges(x)
   switch(
     active,
     nodes = st_as_s2(pull_node_geom(x), ...),
@@ -150,7 +149,6 @@ st_drop_geometry.sfnetwork = function(x, ...) {
 #' @export
 st_bbox.sfnetwork = function(x, active = NULL, ...) {
   if (is.null(active)) active = attr(x, "active")
-  if (active == "edges") expect_spatially_explicit_edges(x)
   switch(
     active,
     nodes = st_bbox(pull_node_geom(x), ...),
@@ -164,7 +162,6 @@ st_bbox.sfnetwork = function(x, active = NULL, ...) {
 #' @export
 st_coordinates.sfnetwork = function(x, active = NULL, ...) {
   if (is.null(active)) active = attr(x, "active")
-  if (active == "edges") expect_spatially_explicit_edges(x)
   switch(
     active,
     nodes = st_coordinates(pull_node_geom(x), ...),
@@ -178,7 +175,6 @@ st_coordinates.sfnetwork = function(x, active = NULL, ...) {
 #' @export
 st_is.sfnetwork = function(x, ...) {
   active = attr(x, "active")
-  if (active == "edges") expect_spatially_explicit_edges(x)
   st_is(pull_geom(x, active), ...)
 }
 
@@ -187,7 +183,6 @@ st_is.sfnetwork = function(x, ...) {
 #' @export
 st_is_valid.sfnetwork = function(x, ...) {
   active = attr(x, "active")
-  if (active == "edges") expect_spatially_explicit_edges(x)
   st_is_valid(pull_geom(x, active), ...)
 }
 
@@ -210,7 +205,7 @@ st_crs.sfnetwork = function(x, ...) {
 #' @importFrom sf st_crs<- st_crs
 #' @export
 `st_crs<-.sfnetwork` = function(x, value) {
-  if (has_spatially_explicit_edges(x)) {
+  if (has_explicit_edges(x)) {
     geom = pull_edge_geom(x)
     st_crs(geom) = value
     x = mutate_edge_geom(x, geom)
@@ -238,7 +233,7 @@ st_precision.sfnetwork = function(x, ...) {
 #' @importFrom sf st_set_precision st_precision
 #' @export
 st_set_precision.sfnetwork = function(x, value) {
-  if (has_spatially_explicit_edges(x)) {
+  if (has_explicit_edges(x)) {
     geom = pull_edge_geom(x)
     st_precision(geom) = value
     x = mutate_edge_geom(x, geom)
@@ -288,7 +283,6 @@ st_zm.sfnetwork = function(x, ...) {
 #' @export
 st_m_range.sfnetwork = function(x, active = NULL, ...) {
   if (is.null(active)) active = attr(x, "active")
-  if (active == "edges") expect_spatially_explicit_edges(x)
   switch(
     active,
     nodes = st_m_range(pull_node_geom(x), ...),
@@ -302,7 +296,6 @@ st_m_range.sfnetwork = function(x, active = NULL, ...) {
 #' @export
 st_z_range.sfnetwork = function(x, active = NULL, ...) {
   if (is.null(active)) active = attr(x, "active")
-  if (active == "edges") expect_spatially_explicit_edges(x)
   switch(
     active,
     nodes = st_z_range(pull_node_geom(x), ...),
@@ -312,7 +305,7 @@ st_z_range.sfnetwork = function(x, active = NULL, ...) {
 }
 
 change_coords = function(x, op, ...) {
-  if (has_spatially_explicit_edges(x)) {
+  if (has_explicit_edges(x)) {
     geom = pull_edge_geom(x)
     new_geom = do.call(match.fun(op), list(geom, ...))
     x = mutate_edge_geom(x, new_geom)
@@ -338,7 +331,6 @@ change_coords = function(x, op, ...) {
 #' @export
 st_agr.sfnetwork = function(x, active = NULL, ...) {
   if (is.null(active)) active = attr(x, "active")
-  if (active == "edges") expect_spatially_explicit_edges(x)
   switch(
     active,
     nodes = node_agr(x),
@@ -352,7 +344,6 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
 #' @export
 `st_agr<-.sfnetwork` = function(x, value) {
   active = attr(x, "active")
-  if (active == "edges") expect_spatially_explicit_edges(x)
   x_sf = st_as_sf(x, active)
   st_agr(x_sf) = value
   agr(x, active) = st_agr(x_sf)
@@ -407,7 +398,6 @@ st_reverse.sfnetwork = function(x, ...) {
 #' @export
 st_simplify.sfnetwork = function(x, ...) {
   active = attr(x, "active")
-  if (active == "edges") expect_spatially_explicit_edges(x)
   geom_unary_ops(st_simplify, x, active, ...)
 }
 
@@ -777,7 +767,6 @@ find_indices_to_drop = function(x, y, ..., .operator = sf::st_filter) {
 #' @export
 st_intersects.sfnetwork = function(x, y, ...) {
   active = attr(x, "active")
-  if (active == "edges") expect_spatially_explicit_edges(x)
   if (missing(y)) {
     st_intersects(pull_geom(x, active), ...)
   } else {
@@ -790,7 +779,6 @@ st_intersects.sfnetwork = function(x, y, ...) {
 #' @export
 st_sample.sfnetwork = function(x, size, ...) {
   active = attr(x, "active")
-  if (active == "edges") expect_spatially_explicit_edges(x)
   st_sample(st_as_sf(x, active), size, ...)
 }
 
@@ -799,7 +787,6 @@ st_sample.sfnetwork = function(x, size, ...) {
 #' @export
 st_nearest_points.sfnetwork = function(x, y, ...) {
   active = attr(x, "active")
-  if (active == "edges") expect_spatially_explicit_edges(x)
   st_nearest_points(pull_geom(x, active), st_geometry(y), ...)
 }
 
@@ -808,7 +795,6 @@ st_nearest_points.sfnetwork = function(x, y, ...) {
 #' @export
 st_area.sfnetwork = function(x, ...) {
   active = attr(x, "active")
-  if (active == "edges") expect_spatially_explicit_edges(x)
   st_area(pull_geom(x, active), ...)
 }
 

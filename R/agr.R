@@ -34,7 +34,7 @@ node_agr = function(x) {
 #' @importFrom igraph edge_attr
 edge_agr = function(x) {
   agr = attr(edge_attr(x), "agr")
-  if (has_spatially_explicit_edges(x)) {
+  if (has_explicit_edges(x)) {
     agr = valid_agr(agr, edge_feature_attribute_names(x))
   }
   agr

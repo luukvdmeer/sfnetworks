@@ -398,7 +398,7 @@ print.sfnetwork = function(x, ...) {
   }
   cat_subtle("#\n")
   cat_subtle("#", describe_graph(as_tbl_graph(x)))
-  if (has_spatially_explicit_edges(x)) {
+  if (has_explicit_edges(x)) {
     cat_subtle(" with spatially explicit edges\n")
   } else {
     cat_subtle(" with spatially implicit edges\n")

@@ -243,7 +243,7 @@ edge_boundary_point_indices = function(x, matrix = FALSE) {
 #' @importFrom tidygraph mutate
 #' @noRd
 explicitize_edges = function(x) {
-  if (has_spatially_explicit_edges(x)) {
+  if (has_explicit_edges(x)) {
     x
   } else {
     # Extract the node geometries from the network.
@@ -302,7 +302,7 @@ get_nearest_node_index = function(x, y) {
 #'
 #' @noRd
 implicitize_edges = function(x) {
-  if (has_spatially_explicit_edges(x)) {
+  if (has_explicit_edges(x)) {
     drop_edge_geom(x)
   } else {
     x

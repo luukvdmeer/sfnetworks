@@ -99,7 +99,7 @@ st_network_blend = function(x, y, tolerance = Inf) {
 
 #' @export
 st_network_blend.sfnetwork = function(x, y, tolerance = Inf) {
-  require_spatially_explicit_edges(x)
+  require_explicit_edges(x, hard = TRUE)
   stopifnot(has_single_geom_type(y, "POINT"))
   stopifnot(have_equal_crs(x, y))
   stopifnot(as.numeric(tolerance) >= 0)

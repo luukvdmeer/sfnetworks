@@ -46,6 +46,7 @@ NULL
 #' @name node_coordinates
 #' @export
 node_X = function() {
+  require_active_nodes()
   x = .G()
   get_coords(pull_node_geom(x), "X")
 }
@@ -53,6 +54,7 @@ node_X = function() {
 #' @name node_coordinates
 #' @export
 node_Y = function() {
+  require_active_nodes()
   x = .G()
   get_coords(pull_node_geom(x), "Y")
 }
@@ -60,6 +62,7 @@ node_Y = function() {
 #' @name node_coordinates
 #' @export
 node_Z = function() {
+  require_active_nodes()
   x = .G()
   get_coords(pull_node_geom(x), "Z")
 }
@@ -67,6 +70,7 @@ node_Z = function() {
 #' @name node_coordinates
 #' @export
 node_M = function() {
+  require_active_nodes()
   x = .G()
   get_coords(pull_node_geom(x), "M")
 }
@@ -165,6 +169,7 @@ NULL
 #' @importFrom sf st_intersects
 #' @export
 node_intersects = function(y, ...) {
+  require_active_nodes()
   x = .G()
   lengths(st_intersects(pull_node_geom(x), y, ...)) > 0
 }
@@ -173,6 +178,7 @@ node_intersects = function(y, ...) {
 #' @importFrom sf st_disjoint
 #' @export
 node_is_disjoint = function(y, ...) {
+  require_active_nodes()
   x = .G()
   lengths(st_disjoint(pull_node_geom(x), y, ...)) > 0
 }
@@ -181,6 +187,7 @@ node_is_disjoint = function(y, ...) {
 #' @importFrom sf st_touches
 #' @export
 node_touches = function(y, ...) {
+  require_active_nodes()
   x = .G()
   lengths(st_touches(pull_node_geom(x), y, ...)) > 0
 }
@@ -189,6 +196,7 @@ node_touches = function(y, ...) {
 #' @importFrom sf st_within
 #' @export
 node_is_within = function(y, ...) {
+  require_active_nodes()
   x = .G()
   lengths(st_within(pull_node_geom(x), y, ...)) > 0
 }
@@ -197,6 +205,7 @@ node_is_within = function(y, ...) {
 #' @importFrom sf st_equals
 #' @export
 node_equals = function(y, ...) {
+  require_active_nodes()
   x = .G()
   lengths(st_equals(pull_node_geom(x), y, ...)) > 0
 }
@@ -205,6 +214,7 @@ node_equals = function(y, ...) {
 #' @importFrom sf st_covered_by
 #' @export
 node_is_covered_by = function(y, ...) {
+  require_active_nodes()
   x = .G()
   lengths(st_covered_by(pull_node_geom(x), y, ...)) > 0
 }
@@ -213,6 +223,7 @@ node_is_covered_by = function(y, ...) {
 #' @importFrom sf st_is_within_distance
 #' @export
 node_is_within_distance = function(y, ...) {
+  require_active_nodes()
   x = .G()
   lengths(st_is_within_distance(pull_node_geom(x), y, ...)) > 0
 }

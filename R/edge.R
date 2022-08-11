@@ -45,8 +45,8 @@ NULL
 #' @importFrom units set_units
 #' @export
 edge_azimuth = function(degrees = FALSE) {
+  require_active_edges()
   x = .G()
-  require_spatially_explicit_edges(x)
   bounds = edge_boundary_nodes(x)
   values = st_geod_azimuth(bounds)[seq(1, length(bounds), 2)]
   if (degrees) values = set_units(values, "degrees")
@@ -71,8 +71,8 @@ edge_azimuth = function(degrees = FALSE) {
 #' @importFrom units drop_units
 #' @export
 edge_circuity = function(Inf_as_NaN = FALSE) {
+  require_active_edges()
   x = .G()
-  require_spatially_explicit_edges(x)
   # Calculate circuity.
   values = st_length(pull_edge_geom(x)) / straight_line_distance(x)
   # Drop units since circuity is unitless (it is a ratio of m/m).
@@ -93,8 +93,9 @@ edge_circuity = function(Inf_as_NaN = FALSE) {
 #' @importFrom tidygraph .G
 #' @export
 edge_length = function() {
+  require_active_edges()
   x = .G()
-  if (has_spatially_explicit_edges(x)) {
+  if (has_explicit_edges(x)) {
     st_length(pull_edge_geom(x))
   } else {
     straight_line_distance(x)
@@ -111,6 +112,7 @@ edge_length = function() {
 #' @importFrom tidygraph .G
 #' @export
 edge_displacement = function() {
+  require_active_edges()
   x = .G()
   straight_line_distance(x)
 }
@@ -201,8 +203,8 @@ NULL
 #' @importFrom sf st_intersects
 #' @export
 edge_intersects = function(y, ...) {
+  require_active_edges()
   x = .G()
-  require_spatially_explicit_edges(x)
   lengths(st_intersects(pull_edge_geom(x), y, ...)) > 0
 }
 
@@ -210,8 +212,8 @@ edge_intersects = function(y, ...) {
 #' @importFrom sf st_disjoint
 #' @export
 edge_is_disjoint = function(y, ...) {
+  require_active_edges()
   x = .G()
-  require_spatially_explicit_edges(x)
   lengths(st_disjoint(pull_edge_geom(x), y, ...)) > 0
 }
 
@@ -219,8 +221,8 @@ edge_is_disjoint = function(y, ...) {
 #' @importFrom sf st_touches
 #' @export
 edge_touches = function(y, ...) {
+  require_active_edges()
   x = .G()
-  require_spatially_explicit_edges(x)
   lengths(st_touches(pull_edge_geom(x), y, ...)) > 0
 }
 
@@ -228,8 +230,8 @@ edge_touches = function(y, ...) {
 #' @importFrom sf st_crosses
 #' @export
 edge_crosses = function(y, ...) {
+  require_active_edges()
   x = .G()
-  require_spatially_explicit_edges(x)
   lengths(st_crosses(pull_edge_geom(x), y, ...)) > 0
 }
 
@@ -237,8 +239,8 @@ edge_crosses = function(y, ...) {
 #' @importFrom sf st_within
 #' @export
 edge_is_within = function(y, ...) {
+  require_active_edges()
   x = .G()
-  require_spatially_explicit_edges(x)
   lengths(st_within(pull_edge_geom(x), y, ...)) > 0
 }
 
@@ -246,8 +248,8 @@ edge_is_within = function(y, ...) {
 #' @importFrom sf st_contains
 #' @export
 edge_contains = function(y, ...) {
+  require_active_edges()
   x = .G()
-  require_spatially_explicit_edges(x)
   lengths(st_contains(pull_edge_geom(x), y, ...)) > 0
 }
 
@@ -255,8 +257,8 @@ edge_contains = function(y, ...) {
 #' @importFrom sf st_contains_properly
 #' @export
 edge_contains_properly = function(y, ...) {
+  require_active_edges()
   x = .G()
-  require_spatially_explicit_edges(x)
   lengths(st_contains_properly(pull_edge_geom(x), y, ...)) > 0
 }
 
@@ -264,8 +266,8 @@ edge_contains_properly = function(y, ...) {
 #' @importFrom sf st_overlaps
 #' @export
 edge_overlaps = function(y, ...) {
+  require_active_edges()
   x = .G()
-  require_spatially_explicit_edges(x)
   lengths(st_overlaps(pull_edge_geom(x), y, ...)) > 0
 }
 
@@ -273,8 +275,8 @@ edge_overlaps = function(y, ...) {
 #' @importFrom sf st_equals
 #' @export
 edge_equals = function(y, ...) {
+  require_active_edges()
   x = .G()
-  require_spatially_explicit_edges(x)
   lengths(st_equals(pull_edge_geom(x), y, ...)) > 0
 }
 
@@ -282,8 +284,8 @@ edge_equals = function(y, ...) {
 #' @importFrom sf st_covers
 #' @export
 edge_covers = function(y, ...) {
+  require_active_edges()
   x = .G()
-  require_spatially_explicit_edges(x)
   lengths(st_covers(pull_edge_geom(x), y, ...)) > 0
 }
 
@@ -291,8 +293,8 @@ edge_covers = function(y, ...) {
 #' @importFrom sf st_covered_by
 #' @export
 edge_is_covered_by = function(y, ...) {
+  require_active_edges()
   x = .G()
-  require_spatially_explicit_edges(x)
   lengths(st_covered_by(pull_edge_geom(x), y, ...)) > 0
 }
 
@@ -300,7 +302,7 @@ edge_is_covered_by = function(y, ...) {
 #' @importFrom sf st_is_within_distance
 #' @export
 edge_is_within_distance = function(y, ...) {
+  require_active_edges()
   x = .G()
-  require_spatially_explicit_edges(x)
   lengths(st_is_within_distance(pull_edge_geom(x), y, ...)) > 0
 }

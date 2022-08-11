@@ -47,7 +47,7 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
   nsf = pull_node_geom(x)
   # Combine node geometries with edge geometries if needed.
   use_edges = TRUE
-  if (! has_spatially_explicit_edges(x)) {
+  if (! has_explicit_edges(x)) {
     if (draw_lines) {
       x = explicitize_edges(x)
     } else {
@@ -79,7 +79,7 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
 #' @name autoplot
 autoplot.sfnetwork = function(object, ...) {
   g = ggplot2::ggplot() + ggplot2::geom_sf(data = nodes_as_sf(object))
-  if (has_spatially_explicit_edges(object)) {
+  if (has_explicit_edges(object)) {
     g + ggplot2::geom_sf(data = edges_as_sf(object))
   } else {
     message("Spatially implicit edges are drawn as lines", call. = FALSE)
