@@ -517,6 +517,7 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
     new_edges[geom_colname] = list(st_sfc(new_edges[[geom_colname]]))
     new_edges = st_as_sf(new_edges, sf_column_name = geom_colname)
     st_crs(new_edges) = st_crs(x)
+    st_precision(new_edges) = st_precision(x)
     edge_attribute_values(x_new) = new_edges
   }
   # If requested, original edge data should be stored in a .orig_data column.
@@ -1022,6 +1023,7 @@ to_spatial_subdivision = function(x) {
   # Build the new edge geometries.
   new_edge_geoms = sfc_linestring(new_edge_coords, linestring_id = "edge_id")
   st_crs(new_edge_geoms) = st_crs(edges)
+  st_precision(new_edge_geoms) = st_precision(edges)
   new_edge_coords$edge_id = NULL
   ## ===================================
   # STEP V: CONSTRUCT THE NEW EDGE DATA
@@ -1053,6 +1055,7 @@ to_spatial_subdivision = function(x) {
   is_new_boundary = rep(is_split | is_boundary, reps)
   new_node_geoms = sfc_point(new_edge_coords[is_new_boundary, ])
   st_crs(new_node_geoms) = st_crs(nodes)
+  st_precision(new_node_geoms) = st_precision(nodes)
   ## =====================================
   # STEP VII: CONSTRUCT THE NEW NODE DATA
   # We now have the geometries of the new nodes.

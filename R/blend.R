@@ -363,6 +363,7 @@ blend_ = function(x, y, tolerance) {
   # Build the new edge geometries.
   new_edge_geoms = sfc_linestring(new_edge_coords, linestring_id = "edge_id")
   st_crs(new_edge_geoms) = st_crs(edges)
+  st_precision(new_edge_geoms) = st_precision(edges)
   new_edge_coords$edge_id = NULL
   ## ================================
   # STEP VI: RESTORE EDGE ATTRIBUTES

@@ -115,6 +115,7 @@ draw_lines = function(x, y) {
   df = df[order(df$point_id), ]
   lines = sfc_linestring(df, x = "x", y = "y", linestring_id = "point_id")
   st_crs(lines) = st_crs(x)
+  st_precision(lines) = st_precision(x)
   lines
 }
 
@@ -336,6 +337,7 @@ linestring_boundary_points = function(x) {
   # Rebuild sf structure.
   points = sfc_point(pairs)
   st_crs(points) = st_crs(x)
+  st_precision(points) = st_precision(x)
   points
 }
 
@@ -373,6 +375,7 @@ linestring_segments = function(x) {
   segment_pts = segment_pts[order(segment_pts$segment_id), ]
   segments = sfc_linestring(segment_pts, linestring_id = "segment_id")
   st_crs(segments) = st_crs(x)
+  st_precision(segments) = st_precision(x)
   segments
 }
 
