@@ -75,6 +75,8 @@ edge_circuity = function(Inf_as_NaN = FALSE) {
   require_spatially_explicit_edges(x)
   # Calculate circuity.
   values = st_length(pull_edge_geom(x)) / straight_line_distance(x)
+  # Drop units since circuity is unitless (it is a ratio of m/m).
+  if (inherits(values, "units")) values = drop_units(values)
   # Replace Inf values by NaN if requested.
   if (Inf_as_NaN) values[is.infinite(values)] = NaN
   values
