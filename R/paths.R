@@ -44,6 +44,11 @@
 #' \code{'all_simple'} paths are calculated using
 #' \code{\link[igraph]{all_simple_paths}}. Defaults to \code{'shortest'}.
 #'
+#' @param use_names If a column named \code{name} is present in the nodes
+#' table, should these names be used to encode the nodes in a path, instead of
+#' the node indices? Defaults to \code{TRUE}. Ignored when the nodes table does
+#' not have a column named \code{name}.
+#'
 #' @param ... Arguments passed on to the corresponding
 #' \code{\link[igraph:shortest_paths]{igraph}} or
 #' \code{\link[igraph:all_simple_paths]{igraph}} function. Arguments
@@ -148,7 +153,7 @@
 #' @importFrom igraph V
 #' @export
 st_network_paths = function(x, from, to = igraph::V(x), weights = NULL,
-                            type = "shortest", ...) {
+                            type = "shortest", use_names = TRUE, ...) {
   UseMethod("st_network_paths")
 }
 
@@ -157,7 +162,7 @@ st_network_paths = function(x, from, to = igraph::V(x), weights = NULL,
 #' @export
 st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
                                       weights = NULL, type = "shortest",
-                                      ...) {
+                                      use_names = TRUE, ...) {
   # If 'from' points are given as simple feature geometries:
   # --> Convert them to node indices.
   if (is.sf(from) | is.sfc(from)) from = get_nearest_node_index(x, from)
@@ -171,47 +176,60 @@ st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
   # Call paths calculation function according to type argument.
   switch(
     type,
-    shortest = get_shortest_paths(x, from, to, weights, ...),
-    all_shortest = get_all_shortest_paths(x, from, to, weights, ...),
-    all_simple = get_all_simple_paths(x, from, to, ...),
+    shortest = get_shortest_paths(x, from, to, weights, use_names,...),
+    all_shortest = get_all_shortest_paths(x, from, to, weights, use_names,...),
+    all_simple = get_all_simple_paths(x, from, to, use_names,...),
     raise_unknown_input(type)
   )
 }
 
-#' @importFrom igraph shortest_paths
+#' @importFrom igraph shortest_paths vertex_attr_names
 #' @importFrom tibble as_tibble
-get_shortest_paths = function(x, from, to, weights, ...) {
+get_shortest_paths = function(x, from, to, weights, use_names = TRUE, ...) {
   # Set weights.
   weights = set_path_weights(x, weights)
   # Call igraph function.
   paths = shortest_paths(x, from, to, weights = weights, output = "both", ...)
-  # Extract paths of node indices and edge indices.
-  npaths = lapply(paths[[1]], as.integer)
+  # Extract vector of node indices or names.
+  if (use_names && "name" %in% vertex_attr_names(x)) {
+    npaths = lapply(paths[[1]], attr, "names")
+  } else {
+    npaths = lapply(paths[[1]], as.integer)
+  }
+  # Extract vector of edge indices.
   epaths = lapply(paths[[2]], as.integer)
   # Return as columns in a tibble.
   as_tibble(do.call(cbind, list(node_paths = npaths, edge_paths = epaths)))
 }
 
-#' @importFrom igraph all_shortest_paths
+#' @importFrom igraph all_shortest_paths vertex_attr_names
 #' @importFrom tibble as_tibble
-get_all_shortest_paths = function(x, from, to, weights, ...) {
+get_all_shortest_paths = function(x, from, to, weights, use_names = TRUE,...) {
   # Set weights.
   weights = set_path_weights(x, weights)
   # Call igraph function.
   paths = all_shortest_paths(x, from, to, weights = weights, ...)
-  # Extract paths of node indices.
-  npaths = lapply(paths[[1]], as.integer)
+  # Extract vector of node indices or names.
+  if (use_names && "name" %in% vertex_attr_names(x)) {
+    npaths = lapply(paths[[1]], attr, "names")
+  } else {
+    npaths = lapply(paths[[1]], as.integer)
+  }
   # Return as column in a tibble.
   as_tibble(do.call(cbind, list(node_paths = npaths)))
 }
 
-#' @importFrom igraph all_simple_paths
+#' @importFrom igraph all_simple_paths vertex_attr_names
 #' @importFrom tibble as_tibble
-get_all_simple_paths = function(x, from, to, ...) {
+get_all_simple_paths = function(x, from, to, use_names = TRUE, ...) {
   # Call igraph function.
   paths = all_simple_paths(x, from, to, ...)
   # Extract paths of node indices.
-  npaths = lapply(paths, as.integer)
+  if (use_names && "name" %in% vertex_attr_names(x)) {
+    npaths = lapply(paths, attr, "names")
+  } else {
+    npaths = lapply(paths, as.integer)
+  }
   # Return as column in a tibble.
   as_tibble(do.call(cbind, list(node_paths = npaths)))
 }

@@ -72,6 +72,10 @@ net \%>\%
 
 net \%>\%
   activate("edges") \%>\%
+  mutate(azimuth = edge_azimuth(degrees = TRUE))
+
+net \%>\%
+  activate("edges") \%>\%
   mutate(circuity = edge_circuity())
 
 net \%>\%
