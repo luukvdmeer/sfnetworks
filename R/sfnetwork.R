@@ -421,6 +421,7 @@ print.sfnetwork = function(x, ...) {
     ...
   )
   print(inactive_data)
+  invisible(x)
 }
 
 #' @importFrom sf st_geometry
@@ -468,6 +469,7 @@ print.morphed_sfnetwork = function(x, ...) {
   cat_subtle(out[[3]], "\n")
   cat_subtle(out[[4]], "\n")
   cat_subtle("# with CRS", st_crs(attr(x, ".orig_graph"))$input, "\n")
+  invisible(x)
 }
 
 #' Check if an object is a sfnetwork
