@@ -9,6 +9,7 @@ st_network_cost(
   from = igraph::V(x),
   to = igraph::V(x),
   weights = NULL,
+  direction = "out",
   Inf_as_NaN = FALSE,
   ...
 )
@@ -25,9 +26,8 @@ containing the names of the nodes from which the shortest paths will be
 calculated. By default, all nodes in the network are included.}
 
 \item{to}{The (set of) geospatial point(s) to which the shortest paths will
-be calculated. Can be an object of  class \code{\link[sf]{sf}} or
-\code{\link[sf]{sfc}}. Features with duplicated nearest node indices will be
-removed before calculating the cost matrix.
+be calculated. Can be an object of class \code{\link[sf]{sf}} or
+\code{\link[sf]{sfc}}.
 Alternatively it can be a numeric vector containing the indices of the nodes
 to which the shortest paths will be calculated, or a character vector
 containing the names of the nodes to which the shortest paths will be
@@ -43,16 +43,23 @@ geographic edge lengths will be calculated internally and used as weights.
 If set to \code{NA}, no weights are used, even if the edges have a
 \code{weight} column.}
 
+\item{direction}{The direction of travel. Defaults to \code{'out'}, meaning
+that the direction given by the network is followed and costs are calculated
+from the points given as argument \code{from}. May be set to \code{'in'},
+meaning that the opposite direction is followed an costs are calculated
+towards the points given as argument \code{from}. May also be set to
+\code{'all'}, meaning that the network is considered to be undirected. This
+argument is ignored for undirected networks.}
+
 \item{Inf_as_NaN}{Should the cost values of unconnected nodes be stored as
 \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.}
 
-\item{...}{Arguments passed on to \code{\link[igraph]{distances}}.}
+\item{...}{Arguments passed on to \code{\link[igraph]{distances}}. Argument
+\code{mode} is ignored. Use \code{direction} instead.}
 }
 \value{
 An n times m numeric matrix where n is the length of the \code{from}
-argument, and m is the length of unique values in the \code{to} argument.
-When the \code{to} argument contains spatial features that have the same
-nearest node, these features are considered duplicates.
+argument, and m is the length of the \code{to} argument.
 }
 \description{
 Wrapper around \code{\link[igraph]{distances}} to calculate costs of
@@ -79,25 +86,11 @@ duplicates.
 For more details on the wrapped function from \code{\link[igraph]{igraph}}
 see the \code{\link[igraph]{distances}} documentation page.
 }
-\note{
-By default, \code{\link[igraph]{distances}} calculates costs by
-by allowing to travel each edge in both directions, hence by assuming an
-undirected network. This is the default even when the input network is
-directed! For directed networks, the behaviour can be changed by setting
-\code{mode = "out"} to consider only outbound edges, or \code{mode = "in"}
-to consider only inbound edges.
-
-Furthermore, \code{\link[igraph]{distances}} does not allow duplicated
-values in the \code{to} argument. This also means that when providing
-spatial features, sets of multiple features that happen to have the same
-nearest node will be reduced to one by selecting only the first of these
-features.
-}
 \examples{
 library(sf, quietly = TRUE)
 library(tidygraph, quietly = TRUE)
 
-# Create a network with edge lenghts as weights.
+# Create a network with edge lengths as weights.
 # These weights will be used automatically in shortest paths calculation.
 net = as_sfnetwork(roxel, directed = FALSE) \%>\%
   st_transform(3035) \%>\%

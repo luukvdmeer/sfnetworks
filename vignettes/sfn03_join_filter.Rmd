@@ -55,9 +55,9 @@ Although the filter is applied only to the active element of the network, it may
 
 ```{r, fig.show='hold', out.width = '50%'}
 p1 = st_point(c(4151358, 3208045))
-p2 = st_point(c(4151340, 3207520))
-p3 = st_point(c(4151756, 3207506))
-p4 = st_point(c(4151774, 3208031))
+p2 = st_point(c(4151340, 3207120))
+p3 = st_point(c(4151856, 3207106))
+p4 = st_point(c(4151874, 3208031))
 
 poly = st_multipoint(c(p1, p2, p3, p4)) %>%
   st_cast("POLYGON") %>%
@@ -70,7 +70,8 @@ filtered = st_filter(net, poly, .pred = st_intersects)
 
 plot(net, col = "grey")
 plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
-plot(filtered)
+plot(net, col = "grey")
+plot(filtered, add = TRUE)
 ```
 
 ```{r, fig.show='hold', out.width = '50%'}
@@ -80,7 +81,8 @@ filtered = net %>%
 
 plot(net, col = "grey")
 plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
-plot(filtered)
+plot(net, col = "grey")
+plot(filtered, add = TRUE)
 ```
 
 The isolated nodes that remain after filtering the edges can be easily removed using a combination of a regular `dplyr::filter()` verb  and the `tidygraph::node_is_isolated()` query function.
@@ -94,7 +96,23 @@ filtered = net %>%
 
 plot(net, col = "grey")
 plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
-plot(filtered)
+plot(net, col = "grey")
+plot(filtered, add = TRUE)
+```
+
+Filtering can also be done with other predicates.
+
+```{r, fig.show='hold', out.width = '50%'}
+point = st_centroid(st_combine(net))
+
+filtered = net %>%
+  activate("nodes") %>%
+  st_filter(point, .predicate = st_is_within_distance, dist = 500)
+
+plot(net, col = "grey")
+plot(point, col = "red", cex = 3, pch = 20, add = TRUE)
+plot(net, col = "grey")
+plot(filtered, add = TRUE)
 ```
 
 For non-spatial filters applied to attribute columns, simply use `dplyr::filter()` instead of `sf::st_filter()`.
@@ -114,7 +132,8 @@ filtered = net %>%
 
 plot(net, col = "grey")
 plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
-plot(filtered)
+plot(net, col = "grey")
+plot(filtered, add = TRUE)
 ```
 
 A nice application of this in road networks is to find underpassing and overpassing roads (i.e. edges that cross other edges but are not connected at that point). As we can see in the example below, such roads are not present in our Roxel data, which results in a network without edges.
@@ -147,28 +166,28 @@ filtered_by_coords = net %>%
 plot(net, col = "grey")
 plot(l, col = "red", lty = 4, lwd = 4, add = TRUE)
 plot(net, col = "grey")
-plot(filtered_by_coords, col = "red", add = TRUE)
+plot(filtered_by_coords, add = TRUE)
 ```
 
-### Cropping
+### Clipping
 
-Another way to spatially filter features is by using the sf function `sf::st_crop()`, which works as follows: the function is applied to a set of geometries A with respect to another set of geometries B. It removes features from A that do not *intersect* with the *bounding box* of B. On top of that, the geometries of those features from A that remain are updated such that only their intersection with the bounding box of B is kept. 
+Filtering returns a subset of the original geometries, but leaves those geometries themselves unchanged. This is different from clipping, in which they get cut at the border of a provided clip feature. There are three ways in which you can do this: `sf::st_intersection()` keeps only those parts of the original geometries that lie within the clip feature, `sf::st_difference()` keeps only those parts of the original geometries that lie outside the clip feature, and `sf::st_crop()` keeps only those parts of the original geometries that lie within the bounding box of the clip feature.
 
-In the case of the nodes, this is equal to a filter using the bounding box of B and the predicate *intersects*. However, in the case of the edges, there is a difference. The linestring geometries of the edges that intersect with the bounding box of B are cut such that only those parts that are really inside the bounding box of B remain. To preserve a valid spatial network structure, `sfnetworks` adds new nodes at these cut locations.
+Note that in the case of the nodes, clipping is not different from filtering, since point geometries cannot fall party inside and partly outside another feature. However, in the case of the edges, clipping will cut the linestring geometries of the edges at the border of the clip feature (or in the case of cropping, the bounding box of that feature). To preserve a valid spatial network structure, `sfnetworks` adds new nodes at these cut locations.
 
 ```{r, fig.show='hold', out.width = '50%'}
-cropped = net %>%
+clipped = net %>%
   activate("edges") %>%
-  st_crop(poly) %>%
+  st_intersection(poly) %>%
   activate("nodes") %>%
   filter(!node_is_isolated())
 
 plot(net, col = "grey")
 plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
-plot(filtered, col = "grey")
-plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
-plot(cropped, add = TRUE)
+plot(net, col = "grey")
+plot(clipped, add = TRUE)
 ```
+Note: Neither of the clipping function currently works well with undirected networks!
 
 ## Spatial joins
 

@@ -68,7 +68,7 @@ as_tibble.sfnetwork = function(x, active = NULL, spatial = TRUE, ...) {
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph
 edges_as_table = function(x) {
-  if (has_spatially_explicit_edges(x)) {
+  if (has_explicit_edges(x)) {
     edges_as_sf(x)
   } else {
     as_tibble(as_tbl_graph(x), "edges")

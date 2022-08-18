@@ -211,37 +211,22 @@ plot(explicit_net, main = "Explicit edges")
 
 ### to_spatial_neighborhood
 
-The `to_spatial_neighborhood()` morpher limits the original network to those nodes that are part of the neighborhood of a specified *origin* node. This origin node can be specified by a node index, but also by any geospatial point (as sf or sfc object). Internally, such a point will be snapped to its nearest node before calculating the neighborhood. A neighborhood contains all nodes that can be reached within a certain cost threshold from the origin node. The morphed state contains a single sfnetwork.
+The `to_spatial_neighborhood()` morpher limits the original network to those nodes that are part of the neighborhood of a specified *origin* node. This origin node can be specified by a node index, but also by any geospatial point (as sf or sfc object). Internally, such a point will be snapped to its nearest node before calculating the neighborhood. A neighborhood contains all nodes that can be reached within a certain cost threshold from the origin node. The morphed state contains a single sfnetwork. See the [Routing](https://luukvdmeer.github.io/sfnetworks/articles/sfn04_routing.html#isochrones-and-isodistances) vignette for more details and examples.
 
 ```{r, fig.width=5, fig.height=5}
-# As an example we will calculate multiple neighborhoods with different thresholds.
-# First we set the geographic lengths of the edges as the edge weights.
-# These weights will automatically be used when calculating travel costs.
-# Just as in the shortest paths calculation functions.
-new_net = net %>%
-  activate("edges") %>%
-  mutate(weight = edge_length())
-
 # Define the origin location.
 p = net %>%
   st_geometry() %>%
   st_combine() %>%
   st_centroid()
 
-# Define the threshold values (in meters).
-# Define also the colors to plot the neighborhoods in.
-thresholds = rev(seq(100, 1000, 100))
-palette = sf.colors(n = 10)
+# Subset neighborhood.
+neigh_net = net %>%
+  activate("edges") %>%
+  convert(to_spatial_neighborhood, p, threshold = 500, weights = edge_length())
 
-# Plot the results.
 plot(net, col = "grey")
-
-for (i in c(1:10)) {
-  nbh = convert(net, to_spatial_neighborhood, p, thresholds[i])
-  plot(nbh, col = palette[i], add = TRUE)
-}
-
-plot(p, pch = 8, cex = 2, lwd = 2, add = TRUE)
+plot(neigh_net, col = "red", add = TRUE)
 ```
 
 ### to_spatial_shortest_paths

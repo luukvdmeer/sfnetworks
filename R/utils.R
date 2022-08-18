@@ -1,3 +1,20 @@
+#' List-column friendly version of bind_rows
+#'
+#' @param ... Tables to be row-binded.
+#'
+#' @details Behaviour of this function should be similar to rbindlist from the
+#' data.table package.
+#'
+#' @importFrom dplyr across bind_rows mutate
+#' @noRd
+bind_rows_list = function(...) {
+  cols_as_list = function(x) list2DF(lapply(x, function(y) unname(as.list(y))))
+  ins = lapply(list(...), cols_as_list)
+  out = bind_rows(ins)
+  is_listcol = vapply(out, function(x) any(lengths(x) > 1), logical(1))
+  mutate(out, across(which(!is_listcol), unlist))
+}
+
 #' Print a string with a subtle style.
 #'
 #' @param ... A string to print.
@@ -107,7 +124,7 @@ create_nodes_from_edges = function(edges) {
 #' and the first point in y, the second point in x and the second point in y,
 #' et cetera.
 #'
-#' @importFrom sf st_crs
+#' @importFrom sf st_crs st_crs<- st_precision st_precision<-
 #' @importFrom sfheaders sfc_linestring sfc_to_df
 #' @noRd
 draw_lines = function(x, y) {
@@ -115,6 +132,7 @@ draw_lines = function(x, y) {
   df = df[order(df$point_id), ]
   lines = sfc_linestring(df, x = "x", y = "y", linestring_id = "point_id")
   st_crs(lines) = st_crs(x)
+  st_precision(lines) = st_precision(x)
   lines
 }
 
@@ -137,7 +155,7 @@ draw_lines = function(x, y) {
 #' @importFrom sf st_as_sf st_geometry
 #' @noRd
 edge_boundary_nodes = function(x) {
-  nodes = node_geom(x)
+  nodes = pull_node_geom(x)
   id_mat = ends(x, E(x), names = FALSE)
   id_vct = as.vector(t(id_mat))
   nodes[id_vct]
@@ -183,7 +201,7 @@ edge_boundary_node_indices = function(x, matrix = FALSE) {
 #' @importFrom sf st_as_sf
 #' @noRd
 edge_boundary_points = function(x) {
-  edges = edge_geom(x)
+  edges = pull_edge_geom(x)
   linestring_boundary_points(edges)
 }
 
@@ -206,7 +224,7 @@ edge_boundary_points = function(x) {
 #' @importFrom sf st_equals
 #' @noRd
 edge_boundary_point_indices = function(x, matrix = FALSE) {
-    nodes = node_geom(x)
+    nodes = pull_node_geom(x)
     edges = edges_as_sf(x)
     idxs_lst = st_equals(linestring_boundary_points(edges), nodes)
     idxs_vct = do.call("c", idxs_lst)
@@ -242,11 +260,11 @@ edge_boundary_point_indices = function(x, matrix = FALSE) {
 #' @importFrom tidygraph mutate
 #' @noRd
 explicitize_edges = function(x) {
-  if (has_spatially_explicit_edges(x)) {
+  if (has_explicit_edges(x)) {
     x
   } else {
     # Extract the node geometries from the network.
-    nodes = node_geom(x)
+    nodes = pull_node_geom(x)
     # Get the indices of the boundary nodes of each edge.
     # Returns a matrix with source ids in column 1 and target ids in column 2.
     ids = edge_boundary_node_indices(x, matrix = TRUE)
@@ -258,6 +276,40 @@ explicitize_edges = function(x) {
   }
 }
 
+#' Get the nearest nodes to given features
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param y Spatial features as object of class \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}.
+#'
+#' @return An object of class \code{\link[sf]{sf}} containing \code{POINT}
+#' geometry. The number of rows will be equal to the amount of features in
+#' \code{y}.
+#'
+#' @importFrom sf st_geometry st_nearest_feature
+#' @noRd
+get_nearest_node = function(x, y) {
+  nodes = nodes_as_sf(x)
+  nodes[st_nearest_feature(st_geometry(y), nodes), ]
+}
+
+#' Get the index of the nearest nodes to given features
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param y Spatial features as object of class \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}.
+#'
+#' @return An vector integers. The length of the vector will be equal to the
+#' amount of features in \code{y}.
+#'
+#' @importFrom sf st_geometry st_nearest_feature
+#' @noRd
+get_nearest_node_index = function(x, y) {
+  st_nearest_feature(st_geometry(y), nodes_as_sf(x))
+}
+
 #' Make edges spatially implicit
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
@@ -267,7 +319,7 @@ explicitize_edges = function(x) {
 #'
 #' @noRd
 implicitize_edges = function(x) {
-  if (has_spatially_explicit_edges(x)) {
+  if (has_explicit_edges(x)) {
     drop_edge_geom(x)
   } else {
     x
@@ -286,7 +338,7 @@ implicitize_edges = function(x) {
 #' @details With boundary points we mean the points at the start and end of
 #' a linestring.
 #'
-#' @importFrom sf st_crs st_geometry
+#' @importFrom sf st_crs st_crs<- st_geometry st_precision st_precision<-
 #' @importFrom sfheaders sfc_point sfc_to_df
 #' @noRd
 linestring_boundary_points = function(x) {
@@ -302,6 +354,7 @@ linestring_boundary_points = function(x) {
   # Rebuild sf structure.
   points = sfc_point(pairs)
   st_crs(points) = st_crs(x)
+  st_precision(points) = st_precision(x)
   points
 }
 
@@ -316,7 +369,7 @@ linestring_boundary_points = function(x) {
 #' @details With a line segment we mean a linestring geometry that has no
 #' interior points.
 #'
-#' @importFrom sf st_crs st_geometry
+#' @importFrom sf st_crs st_crs<- st_geometry st_precision st_precision<-
 #' @importFrom sfheaders sfc_linestring sfc_to_df
 #' @noRd
 linestring_segments = function(x) {
@@ -339,7 +392,39 @@ linestring_segments = function(x) {
   segment_pts = segment_pts[order(segment_pts$segment_id), ]
   segments = sfc_linestring(segment_pts, linestring_id = "segment_id")
   st_crs(segments) = st_crs(x)
+  st_precision(segments) = st_precision(x)
   segments
+}
+
+#' Cast multilinestrings to single linestrings.
+#'
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+#' with \code{MULTILINESTRING} geometries or a combination of
+#' \code{LINESTRING} geometries and \code{MULTILINESTRING} geometries.
+#'
+#' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
+#' geometries.
+#'
+#' @details This may create invalid linestrings according to the simple feature
+#' standard, e.g. linestrings may cross themselves.
+#'
+#' @importFrom sf st_crs st_crs<- st_geometry st_precision st_precision<-
+#' @importFrom sfheaders sfc_linestring sfc_to_df
+#' @noRd
+multilinestrings_to_linestrings = function(x) {
+  # Decompose lines into the points that shape them.
+  pts = sfc_to_df(st_geometry(x))
+  # Add a linestring ID to each of these points.
+  # Points of a multilinestring should all have the same ID.
+  is_in_multi = !is.na(pts$multilinestring_id)
+  pts$linestring_id[is_in_multi] = pts$multilinestring_id[is_in_multi]
+  # Select only coordinate and ID columns.
+  pts = pts[, names(pts) %in% c("x", "y", "z", "m", "linestring_id")]
+  # (Re)create linestring geometries.
+  lines = sfc_linestring(pts, linestring_id = "linestring_id")
+  st_crs(lines) = st_crs(x)
+  st_precision(lines) = st_precision(x)
+  lines
 }
 
 #' Determine duplicated geometries
