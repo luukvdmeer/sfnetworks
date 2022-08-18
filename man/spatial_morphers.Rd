@@ -41,8 +41,8 @@ to_spatial_simple(
 to_spatial_smooth(
   x,
   protect = NULL,
-  check_attributes = NULL,
   summarise_attributes = "ignore",
+  require_equal = FALSE,
   store_original_data = FALSE
 )
 
@@ -69,10 +69,7 @@ existed before contraction. Defaults to \code{FALSE}.}
 \item{summarise_attributes}{Whenever multiple features (i.e. nodes and/or
 edges) are merged into a single feature during morphing, how should their
 attributes be combined? Several options are possible, see
-\code{\link[igraph]{igraph-attribute-combination}} for details. Attributes
-listed in \code{check_attributes} are not considered, since they are
-guaranteed to be equal among the merged features and hence do not have to
-be summarised.}
+\code{\link[igraph]{igraph-attribute-combination}} for details.}
 
 \item{store_original_data}{Whenever multiple features (i.e. nodes and/or
 edges) are merged into a single feature during morphing, should the data of
@@ -117,12 +114,12 @@ geospatial features as object of class code{\link[sf]{sf}} or
 node in the network will be protected. Defaults to \code{NULL}, meaning that
 none of the nodes is protected.}
 
-\item{check_attributes}{Whenever multiple features (i.e. nodes and/or edges)
-may be merged into a single feature during morphing, which attributes should
-be checked for equality before merging the features? If the values of these
-attributes are not equal among the features, they will never be merged.
-Defaults to \code{NULL}, meaning that none of the attributes are checked for
-equality. Equality tests are evaluated using the \code{==} operator.}
+\item{require_equal}{Should nodes only be removed when the attribute values
+of their incident edges are equal? Defaults to \code{FALSE}. If \code{TRUE},
+only pseudo nodes that have incident edges with equal attribute values are
+removed. May also be given as a vector of attribute names. In that case only
+those attributes are checked for equality. Equality tests are evaluated
+using the \code{==} operator.}
 
 \item{subset_by}{Whether to create subgraphs based on nodes or edges.}
 }
@@ -209,7 +206,7 @@ network. In the case of directed networks, pseudo nodes are those nodes that
 have only one incoming and one outgoing edge. In undirected networks, pseudo
 nodes are those nodes that have two incident edges. Equality of attribute
 values among the two edges can be defined as an additional requirement by
-setting the \code{check_attributes} parameter. Connectivity of the
+setting the \code{require_equal} parameter. Connectivity of the
 network is preserved by concatenating the incident edges of each removed
 pseudo node. Returns a \code{morphed_sfnetwork} containing a single element
 of class \code{\link{sfnetwork}}.

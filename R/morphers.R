@@ -24,20 +24,10 @@
 #' column named \code{.orig_data}. This is in line with the design principles
 #' of \code{tidygraph}. Defaults to \code{FALSE}.
 #'
-#' @param check_attributes Whenever multiple features (i.e. nodes and/or edges)
-#' may be merged into a single feature during morphing, which attributes should
-#' be checked for equality before merging the features? If the values of these
-#' attributes are not equal among the features, they will never be merged.
-#' Defaults to \code{NULL}, meaning that none of the attributes are checked for
-#' equality. Equality tests are evaluated using the \code{==} operator.
-#'
 #' @param summarise_attributes Whenever multiple features (i.e. nodes and/or
 #' edges) are merged into a single feature during morphing, how should their
 #' attributes be combined? Several options are possible, see
-#' \code{\link[igraph]{igraph-attribute-combination}} for details. Attributes
-#' listed in \code{check_attributes} are not considered, since they are
-#' guaranteed to be equal among the merged features and hence do not have to
-#' be summarised.
+#' \code{\link[igraph]{igraph-attribute-combination}} for details.
 #'
 #' @return Either a \code{morphed_sfnetwork}, which is a list of one or more
 #' \code{\link{sfnetwork}} objects, or a \code{morphed_tbl_graph}, which is a
@@ -541,7 +531,7 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' have only one incoming and one outgoing edge. In undirected networks, pseudo
 #' nodes are those nodes that have two incident edges. Equality of attribute
 #' values among the two edges can be defined as an additional requirement by
-#' setting the \code{check_attributes} parameter. Connectivity of the
+#' setting the \code{require_equal} parameter. Connectivity of the
 #' network is preserved by concatenating the incident edges of each removed
 #' pseudo node. Returns a \code{morphed_sfnetwork} containing a single element
 #' of class \code{\link{sfnetwork}}.
@@ -554,6 +544,13 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' node in the network will be protected. Defaults to \code{NULL}, meaning that
 #' none of the nodes is protected.
 #'
+#' @param require_equal Should nodes only be removed when the attribute values
+#' of their incident edges are equal? Defaults to \code{FALSE}. If \code{TRUE},
+#' only pseudo nodes that have incident edges with equal attribute values are
+#' removed. May also be given as a vector of attribute names. In that case only
+#' those attributes are checked for equality. Equality tests are evaluated
+#' using the \code{==} operator.
+#'
 #' @importFrom igraph adjacent_vertices decompose degree delete_vertices
 #' edge_attr edge.attributes get.edge.ids igraph_opt igraph_options
 #' incident_edges induced_subgraph is_directed vertex_attr
@@ -562,8 +559,8 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' @export
 to_spatial_smooth = function(x,
                              protect = NULL,
-                             check_attributes = NULL,
                              summarise_attributes = "ignore",
+                             require_equal = FALSE,
                              store_original_data = FALSE) {
   # Change default igraph options.
   # This prevents igraph returns node or edge indices as formatted sequences.
@@ -642,15 +639,21 @@ to_spatial_smooth = function(x,
   }
   # Check for equality of certain attributes between incident edges.
   # Detected pseudo nodes that fail this check should be filtered out.
-  if (! is.null(check_attributes)) {
-    # Check if all listed attribute columns exists in the edges table of x.
-    attr_exists = check_attributes %in% edge_attribute_names(x)
-    if (! all(attr_exists)) {
-      stop(
-        "Unknown edge attributes: ",
-        paste(sQuote(check_attributes[!attr_exists]), collapse = " and "),
-        call. = FALSE
-      )
+  if (! isFALSE(require_equal)) {
+    # If require_equal is TRUE all attributes will be checked for equality.
+    # In other cases only a subset of attributes will be checked.
+    if (isTRUE(require_equal)) {
+      require_equal = edge_attribute_names(x)
+    } else {
+      # Check if all given attributes exist in the edges table of x.
+      attr_exists = require_equal %in% edge_attribute_names(x)
+      if (! all(attr_exists)) {
+        stop(
+          "Unknown edge attributes: ",
+          paste(sQuote(require_equal[!attr_exists]), collapse = " and "),
+          call. = FALSE
+        )
+      }
     }
     # Get the node indices of the detected pseudo nodes.
     pseudo_idxs = which(pseudo)
@@ -664,7 +667,7 @@ to_spatial_smooth = function(x,
     is_in = seq(1, 2 * length(pseudo_idxs), by = 2)
     is_out = seq(2, 2 * length(pseudo_idxs), by = 2)
     # Obtain the attributes to be checked for each of the incident edges.
-    incident_attrs = edge.attributes(x, incident_idxs)[check_attributes]
+    incident_attrs = edge.attributes(x, incident_idxs)[require_equal]
     # For each of these attributes:
     # --> Check if its value is equal for both incident edges of a pseudo node.
     check_equality = function(A) {
@@ -683,7 +686,7 @@ to_spatial_smooth = function(x,
     tests = lapply(incident_attrs, check_equality)
     # If one or more equality tests failed for a detected pseudo node:
     # --> Mark this pseudo node as FALSE, i.e. not being a pseudo node.
-    failed = rowSums(do.call("cbind", tests)) != length(check_attributes)
+    failed = rowSums(do.call("cbind", tests)) != length(require_equal)
     pseudo[pseudo_idxs[failed]] = FALSE
     if (! any(pseudo)) return (x)
   }
