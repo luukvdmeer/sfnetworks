@@ -197,8 +197,14 @@ st_is_valid.sfnetwork = function(x, ...) {
 #'
 #' @importFrom sf st_crs
 #' @export
-st_crs.sfnetwork = function(x, ...) {
-  st_crs(pull_node_geom(x), ...)
+st_crs.sfnetwork = function(x, active = NULL, ...) {
+  if (is.null(active)) active = attr(x, "active")
+  switch(
+    active,
+    nodes = st_crs(pull_node_geom(x), ...),
+    edges = st_crs(pull_edge_geom(x), ...),
+    raise_unknown_input(active)
+  )
 }
 
 #' @name sf
@@ -218,8 +224,14 @@ st_crs.sfnetwork = function(x, ...) {
 #' @name sf
 #' @importFrom sf st_precision
 #' @export
-st_precision.sfnetwork = function(x, ...) {
-  st_precision(pull_node_geom(x), ...)
+st_precision.sfnetwork = function(x, active = NULL, ...) {
+  if (is.null(active)) active = attr(x, "active")
+  switch(
+    active,
+    nodes = st_precision(pull_node_geom(x), ...),
+    edges = st_precision(pull_edge_geom(x), ...),
+    raise_unknown_input(active)
+  )
 }
 
 #' @name sf

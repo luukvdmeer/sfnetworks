@@ -61,11 +61,11 @@
 
 \method{st_is_valid}{sfnetwork}(x, ...)
 
-\method{st_crs}{sfnetwork}(x, ...)
+\method{st_crs}{sfnetwork}(x, active = NULL, ...)
 
 \method{st_crs}{sfnetwork}(x) <- value
 
-\method{st_precision}{sfnetwork}(x, ...)
+\method{st_precision}{sfnetwork}(x, active = NULL, ...)
 
 st_precision.sfnetwork(x) <- value
 
