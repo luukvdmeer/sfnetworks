@@ -226,11 +226,11 @@ test_that("st_network_cost handles Inf_as_Nan correctly", {
 test_that("... ignores mode argument with a warning", {
   expect_warning(
     st_network_cost(net, from = 1, to = 10, mode = "in"),
-    "'mode' argument ignored."
+    "Argument 'mode' is ignored"
   )
   expect_warning(
     st_network_cost(net_dir, from = 1, to = 10, mode = "out"),
-    "'mode' argument ignored."
+    "Argument 'mode' is ignored"
   )
 })
 
