@@ -952,7 +952,8 @@ to_spatial_smooth = function(x,
 #' edges are connected at the points of subdivision. Returns a
 #' \code{morphed_sfnetwork} containing a single element of class
 #' \code{\link{sfnetwork}}. This morpher requires edges to be spatially
-#' explicit.
+#' explicit and nodes to be spatially unique (i.e. not more than one node at
+#' the same spatial location).
 #' @importFrom igraph is_directed
 #' @importFrom sf st_crs st_crs<- st_geometry st_geometry<- st_precision
 #' st_precision<-
