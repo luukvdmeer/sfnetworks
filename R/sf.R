@@ -235,13 +235,6 @@ st_precision.sfnetwork = function(x, active = NULL, ...) {
 }
 
 #' @name sf
-#' @importFrom sf st_precision<- st_precision st_set_precision
-#' @export
-`st_precision<-.sfnetwork` = function(x, value) {
-  st_set_precision(x, value)
-}
-
-#' @name sf
 #' @importFrom sf st_set_precision st_precision<-
 #' @export
 st_set_precision.sfnetwork = function(x, value) {

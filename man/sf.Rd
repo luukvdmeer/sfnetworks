@@ -14,7 +14,6 @@
 \alias{st_crs.sfnetwork}
 \alias{st_crs<-.sfnetwork}
 \alias{st_precision.sfnetwork}
-\alias{st_precision<-.sfnetwork}
 \alias{st_set_precision.sfnetwork}
 \alias{st_shift_longitude.sfnetwork}
 \alias{st_transform.sfnetwork}
@@ -66,8 +65,6 @@
 \method{st_crs}{sfnetwork}(x) <- value
 
 \method{st_precision}{sfnetwork}(x, active = NULL, ...)
-
-st_precision.sfnetwork(x) <- value
 
 \method{st_set_precision}{sfnetwork}(x, value)
 

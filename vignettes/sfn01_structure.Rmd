@@ -289,7 +289,7 @@ The precision in which the coordinates of the network geometries are stored can 
 st_precision(net)
 ```
 
-Precision can be set using either `st_precision(x) = value` or the pipe-friendly `st_set_precision(x, value)`. The precision will always be set for both the nodes and edges, no matter which element is active.
+Precision can be set using `st_set_precision(x, value)`. The precision will always be set for both the nodes and edges, no matter which element is active.
 
 ```{r}
 net %>%
