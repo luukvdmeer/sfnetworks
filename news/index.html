@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -70,7 +70,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.5.5" id="sfnetworks-v055">sfnetworks v0.5.5<a class="anchor" aria-label="anchor" href="#sfnetworks-v055"></a></h2>
+<h2 class="page-header" data-toc-text="0.5.5" id="sfnetworks-v055">sfnetworks v0.5.5<small>2022-02-16</small><a class="anchor" aria-label="anchor" href="#sfnetworks-v055"></a></h2>
 <ul><li>Adjusted the code used to check the version of PROJ on attach. In particular, the new approach tests only <code>sf::sf_extSoftVersion()["proj.4"]</code> since <code>sf::sf_extSoftVersion()["PROJ"]</code> might not be defined for sf &lt; 1.0. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/198" class="external-link">#198</a> and <a href="https://github.com/luukvdmeer/sfnetworks/issues/200" class="external-link">#200</a>.</li>
 <li>Adjusted one of the vignettes following the changes in <code>dplyr</code> 1.0.8. Ref <a href="https://github.com/luukvdmeer/sfnetworks/pull/202" class="external-link">#202</a>. Thanks <a href="https://github.com/romainfrancois" class="external-link">@romainfrancois</a>.</li>
 <li>Removed conflicting URL from package documentation <code>spatial_edge_measures</code>
@@ -88,8 +88,7 @@
 <li>The example dataset <code>Roxel</code> is updated to comply with recent updates on the way a CRS is specified in an sf object. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/167" class="external-link">#167</a>
 </li>
 <li>GitHub Actions workflows are updated to comply with new developments.</li>
-<li>Documentation updates:
-<ul><li>Vignette file names are updated such that the appear in correct order on CRAN. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/162" class="external-link">#162</a>
+<li>Documentation updates:<ul><li>Vignette file names are updated such that the appear in correct order on CRAN. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/162" class="external-link">#162</a>
 </li>
 <li>Example section of the plot method for sfnetwork objects now includes an example of how to add graticules and axes. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/159" class="external-link">#159</a>
 </li>
@@ -98,26 +97,20 @@
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.2" id="sfnetworks-v052">sfnetworks v0.5.2<small>2021-05-13</small><a class="anchor" aria-label="anchor" href="#sfnetworks-v052"></a></h2>
 <ul><li>Compatibility with <code>s2</code> by adding a <code><a href="https://r-spatial.github.io/s2/reference/as_s2_geography.html" class="external-link">s2::as_s2_geography()</a></code> method for sfnetwork objects. In the new version of <code>sf</code>, the <code>s2</code> package will be used for geometric operations involving longitude-latitude coordinates, see <a href="https://github.com/r-spatial/sf/issues/1649" class="external-link">here</a>.</li>
-<li>Bug fixes:
-<ul><li>When setting <code>length_as_weight = TRUE</code> in the sfnetwork construction function, the added weight column now preserves specification of units.</li>
+<li>Bug fixes:<ul><li>When setting <code>length_as_weight = TRUE</code> in the sfnetwork construction function, the added weight column now preserves specification of units.</li>
 <li>
 <code><a href="../reference/st_network_blend.html">st_network_blend()</a></code> now internally uses <code><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">sf::st_cast()</a></code> instead of <code><a href="https://dcooley.github.io/sfheaders/reference/sfc_cast.html" class="external-link">sfheaders::sfc_cast()</a></code> to avoid errors with some CRS specifications.</li>
 </ul></li>
-<li>Documentation updates:
-<ul><li>Extended documentation for the shortest paths functions.</li>
+<li>Documentation updates:<ul><li>Extended documentation for the shortest paths functions.</li>
 <li>Clear mention in vignettes that <code>tidygraph</code> behavior regarding the <code>weight</code> attribute settings is sometimes differing from <code>igraph</code>.</li>
 </ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.1" id="sfnetworks-v051">sfnetworks v0.5.1<small>2021-03-28</small><a class="anchor" aria-label="anchor" href="#sfnetworks-v051"></a></h2>
 <ul><li>Compatibility with <code>spatstat v2</code>, which is now splitted into multiple sub-packages. See <a href="https://github.com/spatstat/spatstat/tree/v1.64-2#spatstat-is-now-split-into-several-packages" class="external-link">here</a> for details. In <code>sfnetworks</code>, this affected the functions <code><a href="../reference/as_sfnetwork.html">as_sfnetwork.linnet()</a></code>, <code><a href="../reference/as_sfnetwork.html">as_sfnetwork.psp()</a></code> and <code><a href="../reference/as.linnet.html">as.linnet.sfnetwork()</a></code>. Using this functions now requires <code>spatstat &gt;= 2.0.0</code> and <code>sf &gt;= 0.9.8</code>.</li>
-<li>Bug fixes:
-<ul><li>Usage of <code>match</code> for checking coordinate equality is replaced by a new <code>st_match</code> function specifically designed for this task. This fixes bugs related to numeric approximations of detailed coordinates. See <a href="https://github.com/luukvdmeer/sfnetworks/issues/130" class="external-link">#130</a>
-</li>
-</ul></li>
-<li>Documentation updates:
-<ul><li>It is now clearly documented that using <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">sf::st_reverse()</a></code> to reverse edge linestrings is only possible with GEOS versions &gt;= 3.7.</li>
-</ul></li>
+<li>Bug fixes:<ul><li>Usage of <code>match</code> for checking coordinate equality is replaced by a new <code>st_match</code> function specifically designed for this task. This fixes bugs related to numeric approximations of detailed coordinates. See <a href="https://github.com/luukvdmeer/sfnetworks/issues/130" class="external-link">#130</a>
+</li></ul></li>
+<li>Documentation updates:<ul><li>It is now clearly documented that using <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">sf::st_reverse()</a></code> to reverse edge linestrings is only possible with GEOS versions &gt;= 3.7.</li></ul></li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.0" id="sfnetworks-v050-nienberge">sfnetworks v0.5.0 “Nienberge”<small>2021-03-11</small><a class="anchor" aria-label="anchor" href="#sfnetworks-v050-nienberge"></a></h2>
@@ -137,8 +130,7 @@
 <li>Removal of the morphed_sfnetwork method for <code>sf::st_geometry&lt;-</code>, since geometries should not be replaced in a morphed state.</li>
 <li>The warning ‘.. assumes attributes are constant over geometries’ is now only raised when not all attribute-geometry relationships are set to ‘constant’. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/123" class="external-link">#123</a>
 </li>
-<li>Bug fixes:
-<ul><li>The attribute-geometry relationships of edge attributes are now preserved during network construction. Fixes <a href="https://github.com/luukvdmeer/sfnetworks/issues/123" class="external-link">#123</a>
+<li>Bug fixes:<ul><li>The attribute-geometry relationships of edge attributes are now preserved during network construction. Fixes <a href="https://github.com/luukvdmeer/sfnetworks/issues/123" class="external-link">#123</a>
 </li>
 <li>
 <code><a href="../reference/st_network_blend.html">st_network_blend()</a></code> now correctly blends points that are very close to the network. Fixes <a href="https://github.com/luukvdmeer/sfnetworks/issues/98" class="external-link">#98</a>
@@ -168,8 +160,7 @@
 <li>Addition of a <code><a href="../reference/spatial_morphers.html">to_spatial_transformed()</a></code> morpher, to temporarily transform a sfnetwork into a different CRS.</li>
 <li>Addition of a sfnetwork methods for <code>linnet</code> objects, to enhance interoperability between <code>sfnetworks</code> and the <code>spatstat</code> package for spatial point patterns on linear networks.</li>
 <li>Addition of an <code>Inf_as_NaN</code> argument to the <code><a href="../reference/spatial_edge_measures.html">edge_circuity()</a></code> function, to store circuity values of loop edges as <code>NaN</code> instead of <code>Inf</code>. The default value of this argument is <code>TRUE</code>.</li>
-<li>Changes to <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code>:
-<ul><li>Addition of a new argument <code>type</code>, which lets you set the type of paths calculation that should be performed.</li>
+<li>Changes to <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code>:<ul><li>Addition of a new argument <code>type</code>, which lets you set the type of paths calculation that should be performed.</li>
 <li>To calculate all shortest paths between nodes, now set <code>type = 'all_shortest'</code> instead of <code>all = TRUE</code>. The latter argument is deprecated.</li>
 <li>Besides shortest paths, there is now also the possibility to calculate all simple paths between nodes, by setting <code>type = 'all_simple'</code>. Be aware that computation time gets high when providing a lot of ‘to’ nodes, or when the network is large and dense. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/105" class="external-link">#105</a>
 </li>
@@ -178,8 +169,7 @@
 <li>Whenever the given ‘from’ and/or ‘to’ nodes contain NA values and/or empty point geometries, igraph behaviour is now replicated by throwing an error. Before, these values would simply be ignored.</li>
 </ul></li>
 <li>Performance improvement of the <code><a href="../reference/spatial_morphers.html">to_spatial_smooth()</a></code> morpher. As a result of this it does not store the original edge data anymore in a ‘.orig_data’ column. Instead, non-merged edges keep their attributes, while merged edges loose their attributes. The ‘.orig_data’ column can still be added by setting <code>store_orig_data = TRUE</code>, but this is not the default.</li>
-<li>Bug fixes:
-<ul><li>
+<li>Bug fixes:<ul><li>
 <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> now correctly handles cases where an unexisting column is passed to the <code>weights</code> argument, by throwing an error. Fixes <a href="https://github.com/luukvdmeer/sfnetworks/issues/99" class="external-link">#99</a>
 </li>
 <li>The sfnetwork method for <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_join()</a></code> now correctly handles inner joins (i.e. joins where <code>left = FALSE</code>).</li>
@@ -189,8 +179,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.0" id="sfnetworks-v040-hiltrup">sfnetworks v0.4.0 “Hiltrup”<a class="anchor" aria-label="anchor" href="#sfnetworks-v040-hiltrup"></a></h2>
-<ul><li>Backward incompatible changes to existing functions:
-<ul><li>Function <code>st_shortest_paths()</code> and <code>st_all_shortest_paths()</code> are now merged into a single function <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code>. By default it call <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">igraph::shortest_paths()</a></code> internally. Setting <code>all = TRUE</code> will make it call <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">igraph::all_shortest_paths()</a></code> instead.</li>
+<ul><li>Backward incompatible changes to existing functions:<ul><li>Function <code>st_shortest_paths()</code> and <code>st_all_shortest_paths()</code> are now merged into a single function <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code>. By default it call <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">igraph::shortest_paths()</a></code> internally. Setting <code>all = TRUE</code> will make it call <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">igraph::all_shortest_paths()</a></code> instead.</li>
 <li>The output format of this <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> function is different from its predecessors. It returns a tibble instead of a list, to fit better in tidyverse workflows. See <a href="https://github.com/luukvdmeer/sfnetworks/issues/77" class="external-link">#77</a>
 </li>
 <li>The <code>snap</code> argument is removed from all shortest paths related functions, which will now always snap geospatial points provides as from or to locations to their nearest node on the network before calculating paths.</li>
@@ -201,8 +190,7 @@
 <li>Functions <code>st_network_distance()</code>, <code>edge_straight_length()</code> and <code>to_spatial_explicit_edges()</code> are renamed to respectively <code><a href="../reference/st_network_cost.html">st_network_cost()</a></code>, <code><a href="../reference/spatial_edge_measures.html">edge_displacement()</a></code> and <code><a href="../reference/spatial_morphers.html">to_spatial_explicit()</a></code>, which either reflects their purpose better or fits better into the naming conventions within the package.</li>
 <li>Function arguments that were named <code>graph</code> are renamed to <code>x</code>, to have more consistency across the package.</li>
 </ul></li>
-<li>Backward compatible changes to existing functions:
-<ul><li>The construction function <code><a href="../reference/sfnetwork.html">sfnetwork()</a></code> now has an argument <code>length_as_weight</code> that, if set to TRUE, will add the lengths of edges as a weight attribute to the edges data. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/65" class="external-link">#65</a>
+<li>Backward compatible changes to existing functions:<ul><li>The construction function <code><a href="../reference/sfnetwork.html">sfnetwork()</a></code> now has an argument <code>length_as_weight</code> that, if set to TRUE, will add the lengths of edges as a weight attribute to the edges data. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/65" class="external-link">#65</a>
 </li>
 <li>There is now an <code><a href="../reference/as_sfnetwork.html">as_sfnetwork()</a></code> method for sfc objects. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/41" class="external-link">#41</a>
 </li>
@@ -216,8 +204,7 @@
 <li>The sfnetwork methods for <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">sf::st_as_sf()</a></code>, <code><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">sf::st_geometry()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/st_agr.html" class="external-link">sf::st_agr()</a></code> now have an argument <code>active</code> to directly retrieve information from a network element without activating it. Use as <code>st_as_sf(x, active = "nodes")</code>, et cetera.</li>
 <li>Character encoded node names can now be provided as from and to locations to the shortest path functions.</li>
 </ul></li>
-<li>New functions:
-<ul><li>The new function <code><a href="../reference/st_network_blend.html">st_network_blend()</a></code> implements a process that we called ‘blending points into a network’. The functions accepts a network and a set of points. For each point p in the set of given points, it finds the projection p* of p on the network, splits the edges of the network at the location of p*, and finally adds p* along with the attributes of p as a node to the network. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/27" class="external-link">#27</a> and <a href="https://github.com/luukvdmeer/sfnetworks/issues/27" class="external-link">#54</a>
+<li>New functions:<ul><li>The new function <code><a href="../reference/st_network_blend.html">st_network_blend()</a></code> implements a process that we called ‘blending points into a network’. The functions accepts a network and a set of points. For each point p in the set of given points, it finds the projection p* of p on the network, splits the edges of the network at the location of p*, and finally adds p* along with the attributes of p as a node to the network. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/27" class="external-link">#27</a> and <a href="https://github.com/luukvdmeer/sfnetworks/issues/27" class="external-link">#54</a>
 </li>
 <li>The new function <code><a href="../reference/st_network_join.html">st_network_join()</a></code> does a network specific join of two sfnetworks. It combines a spatial full join on the nodes data with a bind_rows operation on the edges data, and updates the from and to indices of the edges accordingly. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/22" class="external-link">#22</a>
 </li>
@@ -236,16 +223,14 @@
 <li>There are now morphed sfnetworks method for <code>sf::st_geometry&lt;-()</code>, <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_join()</a></code>, <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_filter()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/st_crop.html" class="external-link">sf::st_crop()</a></code>. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/85" class="external-link">#85</a>
 </li>
 </ul></li>
-<li>Bug fixes:
-<ul><li>Networks can now be constructed by only providing nodes, and no edges. Fixes <a href="https://github.com/luukvdmeer/sfnetworks/issues/81" class="external-link">#81</a>
+<li>Bug fixes:<ul><li>Networks can now be constructed by only providing nodes, and no edges. Fixes <a href="https://github.com/luukvdmeer/sfnetworks/issues/81" class="external-link">#81</a>
 </li>
 <li>The print method for sfnetwork objects now correctly handles networks without edges as well as completely empty networks. Fixes <a href="https://github.com/luukvdmeer/sfnetworks/issues/69" class="external-link">#69</a> and <a href="https://github.com/luukvdmeer/sfnetworks/issues/89" class="external-link">#89</a>
 </li>
 <li>The shortest path functions now correctly handle empty geometries. Fixes <a href="https://github.com/luukvdmeer/sfnetworks/issues/87" class="external-link">#87</a>
 </li>
 </ul></li>
-<li>Documentation improvements:
-<ul><li>Examples are added to the function documentations. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/45" class="external-link">#45</a>
+<li>Documentation improvements:<ul><li>Examples are added to the function documentations. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/45" class="external-link">#45</a>
 </li>
 <li>The existing vignettes are reorganized, and combined with a lot of new information into five new vignettes. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/92" class="external-link">#92</a>
 </li>
@@ -255,11 +240,9 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.1" id="sfnetworks-v031">sfnetworks v0.3.1<a class="anchor" aria-label="anchor" href="#sfnetworks-v031"></a></h2>
-<ul><li>Bug fixes:
-<ul><li>
+<ul><li>Bug fixes:<ul><li>
 <code><a href="../reference/as_sfnetwork.html">as_sfnetwork()</a></code> now handles circular linestrings. Fixes <a href="https://github.com/luukvdmeer/sfnetworks/issues/59" class="external-link">#59</a>
-</li>
-</ul></li>
+</li></ul></li>
 <li>Addition of a “node_key” argument to the construction functions, in line with the recent update of tidygraph. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/53" class="external-link">#53</a>
 </li>
 <li>Better integration with Z and M coordinates by adding them as coordinate columns when calling spatial morpher <code>to_spatial_coordinates()</code>. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/62" class="external-link">#62</a>
@@ -271,24 +254,21 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.0" id="sfnetworks-v030-gievenbeck">sfnetworks v0.3.0 “Gievenbeck”<a class="anchor" aria-label="anchor" href="#sfnetworks-v030-gievenbeck"></a></h2>
-<ul><li>Several spatial network extensions for the tidygraph and sf functionalities:
-<ul><li>Spatial wrappers around igraph shortest paths functions. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/28" class="external-link">#28</a>
+<ul><li>Several spatial network extensions for the tidygraph and sf functionalities:<ul><li>Spatial wrappers around igraph shortest paths functions. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/28" class="external-link">#28</a>
 </li>
 <li>Various spatial morpher functions. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/19" class="external-link">#19</a>
 </li>
 <li>Various edge measure algorithms, including edge circuity. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/51" class="external-link">#51</a>
 </li>
 </ul></li>
-<li>More methods for <code><a href="../reference/as_sfnetwork.html">as_sfnetwork()</a></code>. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/41" class="external-link">#41</a>
-<ul><li>Support <a href="https://docs.ropensci.org/stplanr/reference/SpatialLinesNetwork.html" class="external-link">sfNetwork</a> from <a href="https://docs.ropensci.org/stplanr/" class="external-link">stplanr</a>
+<li>More methods for <code><a href="../reference/as_sfnetwork.html">as_sfnetwork()</a></code>. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/41" class="external-link">#41</a><ul><li>Support <a href="https://docs.ropensci.org/stplanr/reference/SpatialLinesNetwork.html" class="external-link">sfNetwork</a> from <a href="https://docs.ropensci.org/stplanr/" class="external-link">stplanr</a>
 </li>
 <li>Support <a href="https://rdrr.io/cran/spatstat.linnet/man/linnet.html" class="external-link">linnet</a> and <a href="https://rdrr.io/cran/spatstat.geom/man/psp.object.html" class="external-link">psp</a> from <a href="https://rdrr.io/cran/spatstat/" class="external-link">spatstat</a>
 </li>
 </ul></li>
 <li>Preserving sf attributes for nodes and edges inside the sfnetwork object. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/24" class="external-link">#24</a>
 </li>
-<li>Structural and performance improvements of the code base. This includes:
-<ul><li>Construction checks are run only when needed, adding a force argument to skip validity tests.</li>
+<li>Structural and performance improvements of the code base. This includes:<ul><li>Construction checks are run only when needed, adding a force argument to skip validity tests.</li>
 <li>Allowing to choose between spatially explicit and implicit edges during construction, adding an edges_as_lines argument. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/47" class="external-link">#47</a>
 </li>
 <li>Using st_boundary to find line endpoints increases performance for sfnetwork construction from sf objects. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/30" class="external-link">#30</a>
@@ -315,8 +295,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.0" id="sfnetworks-v010-altstadt">sfnetworks v0.1.0 “Altstadt”<a class="anchor" aria-label="anchor" href="#sfnetworks-v010-altstadt"></a></h2>
-<ul><li>Initial release</li>
-</ul></div>
+<ul><li>Initial release</li></ul></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -331,7 +310,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

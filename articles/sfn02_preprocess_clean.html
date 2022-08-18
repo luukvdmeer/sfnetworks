@@ -50,7 +50,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -99,7 +99,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>2. Network pre-processing and cleaning</h1>
             
-            <h4 data-toc-skip class="date">2022-02-16</h4>
+            <h4 data-toc-skip class="date">2022-08-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/HEAD/vignettes/sfn02_preprocess_clean.Rmd" class="external-link"><code>vignettes/sfn02_preprocess_clean.Rmd</code></a></small>
       <div class="hidden name"><code>sfn02_preprocess_clean.Rmd</code></div>
@@ -113,12 +113,12 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 </style>
 <p>Unfortunately real-world datasets are not always as friendly as those used in tutorials. Pre-processing of the data will often be needed, as well as cleaning the network after construction. This vignette presents some examples that may be of use when going through this phase.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://luukvdmeer.github.io/sfnetworks/" class="external-link">sfnetworks</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidygraph.data-imaginist.com" class="external-link">tidygraph</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://igraph.org" class="external-link">igraph</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mhahsler/dbscan" class="external-link">dbscan</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://luukvdmeer.github.io/sfnetworks/" class="external-link">sfnetworks</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidygraph.data-imaginist.com" class="external-link">tidygraph</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://igraph.org" class="external-link">igraph</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mhahsler/dbscan" class="external-link">dbscan</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="common-pre-processing-tasks">Common pre-processing tasks<a class="anchor" aria-label="anchor" href="#common-pre-processing-tasks"></a>
 </h2>
@@ -128,75 +128,75 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>You might have a set of lines in which some endpoints are <em>almost</em> shared between two lines. However, the coordinates are stored with so much precision that there is a minor difference between the two points. When constructing a sfnetwork these lines will <em>not</em> be connected because the points are not <em>exactly</em> equal.</p>
 <p>We can pre-process the lines by reducing the precision of the coordinates such that the points become <em>exactly</em> equal. A tiny example:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">51</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8.000001</span>, <span class="fl">52.000001</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p4</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">l1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">l2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p3</span>, <span class="va">p4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">edges</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">l1</span>, <span class="va">l2</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span>
-
-<span class="co"># The edges are not connected.</span>
-<span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code><span class="co">#&gt; # A sfnetwork with 4 nodes and 2 edges</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # CRS:  EPSG:4326 </span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # A rooted forest with 2 trees with spatially explicit edges</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # Node Data:     4 × 1 (active)</span>
-<span class="co">#&gt; # Geometry type: POINT</span>
-<span class="co">#&gt; # Dimension:     XY</span>
-<span class="co">#&gt; # Bounding box:  xmin: 7 ymin: 51 xmax: 8.000001 ymax: 52</span>
-<span class="co">#&gt;               x</span>
-<span class="co">#&gt;     &lt;POINT [°]&gt;</span>
-<span class="co">#&gt; 1        (7 51)</span>
-<span class="co">#&gt; 2        (8 52)</span>
-<span class="co">#&gt; 3 (8.000001 52)</span>
-<span class="co">#&gt; 4        (7 52)</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # Edge Data:     2 × 3</span>
-<span class="co">#&gt; # Geometry type: LINESTRING</span>
-<span class="co">#&gt; # Dimension:     XY</span>
-<span class="co">#&gt; # Bounding box:  xmin: 7 ymin: 51 xmax: 8.000001 ymax: 52</span>
-<span class="co">#&gt;    from    to                   x</span>
-<span class="co">#&gt;   &lt;int&gt; &lt;int&gt;    &lt;LINESTRING [°]&gt;</span>
-<span class="co">#&gt; 1     1     2        (7 51, 8 52)</span>
-<span class="co">#&gt; 2     3     4 (8.000001 52, 7 52)</span></code></pre>
+<code class="sourceCode R"><span><span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">51</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8.000001</span>, <span class="fl">52.000001</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p4</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">l1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">l2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p3</span>, <span class="va">p4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">edges</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">l1</span>, <span class="va">l2</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># The edges are not connected.</span></span>
+<span><span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code><span><span class="co">#&gt; # A sfnetwork with 4 nodes and 2 edges</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # CRS:  EPSG:4326 </span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # A rooted forest with 2 trees with spatially explicit edges</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # Node Data:     4 × 1 (active)</span></span>
+<span><span class="co">#&gt; # Geometry type: POINT</span></span>
+<span><span class="co">#&gt; # Dimension:     XY</span></span>
+<span><span class="co">#&gt; # Bounding box:  xmin: 7 ymin: 51 xmax: 8.000001 ymax: 52</span></span>
+<span><span class="co">#&gt;               x</span></span>
+<span><span class="co">#&gt;     &lt;POINT [°]&gt;</span></span>
+<span><span class="co">#&gt; 1        (7 51)</span></span>
+<span><span class="co">#&gt; 2        (8 52)</span></span>
+<span><span class="co">#&gt; 3 (8.000001 52)</span></span>
+<span><span class="co">#&gt; 4        (7 52)</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # Edge Data:     2 × 3</span></span>
+<span><span class="co">#&gt; # Geometry type: LINESTRING</span></span>
+<span><span class="co">#&gt; # Dimension:     XY</span></span>
+<span><span class="co">#&gt; # Bounding box:  xmin: 7 ymin: 51 xmax: 8.000001 ymax: 52</span></span>
+<span><span class="co">#&gt;    from    to                   x</span></span>
+<span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;    &lt;LINESTRING [°]&gt;</span></span>
+<span><span class="co">#&gt; 1     1     2        (7 51, 8 52)</span></span>
+<span><span class="co">#&gt; 2     3     4 (8.000001 52, 7 52)</span></span></code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Round coordinates to 0 digits.</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span><span class="op">)</span>
-
-<span class="co"># The edges are connected.</span>
-<span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code><span class="co">#&gt; # A sfnetwork with 3 nodes and 2 edges</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # CRS:  EPSG:4326 </span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # A rooted tree with spatially explicit edges</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # Node Data:     3 × 1 (active)</span>
-<span class="co">#&gt; # Geometry type: POINT</span>
-<span class="co">#&gt; # Dimension:     XY</span>
-<span class="co">#&gt; # Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span>
-<span class="co">#&gt;             x</span>
-<span class="co">#&gt;   &lt;POINT [°]&gt;</span>
-<span class="co">#&gt; 1      (7 51)</span>
-<span class="co">#&gt; 2      (8 52)</span>
-<span class="co">#&gt; 3      (7 52)</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # Edge Data:     2 × 3</span>
-<span class="co">#&gt; # Geometry type: LINESTRING</span>
-<span class="co">#&gt; # Dimension:     XY</span>
-<span class="co">#&gt; # Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span>
-<span class="co">#&gt;    from    to                x</span>
-<span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;LINESTRING [°]&gt;</span>
-<span class="co">#&gt; 1     1     2     (7 51, 8 52)</span>
-<span class="co">#&gt; 2     2     3     (8 52, 7 52)</span></code></pre>
+<code class="sourceCode R"><span><span class="co"># Round coordinates to 0 digits.</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span>crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># The edges are connected.</span></span>
+<span><span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code><span><span class="co">#&gt; # A sfnetwork with 3 nodes and 2 edges</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # CRS:  EPSG:4326 </span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # A rooted tree with spatially explicit edges</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # Node Data:     3 × 1 (active)</span></span>
+<span><span class="co">#&gt; # Geometry type: POINT</span></span>
+<span><span class="co">#&gt; # Dimension:     XY</span></span>
+<span><span class="co">#&gt; # Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span></span>
+<span><span class="co">#&gt;             x</span></span>
+<span><span class="co">#&gt;   &lt;POINT [°]&gt;</span></span>
+<span><span class="co">#&gt; 1      (7 51)</span></span>
+<span><span class="co">#&gt; 2      (8 52)</span></span>
+<span><span class="co">#&gt; 3      (7 52)</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # Edge Data:     2 × 3</span></span>
+<span><span class="co">#&gt; # Geometry type: LINESTRING</span></span>
+<span><span class="co">#&gt; # Dimension:     XY</span></span>
+<span><span class="co">#&gt; # Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span></span>
+<span><span class="co">#&gt;    from    to                x</span></span>
+<span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;LINESTRING [°]&gt;</span></span>
+<span><span class="co">#&gt; 1     1     2     (7 51, 8 52)</span></span>
+<span><span class="co">#&gt; 2     2     3     (8 52, 7 52)</span></span></code></pre>
 <p>Note that too much rounding can create linestring geometries of zero length, with the same start and endpoint. This may cause problems later.</p>
 </div>
 <div class="section level3">
@@ -206,60 +206,60 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>Unfortunately, neither <code>igraph</code> nor <code>tidygraph</code> provides an interface for such networks. Therefore, the only way to deal with this is to create a directed network but first <em>duplicate</em> and <em>reverse</em> all edge linestrings that can be traveled both ways.</p>
 <p>See the small example below, where we have three lines with one-way information stored in a <em>oneway</em> column. One of the lines is a one-way street, the other two are not. By duplicating and reversing the two linestrings that are not one-way streets, we create a directed network that correctly models our situation. Note that reversing linestrings using <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">sf::st_reverse()</a></code> only works when sf links to a GEOS version of at least 3.7.0.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">51</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">l1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">l2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">l3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p3</span>, <span class="va">p2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">edges</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">l1</span>, <span class="va">l2</span>, <span class="va">l3</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span>
-<span class="va">edges</span><span class="op">$</span><span class="va">oneway</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">FALSE</span><span class="op">)</span>
-<span class="va">edges</span>
-<span class="co">#&gt; Simple feature collection with 3 features and 1 field</span>
-<span class="co">#&gt; Geometry type: LINESTRING</span>
-<span class="co">#&gt; Dimension:     XY</span>
-<span class="co">#&gt; Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span>
-<span class="co">#&gt; Geodetic CRS:  WGS 84</span>
-<span class="co">#&gt;                         x oneway</span>
-<span class="co">#&gt; 1 LINESTRING (7 51, 7 52)   TRUE</span>
-<span class="co">#&gt; 2 LINESTRING (7 51, 8 52)  FALSE</span>
-<span class="co">#&gt; 3 LINESTRING (8 52, 7 52)  FALSE</span>
-
-<span class="va">duplicates</span> <span class="op">=</span> <span class="va">edges</span><span class="op">[</span><span class="op">!</span><span class="va">edges</span><span class="op">$</span><span class="va">oneway</span>, <span class="op">]</span>
-<span class="va">reversed_duplicates</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_reverse</a></span><span class="op">(</span><span class="va">duplicates</span><span class="op">)</span>
-
-<span class="va">edges</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">edges</span>, <span class="va">reversed_duplicates</span><span class="op">)</span>
-<span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span>
-<span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code><span class="co">#&gt; # A sfnetwork with 3 nodes and 5 edges</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # CRS:  EPSG:4326 </span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # A directed simple graph with 1 component with spatially explicit edges</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # Edge Data:     5 × 4 (active)</span>
-<span class="co">#&gt; # Geometry type: LINESTRING</span>
-<span class="co">#&gt; # Dimension:     XY</span>
-<span class="co">#&gt; # Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span>
-<span class="co">#&gt;    from    to oneway                x</span>
-<span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;lgl&gt;  &lt;LINESTRING [°]&gt;</span>
-<span class="co">#&gt; 1     1     2 TRUE       (7 51, 7 52)</span>
-<span class="co">#&gt; 2     1     3 FALSE      (7 51, 8 52)</span>
-<span class="co">#&gt; 3     3     2 FALSE      (8 52, 7 52)</span>
-<span class="co">#&gt; 4     3     1 FALSE      (8 52, 7 51)</span>
-<span class="co">#&gt; 5     2     3 FALSE      (7 52, 8 52)</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # Node Data:     3 × 1</span>
-<span class="co">#&gt; # Geometry type: POINT</span>
-<span class="co">#&gt; # Dimension:     XY</span>
-<span class="co">#&gt; # Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span>
-<span class="co">#&gt;             x</span>
-<span class="co">#&gt;   &lt;POINT [°]&gt;</span>
-<span class="co">#&gt; 1      (7 51)</span>
-<span class="co">#&gt; 2      (7 52)</span>
-<span class="co">#&gt; 3      (8 52)</span></code></pre>
+<code class="sourceCode R"><span><span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">51</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">l1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">l2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">l3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p3</span>, <span class="va">p2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">edges</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">l1</span>, <span class="va">l2</span>, <span class="va">l3</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span>
+<span><span class="va">edges</span><span class="op">$</span><span class="va">oneway</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">edges</span></span>
+<span><span class="co">#&gt; Simple feature collection with 3 features and 1 field</span></span>
+<span><span class="co">#&gt; Geometry type: LINESTRING</span></span>
+<span><span class="co">#&gt; Dimension:     XY</span></span>
+<span><span class="co">#&gt; Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span></span>
+<span><span class="co">#&gt; Geodetic CRS:  WGS 84</span></span>
+<span><span class="co">#&gt;                         x oneway</span></span>
+<span><span class="co">#&gt; 1 LINESTRING (7 51, 7 52)   TRUE</span></span>
+<span><span class="co">#&gt; 2 LINESTRING (7 51, 8 52)  FALSE</span></span>
+<span><span class="co">#&gt; 3 LINESTRING (8 52, 7 52)  FALSE</span></span>
+<span></span>
+<span><span class="va">duplicates</span> <span class="op">=</span> <span class="va">edges</span><span class="op">[</span><span class="op">!</span><span class="va">edges</span><span class="op">$</span><span class="va">oneway</span>, <span class="op">]</span></span>
+<span><span class="va">reversed_duplicates</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_reverse</a></span><span class="op">(</span><span class="va">duplicates</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">edges</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">edges</span>, <span class="va">reversed_duplicates</span><span class="op">)</span></span>
+<span><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code><span><span class="co">#&gt; # A sfnetwork with 3 nodes and 5 edges</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # CRS:  EPSG:4326 </span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # A directed simple graph with 1 component with spatially explicit edges</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # Edge Data:     5 × 4 (active)</span></span>
+<span><span class="co">#&gt; # Geometry type: LINESTRING</span></span>
+<span><span class="co">#&gt; # Dimension:     XY</span></span>
+<span><span class="co">#&gt; # Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span></span>
+<span><span class="co">#&gt;    from    to oneway                x</span></span>
+<span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;lgl&gt;  &lt;LINESTRING [°]&gt;</span></span>
+<span><span class="co">#&gt; 1     1     2 TRUE       (7 51, 7 52)</span></span>
+<span><span class="co">#&gt; 2     1     3 FALSE      (7 51, 8 52)</span></span>
+<span><span class="co">#&gt; 3     3     2 FALSE      (8 52, 7 52)</span></span>
+<span><span class="co">#&gt; 4     3     1 FALSE      (8 52, 7 51)</span></span>
+<span><span class="co">#&gt; 5     2     3 FALSE      (7 52, 8 52)</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # Node Data:     3 × 1</span></span>
+<span><span class="co">#&gt; # Geometry type: POINT</span></span>
+<span><span class="co">#&gt; # Dimension:     XY</span></span>
+<span><span class="co">#&gt; # Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span></span>
+<span><span class="co">#&gt;             x</span></span>
+<span><span class="co">#&gt;   &lt;POINT [°]&gt;</span></span>
+<span><span class="co">#&gt; 1      (7 51)</span></span>
+<span><span class="co">#&gt; 2      (7 52)</span></span>
+<span><span class="co">#&gt; 3      (8 52)</span></span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -268,50 +268,50 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>The <code>sfnetworks</code> package contains a set of spatial network specific cleaning functions. They are implemented as <em>spatial morpher functions</em>. To learn more about spatial morphers and what they are, see the <a href="https://luukvdmeer.github.io/sfnetworks/articles/sfn05_morphers.html" class="external-link">dedicated vignette</a> for that. For now, it is sufficient to know that you can use any spatial morpher function inside the <code><a href="https://tidygraph.data-imaginist.com/reference/morph.html" class="external-link">tidygraph::convert()</a></code> verb to convert your network into a different state.</p>
 <p>Before presenting the cleaning functions that are currently implemented, lets create a network to be cleaned.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p4</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p5</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p6</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p7</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p8</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p9</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p10</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p11</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p12</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p13</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p14</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5.8</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p15</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">1.2</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p16</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6.2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p17</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">0.8</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p18</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p19</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span>
-<span class="va">p20</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">l1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">l2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p3</span>, <span class="va">p4</span>, <span class="va">p5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">l3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p6</span>, <span class="va">p4</span>, <span class="va">p7</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">l4</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p8</span>, <span class="va">p11</span>, <span class="va">p9</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">l5</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p9</span>, <span class="va">p5</span>, <span class="va">p10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">l6</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p8</span>, <span class="va">p9</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">l7</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p10</span>, <span class="va">p12</span>, <span class="va">p13</span>, <span class="va">p10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">l8</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p5</span>, <span class="va">p14</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">l9</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p15</span>, <span class="va">p14</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">l10</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p16</span>, <span class="va">p15</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">l11</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p14</span>, <span class="va">p17</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">l12</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p17</span>, <span class="va">p16</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">l13</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p15</span>, <span class="va">p18</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">l14</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p17</span>, <span class="va">p19</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">l15</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p16</span>, <span class="va">p20</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">lines</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">l1</span>, <span class="va">l2</span>, <span class="va">l3</span>, <span class="va">l4</span>, <span class="va">l5</span>, <span class="va">l6</span>, <span class="va">l7</span>, <span class="va">l8</span>, <span class="va">l9</span>, <span class="va">l10</span>, <span class="va">l11</span>, <span class="va">l12</span>, <span class="va">l13</span>, <span class="va">l14</span>, <span class="va">l15</span><span class="op">)</span>
-
-<span class="va">edge_colors</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">sf.colors</a></span><span class="op">(</span><span class="fl">12</span>, categorical <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">2</span><span class="op">]</span>, <span class="fl">2</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">]</span>
-
-<span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">lines</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p4</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p5</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p6</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p7</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p8</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p9</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p10</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p11</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p12</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p13</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p14</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5.8</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p15</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">1.2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p16</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6.2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p17</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">0.8</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p18</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p19</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p20</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">l1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">l2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p3</span>, <span class="va">p4</span>, <span class="va">p5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">l3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p6</span>, <span class="va">p4</span>, <span class="va">p7</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">l4</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p8</span>, <span class="va">p11</span>, <span class="va">p9</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">l5</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p9</span>, <span class="va">p5</span>, <span class="va">p10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">l6</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p8</span>, <span class="va">p9</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">l7</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p10</span>, <span class="va">p12</span>, <span class="va">p13</span>, <span class="va">p10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">l8</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p5</span>, <span class="va">p14</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">l9</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p15</span>, <span class="va">p14</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">l10</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p16</span>, <span class="va">p15</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">l11</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p14</span>, <span class="va">p17</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">l12</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p17</span>, <span class="va">p16</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">l13</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p15</span>, <span class="va">p18</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">l14</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p17</span>, <span class="va">p19</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">l15</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p16</span>, <span class="va">p20</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">lines</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">l1</span>, <span class="va">l2</span>, <span class="va">l3</span>, <span class="va">l4</span>, <span class="va">l5</span>, <span class="va">l6</span>, <span class="va">l7</span>, <span class="va">l8</span>, <span class="va">l9</span>, <span class="va">l10</span>, <span class="va">l11</span>, <span class="va">l12</span>, <span class="va">l13</span>, <span class="va">l14</span>, <span class="va">l15</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">edge_colors</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">sf.colors</a></span><span class="op">(</span><span class="fl">12</span>, categorical <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">2</span><span class="op">]</span>, <span class="fl">2</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">lines</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn02_preprocess_clean_files/figure-html/unnamed-chunk-5-1.png" width="480"></p>
 <div class="section level3">
 <h3 id="simplify-network">Simplify network<a class="anchor" aria-label="anchor" href="#simplify-network"></a>
@@ -319,28 +319,28 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>A network may contain sets of edges that connect the same pair of nodes. Such edges can be called <em>multiple edges</em>. Also, it may contain an edge that starts and ends at the same node. Such an edge can be called a <em>loop edge</em>.</p>
 <p>In graph theory, a <em>simple graph</em> is defined as a graph that does <em>not</em> contain multiple edges nor loop edges. To obtain a simple version of our network, we can remove multiple edges and loop edges by calling tidygraphs edge filter functions <code><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html" class="external-link">tidygraph::edge_is_multiple()</a></code> and <code><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html" class="external-link">tidygraph::edge_is_loop()</a></code>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">simple</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html" class="external-link">edge_is_multiple</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html" class="external-link">edge_is_loop</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">simple</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">simple</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html" class="external-link">edge_is_multiple</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html" class="external-link">edge_is_loop</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">simple</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn02_preprocess_clean_files/figure-html/unnamed-chunk-6-1.png" width="50%"><img src="sfn02_preprocess_clean_files/figure-html/unnamed-chunk-6-2.png" width="50%"></p>
 <p>Note that removing multiple edges in that way always <em>keeps</em> the <em>first</em> edge in each set of multiple edges, and drops all the other members of the set. Hence, the resulting network does not contain multiple edges anymore, but the connections between the nodes are preserved. Which of the multiple edges is the first one in a set depends on the order of the edges in the edges table. That is, by re-arranging the edges table before applying the filter you can influence which edges are kept whenever sets of multiple edges are detected. For example, you might want to always keep the edge with the shortest distance in the set.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">simple</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html" class="external-link">edge_is_multiple</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html" class="external-link">edge_is_loop</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">simple</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">simple</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html" class="external-link">edge_is_multiple</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html" class="external-link">edge_is_loop</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">simple</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn02_preprocess_clean_files/figure-html/unnamed-chunk-7-1.png" width="50%"><img src="sfn02_preprocess_clean_files/figure-html/unnamed-chunk-7-2.png" width="50%"></p>
 <p>By arranging the edges table first, you can influence <em>which</em> edge in a set of multiple edges is kept. However, this way of simplifying still selects a single edge from the set, and drops all the others. When your edges have attributes, you might prefer to <em>merge</em> the edges in a set into a single new edge. This new edge has the geometry of the first edge in the set, but its attribute values are a combination of the attributes of all the edges in the set. This is exactly what the function <code><a href="../reference/spatial_morphers.html">to_spatial_simple()</a></code> does. It has an argument <code>summarise_attributes</code> that lets you specify exactly how you want to merge the attributes of each set of multiple edges.</p>
 <p>How attributes should be combined is of course dependent on the type and purpose of each attribute. Therefore, the combination technique can be specified on a per-attribute basis. There are two ways to specify the combination technique for an attribute:</p>
@@ -352,101 +352,101 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>The analogue of this in tidyverse terms is a <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">dplyr::group_by()</a></code> operation followed by a <code><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">dplyr::summarise()</a></code> call. The groups in this case are defined by the start and end node indices of the edges. Edges that connect the same pair of nodes (i.e. multiple edges) are in the same group. Then, attributes are summarised into a single value for each group separately.</p>
 <p>Enough theory! Lets look at a practical example instead. We will first add some attribute columns to the edges, and then specify different combination techniques when simplifying the network.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Add some attribute columns to the edges table.</span>
-<span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">types</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"path"</span>, <span class="st">"road"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="va">foo</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span>
-<span class="va">bar</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">letters</span>, <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">net</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>flow <span class="op">=</span> <span class="va">flows</span>, type <span class="op">=</span> <span class="va">types</span>, foo <span class="op">=</span> <span class="va">foo</span>, bar <span class="op">=</span> <span class="va">bar</span><span class="op">)</span>
-
-<span class="va">net</span></code></pre></div>
-<pre class="fansi fansi-output"><code><span class="co">#&gt; # A sfnetwork with 15 nodes and 15 edges</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # CRS:  NA </span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # A directed multigraph with 3 components with spatially explicit edges</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # Edge Data:     15 × 7 (active)</span>
-<span class="co">#&gt; # Geometry type: LINESTRING</span>
-<span class="co">#&gt; # Dimension:     XY</span>
-<span class="co">#&gt; # Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span>
-<span class="co">#&gt;    from    to              x  flow type    foo bar  </span>
-<span class="co">#&gt;   &lt;int&gt; &lt;int&gt;   &lt;LINESTRING&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt; &lt;chr&gt;</span>
-<span class="co">#&gt; 1    10     9 (6 1.2, 5.8 1)     5 path     11 d    </span>
-<span class="co">#&gt; 2    11    10 (6.2 1, 6 1.2)     3 path     12 n    </span>
-<span class="co">#&gt; 3     9    12 (5.8 1, 6 0.8)     7 road      8 w    </span>
-<span class="co">#&gt; 4    12    11 (6 0.8, 6.2 1)     4 path      1 v    </span>
-<span class="co">#&gt; 5    11    15   (6.2 1, 7 1)     3 road      5 k    </span>
-<span class="co">#&gt; 6    10    13   (6 1.2, 6 2)     8 road     13 x    </span>
-<span class="co">#&gt; # … with 9 more rows</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # Node Data:     15 × 1</span>
-<span class="co">#&gt; # Geometry type: POINT</span>
-<span class="co">#&gt; # Dimension:     XY</span>
-<span class="co">#&gt; # Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span>
-<span class="co">#&gt;         x</span>
-<span class="co">#&gt;   &lt;POINT&gt;</span>
-<span class="co">#&gt; 1   (0 1)</span>
-<span class="co">#&gt; 2   (2 1)</span>
-<span class="co">#&gt; 3   (4 1)</span>
-<span class="co">#&gt; # … with 12 more rows</span></code></pre>
+<code class="sourceCode R"><span><span class="co"># Add some attribute columns to the edges table.</span></span>
+<span><span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">types</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"path"</span>, <span class="st">"road"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">foo</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">bar</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">letters</span>, <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">net</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>flow <span class="op">=</span> <span class="va">flows</span>, type <span class="op">=</span> <span class="va">types</span>, foo <span class="op">=</span> <span class="va">foo</span>, bar <span class="op">=</span> <span class="va">bar</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">net</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code><span><span class="co">#&gt; # A sfnetwork with 15 nodes and 15 edges</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # CRS:  NA </span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # A directed multigraph with 3 components with spatially explicit edges</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # Edge Data:     15 × 7 (active)</span></span>
+<span><span class="co">#&gt; # Geometry type: LINESTRING</span></span>
+<span><span class="co">#&gt; # Dimension:     XY</span></span>
+<span><span class="co">#&gt; # Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span></span>
+<span><span class="co">#&gt;    from    to              x  flow type    foo bar  </span></span>
+<span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;   &lt;LINESTRING&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt; &lt;chr&gt;</span></span>
+<span><span class="co">#&gt; 1    10     9 (6 1.2, 5.8 1)     6 road     11 s    </span></span>
+<span><span class="co">#&gt; 2    11    10 (6.2 1, 6 1.2)     5 road      7 v    </span></span>
+<span><span class="co">#&gt; 3     9    12 (5.8 1, 6 0.8)     3 road      3 k    </span></span>
+<span><span class="co">#&gt; 4    12    11 (6 0.8, 6.2 1)     3 path     15 l    </span></span>
+<span><span class="co">#&gt; 5    11    15   (6.2 1, 7 1)     3 road      1 b    </span></span>
+<span><span class="co">#&gt; 6    10    13   (6 1.2, 6 2)     7 path      9 j    </span></span>
+<span><span class="co">#&gt; # … with 9 more rows</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # Node Data:     15 × 1</span></span>
+<span><span class="co">#&gt; # Geometry type: POINT</span></span>
+<span><span class="co">#&gt; # Dimension:     XY</span></span>
+<span><span class="co">#&gt; # Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span></span>
+<span><span class="co">#&gt;         x</span></span>
+<span><span class="co">#&gt;   &lt;POINT&gt;</span></span>
+<span><span class="co">#&gt; 1   (0 1)</span></span>
+<span><span class="co">#&gt; 2   (2 1)</span></span>
+<span><span class="co">#&gt; 3   (4 1)</span></span>
+<span><span class="co">#&gt; # … with 12 more rows</span></span></code></pre>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># We know from before that our example network has one set of multiple edges.</span>
-<span class="co"># Lets look at them.</span>
-<span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html" class="external-link">edge_is_between</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code><span class="co">#&gt; Simple feature collection with 2 features and 6 fields</span>
-<span class="co">#&gt; Geometry type: LINESTRING</span>
-<span class="co">#&gt; Dimension:     XY</span>
-<span class="co">#&gt; Bounding box:  xmin: 4 ymin: 2 xmax: 5 ymax: 3</span>
-<span class="co">#&gt; CRS:           NA</span>
-<span class="co">#&gt; # A tibble: 2 × 7</span>
-<span class="co">#&gt;    from    to               x  flow type    foo bar  </span>
-<span class="co">#&gt;   &lt;int&gt; &lt;int&gt;    &lt;LINESTRING&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt; &lt;chr&gt;</span>
-<span class="co">#&gt; 1     6     7      (4 3, 4 2)     8 path      4 o    </span>
-<span class="co">#&gt; 2     6     7 (4 3, 5 2, 4 2)     6 road     14 h</span></code></pre>
+<code class="sourceCode R"><span><span class="co"># We know from before that our example network has one set of multiple edges.</span></span>
+<span><span class="co"># Lets look at them.</span></span>
+<span><span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html" class="external-link">edge_is_between</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code><span><span class="co">#&gt; Simple feature collection with 2 features and 6 fields</span></span>
+<span><span class="co">#&gt; Geometry type: LINESTRING</span></span>
+<span><span class="co">#&gt; Dimension:     XY</span></span>
+<span><span class="co">#&gt; Bounding box:  xmin: 4 ymin: 2 xmax: 5 ymax: 3</span></span>
+<span><span class="co">#&gt; CRS:           NA</span></span>
+<span><span class="co">#&gt; # A tibble: 2 × 7</span></span>
+<span><span class="co">#&gt;    from    to               x  flow type    foo bar  </span></span>
+<span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;    &lt;LINESTRING&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt; &lt;chr&gt;</span></span>
+<span><span class="co">#&gt; 1     6     7      (4 3, 4 2)     4 road      2 f    </span></span>
+<span><span class="co">#&gt; 2     6     7 (4 3, 5 2, 4 2)     3 path      6 y</span></span></code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Define how we want to combine the attributes.</span>
-<span class="co"># For the flows:</span>
-<span class="co"># --&gt; It makes sense to sum them when edges get merged.</span>
-<span class="co"># For the type:</span>
-<span class="co"># --&gt; Preserve the type only if all edges in a set have the same type.</span>
-<span class="co"># For all other attributes:</span>
-<span class="co"># --&gt; Drop these attributes.</span>
-<span class="va">combinations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-  flow <span class="op">=</span> <span class="st">"sum"</span>,
-  type <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="kw">else</span> <span class="cn">NA</span>,
-  <span class="st">"ignore"</span>
-<span class="op">)</span>
-
-<span class="co"># Simplify the network with to_spatial_simple.</span>
-<span class="va">simple</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html" class="external-link">convert</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">to_spatial_simple</span>, summarise_attributes <span class="op">=</span> <span class="va">combinations</span><span class="op">)</span>
-
-<span class="co"># Inspect our merged set of multiple edges.</span>
-<span class="va">simple</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html" class="external-link">edge_is_between</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code><span class="co">#&gt; Simple feature collection with 1 feature and 5 fields</span>
-<span class="co">#&gt; Geometry type: LINESTRING</span>
-<span class="co">#&gt; Dimension:     XY</span>
-<span class="co">#&gt; Bounding box:  xmin: 4 ymin: 2 xmax: 4 ymax: 3</span>
-<span class="co">#&gt; CRS:           NA</span>
-<span class="co">#&gt; # A tibble: 1 × 6</span>
-<span class="co">#&gt;    from    to            x  flow type  .tidygraph_edge_index</span>
-<span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;LINESTRING&gt; &lt;dbl&gt; &lt;chr&gt; &lt;list&gt;               </span>
-<span class="co">#&gt; 1     6     7   (4 3, 4 2)    14 NA    &lt;int [2]&gt;</span></code></pre>
+<code class="sourceCode R"><span><span class="co"># Define how we want to combine the attributes.</span></span>
+<span><span class="co"># For the flows:</span></span>
+<span><span class="co"># --&gt; It makes sense to sum them when edges get merged.</span></span>
+<span><span class="co"># For the type:</span></span>
+<span><span class="co"># --&gt; Preserve the type only if all edges in a set have the same type.</span></span>
+<span><span class="co"># For all other attributes:</span></span>
+<span><span class="co"># --&gt; Drop these attributes.</span></span>
+<span><span class="va">combinations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  flow <span class="op">=</span> <span class="st">"sum"</span>,</span>
+<span>  type <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="kw">else</span> <span class="cn">NA</span>,</span>
+<span>  <span class="st">"ignore"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Simplify the network with to_spatial_simple.</span></span>
+<span><span class="va">simple</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html" class="external-link">convert</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">to_spatial_simple</span>, summarise_attributes <span class="op">=</span> <span class="va">combinations</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Inspect our merged set of multiple edges.</span></span>
+<span><span class="va">simple</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/edge_types.html" class="external-link">edge_is_between</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code><span><span class="co">#&gt; Simple feature collection with 1 feature and 5 fields</span></span>
+<span><span class="co">#&gt; Geometry type: LINESTRING</span></span>
+<span><span class="co">#&gt; Dimension:     XY</span></span>
+<span><span class="co">#&gt; Bounding box:  xmin: 4 ymin: 2 xmax: 4 ymax: 3</span></span>
+<span><span class="co">#&gt; CRS:           NA</span></span>
+<span><span class="co">#&gt; # A tibble: 1 × 6</span></span>
+<span><span class="co">#&gt;    from    to            x  flow type  .tidygraph_edge_index</span></span>
+<span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;LINESTRING&gt; &lt;dbl&gt; &lt;chr&gt; &lt;list&gt;               </span></span>
+<span><span class="co">#&gt; 1     6     7   (4 3, 4 2)     7 NA    &lt;int [2]&gt;</span></span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">simple</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">simple</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn02_preprocess_clean_files/figure-html/unnamed-chunk-8-1.png" width="50%"><img src="sfn02_preprocess_clean_files/figure-html/unnamed-chunk-8-2.png" width="50%"></p>
 <p>When the edges table does not have attribute columns, using <code>to_spatial_simple</code> does not have advantages and applying the filter functions as shown before is faster.</p>
 </div>
@@ -480,13 +480,13 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>Note that an edge is <em>not</em> subdivided when it crosses another edge at a location that is not an interior point or endpoint in the linestring geometry of any of the two edges.</p>
 <p>For our example network, this means:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">subdivision</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html" class="external-link">convert</a></span><span class="op">(</span><span class="va">simple</span>, <span class="va">to_spatial_subdivision</span><span class="op">)</span>
-<span class="co">#&gt; Warning: to_spatial_subdivision assumes attributes are constant over geometries</span>
-
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">simple</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">subdivision</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">subdivision</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">subdivision</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">subdivision</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html" class="external-link">convert</a></span><span class="op">(</span><span class="va">simple</span>, <span class="va">to_spatial_subdivision</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: to_spatial_subdivision assumes attributes are constant over geometries</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">simple</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">simple</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">subdivision</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">subdivision</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">subdivision</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn02_preprocess_clean_files/figure-html/unnamed-chunk-9-1.png" width="50%"><img src="sfn02_preprocess_clean_files/figure-html/unnamed-chunk-9-2.png" width="50%"></p>
 </div>
 <div class="section level3">
@@ -496,12 +496,12 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>In graph theory terms this process is the opposite of subdivision and also called <em>smoothing</em>: smoothing a node <span class="math inline">\(b\)</span> with incident edges <span class="math inline">\(o = \{a, b\}\)</span> and <span class="math inline">\(p = \{b, c\}\)</span> removes <span class="math inline">\(b\)</span>, <span class="math inline">\(o\)</span> and <span class="math inline">\(p\)</span> and creates the new edge <span class="math inline">\(q = \{a, c\}\)</span>.</p>
 <p>The function <code><a href="../reference/spatial_morphers.html">to_spatial_smooth()</a></code> iteratively smooths pseudo nodes, and after each removal concatenates the linestring geometries of the two affected edges together into a new, single linestring geometry.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">smoothed</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html" class="external-link">convert</a></span><span class="op">(</span><span class="va">subdivision</span>, <span class="va">to_spatial_smooth</span><span class="op">)</span>
-
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">subdivision</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">subdivision</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">subdivision</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">smoothed</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">smoothed</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">smoothed</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">smoothed</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html" class="external-link">convert</a></span><span class="op">(</span><span class="va">subdivision</span>, <span class="va">to_spatial_smooth</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">subdivision</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">subdivision</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">subdivision</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">smoothed</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">smoothed</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">smoothed</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn02_preprocess_clean_files/figure-html/unnamed-chunk-10-1.png" width="50%"><img src="sfn02_preprocess_clean_files/figure-html/unnamed-chunk-10-2.png" width="50%"></p>
 </div>
 <div class="section level3">
@@ -512,146 +512,146 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>The function <code><a href="../reference/spatial_morphers.html">to_spatial_contracted()</a></code> contracts groups of nodes based on a given grouping variable. The geometry of each contracted node is the <em>centroid</em> of the original group members’ geometries. Moreover, the geometries of the edges that start or end at a contracted node are updated such that their boundaries match the new node geometries.</p>
 <p>Grouping variables are internally forwarded to <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">dplyr::group_by()</a></code>. That means you can group the nodes based on any (combination of) attribute(s). However, in this case, we want to group the nodes spatially, such that nodes that are very close to each other in space will form a group and get contracted. To do so, we can use any spatial clustering algorithm. In this example, we apply the well-known DBSCAN algorithm as implemented in the R package <code>dbscan</code>.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Retrieve the coordinates of the nodes.</span>
-<span class="va">node_coords</span> <span class="op">=</span> <span class="va">smoothed</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">st_coordinates</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="co"># Cluster the nodes with the DBSCAN spatial clustering algorithm.</span>
-<span class="co"># We set eps = 0.5 such that:</span>
-<span class="co"># Nodes within a distance of 0.5 from each other will be in the same cluster.</span>
-<span class="co"># We set minPts = 1 such that:</span>
-<span class="co"># A node is assigned a cluster even if it is the only member of that cluster.</span>
-<span class="va">clusters</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/dbscan/man/dbscan.html" class="external-link">dbscan</a></span><span class="op">(</span><span class="va">node_coords</span>, eps <span class="op">=</span> <span class="fl">0.5</span>, minPts <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">$</span><span class="va">cluster</span>
-
-<span class="co"># Add the cluster information to the nodes of the network.</span>
-<span class="va">clustered</span> <span class="op">=</span> <span class="va">smoothed</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>cls <span class="op">=</span> <span class="va">clusters</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Retrieve the coordinates of the nodes.</span></span>
+<span><span class="va">node_coords</span> <span class="op">=</span> <span class="va">smoothed</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">st_coordinates</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Cluster the nodes with the DBSCAN spatial clustering algorithm.</span></span>
+<span><span class="co"># We set eps = 0.5 such that:</span></span>
+<span><span class="co"># Nodes within a distance of 0.5 from each other will be in the same cluster.</span></span>
+<span><span class="co"># We set minPts = 1 such that:</span></span>
+<span><span class="co"># A node is assigned a cluster even if it is the only member of that cluster.</span></span>
+<span><span class="va">clusters</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/dbscan/man/dbscan.html" class="external-link">dbscan</a></span><span class="op">(</span><span class="va">node_coords</span>, eps <span class="op">=</span> <span class="fl">0.5</span>, minPts <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">$</span><span class="va">cluster</span></span>
+<span></span>
+<span><span class="co"># Add the cluster information to the nodes of the network.</span></span>
+<span><span class="va">clustered</span> <span class="op">=</span> <span class="va">smoothed</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>cls <span class="op">=</span> <span class="va">clusters</span><span class="op">)</span></span></code></pre></div>
 <p>Now we have assigned each node to a spatial cluster. However, we forgot one important point. When simplifying intersections, it is not only important that the contracted nodes are close to each other in space. They should also be <em>connected</em>. Two nodes that are close to each other but <em>not</em> connected, can never be part of the same intersection. Hence, a group of nodes to be contracted should in this case be located in the same <em>component</em> of the network. We can use <code><a href="https://tidygraph.data-imaginist.com/reference/group_graph.html" class="external-link">tidygraph::group_components()</a></code> to assign a component index to each node. Note that in our example network this is not so much of use, since the whole network forms a single connected component. But for the sake of completeness, we will still show it:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">clustered</span> <span class="op">=</span> <span class="va">clustered</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>cmp <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/group_graph.html" class="external-link">group_components</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">clustered</span>, <span class="va">cls</span>, <span class="va">cmp</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code><span class="co">#&gt; # A sfnetwork with 14 nodes and 14 edges</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # CRS:  NA </span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # A directed simple graph with 1 component with spatially explicit edges</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # Node Data:     14 × 3 (active)</span>
-<span class="co">#&gt; # Geometry type: POINT</span>
-<span class="co">#&gt; # Dimension:     XY</span>
-<span class="co">#&gt; # Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span>
-<span class="co">#&gt;     cls   cmp       x</span>
-<span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;POINT&gt;</span>
-<span class="co">#&gt; 1     1     1   (0 1)</span>
-<span class="co">#&gt; 2     2     1   (3 1)</span>
-<span class="co">#&gt; 3     3     1   (4 1)</span>
-<span class="co">#&gt; 4     4     1 (5.8 1)</span>
-<span class="co">#&gt; 5     5     1   (3 2)</span>
-<span class="co">#&gt; 6     6     1   (3 0)</span>
-<span class="co">#&gt; # … with 8 more rows</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # Edge Data:     14 × 6</span>
-<span class="co">#&gt; # Geometry type: LINESTRING</span>
-<span class="co">#&gt; # Dimension:     XY</span>
-<span class="co">#&gt; # Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span>
-<span class="co">#&gt;    from    to            x  flow type  .tidygraph_edge_index</span>
-<span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;LINESTRING&gt; &lt;dbl&gt; &lt;chr&gt; &lt;list&gt;               </span>
-<span class="co">#&gt; 1     2     3   (3 1, 4 1)     6 road  &lt;int [1]&gt;            </span>
-<span class="co">#&gt; 2     3     4 (4 1, 5.8 1)     2 road  &lt;int [1]&gt;            </span>
-<span class="co">#&gt; 3     5     2   (3 2, 3 1)     2 road  &lt;int [1]&gt;            </span>
-<span class="co">#&gt; # … with 11 more rows</span></code></pre>
+<code class="sourceCode R"><span><span class="va">clustered</span> <span class="op">=</span> <span class="va">clustered</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>cmp <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/group_graph.html" class="external-link">group_components</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">clustered</span>, <span class="va">cls</span>, <span class="va">cmp</span><span class="op">)</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code><span><span class="co">#&gt; # A sfnetwork with 14 nodes and 14 edges</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # CRS:  NA </span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # A directed simple graph with 1 component with spatially explicit edges</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # Node Data:     14 × 3 (active)</span></span>
+<span><span class="co">#&gt; # Geometry type: POINT</span></span>
+<span><span class="co">#&gt; # Dimension:     XY</span></span>
+<span><span class="co">#&gt; # Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span></span>
+<span><span class="co">#&gt;     cls   cmp       x</span></span>
+<span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;POINT&gt;</span></span>
+<span><span class="co">#&gt; 1     1     1   (0 1)</span></span>
+<span><span class="co">#&gt; 2     2     1   (3 1)</span></span>
+<span><span class="co">#&gt; 3     3     1   (4 1)</span></span>
+<span><span class="co">#&gt; 4     4     1 (5.8 1)</span></span>
+<span><span class="co">#&gt; 5     5     1   (3 2)</span></span>
+<span><span class="co">#&gt; 6     6     1   (3 0)</span></span>
+<span><span class="co">#&gt; # … with 8 more rows</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # Edge Data:     14 × 6</span></span>
+<span><span class="co">#&gt; # Geometry type: LINESTRING</span></span>
+<span><span class="co">#&gt; # Dimension:     XY</span></span>
+<span><span class="co">#&gt; # Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span></span>
+<span><span class="co">#&gt;    from    to            x  flow type  .tidygraph_edge_index</span></span>
+<span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;LINESTRING&gt; &lt;dbl&gt; &lt;chr&gt; &lt;list&gt;               </span></span>
+<span><span class="co">#&gt; 1     2     3   (3 1, 4 1)     7 path  &lt;int [1]&gt;            </span></span>
+<span><span class="co">#&gt; 2     3     4 (4 1, 5.8 1)     4 road  &lt;int [1]&gt;            </span></span>
+<span><span class="co">#&gt; 3     5     2   (3 2, 3 1)     3 road  &lt;int [1]&gt;            </span></span>
+<span><span class="co">#&gt; # … with 11 more rows</span></span></code></pre>
 <p>The combination of the cluster index and the component index can now be used to define the groups of nodes to be contracted. Nodes that form a group on their own will remain unchanged.</p>
 <p>A point of attention is that contraction introduces new <em>multiple edges</em> and/or <em>loop edges</em>. Multiple edges are introduced by contraction when there are several connections between the same groups of nodes. Loop edges are introduced by contraction when there are connections within a group. Setting <code>simplify = TRUE</code> will remove the multiple and loop edges after contraction. However, note that this also removes multiple and loop edges that already existed before contraction.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">contracted</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html" class="external-link">convert</a></span><span class="op">(</span>
-  <span class="va">clustered</span>,
-  <span class="va">to_spatial_contracted</span>,
-  <span class="va">cls</span>, <span class="va">cmp</span>,
-  simplify <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span>
-
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">smoothed</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">smoothed</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">smoothed</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">contracted</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">contracted</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">contracted</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">contracted</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html" class="external-link">convert</a></span><span class="op">(</span></span>
+<span>  <span class="va">clustered</span>,</span>
+<span>  <span class="va">to_spatial_contracted</span>,</span>
+<span>  <span class="va">cls</span>, <span class="va">cmp</span>,</span>
+<span>  simplify <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">smoothed</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">smoothed</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">smoothed</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">contracted</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">contracted</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">contracted</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn02_preprocess_clean_files/figure-html/unnamed-chunk-13-1.png" width="50%"><img src="sfn02_preprocess_clean_files/figure-html/unnamed-chunk-13-2.png" width="50%"></p>
 <p>One thing we did not mention yet: in the same way as <code><a href="../reference/spatial_morphers.html">to_spatial_simple()</a></code> allowed you to combine attributes of multiple edges, <code><a href="../reference/spatial_morphers.html">to_spatial_contracted()</a></code> allows you to combine attributes of contracted nodes. It works exactly the same: on a per-attribute basis you can specify how the attribute values of the new node should be inferred from those of the original nodes in the group. An example:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Add some additional attribute columns to the nodes table.</span>
-<span class="va">clustered</span> <span class="op">=</span> <span class="va">clustered</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>is_priority <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>,
-    <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gorder.html" class="external-link">vcount</a></span><span class="op">(</span><span class="va">clustered</span><span class="op">)</span>,
-    replace <span class="op">=</span> <span class="cn">TRUE</span>
-  <span class="op">)</span><span class="op">)</span>
-
-<span class="co"># We know from before there is one group with several close, connected nodes.</span>
-<span class="co"># Lets look at them.</span>
-<span class="va">clustered</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">cls</span> <span class="op">==</span> <span class="fl">4</span> <span class="op">&amp;</span> <span class="va">cmp</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code><span class="co">#&gt; Simple feature collection with 4 features and 4 fields</span>
-<span class="co">#&gt; Geometry type: POINT</span>
-<span class="co">#&gt; Dimension:     XY</span>
-<span class="co">#&gt; Bounding box:  xmin: 5.8 ymin: 0.8 xmax: 6.2 ymax: 1.2</span>
-<span class="co">#&gt; CRS:           NA</span>
-<span class="co">#&gt; # A tibble: 4 × 5</span>
-<span class="co">#&gt;         x .tidygraph_node_index   cls   cmp is_priority</span>
-<span class="co">#&gt;   &lt;POINT&gt;                 &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;lgl&gt;      </span>
-<span class="co">#&gt; 1 (5.8 1)                     5     4     1 FALSE      </span>
-<span class="co">#&gt; 2 (6 0.8)                    11     4     1 TRUE       </span>
-<span class="co">#&gt; 3 (6 1.2)                    12     4     1 FALSE      </span>
-<span class="co">#&gt; 4 (6.2 1)                    14     4     1 TRUE</span></code></pre>
+<code class="sourceCode R"><span><span class="co"># Add some additional attribute columns to the nodes table.</span></span>
+<span><span class="va">clustered</span> <span class="op">=</span> <span class="va">clustered</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>is_priority <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gorder.html" class="external-link">vcount</a></span><span class="op">(</span><span class="va">clustered</span><span class="op">)</span>,</span>
+<span>    replace <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># We know from before there is one group with several close, connected nodes.</span></span>
+<span><span class="co"># Lets look at them.</span></span>
+<span><span class="va">clustered</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">cls</span> <span class="op">==</span> <span class="fl">4</span> <span class="op">&amp;</span> <span class="va">cmp</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code><span><span class="co">#&gt; Simple feature collection with 4 features and 4 fields</span></span>
+<span><span class="co">#&gt; Geometry type: POINT</span></span>
+<span><span class="co">#&gt; Dimension:     XY</span></span>
+<span><span class="co">#&gt; Bounding box:  xmin: 5.8 ymin: 0.8 xmax: 6.2 ymax: 1.2</span></span>
+<span><span class="co">#&gt; CRS:           NA</span></span>
+<span><span class="co">#&gt; # A tibble: 4 × 5</span></span>
+<span><span class="co">#&gt;         x .tidygraph_node_index   cls   cmp is_priority</span></span>
+<span><span class="co">#&gt;   &lt;POINT&gt;                 &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;lgl&gt;      </span></span>
+<span><span class="co">#&gt; 1 (5.8 1)                     5     4     1 FALSE      </span></span>
+<span><span class="co">#&gt; 2 (6 0.8)                    11     4     1 FALSE      </span></span>
+<span><span class="co">#&gt; 3 (6 1.2)                    12     4     1 FALSE      </span></span>
+<span><span class="co">#&gt; 4 (6.2 1)                    14     4     1 FALSE</span></span></code></pre>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Define how we want to combine the attributes.</span>
-<span class="co"># For the boolean is_priority variable:</span>
-<span class="co"># --&gt; We want it to be TRUE if any of the nodes has a values of TRUE.</span>
-<span class="co"># For the others, which were used as grouping variables:</span>
-<span class="co"># --&gt; Drop these attributes.</span>
-<span class="va">combinations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-  is_priority <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,
-  <span class="st">"ignore"</span>
-<span class="op">)</span>
-
-<span class="co"># Contract with to_spatial_contracted.</span>
-<span class="va">contracted</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html" class="external-link">convert</a></span><span class="op">(</span>
-  <span class="va">clustered</span>,
-  <span class="va">to_spatial_contracted</span>,
-  <span class="va">cls</span>, <span class="va">cmp</span>,
-  simplify <span class="op">=</span> <span class="cn">TRUE</span>,
-  summarise_attributes <span class="op">=</span> <span class="va">combinations</span>
-<span class="op">)</span>
-
-<span class="co"># Inspect our contracted group of nodes.</span>
-<span class="va">contracted</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre class="fansi fansi-output"><code><span class="co">#&gt; Simple feature collection with 1 feature and 2 fields</span>
-<span class="co">#&gt; Geometry type: POINT</span>
-<span class="co">#&gt; Dimension:     XY</span>
-<span class="co">#&gt; Bounding box:  xmin: 6 ymin: 1 xmax: 6 ymax: 1</span>
-<span class="co">#&gt; CRS:           NA</span>
-<span class="co">#&gt; # A tibble: 1 × 3</span>
-<span class="co">#&gt;   .tidygraph_node_index is_priority       x</span>
-<span class="co">#&gt;   &lt;list&gt;                &lt;lgl&gt;       &lt;POINT&gt;</span>
-<span class="co">#&gt; 1 &lt;int [4]&gt;             TRUE          (6 1)</span></code></pre>
+<code class="sourceCode R"><span><span class="co"># Define how we want to combine the attributes.</span></span>
+<span><span class="co"># For the boolean is_priority variable:</span></span>
+<span><span class="co"># --&gt; We want it to be TRUE if any of the nodes has a values of TRUE.</span></span>
+<span><span class="co"># For the others, which were used as grouping variables:</span></span>
+<span><span class="co"># --&gt; Drop these attributes.</span></span>
+<span><span class="va">combinations</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  is_priority <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span>
+<span>  <span class="st">"ignore"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Contract with to_spatial_contracted.</span></span>
+<span><span class="va">contracted</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/morph.html" class="external-link">convert</a></span><span class="op">(</span></span>
+<span>  <span class="va">clustered</span>,</span>
+<span>  <span class="va">to_spatial_contracted</span>,</span>
+<span>  <span class="va">cls</span>, <span class="va">cmp</span>,</span>
+<span>  simplify <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  summarise_attributes <span class="op">=</span> <span class="va">combinations</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Inspect our contracted group of nodes.</span></span>
+<span><span class="va">contracted</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code><span><span class="co">#&gt; Simple feature collection with 1 feature and 2 fields</span></span>
+<span><span class="co">#&gt; Geometry type: POINT</span></span>
+<span><span class="co">#&gt; Dimension:     XY</span></span>
+<span><span class="co">#&gt; Bounding box:  xmin: 6 ymin: 1 xmax: 6 ymax: 1</span></span>
+<span><span class="co">#&gt; CRS:           NA</span></span>
+<span><span class="co">#&gt; # A tibble: 1 × 3</span></span>
+<span><span class="co">#&gt;   .tidygraph_node_index is_priority       x</span></span>
+<span><span class="co">#&gt;   &lt;list&gt;                &lt;lgl&gt;       &lt;POINT&gt;</span></span>
+<span><span class="co">#&gt; 1 &lt;int [4]&gt;             FALSE         (6 1)</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h3>
 <p>After applying all the network cleaning functions described in the previous sections, we have cleaned our original network as follows:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">contracted</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">contracted</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">contracted</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">contracted</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">contracted</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">contracted</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn02_preprocess_clean_files/figure-html/unnamed-chunk-15-1.png" width="50%"><img src="sfn02_preprocess_clean_files/figure-html/unnamed-chunk-15-2.png" width="50%"></p>
 </div>
 </div>
@@ -674,7 +674,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

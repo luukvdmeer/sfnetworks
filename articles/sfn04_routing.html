@@ -50,7 +50,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -99,7 +99,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>4. Routing</h1>
             
-            <h4 data-toc-skip class="date">2022-02-16</h4>
+            <h4 data-toc-skip class="date">2022-08-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/HEAD/vignettes/sfn04_routing.Rmd" class="external-link"><code>vignettes/sfn04_routing.Rmd</code></a></small>
       <div class="hidden name"><code>sfn04_routing.Rmd</code></div>
@@ -114,11 +114,11 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>Calculating shortest paths between pairs of nodes is a core task in network analysis. The <code>sfnetworks</code> package offers wrappers around the path calculation functions of <code>igraph</code>, making it easier to use them when working with spatial data and tidyverse packages. This vignette demonstrates their functionality.</p>
 <p>In this regard it is important to remember that <code>sfnetworks</code> is a general-purpose package for spatial network analysis, not specifically optimized for a single task. If your <em>only</em> purpose is many-to-many routing in large networks, there might be other approaches that are faster and fit better to your needs. For example, the <a href="https://github.com/ATFutures/dodgr" class="external-link">dodgr</a> package was designed for many-to-many routing on large dual-weighted graphs, with its main focus on OpenStreetMap road network data. The <a href="https://github.com/vlarmet/cppRouting" class="external-link">cppRouting</a> package contains functions to calculate shortest paths and isochrones/isodistances on weighted graphs. When working with OpenStreetMap data, it is also possible to use the interfaces to external routing engines such as <a href="https://github.com/crazycapivara/graphhopper-r" class="external-link">graphhopper</a>, <a href="https://github.com/riatelab/osrm" class="external-link">osrm</a> and <a href="https://github.com/ropensci/opentripplanner" class="external-link">opentripplanner</a>. The <a href="https://github.com/ropensci/stplanr" class="external-link">stplanr</a> package for sustainable transport planning lets you use many routing engines from a single interface, through <code>stplanr::route()</code>, including routing using local R objects. Of course, all these packages can be happily used <em>alongside</em> <code>sfnetworks</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://luukvdmeer.github.io/sfnetworks/" class="external-link">sfnetworks</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidygraph.data-imaginist.com" class="external-link">tidygraph</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mhahsler/TSP" class="external-link">TSP</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://luukvdmeer.github.io/sfnetworks/" class="external-link">sfnetworks</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidygraph.data-imaginist.com" class="external-link">tidygraph</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mhahsler/TSP" class="external-link">TSP</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="setting-edge-weights">Setting edge weights<a class="anchor" aria-label="anchor" href="#setting-edge-weights"></a>
 </h2>
@@ -130,42 +130,42 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>Every function that is about the calculation of shortest paths also accepts a <code>weights</code> argument which allows you to provide edge weights explicitly. In <code>sfnetworks</code>, this argument can be a numeric vector of the same length as the number of edges in the network, but also the name of a column in the edges table. The <code>weights</code> argument will always overrule the default behavior of using the <em>weight</em> column for edge weights. If you have a <em>weight</em> column but want to calculate paths <em>without</em> using weights, set <code>weights = NA</code>. In practice that means that the weight of all edges is equal to 1. Hence, the shortest path between node A and node B is the path with the fewest <em>number</em> of edges.</p>
 <p>The <code><a href="../reference/spatial_edge_measures.html">edge_length()</a></code> function can be used to calculate the length of each edge in geographic space, such that you can use those as weights in shortest paths calculations. The function is meant to be used inside a <code><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">dplyr::mutate()</a></code> verb, as follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">roxel</span>, directed <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="fl">3035</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>weight <span class="op">=</span> <span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">net</span></code></pre></div>
-<pre class="fansi fansi-output"><code><span class="co">#&gt; # A sfnetwork with 701 nodes and 851 edges</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # CRS:  EPSG:3035 </span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # An undirected multigraph with 14 components with spatially explicit edges</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # Edge Data:     851 × 6 (active)</span>
-<span class="co">#&gt; # Geometry type: LINESTRING</span>
-<span class="co">#&gt; # Dimension:     XY</span>
-<span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
-<span class="co">#&gt;    from    to name                  type                         geometry weight</span>
-<span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;                 &lt;fct&gt;                &lt;LINESTRING [m]&gt;    [m]</span>
-<span class="co">#&gt; 1     1     2 Havixbecker Strasse   residential (4151491 3207923, 415147…   28.9</span>
-<span class="co">#&gt; 2     3     4 Pienersallee          secondary   (4151398 3207777, 415139…  108. </span>
-<span class="co">#&gt; 3     5     6 Schulte-Bernd-Strasse residential (4151408 3207539, 415141…   54.4</span>
-<span class="co">#&gt; 4     7     8 NA                    path        (4151885 3206698, 415186…  155. </span>
-<span class="co">#&gt; 5     9    10 Welsingheide          residential (4151732 3207017, 415172…  209. </span>
-<span class="co">#&gt; 6    11    12 NA                    footway     (4152152 3206984, 415214…   63.0</span>
-<span class="co">#&gt; # … with 845 more rows</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # Node Data:     701 × 1</span>
-<span class="co">#&gt; # Geometry type: POINT</span>
-<span class="co">#&gt; # Dimension:     XY</span>
-<span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
-<span class="co">#&gt;            geometry</span>
-<span class="co">#&gt;         &lt;POINT [m]&gt;</span>
-<span class="co">#&gt; 1 (4151491 3207923)</span>
-<span class="co">#&gt; 2 (4151474 3207946)</span>
-<span class="co">#&gt; 3 (4151398 3207777)</span>
-<span class="co">#&gt; # … with 698 more rows</span></code></pre>
+<code class="sourceCode R"><span><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">roxel</span>, directed <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="fl">3035</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>weight <span class="op">=</span> <span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">net</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code><span><span class="co">#&gt; # A sfnetwork with 701 nodes and 851 edges</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # CRS:  EPSG:3035 </span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # An undirected multigraph with 14 components with spatially explicit edges</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # Edge Data:     851 × 6 (active)</span></span>
+<span><span class="co">#&gt; # Geometry type: LINESTRING</span></span>
+<span><span class="co">#&gt; # Dimension:     XY</span></span>
+<span><span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
+<span><span class="co">#&gt;    from    to name                  type                         geometry weight</span></span>
+<span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;                 &lt;fct&gt;                &lt;LINESTRING [m]&gt;    [m]</span></span>
+<span><span class="co">#&gt; 1     1     2 Havixbecker Strasse   residential (4151491 3207923, 415147…   28.9</span></span>
+<span><span class="co">#&gt; 2     3     4 Pienersallee          secondary   (4151398 3207777, 415139…  108. </span></span>
+<span><span class="co">#&gt; 3     5     6 Schulte-Bernd-Strasse residential (4151408 3207539, 415141…   54.4</span></span>
+<span><span class="co">#&gt; 4     7     8 NA                    path        (4151885 3206698, 415186…  155. </span></span>
+<span><span class="co">#&gt; 5     9    10 Welsingheide          residential (4151732 3207017, 415172…  209. </span></span>
+<span><span class="co">#&gt; 6    11    12 NA                    footway     (4152152 3206984, 415214…   63.0</span></span>
+<span><span class="co">#&gt; # … with 845 more rows</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # Node Data:     701 × 1</span></span>
+<span><span class="co">#&gt; # Geometry type: POINT</span></span>
+<span><span class="co">#&gt; # Dimension:     XY</span></span>
+<span><span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
+<span><span class="co">#&gt;            geometry</span></span>
+<span><span class="co">#&gt;         &lt;POINT [m]&gt;</span></span>
+<span><span class="co">#&gt; 1 (4151491 3207923)</span></span>
+<span><span class="co">#&gt; 2 (4151474 3207946)</span></span>
+<span><span class="co">#&gt; 3 (4151398 3207777)</span></span>
+<span><span class="co">#&gt; # … with 698 more rows</span></span></code></pre>
 <p>It is important to mention that <code>tidygraph</code> does not always comply with the default <code>igraph</code> behaviors as we described them above. For example, when using tidygraphs centrality functions, you <em>have</em> to explicity set <code>weights = weight</code> when you want to use your <em>weight</em> column as edge weights in the centrality calculation. If the <code>weights</code> argument is not set (i.e. <code>weights = NULL</code>) it will not use any edge weights.</p>
 </div>
 <div class="section level2">
@@ -181,76 +181,76 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>Lets start with the most basic example of providing node indices as <em>from</em> and <em>to</em> locations. Remember that a node index in a sfnetwork refers to the position of the node in the nodes table of the network (i.e. its row number). There is also the possibility to use character encoded node names instead of numeric node indices. This requires the nodes table to have a column <em>name</em> with a unique name for each node.</p>
 <p>Since we have created a <em>weight</em> column in the previous section, these weights (i.e. the length of the edge geometries) will be used automatically in the shortest paths calculation. In weighted networks, <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">igraph::shortest_paths()</a></code> applies the Dijkstra algorithm to find the shortest paths. In the case of unweighted networks, it uses breadth-first search instead.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">paths</span> <span class="op">=</span> <span class="fu"><a href="../reference/st_network_paths.html">st_network_paths</a></span><span class="op">(</span><span class="va">net</span>, from <span class="op">=</span> <span class="fl">495</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">458</span>, <span class="fl">121</span><span class="op">)</span><span class="op">)</span>
-<span class="va">paths</span></code></pre></div>
-<pre class="fansi fansi-output"><code><span class="co">#&gt; # A tibble: 2 × 2</span>
-<span class="co">#&gt;   node_paths edge_paths</span>
-<span class="co">#&gt;   &lt;list&gt;     &lt;list&gt;    </span>
-<span class="co">#&gt; 1 &lt;int [29]&gt; &lt;int [28]&gt;</span>
-<span class="co">#&gt; 2 &lt;int [33]&gt; &lt;int [32]&gt;</span></code></pre>
+<code class="sourceCode R"><span><span class="va">paths</span> <span class="op">=</span> <span class="fu"><a href="../reference/st_network_paths.html">st_network_paths</a></span><span class="op">(</span><span class="va">net</span>, from <span class="op">=</span> <span class="fl">495</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">458</span>, <span class="fl">121</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">paths</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code><span><span class="co">#&gt; # A tibble: 2 × 2</span></span>
+<span><span class="co">#&gt;   node_paths edge_paths</span></span>
+<span><span class="co">#&gt;   &lt;list&gt;     &lt;list&gt;    </span></span>
+<span><span class="co">#&gt; 1 &lt;int [29]&gt; &lt;int [28]&gt;</span></span>
+<span><span class="co">#&gt; 2 &lt;int [33]&gt; &lt;int [32]&gt;</span></span></code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">paths</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">node_paths</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt;  [1] 495 485 244 402 166  18 195 181  68 100 169 170 182 101 103 547 546 554 556</span>
-<span class="co">#&gt; [20] 555  86  61  88 531 543  90 229 527 458</span>
-
-<span class="va">paths</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">edge_paths</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt;  [1] 311 757 670 671  93 117 116 106  54  96  97 502 501 414 413 402 791 423 422</span>
-<span class="co">#&gt; [20] 788 392 393 394 779 395 540 539 357</span>
-
-<span class="va">plot_path</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">node_path</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-    <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="va">node_path</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-    <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span>cex <span class="op">=</span> <span class="fl">1.5</span>, lwd <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="op">}</span>
-
-<span class="va">colors</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">sf.colors</a></span><span class="op">(</span><span class="fl">3</span>, categorical <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span>
-<span class="va">paths</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">node_paths</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">walk</a></span><span class="op">(</span><span class="va">plot_path</span><span class="op">)</span>
-<span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">495</span>, <span class="fl">121</span>, <span class="fl">458</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">colors</span>, pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">paths</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">node_paths</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] 495 485 244 402 166  18 195 181  68 100 169 170 182 101 103 547 546 554 556</span></span>
+<span><span class="co">#&gt; [20] 555  86  61  88 531 543  90 229 527 458</span></span>
+<span></span>
+<span><span class="va">paths</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">edge_paths</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] 311 757 670 671  93 117 116 106  54  96  97 502 501 414 413 402 791 423 422</span></span>
+<span><span class="co">#&gt; [20] 788 392 393 394 779 395 540 539 357</span></span>
+<span></span>
+<span><span class="va">plot_path</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">node_path</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="va">node_path</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>cex <span class="op">=</span> <span class="fl">1.5</span>, lwd <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">colors</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">sf.colors</a></span><span class="op">(</span><span class="fl">3</span>, categorical <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
+<span><span class="va">paths</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">node_paths</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">walk</a></span><span class="op">(</span><span class="va">plot_path</span><span class="op">)</span></span>
+<span><span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">495</span>, <span class="fl">121</span>, <span class="fl">458</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">colors</span>, pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn04_routing_files/figure-html/unnamed-chunk-3-1.png" width="480"></p>
 <p>Next we will create some geospatial points that do not intersect with any node in the network. Providing them to <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> will first find the nearest node to each of them, and then calculate the shortest paths accordingly.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span><span class="op">[</span><span class="fl">495</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="op">-</span><span class="fl">50</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span>
-<span class="va">p2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span><span class="op">[</span><span class="fl">458</span><span class="op">]</span>
-<span class="va">p3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span><span class="op">[</span><span class="fl">121</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">10</span>, <span class="fl">100</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">p3</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span>
-
-<span class="va">paths</span> <span class="op">=</span> <span class="fu"><a href="../reference/st_network_paths.html">st_network_paths</a></span><span class="op">(</span><span class="va">net</span>, from <span class="op">=</span> <span class="va">p1</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span>
-<span class="va">paths</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">node_paths</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">walk</a></span><span class="op">(</span><span class="va">plot_path</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span>, col <span class="op">=</span> <span class="va">colors</span>, pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span><span class="op">[</span><span class="fl">495</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="op">-</span><span class="fl">50</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span></span>
+<span><span class="va">p2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span><span class="op">[</span><span class="fl">458</span><span class="op">]</span></span>
+<span><span class="va">p3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span><span class="op">[</span><span class="fl">121</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">10</span>, <span class="fl">100</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">p3</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">paths</span> <span class="op">=</span> <span class="fu"><a href="../reference/st_network_paths.html">st_network_paths</a></span><span class="op">(</span><span class="va">net</span>, from <span class="op">=</span> <span class="va">p1</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
+<span><span class="va">paths</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">node_paths</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">walk</a></span><span class="op">(</span><span class="va">plot_path</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span>, col <span class="op">=</span> <span class="va">colors</span>, pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn04_routing_files/figure-html/unnamed-chunk-4-1.png" width="480"></p>
 <p>Simply finding the nearest node to given points is not always the best way to go. For example: when a provided point is close to a location on an edge linestring, but relatively far from any node, it gives better results when the routing does not start at its nearest node, but at that nearby location on the edge linestring. To accommodate this, you can first <em>blend</em> your input points into the network, and then proceed as normal. Blending is the name we gave to the combined process of snapping a point to its nearest point on its nearest edge, splitting the edge there, and adding the snapped point as node to the network. It is implement in the function <code><a href="../reference/st_network_blend.html">st_network_blend()</a></code>. See the vignette on <a href="https://luukvdmeer.github.io/sfnetworks/articles/sfn03_join_filter.html#blending-points-into-a-network" class="external-link">spatial joins and filters</a> for more details.</p>
 <p>Another issue may arise wen your network consists of multiple components that are not connected to each other. In that case, it is possible that the nearest node to a provided point is located in a tiny component and only a few other nodes can be reached from it. In such cases it might be good to first reduce the network to its largest (or <em>n</em> largest) component(s) before calculating shortest paths. The tidygraph function <code><a href="https://tidygraph.data-imaginist.com/reference/group_graph.html" class="external-link">tidygraph::group_components()</a></code> can help with this. It assigns an integer to each node identifying the component it is in, with <code>1</code> being the largest component in the network, <code>2</code> the second largest, and so on.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Our network consists of several unconnected components.</span>
-<span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/with_graph.html" class="external-link">with_graph</a></span><span class="op">(</span><span class="va">net</span>, <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/graph_measures.html" class="external-link">graph_component_count</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; [1] 14</span>
-
-<span class="va">connected_net</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/group_graph.html" class="external-link">group_components</a></span><span class="op">(</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span>
-
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">connected_net</span>, cex <span class="op">=</span> <span class="fl">1.1</span>, lwd <span class="op">=</span> <span class="fl">1.1</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Our network consists of several unconnected components.</span></span>
+<span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/with_graph.html" class="external-link">with_graph</a></span><span class="op">(</span><span class="va">net</span>, <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/graph_measures.html" class="external-link">graph_component_count</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 14</span></span>
+<span></span>
+<span><span class="va">connected_net</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/group_graph.html" class="external-link">group_components</a></span><span class="op">(</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">connected_net</span>, cex <span class="op">=</span> <span class="fl">1.1</span>, lwd <span class="op">=</span> <span class="fl">1.1</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn04_routing_files/figure-html/unnamed-chunk-5-1.png" width="480"></p>
 <p>Another way to calculate shortest paths, which fits nicely in the tidygraph style of working, is by using the <code><a href="../reference/spatial_morphers.html">to_spatial_shortest_paths()</a></code> morpher function. This will subset the original network to only contain those nodes and edges that appear in a shortest path between two nodes. See the vignette on <a href="https://luukvdmeer.github.io/sfnetworks/articles/sfn05_morphers.html#to_spatial_shortest_paths" class="external-link">Spatial morphers</a> for details.</p>
 </div>
@@ -260,20 +260,20 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>The shortest paths calculation as described above is only supported for one-to-one and one-to-many routing. The alternative for many-to-many routing is the calculation of an origin-destination cost matrix. Instead of providing the individual paths, it returns a matrix in which entry <span class="math inline">\(i,j\)</span> is the total cost (i.e. sum of weights) of the shortest path from node <span class="math inline">\(i\)</span> to node <span class="math inline">\(j\)</span>. The origin-destination cost matrix is usually an important starting point for further analysis. For example, it can serve as input to route optimization algorithms, spatial clustering algorithms and the calculation of statistical measures based on spatial proximity.</p>
 <p>The igraph function for this purpose is <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">igraph::distances()</a></code>, which in <code>sfnetworks</code> is wrapped by <code><a href="../reference/st_network_cost.html">st_network_cost()</a></code>, allowing again to provide sets of geospatial points as <em>from</em> and <em>to</em> locations. Note that the calculated costs refer to the paths between the <em>nearest nodes</em> of the input points. Their units are the same as the units of weights used in the calculation, in this case meters.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/st_network_cost.html">st_network_cost</a></span><span class="op">(</span><span class="va">net</span>, from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;          [,1]     [,2]     [,3]</span>
-<span class="co">#&gt; [1,]    0.000 1614.252 2094.555</span>
-<span class="co">#&gt; [2,] 1614.252    0.000 1315.965</span>
-<span class="co">#&gt; [3,] 2094.555 1315.965    0.000</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/st_network_cost.html">st_network_cost</a></span><span class="op">(</span><span class="va">net</span>, from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;          [,1]     [,2]     [,3]</span></span>
+<span><span class="co">#&gt; [1,]    0.000 1614.252 2094.555</span></span>
+<span><span class="co">#&gt; [2,] 1614.252    0.000 1315.965</span></span>
+<span><span class="co">#&gt; [3,] 2094.555 1315.965    0.000</span></span></code></pre></div>
 <p>If we don’t provide any from and to points, <code><a href="../reference/st_network_cost.html">st_network_cost()</a></code> will by default calculate the cost matrix for the entire network.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Our network has 701 nodes.</span>
-<span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/with_graph.html" class="external-link">with_graph</a></span><span class="op">(</span><span class="va">net</span>, <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/graph_measures.html" class="external-link">graph_order</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; [1] 701</span>
-
-<span class="va">cost_matrix</span> <span class="op">=</span> <span class="fu"><a href="../reference/st_network_cost.html">st_network_cost</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">cost_matrix</span><span class="op">)</span>
-<span class="co">#&gt; [1] 701 701</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Our network has 701 nodes.</span></span>
+<span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/with_graph.html" class="external-link">with_graph</a></span><span class="op">(</span><span class="va">net</span>, <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/graph_measures.html" class="external-link">graph_order</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 701</span></span>
+<span></span>
+<span><span class="va">cost_matrix</span> <span class="op">=</span> <span class="fu"><a href="../reference/st_network_cost.html">st_network_cost</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">cost_matrix</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 701 701</span></span></code></pre></div>
 <p>All <code>...</code> arguments are forwarded internally to <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">igraph::distances()</a></code>. Among other options, this means that you can define which algorithm is used for the paths calculation. By default, <code>igraph</code> will choose the most suitable algorithm based on characteristics of the request, such as the type of weights (e.g. only positive or also negative) and the number of given from locations. For details, see the <a href="https://igraph.org/r/doc/distances.html" class="external-link">igraph documentation</a>.</p>
 <p>In directed networks, it also gives you the possibility to define if you want to allow travel only over outbound edges (by setting <code>mode = "out"</code>), only over inbound edges (by setting <code>mode = "in"</code>), or both (by setting <code>mode = "all"</code>, i.e. assume an undirected network). It is important to note that even in directed networks the latter is the default!</p>
 </div>
@@ -287,52 +287,52 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>The purpose of closest facility analysis is, given a set of destination locations (also referred to as the <em>facilities</em>) and origin locations (also referred to as the <em>sites</em>), to find the closest <em>n</em> facilities to each site. For example, you might want to find the nearest transit hub for each address in a city, or the nearest hospital to high-risk road intersections.</p>
 <p>To solve this problem, you can calculate the OD cost matrix with the sites as <em>from</em> points, and the facilities as <em>to</em> points. Then, for each row (i.e. each site) you find the column(s) with the lowest cost value.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Select a random set of sites and facilities.</span>
-<span class="co"># We select random locations within the bounding box of the nodes.</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">128</span><span class="op">)</span>
-<span class="va">hull</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html" class="external-link">st_combine</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_convex_hull</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="va">sites</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_sample.html" class="external-link">st_sample</a></span><span class="op">(</span><span class="va">hull</span>, <span class="fl">50</span>, type <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span>
-<span class="va">facilities</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_sample.html" class="external-link">st_sample</a></span><span class="op">(</span><span class="va">hull</span>, <span class="fl">5</span>, type <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span>
-
-<span class="co"># Blend the sites and facilities into the network to get better results.</span>
-<span class="co"># Also select only the largest connected component.</span>
-<span class="va">new_net</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/group_graph.html" class="external-link">group_components</a></span><span class="op">(</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="../reference/st_network_blend.html">st_network_blend</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">sites</span>, <span class="va">facilities</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; Warning: st_network_blend assumes attributes are constant over geometries</span>
-
-<span class="co"># Calculate the cost matrix.</span>
-<span class="co"># By default the weight column is used for edge weights.</span>
-<span class="co"># In our case this column contains the geographic lengths of the edges.</span>
-<span class="va">cost_matrix</span> <span class="op">=</span> <span class="fu"><a href="../reference/st_network_cost.html">st_network_cost</a></span><span class="op">(</span><span class="va">new_net</span>, from <span class="op">=</span> <span class="va">sites</span>, to <span class="op">=</span> <span class="va">facilities</span><span class="op">)</span>
-
-<span class="co"># Find for each site which facility is closest.</span>
-<span class="va">closest</span> <span class="op">=</span> <span class="va">facilities</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">cost_matrix</span>, <span class="fl">1</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">x</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">]</span>
-
-<span class="co"># Create a line between each site and its closest facility, for visualization.</span>
-<span class="va">draw_lines</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">sources</span>, <span class="va">targets</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">lines</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mapply.html" class="external-link">mapply</a></span><span class="op">(</span>
-    <span class="kw">function</span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span><span class="op">)</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span><span class="op">)</span>, <span class="st">"LINESTRING"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span>,
-    <span class="va">sources</span>,
-    <span class="va">targets</span>,
-    SIMPLIFY <span class="op">=</span> <span class="cn">FALSE</span>
-  <span class="op">)</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="st">"c"</span>, <span class="va">lines</span><span class="op">)</span>
-<span class="op">}</span>
-
-<span class="va">connections</span> <span class="op">=</span> <span class="fu">draw_lines</span><span class="op">(</span><span class="va">sites</span>, <span class="va">closest</span><span class="op">)</span>
-
-<span class="co"># Plot the results.</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">new_net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">connections</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">facilities</span>, pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sites</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Select a random set of sites and facilities.</span></span>
+<span><span class="co"># We select random locations within the bounding box of the nodes.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">128</span><span class="op">)</span></span>
+<span><span class="va">hull</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html" class="external-link">st_combine</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_convex_hull</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sites</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_sample.html" class="external-link">st_sample</a></span><span class="op">(</span><span class="va">hull</span>, <span class="fl">50</span>, type <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span></span>
+<span><span class="va">facilities</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_sample.html" class="external-link">st_sample</a></span><span class="op">(</span><span class="va">hull</span>, <span class="fl">5</span>, type <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Blend the sites and facilities into the network to get better results.</span></span>
+<span><span class="co"># Also select only the largest connected component.</span></span>
+<span><span class="va">new_net</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/group_graph.html" class="external-link">group_components</a></span><span class="op">(</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/st_network_blend.html">st_network_blend</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">sites</span>, <span class="va">facilities</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: st_network_blend assumes attributes are constant over geometries</span></span>
+<span></span>
+<span><span class="co"># Calculate the cost matrix.</span></span>
+<span><span class="co"># By default the weight column is used for edge weights.</span></span>
+<span><span class="co"># In our case this column contains the geographic lengths of the edges.</span></span>
+<span><span class="va">cost_matrix</span> <span class="op">=</span> <span class="fu"><a href="../reference/st_network_cost.html">st_network_cost</a></span><span class="op">(</span><span class="va">new_net</span>, from <span class="op">=</span> <span class="va">sites</span>, to <span class="op">=</span> <span class="va">facilities</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Find for each site which facility is closest.</span></span>
+<span><span class="va">closest</span> <span class="op">=</span> <span class="va">facilities</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">cost_matrix</span>, <span class="fl">1</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">x</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># Create a line between each site and its closest facility, for visualization.</span></span>
+<span><span class="va">draw_lines</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">sources</span>, <span class="va">targets</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">lines</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mapply.html" class="external-link">mapply</a></span><span class="op">(</span></span>
+<span>    <span class="kw">function</span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span><span class="op">)</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span><span class="op">)</span>, <span class="st">"LINESTRING"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="va">sources</span>,</span>
+<span>    <span class="va">targets</span>,</span>
+<span>    SIMPLIFY <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="st">"c"</span>, <span class="va">lines</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">connections</span> <span class="op">=</span> <span class="fu">draw_lines</span><span class="op">(</span><span class="va">sites</span>, <span class="va">closest</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Plot the results.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">new_net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">connections</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">facilities</span>, pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sites</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn04_routing_files/figure-html/unnamed-chunk-8-1.png" width="480"></p>
 </div>
 <div class="section level3">
@@ -341,79 +341,79 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>The traveling salesman problem aims to find the shortest tour that visits a set of locations exactly once and then returns to the starting location. In <code>sfnetworks</code>, there are no dedicated functions to solve this. However, we can bring in other packages here to assist us. Probably the best known R package for solving traveling salesman problems is <a href="https://CRAN.R-project.org/package=TSP" class="external-link">TSP</a>. To do so, it requires a matrix that specifies the travel cost between each pair of locations. As shown above, we can use <code>sfnetworks</code> to calculate such a cost matrix for our network.</p>
 <p>Lets first generate a set of random points within the bounding box of the network. These will serve as the locations the traveling salesman has to visit.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">403</span><span class="op">)</span>
-<span class="va">rdm</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sfc.html" class="external-link">st_as_sfc</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_sample.html" class="external-link">st_sample</a></span><span class="op">(</span><span class="fl">10</span>, type <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">403</span><span class="op">)</span></span>
+<span><span class="va">rdm</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sfc.html" class="external-link">st_as_sfc</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_sample.html" class="external-link">st_sample</a></span><span class="op">(</span><span class="fl">10</span>, type <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span></span></code></pre></div>
 <p>We can then compute the cost matrix using <code><a href="../reference/st_network_cost.html">st_network_cost()</a></code>. Internally, it will first snap the provided points to their nearest node in the network, and then use the <em>weight</em> column to calculate the travel costs between these nodes. Passing the matrix to <code><a href="https://rdrr.io/pkg/TSP/man/TSP.html" class="external-link">TSP::TSP()</a></code> will make it suitable for usage inside the <code>TSP</code> package.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>
-<span class="va">cost_matrix</span> <span class="op">=</span> <span class="fu"><a href="../reference/st_network_cost.html">st_network_cost</a></span><span class="op">(</span><span class="va">net</span>, from <span class="op">=</span> <span class="va">rdm</span>, to <span class="op">=</span> <span class="va">rdm</span><span class="op">)</span>
-
-<span class="co"># Use nearest node indices as row and column names.</span>
-<span class="va">rdm_idxs</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_nearest_feature.html" class="external-link">st_nearest_feature</a></span><span class="op">(</span><span class="va">rdm</span>, <span class="va">net</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/row.names.html" class="external-link">row.names</a></span><span class="op">(</span><span class="va">cost_matrix</span><span class="op">)</span> <span class="op">=</span> <span class="va">rdm_idxs</span>
-<span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">cost_matrix</span><span class="op">)</span> <span class="op">=</span> <span class="va">rdm_idxs</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">cost_matrix</span>, <span class="fl">0</span><span class="op">)</span>
-<span class="co">#&gt;      252  545  698   15  224  323   31  510   71   61</span>
-<span class="co">#&gt; 252    0  914 1335 1947 1010 1122  776 1052 1365 1204</span>
-<span class="co">#&gt; 545  914    0  421 1575  503  358  962  680  451  291</span>
-<span class="co">#&gt; 698 1335  421    0 1552  590  241 1383 1031  227  130</span>
-<span class="co">#&gt; 15  1947 1575 1552    0 2046 1408 1314 1015 1616 1620</span>
-<span class="co">#&gt; 224 1010  503  590 2046    0  767 1155 1151  551  459</span>
-<span class="co">#&gt; 323 1122  358  241 1408  767    0 1170  800  304  308</span>
-<span class="co">#&gt; 31   776  962 1383 1314 1155 1170    0  796 1413 1252</span>
-<span class="co">#&gt; 510 1052  680 1031 1015 1151  800  796    0 1094  970</span>
-<span class="co">#&gt; 71  1365  451  227 1616  551  304 1413 1094    0  161</span>
-<span class="co">#&gt; 61  1204  291  130 1620  459  308 1252  970  161    0</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span></span>
+<span><span class="va">cost_matrix</span> <span class="op">=</span> <span class="fu"><a href="../reference/st_network_cost.html">st_network_cost</a></span><span class="op">(</span><span class="va">net</span>, from <span class="op">=</span> <span class="va">rdm</span>, to <span class="op">=</span> <span class="va">rdm</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use nearest node indices as row and column names.</span></span>
+<span><span class="va">rdm_idxs</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_nearest_feature.html" class="external-link">st_nearest_feature</a></span><span class="op">(</span><span class="va">rdm</span>, <span class="va">net</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/row.names.html" class="external-link">row.names</a></span><span class="op">(</span><span class="va">cost_matrix</span><span class="op">)</span> <span class="op">=</span> <span class="va">rdm_idxs</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">cost_matrix</span><span class="op">)</span> <span class="op">=</span> <span class="va">rdm_idxs</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">cost_matrix</span>, <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      252  545  698   15  224  323   31  510   71   61</span></span>
+<span><span class="co">#&gt; 252    0  914 1335 1947 1010 1122  776 1052 1365 1204</span></span>
+<span><span class="co">#&gt; 545  914    0  421 1575  503  358  962  680  451  291</span></span>
+<span><span class="co">#&gt; 698 1335  421    0 1552  590  241 1383 1031  227  130</span></span>
+<span><span class="co">#&gt; 15  1947 1575 1552    0 2046 1408 1314 1015 1616 1620</span></span>
+<span><span class="co">#&gt; 224 1010  503  590 2046    0  767 1155 1151  551  459</span></span>
+<span><span class="co">#&gt; 323 1122  358  241 1408  767    0 1170  800  304  308</span></span>
+<span><span class="co">#&gt; 31   776  962 1383 1314 1155 1170    0  796 1413 1252</span></span>
+<span><span class="co">#&gt; 510 1052  680 1031 1015 1151  800  796    0 1094  970</span></span>
+<span><span class="co">#&gt; 71  1365  451  227 1616  551  304 1413 1094    0  161</span></span>
+<span><span class="co">#&gt; 61  1204  291  130 1620  459  308 1252  970  161    0</span></span></code></pre></div>
 <p>By passing the cost matrix to the solver <code><a href="https://rdrr.io/pkg/TSP/man/solve_TSP.html" class="external-link">TSP::solve_TSP()</a></code> we obtain an object of class <code>TOUR</code>. This object contains a named vector specifying the indices of the provided locations in the optimal order of visit.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tour</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/TSP/man/solve_TSP.html" class="external-link">solve_TSP</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/TSP/man/TSP.html" class="external-link">TSP</a></span><span class="op">(</span><span class="va">cost_matrix</span><span class="op">)</span><span class="op">)</span>
-<span class="va">tour_idxs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">tour</span><span class="op">)</span><span class="op">)</span>
-<span class="va">tour_idxs</span>
-<span class="co">#&gt;  [1]  71  61 545 224 252  31  15 510 323 698</span>
-
-<span class="co"># Approximate length of the route.</span>
-<span class="co"># In meters, since that was the unit of our cost values.</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/TSP/man/tour_length.html" class="external-link">tour_length</a></span><span class="op">(</span><span class="va">tour</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span>
-<span class="co">#&gt; [1] 6337</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tour</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/TSP/man/solve_TSP.html" class="external-link">solve_TSP</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/TSP/man/TSP.html" class="external-link">TSP</a></span><span class="op">(</span><span class="va">cost_matrix</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">tour_idxs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">tour</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">tour_idxs</span></span>
+<span><span class="co">#&gt;  [1]  71  61 545 224 252  31  15 510 323 698</span></span>
+<span></span>
+<span><span class="co"># Approximate length of the route.</span></span>
+<span><span class="co"># In meters, since that was the unit of our cost values.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/TSP/man/tour_length.html" class="external-link">tour_length</a></span><span class="op">(</span><span class="va">tour</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 6337</span></span></code></pre></div>
 <p>Knowing the optimal order to visit all provided locations, we move back to <code>sfnetworks</code> to match this route to the network. We do so by computing the shortest paths between each location and its subsequent one, until we reach the starting point again.</p>
 <p>For more details on solving travelling salesman problems in R, see the <a href="https://CRAN.R-project.org/package=TSP" class="external-link">TSP package documentation</a>.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Define the nodes to calculate the shortest paths from.</span>
-<span class="co"># Define the nodes to calculate the shortest paths to.</span>
-<span class="co"># All based on the calculated order of visit.</span>
-<span class="va">from_idxs</span> <span class="op">=</span> <span class="va">tour_idxs</span>
-<span class="va">to_idxs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">tour_idxs</span><span class="op">[</span><span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">tour_idxs</span><span class="op">)</span><span class="op">]</span>, <span class="va">tour_idxs</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>
-
-<span class="co"># Calculate the specified paths.</span>
-<span class="va">tsp_paths</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mapply.html" class="external-link">mapply</a></span><span class="op">(</span><span class="va">st_network_paths</span>,
-    from <span class="op">=</span> <span class="va">from_idxs</span>,
-    to <span class="op">=</span> <span class="va">to_idxs</span>,
-    MoreArgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">net</span><span class="op">)</span>
-  <span class="op">)</span><span class="op">[</span><span class="st">"node_paths"</span>, <span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span>recursive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="co"># Plot the results.</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">rdm</span>, pch <span class="op">=</span> <span class="fl">20</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-
-<span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">walk</a></span><span class="op">(</span><span class="va">tsp_paths</span>, <span class="va">plot_path</span><span class="op">)</span> <span class="co"># Reuse the plot_path function defined earlier.</span>
-
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">rdm_idxs</span><span class="op">)</span><span class="op">)</span>,
-  pch <span class="op">=</span> <span class="fl">20</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, add <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">tour_idxs</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>,
-  pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, add <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/text.html" class="external-link">text</a></span><span class="op">(</span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">st_coordinates</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">tour_idxs</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">90</span><span class="op">)</span>,
-  labels <span class="op">=</span> <span class="st">"start/end\npoint"</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Define the nodes to calculate the shortest paths from.</span></span>
+<span><span class="co"># Define the nodes to calculate the shortest paths to.</span></span>
+<span><span class="co"># All based on the calculated order of visit.</span></span>
+<span><span class="va">from_idxs</span> <span class="op">=</span> <span class="va">tour_idxs</span></span>
+<span><span class="va">to_idxs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">tour_idxs</span><span class="op">[</span><span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">tour_idxs</span><span class="op">)</span><span class="op">]</span>, <span class="va">tour_idxs</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Calculate the specified paths.</span></span>
+<span><span class="va">tsp_paths</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mapply.html" class="external-link">mapply</a></span><span class="op">(</span><span class="va">st_network_paths</span>,</span>
+<span>    from <span class="op">=</span> <span class="va">from_idxs</span>,</span>
+<span>    to <span class="op">=</span> <span class="va">to_idxs</span>,</span>
+<span>    MoreArgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">net</span><span class="op">)</span></span>
+<span>  <span class="op">)</span><span class="op">[</span><span class="st">"node_paths"</span>, <span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span>recursive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Plot the results.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">rdm</span>, pch <span class="op">=</span> <span class="fl">20</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">walk</a></span><span class="op">(</span><span class="va">tsp_paths</span>, <span class="va">plot_path</span><span class="op">)</span> <span class="co"># Reuse the plot_path function defined earlier.</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">rdm_idxs</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  pch <span class="op">=</span> <span class="fl">20</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, add <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">tour_idxs</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, add <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/text.html" class="external-link">text</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">st_coordinates</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">tour_idxs</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">90</span><span class="op">)</span>,</span>
+<span>  labels <span class="op">=</span> <span class="st">"start/end\npoint"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn04_routing_files/figure-html/unnamed-chunk-12-1.png" width="480"></p>
 </div>
 <div class="section level3">
@@ -422,83 +422,83 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <p>With respect to a given point <span class="math inline">\(p\)</span> and a given travel time <span class="math inline">\(t\)</span>, an isochrone is the line for which it holds that the travel time from any point on the line to or from <span class="math inline">\(p\)</span> is equal to <span class="math inline">\(t\)</span>. When using distances instead of time, it is called an isodistance.</p>
 <p>In <code>sfnetworks</code> there are no dedicated, optimized functions for calculating isochrones or isodistances. However, we can roughly approximate them by using a combination of sf and tidygraph functions. Lets first calculate imaginary travel times for each edge, using randomly generated average walking speeds for each type of edge.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># How many edge types are there?</span>
-<span class="va">types</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">type</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="va">types</span>
-<span class="co">#&gt; [1] residential  secondary    path         footway      track       </span>
-<span class="co">#&gt; [6] unclassified pedestrian   service      cycleway    </span>
-<span class="co">#&gt; 9 Levels: cycleway footway path pedestrian residential secondary ... unclassified</span>
-
-<span class="co"># Randomly define a walking speed in m/s for each type.</span>
-<span class="co"># With values between 3 and 7 km/hr.</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
-<span class="va">speeds</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">types</span><span class="op">)</span>, <span class="fl">3</span> <span class="op">*</span> <span class="fl">1000</span> <span class="op">/</span> <span class="fl">60</span> <span class="op">/</span> <span class="fl">60</span>, <span class="fl">7</span> <span class="op">*</span> <span class="fl">1000</span> <span class="op">/</span> <span class="fl">60</span> <span class="op">/</span> <span class="fl">60</span><span class="op">)</span>
-
-<span class="co"># Assign a speed to each edge based on its type.</span>
-<span class="co"># Calculate travel time for each edge based on that.</span>
-<span class="va">net</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">type</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>speed <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/units/man/units.html" class="external-link">set_units</a></span><span class="op">(</span><span class="va">speeds</span><span class="op">[</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">cur_group_id</a></span><span class="op">(</span><span class="op">)</span><span class="op">]</span>, <span class="st">"m/s"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>time <span class="op">=</span> <span class="va">weight</span> <span class="op">/</span> <span class="va">speed</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="va">net</span></code></pre></div>
-<pre class="fansi fansi-output"><code><span class="co">#&gt; # A sfnetwork with 701 nodes and 851 edges</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # CRS:  EPSG:3035 </span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # An undirected multigraph with 14 components with spatially explicit edges</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # Edge Data:     851 × 8 (active)</span>
-<span class="co">#&gt; # Geometry type: LINESTRING</span>
-<span class="co">#&gt; # Dimension:     XY</span>
-<span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
-<span class="co">#&gt;    from    to name     type                          geometry weight speed  time</span>
-<span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;    &lt;fct&gt;                 &lt;LINESTRING [m]&gt;    [m] [m/s]   [s]</span>
-<span class="co">#&gt; 1     1     2 Havixbe… resi… (4151491 3207923, 4151474 32079…   28.9  1.06  27.3</span>
-<span class="co">#&gt; 2     3     4 Pieners… seco… (4151398 3207777, 4151390 32077…  108.   1.83  58.8</span>
-<span class="co">#&gt; 3     5     6 Schulte… resi… (4151408 3207539, 4151417 32075…   54.4  1.06  51.4</span>
-<span class="co">#&gt; 4     7     8 NA       path  (4151885 3206698, 4151861 32067…  155.   1.47 106. </span>
-<span class="co">#&gt; 5     9    10 Welsing… resi… (4151732 3207017, 4151721 32068…  209.   1.06 197. </span>
-<span class="co">#&gt; 6    11    12 NA       foot… (4152152 3206984, 4152143 32069…   63.0  1.25  50.6</span>
-<span class="co">#&gt; # … with 845 more rows</span>
-<span class="co">#&gt; #</span>
-<span class="co">#&gt; # Node Data:     701 × 1</span>
-<span class="co">#&gt; # Geometry type: POINT</span>
-<span class="co">#&gt; # Dimension:     XY</span>
-<span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span>
-<span class="co">#&gt;            geometry</span>
-<span class="co">#&gt;         &lt;POINT [m]&gt;</span>
-<span class="co">#&gt; 1 (4151491 3207923)</span>
-<span class="co">#&gt; 2 (4151474 3207946)</span>
-<span class="co">#&gt; 3 (4151398 3207777)</span>
-<span class="co">#&gt; # … with 698 more rows</span></code></pre>
+<code class="sourceCode R"><span><span class="co"># How many edge types are there?</span></span>
+<span><span class="va">types</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">type</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">types</span></span>
+<span><span class="co">#&gt; [1] residential  secondary    path         footway      track       </span></span>
+<span><span class="co">#&gt; [6] unclassified pedestrian   service      cycleway    </span></span>
+<span><span class="co">#&gt; 9 Levels: cycleway footway path pedestrian residential secondary ... unclassified</span></span>
+<span></span>
+<span><span class="co"># Randomly define a walking speed in m/s for each type.</span></span>
+<span><span class="co"># With values between 3 and 7 km/hr.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">speeds</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">types</span><span class="op">)</span>, <span class="fl">3</span> <span class="op">*</span> <span class="fl">1000</span> <span class="op">/</span> <span class="fl">60</span> <span class="op">/</span> <span class="fl">60</span>, <span class="fl">7</span> <span class="op">*</span> <span class="fl">1000</span> <span class="op">/</span> <span class="fl">60</span> <span class="op">/</span> <span class="fl">60</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Assign a speed to each edge based on its type.</span></span>
+<span><span class="co"># Calculate travel time for each edge based on that.</span></span>
+<span><span class="va">net</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">type</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>speed <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/units/man/units.html" class="external-link">set_units</a></span><span class="op">(</span><span class="va">speeds</span><span class="op">[</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">cur_group_id</a></span><span class="op">(</span><span class="op">)</span><span class="op">]</span>, <span class="st">"m/s"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>time <span class="op">=</span> <span class="va">weight</span> <span class="op">/</span> <span class="va">speed</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">net</span></span></code></pre></div>
+<pre class="fansi fansi-output"><code><span><span class="co">#&gt; # A sfnetwork with 701 nodes and 851 edges</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # CRS:  EPSG:3035 </span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # An undirected multigraph with 14 components with spatially explicit edges</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # Edge Data:     851 × 8 (active)</span></span>
+<span><span class="co">#&gt; # Geometry type: LINESTRING</span></span>
+<span><span class="co">#&gt; # Dimension:     XY</span></span>
+<span><span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
+<span><span class="co">#&gt;    from    to name     type                          geometry weight speed  time</span></span>
+<span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;    &lt;fct&gt;                 &lt;LINESTRING [m]&gt;    [m] [m/s]   [s]</span></span>
+<span><span class="co">#&gt; 1     1     2 Havixbe… resi… (4151491 3207923, 4151474 32079…   28.9  1.06  27.3</span></span>
+<span><span class="co">#&gt; 2     3     4 Pieners… seco… (4151398 3207777, 4151390 32077…  108.   1.83  58.8</span></span>
+<span><span class="co">#&gt; 3     5     6 Schulte… resi… (4151408 3207539, 4151417 32075…   54.4  1.06  51.4</span></span>
+<span><span class="co">#&gt; 4     7     8 NA       path  (4151885 3206698, 4151861 32067…  155.   1.47 106. </span></span>
+<span><span class="co">#&gt; 5     9    10 Welsing… resi… (4151732 3207017, 4151721 32068…  209.   1.06 197. </span></span>
+<span><span class="co">#&gt; 6    11    12 NA       foot… (4152152 3206984, 4152143 32069…   63.0  1.25  50.6</span></span>
+<span><span class="co">#&gt; # … with 845 more rows</span></span>
+<span><span class="co">#&gt; #</span></span>
+<span><span class="co">#&gt; # Node Data:     701 × 1</span></span>
+<span><span class="co">#&gt; # Geometry type: POINT</span></span>
+<span><span class="co">#&gt; # Dimension:     XY</span></span>
+<span><span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
+<span><span class="co">#&gt;            geometry</span></span>
+<span><span class="co">#&gt;         &lt;POINT [m]&gt;</span></span>
+<span><span class="co">#&gt; 1 (4151491 3207923)</span></span>
+<span><span class="co">#&gt; 2 (4151474 3207946)</span></span>
+<span><span class="co">#&gt; 3 (4151398 3207777)</span></span>
+<span><span class="co">#&gt; # … with 698 more rows</span></span></code></pre>
 <p>Now, we can calculate the total travel time for each shortest path between the (nearest node of the) origin point and all other nodes in the network, using the node measure function <code><a href="https://tidygraph.data-imaginist.com/reference/pair_measures.html" class="external-link">tidygraph::node_distance_from()</a></code> with the values in the <em>time</em> column as weights. Then, we filter the nodes reachable within a given travel time from the origin. By drawing a convex hull around these selected nodes we roughly approximate the isochrone. If we wanted isochrones for travel times <em>towards</em> the central point, we could have used the node measure function <code><a href="https://tidygraph.data-imaginist.com/reference/pair_measures.html" class="external-link">tidygraph::node_distance_to()</a></code> instead.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>
-
-<span class="va">p</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html" class="external-link">st_combine</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_centroid</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="va">iso</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/pair_measures.html" class="external-link">node_distance_from</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_nearest_feature.html" class="external-link">st_nearest_feature</a></span><span class="op">(</span><span class="va">p</span>, <span class="va">net</span><span class="op">)</span>, weights <span class="op">=</span> <span class="va">time</span><span class="op">)</span> <span class="op">&lt;=</span> <span class="fl">600</span><span class="op">)</span>
-
-<span class="va">iso_poly</span> <span class="op">=</span> <span class="va">iso</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html" class="external-link">st_combine</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_convex_hull</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iso_poly</span>, col <span class="op">=</span> <span class="cn">NA</span>, border <span class="op">=</span> <span class="st">"black"</span>, lwd <span class="op">=</span> <span class="fl">3</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iso</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">p</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html" class="external-link">st_combine</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_centroid</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">iso</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/pair_measures.html" class="external-link">node_distance_from</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_nearest_feature.html" class="external-link">st_nearest_feature</a></span><span class="op">(</span><span class="va">p</span>, <span class="va">net</span><span class="op">)</span>, weights <span class="op">=</span> <span class="va">time</span><span class="op">)</span> <span class="op">&lt;=</span> <span class="fl">600</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">iso_poly</span> <span class="op">=</span> <span class="va">iso</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html" class="external-link">st_combine</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_convex_hull</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iso_poly</span>, col <span class="op">=</span> <span class="cn">NA</span>, border <span class="op">=</span> <span class="st">"black"</span>, lwd <span class="op">=</span> <span class="fl">3</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iso</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">p</span>, col <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn04_routing_files/figure-html/unnamed-chunk-14-1.png" width="480"></p>
 <p>The workflow presented above is generalized in a spatial morpher function <code><a href="../reference/spatial_morphers.html">to_spatial_neighborhood()</a></code>, which can be used inside the <code><a href="https://tidygraph.data-imaginist.com/reference/morph.html" class="external-link">tidygraph::convert()</a></code> verb to filter only those nodes that can be reached within a given travel cost from the given origin node. See the vignette on <a href="https://luukvdmeer.github.io/sfnetworks/articles/sfn05_morphers.html#to_spatial_neighborhood" class="external-link">Spatial morphers</a> for details.</p>
 </div>
@@ -507,68 +507,68 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 </h3>
 <p>In many cases the shortest path based geographical distances or travel time is not necessarily the optimal path. The most appropriate route may depend on many factors, for example staying away from large and potentially unpleasant highways for motor traffic. All networks have different characteristics. In OpenStreetMap networks the ‘highway’ type is often a good (albeit crude) approximation of the network. The <code>roxel</code> demo dataset is derived from OpenStreetMap and represents a largely residential network:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">roxel</span><span class="op">$</span><span class="va">type</span><span class="op">)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     cycleway      footway         path   pedestrian  residential    secondary </span>
-<span class="co">#&gt;           42           67           95            1          394           62 </span>
-<span class="co">#&gt;      service        track unclassified </span>
-<span class="co">#&gt;          160            5           25</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">roxel</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     cycleway      footway         path   pedestrian  residential    secondary </span></span>
+<span><span class="co">#&gt;           42           67           95            1          394           62 </span></span>
+<span><span class="co">#&gt;      service        track unclassified </span></span>
+<span><span class="co">#&gt;          160            5           25</span></span></code></pre></div>
 <p>Building on the shortest paths calculated in a previous section we can try an alternative routing profile. Let’s take a look at these paths to see what type of ways they travel on:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">paths_sf</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">paths</span><span class="op">$</span><span class="va">edge_paths</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">paths_sf</span><span class="op">$</span><span class="va">type</span><span class="op">)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     cycleway      footway         path   pedestrian  residential    secondary </span>
-<span class="co">#&gt;            2            0            6            0           38            1 </span>
-<span class="co">#&gt;      service        track unclassified </span>
-<span class="co">#&gt;            2            0            6</span>
-
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">paths_sf</span><span class="op">[</span><span class="st">"type"</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">4</span>, key.pos <span class="op">=</span> <span class="fl">4</span>, key.width <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/layout.html" class="external-link">lcm</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">paths_sf</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">paths</span><span class="op">$</span><span class="va">edge_paths</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">paths_sf</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     cycleway      footway         path   pedestrian  residential    secondary </span></span>
+<span><span class="co">#&gt;            2            0            6            0           38            1 </span></span>
+<span><span class="co">#&gt;      service        track unclassified </span></span>
+<span><span class="co">#&gt;            2            0            6</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">paths_sf</span><span class="op">[</span><span class="st">"type"</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">4</span>, key.pos <span class="op">=</span> <span class="fl">4</span>, key.width <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/graphics/layout.html" class="external-link">lcm</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn04_routing_files/figure-html/unnamed-chunk-16-1.png" width="480"></p>
 <p>As with the overall network, the paths we calculated are dominated by residential streets. For the purposes of illustration, lets imagine we’re routing for a vehicle that we want to keep away from residential roads, and which has a much lower cost per unit distance on secondary roads:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">weighting_profile</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>
-  cycleway <span class="op">=</span> <span class="cn">Inf</span>,
-  footway <span class="op">=</span> <span class="cn">Inf</span>,
-  path <span class="op">=</span> <span class="cn">Inf</span>,
-  pedestrian <span class="op">=</span> <span class="cn">Inf</span>,
-  residential <span class="op">=</span> <span class="fl">3</span>,
-  secondary <span class="op">=</span> <span class="fl">1</span>,
-  service <span class="op">=</span> <span class="fl">1</span>,
-  track <span class="op">=</span> <span class="fl">10</span>,
-  unclassified <span class="op">=</span> <span class="fl">1</span>
-<span class="op">)</span>
-
-<span class="va">weighted_net</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>multiplier <span class="op">=</span> <span class="va">weighting_profile</span><span class="op">[</span><span class="va">type</span><span class="op">]</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>weight <span class="op">=</span> <span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span> <span class="op">*</span> <span class="va">multiplier</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">weighting_profile</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  cycleway <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  footway <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  path <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  pedestrian <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  residential <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  secondary <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  service <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  track <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  unclassified <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">weighted_net</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>multiplier <span class="op">=</span> <span class="va">weighting_profile</span><span class="op">[</span><span class="va">type</span><span class="op">]</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>weight <span class="op">=</span> <span class="fu"><a href="../reference/spatial_edge_measures.html">edge_length</a></span><span class="op">(</span><span class="op">)</span> <span class="op">*</span> <span class="va">multiplier</span><span class="op">)</span></span></code></pre></div>
 <p>We can now recalculate the routes. The result show routes that avoid residential networks.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">weighted_paths</span> <span class="op">=</span> <span class="fu"><a href="../reference/st_network_paths.html">st_network_paths</a></span><span class="op">(</span><span class="va">weighted_net</span>, from <span class="op">=</span> <span class="fl">495</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">458</span>, <span class="fl">121</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">weighted_paths_sf</span> <span class="op">=</span> <span class="va">weighted_net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">weighted_paths</span><span class="op">$</span><span class="va">edge_paths</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">weighted_paths_sf</span><span class="op">$</span><span class="va">type</span><span class="op">)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     cycleway      footway         path   pedestrian  residential    secondary </span>
-<span class="co">#&gt;            0            0            0            0            9           43 </span>
-<span class="co">#&gt;      service        track unclassified </span>
-<span class="co">#&gt;            3            0            0</span>
-
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span><span class="op">[</span><span class="st">"type"</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">4</span>,
-     key.pos <span class="op">=</span> <span class="cn">NULL</span>, reset <span class="op">=</span> <span class="cn">FALSE</span>, main <span class="op">=</span> <span class="st">"Distance weights"</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">paths_sf</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span><span class="op">[</span><span class="st">"type"</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">4</span>,
-     key.pos <span class="op">=</span> <span class="cn">NULL</span>, reset <span class="op">=</span> <span class="cn">FALSE</span>, main <span class="op">=</span> <span class="st">"Custom weights"</span><span class="op">)</span>
-<span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">weighted_paths_sf</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">weighted_paths</span> <span class="op">=</span> <span class="fu"><a href="../reference/st_network_paths.html">st_network_paths</a></span><span class="op">(</span><span class="va">weighted_net</span>, from <span class="op">=</span> <span class="fl">495</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">458</span>, <span class="fl">121</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">weighted_paths_sf</span> <span class="op">=</span> <span class="va">weighted_net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">weighted_paths</span><span class="op">$</span><span class="va">edge_paths</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">weighted_paths_sf</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     cycleway      footway         path   pedestrian  residential    secondary </span></span>
+<span><span class="co">#&gt;            0            0            0            0            9           43 </span></span>
+<span><span class="co">#&gt;      service        track unclassified </span></span>
+<span><span class="co">#&gt;            3            0            0</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span><span class="op">[</span><span class="st">"type"</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>     key.pos <span class="op">=</span> <span class="cn">NULL</span>, reset <span class="op">=</span> <span class="cn">FALSE</span>, main <span class="op">=</span> <span class="st">"Distance weights"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">paths_sf</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span><span class="op">[</span><span class="st">"type"</span><span class="op">]</span>, lwd <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>     key.pos <span class="op">=</span> <span class="cn">NULL</span>, reset <span class="op">=</span> <span class="cn">FALSE</span>, main <span class="op">=</span> <span class="st">"Custom weights"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">weighted_paths_sf</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn04_routing_files/figure-html/unnamed-chunk-18-1.png" width="50%"><img src="sfn04_routing_files/figure-html/unnamed-chunk-18-2.png" width="50%"></p>
 <p>Note that developing more sophisticated routing profiles is beyond the scope of this package. If you need complex mode-specific routing profiles, we recommend looking at routing profiles associated with open source routing engines, such as <a href="https://github.com/fossgis-routing-server/cbf-routing-profiles/blob/master/bike.lua" class="external-link">bike.lua</a> in the OSRM project. Another direction of travel could be to extend on the approach illustrated here, but this work could be well-suited to a separate package that builds on <code>sfnetworks</code> (remembering that sophisticated routing profiles account for nodes and edges). If you’d like to work on such a project to improve mode-specific routing in R by building on this package, please let us know in the <a href="https://github.com/luukvdmeer/sfnetworks/discussions" class="external-link">discussion room</a>!</p>
 </div>
@@ -592,7 +592,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

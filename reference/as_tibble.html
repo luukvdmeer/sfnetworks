@@ -34,7 +34,7 @@ as a user, you can disable this behaviour by setting spatial = FALSE."><meta pro
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -91,39 +91,48 @@ as a user, you can disable this behaviour by setting <code>spatial = FALSE</code
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S3 method for sfnetwork</span>
-<span class="fu">as_tibble</span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, spatial <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for sfnetwork</span></span>
+<span><span class="fu">as_tibble</span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, spatial <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>An object of class <code><a href="sfnetwork.html">sfnetwork</a></code>.</p></dd>
+
+
 <dt>active</dt>
 <dd><p>Which network element (i.e. nodes or edges) to activate before
 extracting. If <code>NULL</code>, it will be set to the current active element of
 the given network. Defaults to <code>NULL</code>.</p></dd>
+
+
 <dt>spatial</dt>
 <dd><p>Should the extracted tibble be a 'spatial tibble', i.e. an
 object of class <code>c('sf', 'tbl_df')</code>, if it contains a geometry list
 column. Defaults to <code>TRUE</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Arguments passed on to <code><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>The active element of the network as an object of class
+    
+
+<p>The active element of the network as an object of class
 <code><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></code>.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">roxel</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Extract the active network element as a spatial tibble.</span></span>
-<span class="r-in"><span class="fu">as_tibble</span><span class="op">(</span><span class="va">net</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">roxel</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Extract the active network element as a spatial tibble.</span></span></span>
+<span class="r-in"><span><span class="fu">as_tibble</span><span class="op">(</span><span class="va">net</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 701 features and 0 fields</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: POINT</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
@@ -143,9 +152,10 @@ column. Defaults to <code>TRUE</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>  (7.537673 51.9475)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> (7.537614 51.94562)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 691 more rows</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Extract any network element as a spatial tibble.</span></span>
-<span class="r-in"><span class="fu">as_tibble</span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Extract any network element as a spatial tibble.</span></span></span>
+<span class="r-in"><span><span class="fu">as_tibble</span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 851 features and 4 fields</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: LINESTRING</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
@@ -165,9 +175,10 @@ column. Defaults to <code>TRUE</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     7    15 <span style="color: #BB0000;">NA</span>                    track       (7.540063 51.94468, 7.540338 5…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>    16    17 <span style="color: #BB0000;">NA</span>                    track       (7.5424 51.94599, 7.54205 51.9…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 841 more rows</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Extract the active network element as a regular tibble.</span></span>
-<span class="r-in"><span class="fu">as_tibble</span><span class="op">(</span><span class="va">net</span>, spatial <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Extract the active network element as a regular tibble.</span></span></span>
+<span class="r-in"><span><span class="fu">as_tibble</span><span class="op">(</span><span class="va">net</span>, spatial <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 701 × 1</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>               geometry</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;POINT [°]&gt;</span></span>
@@ -182,7 +193,8 @@ column. Defaults to <code>TRUE</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>  (7.537673 51.9475)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> (7.537614 51.94562)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 691 more rows</span></span>
-<span class="r-in"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -197,7 +209,7 @@ column. Defaults to <code>TRUE</code>.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

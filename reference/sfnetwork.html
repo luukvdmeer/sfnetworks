@@ -30,7 +30,7 @@ sf for spatial data analysis."><meta property="og:image" content="/logo.png"><!-
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -83,16 +83,16 @@ edges embedded in geographical space, and offers smooth integration with
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">sfnetwork</span><span class="op">(</span>
-  <span class="va">nodes</span>,
-  edges <span class="op">=</span> <span class="cn">NULL</span>,
-  directed <span class="op">=</span> <span class="cn">TRUE</span>,
-  node_key <span class="op">=</span> <span class="st">"name"</span>,
-  edges_as_lines <span class="op">=</span> <span class="cn">NULL</span>,
-  length_as_weight <span class="op">=</span> <span class="cn">FALSE</span>,
-  force <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sfnetwork</span><span class="op">(</span></span>
+<span>  <span class="va">nodes</span>,</span>
+<span>  edges <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  directed <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  node_key <span class="op">=</span> <span class="st">"name"</span>,</span>
+<span>  edges_as_lines <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  length_as_weight <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  force <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -102,6 +102,8 @@ edges embedded in geographical space, and offers smooth integration with
 <code><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">sf</a></code>, or directly convertible to it using
 <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></code>. All features should have an associated geometry
 of type <code>POINT</code>.</p></dd>
+
+
 <dt>edges</dt>
 <dd><p>The edges of the network. May be an object of class
 <code><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">sf</a></code>, with all features having an associated geometry of
@@ -112,20 +114,28 @@ integers or characters. Integers should refer to the position of a node in
 the nodes table, while characters should refer to the name of a node encoded
 in the column referred to in the <code>node_key</code> argument. Setting edges to
 <code>NULL</code> will create a network without edges.</p></dd>
+
+
 <dt>directed</dt>
 <dd><p>Should the constructed network be directed? Defaults to
 <code>TRUE</code>.</p></dd>
+
+
 <dt>node_key</dt>
 <dd><p>The name of the column in the nodes table that character
 represented <code>to</code> and <code>from</code> columns should be matched against. If
 <code>NA</code>, the first column is always chosen. This setting has no effect if
 <code>to</code> and <code>from</code> are given as integers. Defaults to <code>'name'</code>.</p></dd>
+
+
 <dt>edges_as_lines</dt>
 <dd><p>Should the edges be spatially explicit, i.e. have
 <code>LINESTRING</code> geometries stored in a geometry list column? If
 <code>NULL</code>, this will be automatically defined, by setting the argument to
 <code>TRUE</code> when the edges are given as an object of class
 <code><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">sf</a></code>, and <code>FALSE</code> otherwise. Defaults to <code>NULL</code>.</p></dd>
+
+
 <dt>length_as_weight</dt>
 <dd><p>Should the length of the edges be stored in a column
 named <code>weight</code>? If set to <code>TRUE</code>, this will calculate the length
@@ -133,6 +143,8 @@ of the linestring geometry of the edge in the case of spatially explicit
 edges, and the straight-line distance between the source and target node in
 the case of spatially implicit edges. If there is already a column named
 <code>weight</code>, it will be overwritten. Defaults to <code>FALSE</code>.</p></dd>
+
+
 <dt>force</dt>
 <dd><p>Should network validity checks be skipped? Defaults to
 <code>FALSE</code>, meaning that network validity checks are executed when
@@ -144,34 +156,39 @@ CRS and boundary points of edges match their corresponding node coordinates.
 These checks are important, but also time consuming. If you are already sure
 your input data meet the requirements, the checks are unnecessary and can be
 turned off to improve performance.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Arguments passed on to <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></code>, if nodes need
 to be converted into an <code><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">sf</a></code> object during construction.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An object of class <code>sfnetwork</code>.</p>
+    
+
+<p>An object of class <code>sfnetwork</code>.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">## Create sfnetwork from sf objects</span></span>
-<span class="r-in"><span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">51</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">p2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">p3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">nodes</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">e1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html" class="external-link">st_union</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span><span class="op">)</span>, <span class="st">"LINESTRING"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">e2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html" class="external-link">st_union</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p3</span><span class="op">)</span>, <span class="st">"LINESTRING"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">e3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html" class="external-link">st_union</a></span><span class="op">(</span><span class="va">p3</span>, <span class="va">p2</span><span class="op">)</span>, <span class="st">"LINESTRING"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">edges</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="va">e1</span>, <span class="va">e2</span>, <span class="va">e3</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">edges</span><span class="op">$</span><span class="va">from</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">edges</span><span class="op">$</span><span class="va">to</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Default.</span></span>
-<span class="r-in"><span class="fu">sfnetwork</span><span class="op">(</span><span class="va">nodes</span>, <span class="va">edges</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Create sfnetwork from sf objects</span></span></span>
+<span class="r-in"><span><span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">51</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">52</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">nodes</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">e1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html" class="external-link">st_union</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span><span class="op">)</span>, <span class="st">"LINESTRING"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">e2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html" class="external-link">st_union</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p3</span><span class="op">)</span>, <span class="st">"LINESTRING"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">e3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html" class="external-link">st_cast</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html" class="external-link">st_union</a></span><span class="op">(</span><span class="va">p3</span>, <span class="va">p2</span><span class="op">)</span>, <span class="st">"LINESTRING"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">edges</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="va">e1</span>, <span class="va">e2</span>, <span class="va">e3</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">edges</span><span class="op">$</span><span class="va">from</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">edges</span><span class="op">$</span><span class="va">to</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Default.</span></span></span>
+<span class="r-in"><span><span class="fu">sfnetwork</span><span class="op">(</span><span class="va">nodes</span>, <span class="va">edges</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Checking if spatial network structure is valid...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial network structure is valid</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">3</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">3</span> <span style="color: #555555;">edges</span></span>
@@ -199,9 +216,9 @@ to be converted into an <code><a href="https://r-spatial.github.io/sf/reference/
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     1     2     (7 51, 7 52)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>     1     3     (7 51, 8 52)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>     3     2     (8 52, 7 52)</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Undirected network.</span></span>
-<span class="r-in"><span class="fu">sfnetwork</span><span class="op">(</span><span class="va">nodes</span>, <span class="va">edges</span>, directed <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Undirected network.</span></span></span>
+<span class="r-in"><span><span class="fu">sfnetwork</span><span class="op">(</span><span class="va">nodes</span>, <span class="va">edges</span>, directed <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Checking if spatial network structure is valid...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial network structure is valid</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">3</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">3</span> <span style="color: #555555;">edges</span></span>
@@ -229,12 +246,12 @@ to be converted into an <code><a href="https://r-spatial.github.io/sf/reference/
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     1     2     (7 51, 7 52)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>     1     3     (7 51, 8 52)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>     2     3     (8 52, 7 52)</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Using character encoded from and to columns.</span></span>
-<span class="r-in"><span class="va">nodes</span><span class="op">$</span><span class="va">name</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"city"</span>, <span class="st">"village"</span>, <span class="st">"farm"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">edges</span><span class="op">$</span><span class="va">from</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"city"</span>, <span class="st">"city"</span>, <span class="st">"farm"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">edges</span><span class="op">$</span><span class="va">to</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"village"</span>, <span class="st">"farm"</span>, <span class="st">"village"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">sfnetwork</span><span class="op">(</span><span class="va">nodes</span>, <span class="va">edges</span>, node_key <span class="op">=</span> <span class="st">"name"</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Using character encoded from and to columns.</span></span></span>
+<span class="r-in"><span><span class="va">nodes</span><span class="op">$</span><span class="va">name</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"city"</span>, <span class="st">"village"</span>, <span class="st">"farm"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">edges</span><span class="op">$</span><span class="va">from</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"city"</span>, <span class="st">"city"</span>, <span class="st">"farm"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">edges</span><span class="op">$</span><span class="va">to</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"village"</span>, <span class="st">"farm"</span>, <span class="st">"village"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">sfnetwork</span><span class="op">(</span><span class="va">nodes</span>, <span class="va">edges</span>, node_key <span class="op">=</span> <span class="st">"name"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Checking if spatial network structure is valid...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial network structure is valid</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">3</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">3</span> <span style="color: #555555;">edges</span></span>
@@ -262,9 +279,9 @@ to be converted into an <code><a href="https://r-spatial.github.io/sf/reference/
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     1     2     (7 51, 7 52)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>     1     3     (7 51, 8 52)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>     3     2     (8 52, 7 52)</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Spatially implicit edges.</span></span>
-<span class="r-in"><span class="fu">sfnetwork</span><span class="op">(</span><span class="va">nodes</span>, <span class="va">edges</span>, edges_as_lines <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Spatially implicit edges.</span></span></span>
+<span class="r-in"><span><span class="fu">sfnetwork</span><span class="op">(</span><span class="va">nodes</span>, <span class="va">edges</span>, edges_as_lines <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Checking if spatial network structure is valid...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial network structure is valid</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">3</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">3</span> <span style="color: #555555;">edges</span></span>
@@ -289,9 +306,9 @@ to be converted into an <code><a href="https://r-spatial.github.io/sf/reference/
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     1     2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>     1     3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>     3     2</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Store edge lenghts in a weight column.</span></span>
-<span class="r-in"><span class="fu">sfnetwork</span><span class="op">(</span><span class="va">nodes</span>, <span class="va">edges</span>, length_as_weight <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Store edge lenghts in a weight column.</span></span></span>
+<span class="r-in"><span><span class="fu">sfnetwork</span><span class="op">(</span><span class="va">nodes</span>, <span class="va">edges</span>, length_as_weight <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Checking if spatial network structure is valid...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial network structure is valid</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">3</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">3</span> <span style="color: #555555;">edges</span></span>
@@ -319,10 +336,10 @@ to be converted into an <code><a href="https://r-spatial.github.io/sf/reference/
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     1     2     (7 51, 7 52) <span style="text-decoration: underline;">111</span>195.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>     1     3     (7 51, 8 52) <span style="text-decoration: underline;">130</span>977.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>     3     2     (8 52, 7 52)  <span style="text-decoration: underline;">68</span>458.</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Adjust the number of features printed by active and inactive components</span></span>
-<span class="r-in"><span class="va">oldoptions</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>sfn_max_print_active <span class="op">=</span> <span class="fl">1</span>, sfn_max_print_inactive <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">sfnetwork</span><span class="op">(</span><span class="va">nodes</span>, <span class="va">edges</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Adjust the number of features printed by active and inactive components</span></span></span>
+<span class="r-in"><span><span class="va">oldoptions</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>sfn_max_print_active <span class="op">=</span> <span class="fl">1</span>, sfn_max_print_inactive <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">sfnetwork</span><span class="op">(</span><span class="va">nodes</span>, <span class="va">edges</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Checking if spatial network structure is valid...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Spatial network structure is valid</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">3</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">3</span> <span style="color: #555555;">edges</span></span>
@@ -349,8 +366,8 @@ to be converted into an <code><a href="https://r-spatial.github.io/sf/reference/
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     1     2     (7 51, 7 52)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>     1     3     (7 51, 8 52)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 1 more row</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="va">oldoptions</span><span class="op">)</span></span>
-<span class="r-in"></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="va">oldoptions</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -365,7 +382,7 @@ to be converted into an <code><a href="https://r-spatial.github.io/sf/reference/
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
