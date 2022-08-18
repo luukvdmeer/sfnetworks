@@ -14,7 +14,9 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 knitr::opts_knit$set(global.par = TRUE)
-geos37 = sf::sf_extSoftVersion()["GEOS"] >= "3.7.0"
+current_geos = numeric_version(sf::sf_extSoftVersion()["GEOS"])
+required_geos = numeric_version("3.7.0")
+geos37 = current_geos >= required_geos
 ```
 
 ```{r plot, echo=FALSE, results='asis'}
