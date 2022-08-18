@@ -109,8 +109,9 @@ st_network_blend.sfnetwork = function(x, y, tolerance = Inf) {
 
 #' @importFrom dplyr bind_rows full_join
 #' @importFrom igraph is_directed vcount
-#' @importFrom sf st_as_sf st_cast st_crs st_distance st_equals st_geometry
-#' st_intersects st_is_within_distance st_nearest_feature st_nearest_points
+#' @importFrom sf st_as_sf st_cast st_crs st_crs<- st_distance st_equals
+#' st_geometry st_geometry<- st_intersects st_is_within_distance
+#' st_nearest_feature st_nearest_points st_precision st_precision<-
 #' @importFrom sfheaders sfc_linestring sfc_to_df
 #' @importFrom units set_units
 blend_ = function(x, y, tolerance) {

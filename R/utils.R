@@ -124,7 +124,7 @@ create_nodes_from_edges = function(edges) {
 #' and the first point in y, the second point in x and the second point in y,
 #' et cetera.
 #'
-#' @importFrom sf st_crs
+#' @importFrom sf st_crs st_crs<- st_precision st_precision<-
 #' @importFrom sfheaders sfc_linestring sfc_to_df
 #' @noRd
 draw_lines = function(x, y) {
@@ -338,7 +338,7 @@ implicitize_edges = function(x) {
 #' @details With boundary points we mean the points at the start and end of
 #' a linestring.
 #'
-#' @importFrom sf st_crs st_geometry
+#' @importFrom sf st_crs st_crs<- st_geometry st_precision st_precision<-
 #' @importFrom sfheaders sfc_point sfc_to_df
 #' @noRd
 linestring_boundary_points = function(x) {
@@ -369,7 +369,7 @@ linestring_boundary_points = function(x) {
 #' @details With a line segment we mean a linestring geometry that has no
 #' interior points.
 #'
-#' @importFrom sf st_crs st_geometry
+#' @importFrom sf st_crs st_crs<- st_geometry st_precision st_precision<-
 #' @importFrom sfheaders sfc_linestring sfc_to_df
 #' @noRd
 linestring_segments = function(x) {

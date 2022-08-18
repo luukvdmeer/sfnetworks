@@ -230,7 +230,7 @@ st_precision.sfnetwork = function(x, ...) {
 }
 
 #' @name sf
-#' @importFrom sf st_set_precision st_precision
+#' @importFrom sf st_set_precision st_precision<-
 #' @export
 st_set_precision.sfnetwork = function(x, value) {
   if (has_explicit_edges(x)) {

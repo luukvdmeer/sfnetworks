@@ -94,7 +94,7 @@ NULL
 #' @importFrom igraph contract delete_edges delete_vertex_attr which_loop
 #' which_multiple
 #' @importFrom sf st_as_sf st_cast st_centroid st_combine st_geometry
-#' st_intersects
+#' st_geometry<- st_intersects
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph
 #' @export
@@ -477,7 +477,7 @@ to_spatial_shortest_paths = function(x, ...) {
 #' @param remove_loops Should loop edges be removed. Defaults to \code{TRUE}.
 #'
 #' @importFrom igraph simplify
-#' @importFrom sf st_as_sf st_crs st_sfc
+#' @importFrom sf st_as_sf st_crs st_crs<- st_precision st_precision<- st_sfc
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph
 #' @export
@@ -944,7 +944,8 @@ to_spatial_smooth = function(x,
 #' \code{\link{sfnetwork}}. This morpher requires edges to be spatially
 #' explicit.
 #' @importFrom igraph is_directed
-#' @importFrom sf st_crs st_geometry
+#' @importFrom sf st_crs st_crs<- st_geometry st_geometry<- st_precision
+#' st_precision<-
 #' @importFrom sfheaders sf_to_df sfc_linestring sfc_point
 #' @export
 to_spatial_subdivision = function(x) {
