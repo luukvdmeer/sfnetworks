@@ -557,7 +557,8 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' @importFrom igraph adjacent_vertices decompose degree delete_vertices
 #' edge_attr edge.attributes get.edge.ids igraph_opt igraph_options
 #' incident_edges induced_subgraph is_directed vertex_attr
-#' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_line_merge
+#' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_is
+#' st_line_merge
 #' @export
 to_spatial_smooth = function(x,
                              protect = NULL,
@@ -864,14 +865,14 @@ to_spatial_smooth = function(x,
       orig_edges = E$.tidygraph_edge_index
       orig_geoms = edge_geoms[orig_edges]
       new_geom = st_line_merge(st_combine(orig_geoms))
-      # There is one situation where merging lines like this is problematic.
-      # That is when the source and sink node of the new edge are the same.
-      # Hence, the original edges to be replaced form a closed loop.
-      # Any original edge endpoint can then be the startpoint of the new edge.
-      # st_line_merge chooses the point with the lowest x coordinate.
-      # This is not necessarily the source node we defined.
-      # This behaviour comes from third partly libs and can not be tuned.
-      # Hence, we manually need to reorder the points in the merged line.
+      # There are two situations where merging lines like this is problematic.
+      # 1. When the source and sink node of the new edge are the same.
+      # --> In this case the original edges to be replaced form a closed loop.
+      # --> Any original endpoint can then be the startpoint of the new edge.
+      # --> st_line_merge chooses the point with the lowest x coordinate.
+      # --> This is not necessarily the source node we defined.
+      # --> This behaviour comes from third partly libs and can not be tuned.
+      # --> Hence, we manually need to reorder the points in the merged line.
       if (E$from == E$to && length(orig_edges) > 1) {
         pts = st_cast(new_geom, "POINT")
         from_idx = st_equals(node_geoms[E$from], pts)[[1]]
@@ -880,6 +881,12 @@ to_spatial_smooth = function(x,
           ordered_pts = c(pts[c(from_idx:n)], pts[c(2:from_idx)])
           new_geom = st_cast(st_combine(ordered_pts), "LINESTRING")
         }
+      }
+      # 2. When the new edge crosses itself.
+      # --> In this case st_line_merge creates a multilinestring geometry.
+      # --> We just want a regular linestring (even if this is invalid).
+      if (any(st_is(new_geom, "MULTILINESTRING"))) {
+        new_geom = multilinestrings_to_linestrings(new_geom)
       }
       new_geom
     }

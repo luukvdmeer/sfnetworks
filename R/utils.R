@@ -396,6 +396,37 @@ linestring_segments = function(x) {
   segments
 }
 
+#' Cast multilinestrings to single linestrings.
+#'
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+#' with \code{MULTILINESTRING} geometries or a combination of
+#' \code{LINESTRING} geometries and \code{MULTILINESTRING} geometries.
+#'
+#' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
+#' geometries.
+#'
+#' @details This may create invalid linestrings according to the simple feature
+#' standard, e.g. linestrings may cross themselves.
+#'
+#' @importFrom sf st_crs st_crs<- st_geometry st_precision st_precision<-
+#' @importFrom sfheaders sfc_linestring sfc_to_df
+#' @noRd
+multilinestrings_to_linestrings = function(x) {
+  # Decompose lines into the points that shape them.
+  pts = sfc_to_df(st_geometry(x))
+  # Add a linestring ID to each of these points.
+  # Points of a multilinestring should all have the same ID.
+  is_in_multi = !is.na(pts$multilinestring_id)
+  pts$linestring_id[is_in_multi] = pts$multilinestring_id[is_in_multi]
+  # Select only coordinate and ID columns.
+  pts = pts[, names(pts) %in% c("x", "y", "z", "m", "linestring_id")]
+  # (Re)create linestring geometries.
+  lines = sfc_linestring(pts, linestring_id = "linestring_id")
+  st_crs(lines) = st_crs(x)
+  st_precision(lines) = st_precision(x)
+  lines
+}
+
 #' Determine duplicated geometries
 #'
 #' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
