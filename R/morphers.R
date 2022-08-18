@@ -554,7 +554,6 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' node in the network will be protected. Defaults to \code{NULL}, meaning that
 #' none of the nodes is protected.
 #'
-#' @importFrom dplyr bind_rows
 #' @importFrom igraph adjacent_vertices decompose degree delete_vertices
 #' edge_attr edge.attributes get.edge.ids igraph_opt igraph_options
 #' incident_edges induced_subgraph is_directed vertex_attr
@@ -738,9 +737,13 @@ to_spatial_smooth = function(x,
       sink_node = adjacent_vertices(x, n_o, mode = "out")[[1]] + 1
       sink_edge = get.edge.ids(x, c(n_o, sink_node))
       # List indices of all edges that will be merged into the replacement edge.
-      edge_idxs = as.integer(c(source_edge, E, sink_edge))
+      edge_idxs = c(source_edge, E, sink_edge)
       # Return all retrieved information in a list.
-      list(from = source_node, to = sink_node, .tidygraph_edge_index = edge_idxs)
+      list(
+        from = as.integer(source_node),
+        to = as.integer(sink_node),
+        .tidygraph_edge_index = as.integer(edge_idxs)
+      )
     }
   } else {
     initialize_replacement_edge = function(S) {
@@ -808,9 +811,13 @@ to_spatial_smooth = function(x,
         sink_edge = get.edge.ids(x, c(N_b[2], sink_node))
       }
       # List indices of all edges that will be merged into the replacement edge.
-      edge_idxs = as.integer(c(source_edge, E, sink_edge))
+      edge_idxs = c(source_edge, E, sink_edge)
       # Return all retrieved information in a list.
-      list(from = source_node, to = sink_node, .tidygraph_edge_index = edge_idxs)
+      list(
+        from = as.integer(source_node),
+        to = as.integer(sink_node),
+        .tidygraph_edge_index = as.integer(edge_idxs)
+      )
     }
   }
   new_idxs = lapply(pseudo_sets, initialize_replacement_edge)
@@ -893,13 +900,7 @@ to_spatial_smooth = function(x,
   # Bind together with the original edges.
   # Merged edges may have list-columns for some attributes.
   # This requires a bit more complicated rowbinding.
-  rowbind = function(...) {
-    ins = lapply(list(...), function(x) list2DF(lapply(x, as.list)))
-    out = bind_rows(ins)
-    is_listcol = vapply(out, function(x) all(lengths(x) > 1), logical(1))
-    mutate(out, across(which(!is_listcol), unlist))
-  }
-  all_edges = rowbind(edges, new_edges)
+  all_edges = bind_rows_list(edges, new_edges)
   if (spatial) all_edges = st_as_sf(all_edges, sf_column_name = geom_colname)
   # Recreate an sfnetwork.
   x_new = sfnetwork_(nodes, all_edges, directed = directed)

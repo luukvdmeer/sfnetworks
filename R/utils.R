@@ -1,3 +1,20 @@
+#' List-column friendly version of bind_rows
+#'
+#' @param ... Tables to be row-binded.
+#'
+#' @details Behaviour of this function should be similar to rbindlist from the
+#' data.table package.
+#'
+#' @importFrom dplyr across bind_rows mutate
+#' @noRd
+bind_rows_list = function(...) {
+  cols_as_list = function(x) list2DF(lapply(x, function(y) unname(as.list(y))))
+  ins = lapply(list(...), cols_as_list)
+  out = bind_rows(ins)
+  is_listcol = vapply(out, function(x) any(lengths(x) > 1), logical(1))
+  mutate(out, across(which(!is_listcol), unlist))
+}
+
 #' Print a string with a subtle style.
 #'
 #' @param ... A string to print.
