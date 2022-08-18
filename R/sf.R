@@ -644,9 +644,14 @@ spatial_clip_nodes = function(x, y, ..., .operator = sf::st_intersection) {
 #' @importFrom sf st_cast st_equals st_geometry st_is st_line_merge st_sf
 spatial_clip_edges = function(x, y, ..., .operator = sf::st_intersection) {
   expect_explicit_edges(x)
-  # Define if x is a directed network.
-  # This influences some of the processes to come.
-  directed = is_directed(x)
+  # Clipping does not work good yet for undirected networks.
+  if (is_directed(x)) {
+    warning(
+      .operator, " does not give correct results for undirected networks ",
+      "when applied to the edges",
+      call. = FALSE
+    )
+  }
   ## ===========================
   # STEP I: CLIP THE EDGES
   ## ===========================
