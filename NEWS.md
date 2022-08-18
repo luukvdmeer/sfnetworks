@@ -37,6 +37,7 @@
 * Vignettes updated to showcase new features.
 * Code of conduct updated according to newer template.
 * Contributing guidelines extended with templates for commit messages.
+* Master branch renamed to main, and protected from directed pushes.
 
 # sfnetworks v0.5.5
 
