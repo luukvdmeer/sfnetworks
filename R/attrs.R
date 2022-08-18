@@ -258,22 +258,20 @@ get_summary_function = function(attr, spec) {
   if (!is.list(spec)) {
     func = spec
   } else {
-    func = tryCatch(
-      spec[[attr]],
-      error = function(e) {
-        names = names(spec)
-        if (is.null(names)) {
-          spec[[1]]
+    names = names(spec)
+    if (is.null(names)) {
+      func = spec[[1]]
+    } else {
+      func = spec[[attr]]
+      if (is.null(func)) {
+        default = which(names == "")
+        if (length(default) > 0) {
+          func = spec[[default[1]]]
         } else {
-          default = which(names == "")
-          if (length(default) > 0) {
-            spec[[default]]
-          } else {
-            "ignore"
-          }
+          func = "ignore"
         }
       }
-    )
+    }
   }
   if (is.function(func)) {
     func
