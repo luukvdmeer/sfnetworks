@@ -255,22 +255,31 @@ edge_feature_attribute_names = function(x) {
 #'
 #' @noRd
 get_summary_function = function(attr, spec) {
-  if (length(spec) == 1) {
-    func = summariser(spec[1])
+  if (!is.list(spec)) {
+    func = spec
   } else {
     func = tryCatch(
-      summariser(spec[[attr]]),
+      spec[[attr]],
       error = function(e) {
-        default = which(names(spec) == "")
-        if (length(default) > 0) {
-          summariser(spec[[default]])
+        names = names(spec)
+        if (is.null(names)) {
+          spec[[1]]
         } else {
-          summariser("ignore")
+          default = which(names == "")
+          if (length(default) > 0) {
+            spec[[default]]
+          } else {
+            "ignore"
+          }
         }
       }
     )
   }
-  func
+  if (is.function(func)) {
+    func
+  } else {
+    summariser(func)
+  }
 }
 
 #' @importFrom stats median
