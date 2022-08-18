@@ -220,7 +220,8 @@ of the linestrings. The network is reconstructed after subdivision such that
 edges are connected at the points of subdivision. Returns a
 \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}. This morpher requires edges to be spatially
-explicit.
+explicit and nodes to be spatially unique (i.e. not more than one node at
+the same spatial location).
 
 \item \code{to_spatial_subset()}: Subset the network by applying a spatial
 filter, i.e. a filter on the geometry column based on a spatial predicate.

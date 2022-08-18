@@ -118,7 +118,7 @@ validate_edges = function(x) {
       call. = FALSE
     )
   }
-  # --> Is teh precision of the edges the same as of the nodes?
+  # --> Is the precision of the edges the same as of the nodes?
   if (! have_equal_precision(nodes, edges)) {
     stop(
       "Nodes and edges do not have the same precision",
