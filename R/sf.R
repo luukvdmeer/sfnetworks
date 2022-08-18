@@ -384,7 +384,7 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
 st_reverse.sfnetwork = function(x, ...) {
   active = attr(x, "active")
   if (active == "edges") {
-    expect_explicit_edges(x)
+    require_explicit_edges(x)
     if (is_directed(x)) {
       warning(
         "In directed networks st_reverse swaps columns 'to' and 'from'",
@@ -507,7 +507,7 @@ spatial_join_nodes = function(x, y, ...) {
 #' @importFrom igraph is_directed
 #' @importFrom sf st_as_sf st_join
 spatial_join_edges = function(x, y, ...) {
-  expect_explicit_edges(x)
+  require_explicit_edges(x)
   # Convert x and y to sf.
   x_sf = edges_as_sf(x)
   y_sf = st_as_sf(y)
@@ -571,7 +571,7 @@ spatial_filter_nodes = function(x, y, ...) {
 #' @importFrom igraph delete_edges
 #' @importFrom sf st_geometry st_filter
 spatial_filter_edges = function(x, y, ...) {
-  expect_explicit_edges(x)
+  require_explicit_edges(x)
   x_sf = edges_as_sf(x)
   y_sf = st_geometry(y)
   drop = find_indices_to_drop(x_sf, y_sf, ..., .operator = st_filter)
@@ -655,7 +655,7 @@ spatial_clip_nodes = function(x, y, ..., .operator = sf::st_intersection) {
 #' @importFrom igraph is_directed
 #' @importFrom sf st_cast st_equals st_geometry st_is st_line_merge st_sf
 spatial_clip_edges = function(x, y, ..., .operator = sf::st_intersection) {
-  expect_explicit_edges(x)
+  require_explicit_edges(x)
   # Clipping does not work good yet for undirected networks.
   if (is_directed(x)) {
     warning(
