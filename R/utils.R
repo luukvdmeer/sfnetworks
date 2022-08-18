@@ -276,38 +276,38 @@ explicitize_edges = function(x) {
   }
 }
 
-#' Get the nearest node to a given feature
+#' Get the nearest nodes to given features
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @param y A single spatial feature as object of class \code{\link[sf]{sf}}
-#' or \code{\link[sf]{sfc}}. If multiple features are given only the first one
-#' is considered.
+#' @param y Spatial features as object of class \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}.
 #'
-#' @return An object of class \code{\link[sf]{sf}} containing a single feature
-#' with \code{POINT} geometry.
+#' @return An object of class \code{\link[sf]{sf}} containing \code{POINT}
+#' geometry. The number of rows will be equal to the amount of features in
+#' \code{y}.
 #'
 #' @importFrom sf st_geometry st_nearest_feature
 #' @noRd
 get_nearest_node = function(x, y) {
   nodes = nodes_as_sf(x)
-  nodes[st_nearest_feature(st_geometry(y)[1], nodes), ]
+  nodes[st_nearest_feature(st_geometry(y), nodes), ]
 }
 
-#' Get the index of the nearest node to a given feature
+#' Get the index of the nearest nodes to given features
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @param y A single spatial feature as object of class \code{\link[sf]{sf}}
-#' or \code{\link[sf]{sfc}}. If multiple features are given only the first one
-#' is considered.
+#' @param y Spatial features as object of class \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}.
 #'
-#' @return An integer.
+#' @return An vector integers. The length of the vector will be equal to the
+#' amount of features in \code{y}.
 #'
 #' @importFrom sf st_geometry st_nearest_feature
 #' @noRd
 get_nearest_node_index = function(x, y) {
-  st_nearest_feature(st_geometry(y)[1], nodes_as_sf(x))
+  st_nearest_feature(st_geometry(y), nodes_as_sf(x))
 }
 
 #' Make edges spatially implicit
