@@ -197,7 +197,7 @@ How attributes should be combined is of course dependent on the type and purpose
 - As a character, referring to the name of a pre-defined combination technique in `igraph`. Examples include `mean`, `sum`, `first` and `last`. See [here](https://igraph.org/r/doc/igraph-attribute-combination.html) for an overview of all implemented techniques.
 - As a function, taking a vector of attribute values as input and returning a single value. This is helpful when you want to combine attributes in a way that is not pre-defined in `igraph`.
 
-Providing a single character or a single function (e.g. `summarise_attributes = "sum"`) will apply the same technique to each attribute. Instead, you can provide a named list with a different technique for each attribute. This list can also include one unnamed element containing the technique that should be applied to all attributes that were not referenced in any of the other elements. Note that the geometry-list column as well as the *from* and *to* columns are not attributes!
+Providing a single character or a single function (e.g. `summarise_attributes = "sum"`) will apply the same technique to each attribute. Instead, you can provide a named list with a different technique for each attribute. This list can also include one unnamed element containing the technique that should be applied to all attributes that were not referenced in any of the other elements. Note that the geometry-list column, the tidygraph index column, as well as the *from* and *to* columns are not attributes!
 
 The analogue of this in tidyverse terms is a `dplyr::group_by()` operation followed by a `dplyr::summarise()` call. The groups in this case are defined by the start and end node indices of the edges. Edges that connect the same pair of nodes (i.e. multiple edges) are in the same group. Then, attributes are summarised into a single value for each group separately.
 
@@ -206,7 +206,7 @@ Enough theory! Lets look at a practical example instead. We will first add some 
 ```{r, fig.show='hold', out.width = '50%'}
 # Add some attribute columns to the edges table.
 flows = sample(1:10, ecount(net), replace = TRUE)
-types = sample(c("path", "road"), ecount(net), replace = TRUE)
+types = c(rep("path", 8), rep("road", 7))
 foo = sample(c(1:ecount(net)), ecount(net))
 bar = sample(letters, ecount(net))
 
@@ -231,7 +231,7 @@ net %>%
 # --> Drop these attributes.
 combinations = list(
   flow = "sum",
-  type = function(x) if (length(unique(x)) == 1) x[1] else NA,
+  type = function(x) if (length(unique(x)) == 1) x[1] else "unknown",
   "ignore"
 )
 
@@ -296,7 +296,58 @@ plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(smoothed, "edges"), col = edge_colors(smoothed), lwd = 4)
 plot(st_geometry(smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
+There are different ways in which the smoothing process can be tuned. Firstly, it is possible to specify how attributes of concatenated edges should be summarized, just as with `to_spatial_simple()`. That is, you can specify a single summarise technique to be applied to all attributes (e.g. `summarise_attributes = "sum"`), a named list with a different summarise technique per attribute (e.g. `summarise_attributes = list(foo = "sum", bar = "mean")`), or a named list including an unnamed default technique for those attributes that where not mentioned (e.g. `summarise_attributes = list(foo = "sum", "mean")`). The techniques can be chosen from a set of pre-defined functions, but can also be a custom function provided by you. See the [igraph documentation](https://igraph.org/r/doc/igraph-attribute-combination.html) for details. Note that the geometry-list column, the tidygraph index column, as well as the *from* and *to* columns are not attributes!
 
+```{r}
+# We know from before that our example network has two pseudo nodes.
+# Lets look at the attributes of their incident edges.
+subdivision %>%
+  activate("edges") %>%
+  filter(edge_is_incident(2) | edge_is_incident(9)) %>%
+  st_as_sf()
+
+# Define how we want to combine the attributes.
+# For the flows:
+# --> It makes sense to sum them when edges get merged.
+# For the type:
+# --> Preserve the type only if all edges in a set have the same type.
+combinations = list(
+  flow = "sum",
+  type = function(x) if (length(unique(x)) == 1) x[1] else "unknown",
+  "ignore"
+)
+
+# Apply the morpher.
+other_smoothed = convert(subdivision, to_spatial_smooth, summarise_attributes = combinations)
+
+# Inspect our concatenated edges.
+other_smoothed %>%
+  activate("edges") %>%
+  filter(edge_is_between(1, 2) | edge_is_between(7, 3)) %>%
+  st_as_sf()
+```
+Secondly, it is possible to only remove those pseudo nodes for which attributes among their incident edges are equal. To do this, set `require_equal = TRUE`. Optionally, you can provide a list of attribute names instead, such that only those attributes are checked for equality, instead of all attributes. Again, remember that the geometry-list column, the tidygraph index column, as well as the *from* and *to* columns are not considered attributes in this case.
+
+In our example, our first pseudo node has incident edges of the same type ("road"), while the second pseudo node has incident edges of differing types ("road" and "unknown"). If we require the type attribute to be equal, the second pseudo node will not be removed.
+
+```{r, message=FALSE, fig.show='hold', out.width = '50%'}
+other_smoothed = convert(subdivision, to_spatial_smooth, require_equal = "type")
+
+plot(st_geometry(subdivision, "edges"), col = edge_colors(subdivision), lwd = 4)
+plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 1.5, add = TRUE)
+plot(st_geometry(other_smoothed, "edges"), col = edge_colors(smoothed), lwd = 4)
+plot(st_geometry(other_smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
+```
+Thirdly, it is also possible to directly specify a set of nodes that should never be removed, even if they are a pseudo node. This can be done by either providing a vector of node indices or a set of geospatial points to the `protect` argument. In the latter case, the function will protect the nearest node to each of these points. This can be helpful when you already know you want to use this nodes at a later stage for routing purposes. For example:
+
+```{r, message=FALSE, fig.show='hold', out.width = '50%'}
+other_smoothed = convert(subdivision, to_spatial_smooth, protect = 2)
+
+plot(st_geometry(subdivision, "edges"), col = edge_colors(subdivision), lwd = 4)
+plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 1.5, add = TRUE)
+plot(st_geometry(other_smoothed, "edges"), col = edge_colors(smoothed), lwd = 4)
+plot(st_geometry(other_smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
+```
 ### Simplify intersections
 
 Especially in road networks you may find that intersections between edges are not modelled by a single node. Instead, each leg of the intersection has a dedicated edge. To simplify the topology of your network, you might want to reduce such complex intersection structures into a single node. Hence, we want to reduce a group of nodes into a single node, while maintaining the connectivity of the network.
@@ -353,7 +404,9 @@ plot(st_geometry(contracted, "edges"), col = edge_colors(contracted), lwd = 4)
 plot(st_geometry(contracted, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
-One thing we did not mention yet: in the same way as `to_spatial_simple()` allowed you to combine attributes of multiple edges, `to_spatial_contracted()` allows you to combine attributes of contracted nodes. It works exactly the same: on a per-attribute basis you can specify how the attribute values of the new node should be inferred from those of the original nodes in the group. An example:
+One thing we did not mention yet: in the same way as `to_spatial_simple()` allowed you to combine attributes of multiple edges and `to_spatial_smooth()` allowed to combine attributes of concatenated edges, `to_spatial_contracted()` allows you to combine attributes of contracted nodes. It works exactly the same: you can specify a single summarise technique to be applied to all attributes (e.g. `summarise_attributes = "sum"`), a named list with a different summarise technique per attribute (e.g. `summarise_attributes = list(foo = "sum", bar = "mean")`), or a named list including an unnamed default technique for those attributes that where not mentioned (e.g. `summarise_attributes = list(foo = "sum", "mean")`). The techniques can be chosen from a set of pre-defined functions, but can also be a custom function provided by you. See the [igraph documentation](https://igraph.org/r/doc/igraph-attribute-combination.html) for details. Note that the geometry-list column, the tidygraph index column, as well as the *from* and *to* columns are not attributes!
+
+An example:
 
 ```{r}
 # Add some additional attribute columns to the nodes table.
