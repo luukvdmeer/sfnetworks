@@ -211,7 +211,7 @@ st_crs.sfnetwork = function(x, active = NULL, ...) {
 #' @importFrom sf st_crs<- st_crs
 #' @export
 `st_crs<-.sfnetwork` = function(x, value) {
-  if (has_explicit_edges(x)) {
+  if (attr(x, "active") == "edges" || has_explicit_edges(x)) {
     geom = pull_edge_geom(x)
     st_crs(geom) = value
     x = mutate_edge_geom(x, geom)
@@ -238,7 +238,7 @@ st_precision.sfnetwork = function(x, active = NULL, ...) {
 #' @importFrom sf st_set_precision st_precision<-
 #' @export
 st_set_precision.sfnetwork = function(x, value) {
-  if (has_explicit_edges(x)) {
+  if (attr(x, "active") == "edges" || has_explicit_edges(x)) {
     geom = pull_edge_geom(x)
     st_precision(geom) = value
     x = mutate_edge_geom(x, geom)
@@ -310,7 +310,7 @@ st_z_range.sfnetwork = function(x, active = NULL, ...) {
 }
 
 change_coords = function(x, op, ...) {
-  if (has_explicit_edges(x)) {
+  if (attr(x, "active") == "edges" || has_explicit_edges(x)) {
     geom = pull_edge_geom(x)
     new_geom = do.call(match.fun(op), list(geom, ...))
     x = mutate_edge_geom(x, new_geom)
