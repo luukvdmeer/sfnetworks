@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.5.900</span>
       </span>
     </div>
 
@@ -79,25 +79,40 @@
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/s2.html" class="external-link">st_as_s2</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for sfnetwork</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
-<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
-<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">st_coordinates</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for sfnetwork</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">st_coordinates</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_is.html" class="external-link">st_is</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
-<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/valid.html" class="external-link">st_is_valid</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for sfnetwork</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span></span>
+<span><span class="co"># S3 method for sfnetwork</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_precision.html" class="external-link">st_precision</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for sfnetwork</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_precision.html" class="external-link">st_set_precision</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">value</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_shift_longitude.html" class="external-link">st_shift_longitude</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
@@ -109,22 +124,22 @@
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_wrap_dateline</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_normalize.html" class="external-link">st_normalize</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for sfnetwork</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_zm.html" class="external-link">st_zm</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
-<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_m_range.html" class="external-link">st_m_range</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_m_range.html" class="external-link">st_m_range</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
-<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_z_range.html" class="external-link">st_z_range</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_z_range.html" class="external-link">st_z_range</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_agr.html" class="external-link">st_agr</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_agr.html" class="external-link">st_agr</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
-<span></span>
-<span><span class="co"># S3 method for sfnetwork</span></span>
-<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html" class="external-link">st_intersects</a></span><span class="op">(</span><span class="va">x</span>, y <span class="op">=</span> <span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_reverse</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
@@ -139,16 +154,40 @@
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">st_join</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">st_filter</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for morphed_sfnetwork</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">st_filter</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for sfnetwork</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crop.html" class="external-link">st_crop</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for morphed_sfnetwork</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crop.html" class="external-link">st_crop</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
-<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">st_filter</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html" class="external-link">st_difference</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for morphed_sfnetwork</span></span>
-<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">st_filter</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html" class="external-link">st_difference</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for sfnetwork</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html" class="external-link">st_intersection</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for morphed_sfnetwork</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html" class="external-link">st_intersection</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for sfnetwork</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html" class="external-link">st_intersects</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for sfnetwork</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_sample.html" class="external-link">st_sample</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for sfnetwork</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_nearest_points.html" class="external-link">st_nearest_points</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for sfnetwork</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_measures.html" class="external-link">st_area</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">

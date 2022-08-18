@@ -21,7 +21,7 @@ be snapped to its nearest node before calculating costs."><meta property="og:ima
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.5.900</span>
       </span>
     </div>
 
@@ -88,6 +88,7 @@ be snapped to its nearest node before calculating costs.</p>
 <span>  from <span class="op">=</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span>
 <span>  to <span class="op">=</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span>
 <span>  weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  direction <span class="op">=</span> <span class="st">"out"</span>,</span>
 <span>  Inf_as_NaN <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -111,9 +112,8 @@ calculated. By default, all nodes in the network are included.</p></dd>
 
 <dt>to</dt>
 <dd><p>The (set of) geospatial point(s) to which the shortest paths will
-be calculated. Can be an object of  class <code><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">sf</a></code> or
-<code><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">sfc</a></code>. Features with duplicated nearest node indices will be
-removed before calculating the cost matrix.
+be calculated. Can be an object of class <code><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">sf</a></code> or
+<code><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">sfc</a></code>.
 Alternatively it can be a numeric vector containing the indices of the nodes
 to which the shortest paths will be calculated, or a character vector
 containing the names of the nodes to which the shortest paths will be
@@ -132,13 +132,24 @@ If set to <code>NA</code>, no weights are used, even if the edges have a
 <code>weight</code> column.</p></dd>
 
 
+<dt>direction</dt>
+<dd><p>The direction of travel. Defaults to <code>'out'</code>, meaning
+that the direction given by the network is followed and costs are calculated
+from the points given as argument <code>from</code>. May be set to <code>'in'</code>,
+meaning that the opposite direction is followed an costs are calculated
+towards the points given as argument <code>from</code>. May also be set to
+<code>'all'</code>, meaning that the network is considered to be undirected. This
+argument is ignored for undirected networks.</p></dd>
+
+
 <dt>Inf_as_NaN</dt>
 <dd><p>Should the cost values of unconnected nodes be stored as
 <code>NaN</code> instead of <code>Inf</code>? Defaults to <code>FALSE</code>.</p></dd>
 
 
 <dt>...</dt>
-<dd><p>Arguments passed on to <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">distances</a></code>.</p></dd>
+<dd><p>Arguments passed on to <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">distances</a></code>. Argument
+<code>mode</code> is ignored. Use <code>direction</code> instead.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -148,9 +159,7 @@ If set to <code>NA</code>, no weights are used, even if the edges have a
 <p>An n times m numeric matrix where n is the length of the <code>from</code></p>
 
 
-<p>argument, and m is the length of unique values in the <code>to</code> argument.
-When the <code>to</code> argument contains spatial features that have the same
-nearest node, these features are considered duplicates.</p>
+<p>argument, and m is the length of the <code>to</code> argument.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -169,20 +178,6 @@ duplicates.</p>
 <p>For more details on the wrapped function from <code><a href="https://rdrr.io/pkg/igraph/man/aaa-igraph-package.html" class="external-link">igraph</a></code>
 see the <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">distances</a></code> documentation page.</p>
     </div>
-    <div id="note">
-    <h2>Note</h2>
-    <p>By default, <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">distances</a></code> calculates costs by
-by allowing to travel each edge in both directions, hence by assuming an
-undirected network. This is the default even when the input network is
-directed! For directed networks, the behaviour can be changed by setting
-<code>mode = "out"</code> to consider only outbound edges, or <code>mode = "in"</code>
-to consider only inbound edges.</p>
-<p>Furthermore, <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">distances</a></code> does not allow duplicated
-values in the <code>to</code> argument. This also means that when providing
-spatial features, sets of multiple features that happen to have the same
-nearest node will be reduced to one by selecting only the first of these
-features.</p>
-    </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p><code><a href="st_network_paths.html">st_network_paths</a></code></p></div>
@@ -193,7 +188,7 @@ features.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidygraph.data-imaginist.com" class="external-link">tidygraph</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Create a network with edge lenghts as weights.</span></span></span>
+<span class="r-in"><span><span class="co"># Create a network with edge lengths as weights.</span></span></span>
 <span class="r-in"><span><span class="co"># These weights will be used automatically in shortest paths calculation.</span></span></span>
 <span class="r-in"><span><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">roxel</span>, directed <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="fl">3035</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
@@ -202,6 +197,7 @@ features.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Providing node indices.</span></span></span>
 <span class="r-in"><span><span class="fu">st_network_cost</span><span class="op">(</span><span class="va">net</span>, from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">495</span>, <span class="fl">121</span><span class="op">)</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">495</span>, <span class="fl">121</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Units: [m]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          [,1]     [,2]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    0.000 2094.555</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 2094.555    0.000</span>
@@ -214,6 +210,7 @@ features.</p>
 <span class="r-in"><span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">p2</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">st_network_cost</span><span class="op">(</span><span class="va">net</span>, from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span><span class="op">)</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Units: [m]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          [,1]     [,2]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    0.000 2094.555</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 2094.555    0.000</span>

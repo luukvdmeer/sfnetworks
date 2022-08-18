@@ -23,7 +23,7 @@ node before calculating the shortest or simple paths."><meta property="og:image"
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.5.900</span>
       </span>
     </div>
 
@@ -93,6 +93,7 @@ node before calculating the shortest or simple paths.</p>
 <span>  to <span class="op">=</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span>
 <span>  weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"shortest"</span>,</span>
+<span>  use_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -143,6 +144,13 @@ performed. If set to <code>'shortest'</code> paths are calculated using
 <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">all_shortest_paths</a></code>, if set to
 <code>'all_simple'</code> paths are calculated using
 <code><a href="https://rdrr.io/pkg/igraph/man/all_simple_paths.html" class="external-link">all_simple_paths</a></code>. Defaults to <code>'shortest'</code>.</p></dd>
+
+
+<dt>use_names</dt>
+<dd><p>If a column named <code>name</code> is present in the nodes
+table, should these names be used to encode the nodes in a path, instead of
+the node indices? Defaults to <code>TRUE</code>. Ignored when the nodes table does
+not have a column named <code>name</code>.</p></dd>
 
 
 <dt>...</dt>

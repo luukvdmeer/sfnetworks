@@ -19,7 +19,7 @@ tidygraph."><meta property="og:image" content="/logo.png"><!-- mathjax --><scrip
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.5.900</span>
       </span>
     </div>
 
@@ -79,7 +79,7 @@ form a spatial extension to edge measures in
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">edge_azimuth</span><span class="op">(</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">edge_azimuth</span><span class="op">(</span>degrees <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">edge_circuity</span><span class="op">(</span>Inf_as_NaN <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
@@ -90,7 +90,12 @@ form a spatial extension to edge measures in
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>Inf_as_NaN</dt>
+    <dl><dt>degrees</dt>
+<dd><p>Should the angle be returned in degrees instead of radians?
+Defaults to <code>FALSE</code>.</p></dd>
+
+
+<dt>Inf_as_NaN</dt>
 <dd><p>Should the circuity values of loop edges be stored as
 <code>NaN</code> instead of <code>Inf</code>? Defaults to <code>FALSE</code>.</p></dd>
 
@@ -115,17 +120,17 @@ set the context temporarily while the algorithm is being evaluated.</p>
     <div id="functions">
     <h2>Functions</h2>
     
-<ul><li><p><code>edge_azimuth</code>: The angle in radians between a straight
+<ul><li><p><code>edge_azimuth()</code>: The angle in radians between a straight
 line from the edge startpoint pointing north, and the straight line from
 the edge startpoint and the edge endpoint. Calculated with
 <code><a href="https://rdrr.io/pkg/lwgeom/man/st_geod_azimuth.html" class="external-link">st_geod_azimuth</a></code>. Requires a geographic CRS.</p></li>
-<li><p><code>edge_circuity</code>: The ratio of the length of an edge
+<li><p><code>edge_circuity()</code>: The ratio of the length of an edge
 linestring geometry versus the straight-line distance between its boundary
 nodes, as described in Giacomin &amp;
 Levinson, 2015. DOI: 10.1068/b130131p.</p></li>
-<li><p><code>edge_length</code>: The length of an edge linestring geometry
+<li><p><code>edge_length()</code>: The length of an edge linestring geometry
 as calculated by <code><a href="https://r-spatial.github.io/sf/reference/geos_measures.html" class="external-link">st_length</a></code>.</p></li>
-<li><p><code>edge_displacement</code>: The straight-line distance between the two
+<li><p><code>edge_displacement()</code>: The straight-line distance between the two
 boundary nodes of an edge, as calculated by <code><a href="https://r-spatial.github.io/sf/reference/geos_measures.html" class="external-link">st_distance</a></code>.</p></li>
 </ul></div>
 
@@ -172,6 +177,40 @@ boundary nodes of an edge, as calculated by <code><a href="https://r-spatial.git
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>azimuth <span class="op">=</span> <span class="fu">edge_azimuth</span><span class="op">(</span>degrees <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">701</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">851</span> <span style="color: #555555;">edges</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">#</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"># CRS: </span> <span style="color: #555555;">EPSG:4326</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">#</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"># A directed multigraph with 14 components with spatially explicit edges</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">#</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Edge Data:     851 × 6 (active)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Geometry type: LINESTRING</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Dimension:     XY</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    from    to name                  type                        geometry azimuth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;LINESTRING [°]&gt;</span>     <span style="color: #949494;">[°]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     1     2 Havixbecker Strasse   resid… (7.533722 51.95556, 7.533461…   -<span style="color: #BB0000;">38.4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>     3     4 Pienersallee          secon… (7.532442 51.95422, 7.53236 …  -<span style="color: #BB0000;">167.</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>     5     6 Schulte-Bernd-Strasse resid… (7.532709 51.95209, 7.532823…    11.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>     7     8 <span style="color: #BB0000;">NA</span>                    path   (7.540063 51.94468, 7.539696…   -<span style="color: #BB0000;">55.4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span>     9    10 Welsingheide          resid… (7.537673 51.9475, 7.537614 …  -<span style="color: #BB0000;">179.</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span>    11    12 <span style="color: #BB0000;">NA</span>                    footw… (7.543791 51.94733, 7.54369 …  -<span style="color: #BB0000;">177.</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 845 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">#</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Node Data:     701 × 1</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Geometry type: POINT</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Dimension:     XY</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              geometry</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;POINT [°]&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> (7.533722 51.95556)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> (7.533461 51.95576)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> (7.532442 51.95422)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 698 more rows</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>circuity <span class="op">=</span> <span class="fu">edge_circuity</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">701</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">851</span> <span style="color: #555555;">edges</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">#</span></span>
@@ -184,7 +223,7 @@ boundary nodes of an edge, as calculated by <code><a href="https://r-spatial.git
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Dimension:     XY</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    from    to name                  type                        geometry circui…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;LINESTRING [°]&gt;</span>     <span style="color: #949494;">[1]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;LINESTRING [°]&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     1     2 Havixbecker Strasse   resid… (7.533722 51.95556, 7.533461…    1   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>     3     4 Pienersallee          secon… (7.532442 51.95422, 7.53236 …    1.01</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>     5     6 Schulte-Bernd-Strasse resid… (7.532709 51.95209, 7.532823…    1.00</span>
