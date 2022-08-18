@@ -115,7 +115,7 @@ st_precision.sfnetwork(x) <- value
 
 \method{st_intersects}{sfnetwork}(x, y, ...)
 
-\method{st_sample}{sfnetwork}(x, size, ...)
+\method{st_sample}{sfnetwork}(x, ...)
 
 \method{st_nearest_points}{sfnetwork}(x, y, ...)
 

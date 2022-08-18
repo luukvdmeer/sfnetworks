@@ -795,9 +795,9 @@ st_intersects.sfnetwork = function(x, y, ...) {
 #' @name sf
 #' @importFrom sf st_as_sf st_sample
 #' @export
-st_sample.sfnetwork = function(x, size, ...) {
+st_sample.sfnetwork = function(x, ...) {
   active = attr(x, "active")
-  st_sample(st_as_sf(x, active), size, ...)
+  st_sample(st_as_sf(x, active), ...)
 }
 
 #' @name sf
