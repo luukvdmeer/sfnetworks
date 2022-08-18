@@ -659,7 +659,7 @@ spatial_clip_edges = function(x, y, ..., .operator = sf::st_intersection) {
   # Clipping does not work good yet for undirected networks.
   if (is_directed(x)) {
     warning(
-      .operator, " does not give correct results for undirected networks ",
+      "Clipping does not give correct results for undirected networks ",
       "when applied to the edges",
       call. = FALSE
     )
