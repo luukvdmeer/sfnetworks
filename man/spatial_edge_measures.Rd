@@ -43,23 +43,23 @@ set the context temporarily while the algorithm is being evaluated.
 }
 \section{Functions}{
 \itemize{
-\item \code{edge_azimuth}: The angle in radians between a straight
+\item \code{edge_azimuth()}: The angle in radians between a straight
 line from the edge startpoint pointing north, and the straight line from
 the edge startpoint and the edge endpoint. Calculated with
 \code{\link[lwgeom]{st_geod_azimuth}}. Requires a geographic CRS.
 
-\item \code{edge_circuity}: The ratio of the length of an edge
+\item \code{edge_circuity()}: The ratio of the length of an edge
 linestring geometry versus the straight-line distance between its boundary
 nodes, as described in Giacomin &
 Levinson, 2015. DOI: 10.1068/b130131p.
 
-\item \code{edge_length}: The length of an edge linestring geometry
+\item \code{edge_length()}: The length of an edge linestring geometry
 as calculated by \code{\link[sf]{st_length}}.
 
-\item \code{edge_displacement}: The straight-line distance between the two
+\item \code{edge_displacement()}: The straight-line distance between the two
 boundary nodes of an edge, as calculated by \code{\link[sf]{st_distance}}.
-}}
 
+}}
 \examples{
 library(sf, quietly = TRUE)
 library(tidygraph, quietly = TRUE)

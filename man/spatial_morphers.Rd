@@ -152,7 +152,7 @@ of \code{\link[tidygraph]{morph}} for the requirements for custom morphers.
 }
 \section{Functions}{
 \itemize{
-\item \code{to_spatial_contracted}: Combine groups of nodes into a single node per
+\item \code{to_spatial_contracted()}: Combine groups of nodes into a single node per
 group. \code{...} is forwarded to \code{\link[dplyr]{group_by}} to
 create the groups. The centroid of the group of nodes will be used as
 geometry of the contracted node. If edge are spatially explicit, edge
@@ -160,7 +160,7 @@ geometries are updated accordingly such that the valid spatial network
 structure is preserved. Returns a \code{morphed_sfnetwork} containing a
 single element of class \code{\link{sfnetwork}}.
 
-\item \code{to_spatial_directed}: Make a network directed in the direction given
+\item \code{to_spatial_directed()}: Make a network directed in the direction given
 by the linestring geometries of the edges. Differs from
 \code{\link[tidygraph]{to_directed}}, which makes a network directed based
 on the node indices given in the \code{from} and \code{to} columns. In
@@ -169,7 +169,7 @@ the linestring geometries. Returns a \code{morphed_sfnetwork} containing a
 single element of class \code{\link{sfnetwork}}. This morpher requires edges
 to be spatially explicit. If not, use \code{\link[tidygraph]{to_directed}}.
 
-\item \code{to_spatial_explicit}: Create linestring geometries between source
+\item \code{to_spatial_explicit()}: Create linestring geometries between source
 and target nodes of edges. If the edges data can be directly converted to
 an object of class \code{\link[sf]{sf}} using \code{\link[sf]{st_as_sf}},
 extra arguments can be provided as \code{...} and will be forwarded to
@@ -178,14 +178,14 @@ drawn between the source and target node of each edge. Returns a
 \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}.
 
-\item \code{to_spatial_neighborhood}: Limit a network to the spatial neighborhood of
+\item \code{to_spatial_neighborhood()}: Limit a network to the spatial neighborhood of
 a specific node. \code{...} is forwarded to
 \code{\link[tidygraph]{node_distance_from}} (if \code{from} is \code{TRUE})
 or \code{\link[tidygraph]{node_distance_to}} (if \code{from} is
 \code{FALSE}). Returns a \code{morphed_sfnetwork} containing a single
 element of class \code{\link{sfnetwork}}.
 
-\item \code{to_spatial_shortest_paths}: Limit a network to those nodes and edges that
+\item \code{to_spatial_shortest_paths()}: Limit a network to those nodes and edges that
 are part of the shortest path between two nodes. \code{...} is evaluated in
 the same manner as \code{\link{st_network_paths}} with
 \code{type = 'shortest'}. Returns a \code{morphed_sfnetwork} that may
@@ -194,7 +194,7 @@ the number of requested paths. When unmorphing only the first instance of
 both the node and edge data will be used, as the the same node and/or edge
 can be present in multiple paths.
 
-\item \code{to_spatial_simple}: Remove loop edges and/or merges multiple edges
+\item \code{to_spatial_simple()}: Remove loop edges and/or merges multiple edges
 into a single edge. Multiple edges are edges that have the same source and
 target nodes (in directed networks) or edges that are incident to the same
 nodes (in undirected networks). When merging them into a single edge, the
@@ -203,7 +203,7 @@ influenced by calling \code{\link[dplyr]{arrange}} before simplifying.
 Returns a \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}.
 
-\item \code{to_spatial_smooth}: Construct a smoothed version of the network by
+\item \code{to_spatial_smooth()}: Construct a smoothed version of the network by
 iteratively removing pseudo nodes, while preserving the connectivity of the
 network. In the case of directed networks, pseudo nodes are those nodes that
 have only one incoming and one outgoing edge. In undirected networks, pseudo
@@ -214,7 +214,7 @@ network is preserved by concatenating the incident edges of each removed
 pseudo node. Returns a \code{morphed_sfnetwork} containing a single element
 of class \code{\link{sfnetwork}}.
 
-\item \code{to_spatial_subdivision}: Construct a subdivision of the network by
+\item \code{to_spatial_subdivision()}: Construct a subdivision of the network by
 subdividing edges at each interior point that is equal to any
 other interior or boundary point in the edges table. Interior points in this
 sense are those points that are included in their linestring geometry
@@ -225,20 +225,20 @@ edges are connected at the points of subdivision. Returns a
 \code{\link{sfnetwork}}. This morpher requires edges to be spatially
 explicit.
 
-\item \code{to_spatial_subset}: Subset the network by applying a spatial
+\item \code{to_spatial_subset()}: Subset the network by applying a spatial
 filter, i.e. a filter on the geometry column based on a spatial predicate.
 \code{...} is evaluated in the same manner as \code{\link[sf]{st_filter}}.
 Returns a \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}. For filters on an attribute column, use
 \code{\link[tidygraph]{to_subgraph}}.
 
-\item \code{to_spatial_transformed}: Transform the geospatial coordinates of the
+\item \code{to_spatial_transformed()}: Transform the geospatial coordinates of the
 network into a different coordinate reference system. \code{...} is
 evaluated in the same manner as \code{\link[sf]{st_transform}}.
 Returns a \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}.
-}}
 
+}}
 \examples{
 library(sf, quietly = TRUE)
 library(tidygraph, quietly = TRUE)
