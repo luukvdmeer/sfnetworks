@@ -1,4 +1,4 @@
-# development
+# sfnetworks v0.6.0 "Coerde"
 
 ### New features
 
