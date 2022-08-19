@@ -350,6 +350,7 @@ plot(st_geometry(subdivision, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(other_smoothed, "edges"), col = edge_colors(smoothed), lwd = 4)
 plot(st_geometry(other_smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
+
 ### Simplify intersections
 
 Especially in road networks you may find that intersections between edges are not modelled by a single node. Instead, each leg of the intersection has a dedicated edge. To simplify the topology of your network, you might want to reduce such complex intersection structures into a single node. Hence, we want to reduce a group of nodes into a single node, while maintaining the connectivity of the network.
