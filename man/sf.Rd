@@ -139,8 +139,10 @@ at the documentation of the corresponding \code{sf} function for details.}
 The \code{sfnetwork} method for \code{\link[sf]{st_as_sf}} returns
 the active element of the network as object of class \code{\link[sf]{sf}}.
 The \code{sfnetwork} and \code{morphed_sfnetwork} methods for
-\code{\link[sf]{st_join}}, \code{\link[sf]{st_filter}} and
-\code{\link[sf]{st_crop}} return an object of class \code{\link{sfnetwork}}
+\code{\link[sf]{st_join}}, \code{\link[sf]{st_filter}},
+\code{\link[sf]{st_intersection}}, \code{\link[sf]{st_difference}},
+\code{\link[sf]{st_crop}} and the setter functions
+ return an object of class \code{\link{sfnetwork}}
 and \code{morphed_sfnetwork} respectively. All other
 methods return the same type of objects as their corresponding sf function.
 See the \code{\link[sf]{sf}} documentation for details.
