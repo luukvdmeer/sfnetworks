@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.5.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.0</span>
       </span>
     </div>
 
@@ -69,6 +69,46 @@
       <small>Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.6.0" id="sfnetworks-v060-coerde">sfnetworks v0.6.0 “Coerde”<a class="anchor" aria-label="anchor" href="#sfnetworks-v060-coerde"></a></h2>
+<div class="section level4">
+<h4 id="new-features-0-6-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-6-0"></a></h4>
+<ul><li>Updates to <code><a href="../reference/spatial_morphers.html">to_spatial_smooth()</a></code> morpher:<ul><li>Argument <code>summarise_attributes</code> added to summarise attribute values of concatenated edges. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/120" class="external-link">#120</a>.</li>
+<li>Argument <code>require_equal</code> added to specify if and which attributes should be checked for equality before removing a pseudo node. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/124" class="external-link">#124</a>.</li>
+<li>Argument <code>protect</code> added to specify nodes that should never be removed, even if they are a pseudo node. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/177" class="external-link">#177</a>.</li>
+<li>Concatenated edges after smoothing are now allowed to cross themselves. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/117" class="external-link">#117</a>.</li>
+</ul></li>
+<li>Updates to <code><a href="../reference/st_network_cost.html">st_network_cost()</a></code>:<ul><li>Duplicated nodes are now accepted in the <code>to</code> argument. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/183" class="external-link">#183</a>.</li>
+<li>Cost matrix output now contains units. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/119" class="external-link">#119</a>.</li>
+<li>Argument <code>direction</code> added to specify if outbound, inbound or all edges should be considered. This replaces the argument <code>mode</code> from <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">igraph::distances()</a></code>. The default is “out”, while before it was “all”. For undirected networks this argument is ignored.</li>
+</ul></li>
+<li>Edge measure function gained an argument <code>degrees</code> which can be set to <code>TRUE</code> to return angles in degrees instead of radians.</li>
+<li>By default <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> now encodes nodes by their name, whenever a name attribute is present in the nodes table. This can be disabled by setting <code>use_names = FALSE</code>. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/154" class="external-link">#154</a>.</li>
+<li>Functions <code><a href="https://r-spatial.github.io/sf/reference/st_precision.html" class="external-link">sf::st_precision()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/st_precision.html" class="external-link">sf::st_set_precision()</a></code> now have a method for <code>sfnetwork</code> objects, such that coordinate precision can be queried and set. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/209" class="external-link">#209</a>.</li>
+<li>Functions <code><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html" class="external-link">sf::st_intersection()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html" class="external-link">sf::st_difference()</a></code> now have a method for <code>sfnetwork</code> objects, such that networks can be spatially clipped. The method for <code><a href="https://r-spatial.github.io/sf/reference/st_crop.html" class="external-link">sf::st_crop()</a></code> now uses the same workflow. These functions do not work yet on edges of undirected networks. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/133" class="external-link">#133</a>.</li>
+<li>Function <code><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">sf::st_drop_geometry()</a></code> is now a generic and therefore got an <code>sfnetwork</code> method.</li>
+<li>Several other sf functions got an <code>sfnetwork</code> method, merely to be consistent in the type of functions we provide a method for. Only those functions that mutate the geometry column of an sf object in such a way that would break the valid spatial network structure are not supported.</li>
+<li>Methods for <code><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">sf::st_coordinates()</a></code>, <code><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">sf::st_bbox()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">sf::st_crs()</a></code> gained an <code>active</code> argument such that this information can be extracted from any network element without first activating it. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/215" class="external-link">#215</a>.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="bug-fixes-0-6-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-6-0"></a></h4>
+<ul><li>Rd files do not contain code anymore that is incompatible with HTML5. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/221" class="external-link">#221</a>.</li>
+<li>Print methods now return x invisibly. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/217" class="external-link">#217</a>.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="refactoring-0-6-0">Refactoring<a class="anchor" aria-label="anchor" href="#refactoring-0-6-0"></a></h4>
+<ul><li>Error messages when edge measure or query functions are applied to a network with active nodes, or when node measure or query functions are applied to a network with active edges, are now more informative. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/216" class="external-link">#216</a>.</li>
+<li>Calculating straight-line distances of edges is now more performant. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/180" class="external-link">#180</a>.</li>
+<li>Edge measure function <code><a href="../reference/spatial_edge_measures.html">edge_circuity()</a></code> does not return units objects anymore, since circuity is unitless.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="community-0-6-0">Community<a class="anchor" aria-label="anchor" href="#community-0-6-0"></a></h4>
+<ul><li>Vignettes updated to showcase new features.</li>
+<li>Code of conduct updated according to newer template.</li>
+<li>Contributing guidelines extended with templates for commit messages.</li>
+<li>Master branch renamed to main, and protected from directed pushes.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.5" id="sfnetworks-v055">sfnetworks v0.5.5<small>2022-02-16</small><a class="anchor" aria-label="anchor" href="#sfnetworks-v055"></a></h2>
 <ul><li>Adjusted the code used to check the version of PROJ on attach. In particular, the new approach tests only <code>sf::sf_extSoftVersion()["proj.4"]</code> since <code>sf::sf_extSoftVersion()["PROJ"]</code> might not be defined for sf &lt; 1.0. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/198" class="external-link">#198</a> and <a href="https://github.com/luukvdmeer/sfnetworks/issues/200" class="external-link">#200</a>.</li>
