@@ -225,8 +225,10 @@ at the documentation of the corresponding <code>sf</code> function for details.<
 <p>The <code>sfnetwork</code> method for <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></code> returns
 the active element of the network as object of class <code><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">sf</a></code>.
 The <code>sfnetwork</code> and <code>morphed_sfnetwork</code> methods for
-<code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">st_join</a></code>, <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">st_filter</a></code> and
-<code><a href="https://r-spatial.github.io/sf/reference/st_crop.html" class="external-link">st_crop</a></code> return an object of class <code><a href="sfnetwork.html">sfnetwork</a></code></p>
+<code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">st_join</a></code>, <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">st_filter</a></code>,
+<code><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html" class="external-link">st_intersection</a></code>, <code><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html" class="external-link">st_difference</a></code>,
+<code><a href="https://r-spatial.github.io/sf/reference/st_crop.html" class="external-link">st_crop</a></code> and the setter functions
+ return an object of class <code><a href="sfnetwork.html">sfnetwork</a></code></p>
 
 
 <p>and <code>morphed_sfnetwork</code> respectively. All other
@@ -265,7 +267,6 @@ See the <code><a href="https://r-spatial.github.io/sf/reference/sf.html" class="
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>  (7.537673 51.9475)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> (7.537614 51.94562)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 691 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Extract any network element.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span></span></span>
@@ -288,7 +289,6 @@ See the <code><a href="https://r-spatial.github.io/sf/reference/sf.html" class="
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     7    15 <span style="color: #BB0000;">NA</span>                    track       (7.540063 51.94468, 7.540338 5…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>    16    17 <span style="color: #BB0000;">NA</span>                    track       (7.5424 51.94599, 7.54205 51.9…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 841 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get geometry of the active network element.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span></span></span>

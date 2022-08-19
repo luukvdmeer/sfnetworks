@@ -99,7 +99,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>1. The sfnetwork data structure</h1>
             
-            <h4 data-toc-skip class="date">2022-08-18</h4>
+            <h4 data-toc-skip class="date">2022-08-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/HEAD/vignettes/sfn01_structure.Rmd" class="external-link"><code>vignettes/sfn01_structure.Rmd</code></a></small>
       <div class="hidden name"><code>sfn01_structure.Rmd</code></div>
@@ -305,8 +305,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="co">#&gt;  8 NA                    path        (7.53822 51.94546, 7.538131 51.94549, 7.53…</span></span>
 <span><span class="co">#&gt;  9 NA                    track       (7.540063 51.94468, 7.540338 51.94468, 7.5…</span></span>
 <span><span class="co">#&gt; 10 NA                    track       (7.5424 51.94599, 7.54205 51.94629, 7.5419…</span></span>
-<span><span class="co">#&gt; # … with 841 more rows</span></span>
-<span><span class="co">#&gt; # ℹ Use `print(n = ...)` to see more rows</span></span></code></pre>
+<span><span class="co">#&gt; # … with 841 more rows</span></span></code></pre>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">roxel</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span></span></code></pre></div>
@@ -385,8 +384,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="co">#&gt;  8  (7.53822 51.94546)</span></span>
 <span><span class="co">#&gt;  9  (7.537673 51.9475)</span></span>
 <span><span class="co">#&gt; 10 (7.537614 51.94562)</span></span>
-<span><span class="co">#&gt; # … with 691 more rows</span></span>
-<span><span class="co">#&gt; # ℹ Use `print(n = ...)` to see more rows</span></span></code></pre>
+<span><span class="co">#&gt; # … with 691 more rows</span></span></code></pre>
 <p>Although we recommend for reasons of clarity to always explicitly activate an element before extraction, you can also use a shortcut by providing the name of the element you want to extract as extra argument to <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">sf::st_as_sf()</a></code>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span></span></code></pre></div>
@@ -408,8 +406,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="co">#&gt;  8     8    10 NA                    path        (7.53822 51.94546, 7.538131 51…</span></span>
 <span><span class="co">#&gt;  9     7    15 NA                    track       (7.540063 51.94468, 7.540338 5…</span></span>
 <span><span class="co">#&gt; 10    16    17 NA                    track       (7.5424 51.94599, 7.54205 51.9…</span></span>
-<span><span class="co">#&gt; # … with 841 more rows</span></span>
-<span><span class="co">#&gt; # ℹ Use `print(n = ...)` to see more rows</span></span></code></pre>
+<span><span class="co">#&gt; # … with 841 more rows</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="visualization">Visualization<a class="anchor" aria-label="anchor" href="#visualization"></a>
