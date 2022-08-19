@@ -61,6 +61,6 @@ This project is released with a [Contributor Code of Conduct](https://github.com
 
 This project gratefully acknowledges financial [support](https://www.r-consortium.org/projects) from the
 
-<a href="https://www.r-consortium.org/projects/awarded-projects">
+<a href="https://www.r-consortium.org/all-projects/awarded-projects">
 <img src="https://raw.githubusercontent.com/RConsortium/artwork/main/r_consortium/R_Consortium-logo-horizontal-color.png" width="300">
 </a>
