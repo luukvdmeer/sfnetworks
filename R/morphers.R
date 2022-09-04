@@ -1167,7 +1167,7 @@ to_spatial_transformed = function(x, ...) {
 
 #' @describeIn spatial_morphers Transform the edges of the input object
 #'   extracting all segments that compose each LINESTRING geometry. These
-#'   segments represent the edges of the ouput network. The nodes of the network
+#'   segments represent the edges of the output network. The nodes of the network
 #'   are adjusted accordingly. See also the examples in
 #'   \code{\link{as.linnet.sfnetwork}} to see how this morpher can be used to
 #'   adjust an \code{\link{sfnetwork}} object before converting it into
@@ -1177,10 +1177,10 @@ to_spatial_transformed = function(x, ...) {
 #' @importFrom sfheaders sf_to_df sf_linestring
 #' @importFrom sf st_geometry st_drop_geometry st_set_crs st_crs
 #'   st_set_precision st_precision st_agr
-to_spatial_dump_segments = function(x) {
+to_spatial_segmentation = function(x) {
   # The following follows the same ideas as in to_spatial_subdivision so I start
   # from the same point
-  require_spatially_explicit_edges(x)
+  require_explicit_edges(x, hard = TRUE)
   if (will_assume_constant(x)) raise_assume_constant("to_spatial_subdivision")
   edges = edges_as_sf(x)
   directed = is_directed(x)
@@ -1239,7 +1239,7 @@ to_spatial_dump_segments = function(x) {
 
   # Return in a list.
   list(
-    dump_segments = new_sfn %preserve_graph_attrs% x
+    dump_segments = new_sfn %preserve_network_attrs% x
   )
 
 }
