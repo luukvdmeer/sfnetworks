@@ -127,8 +127,8 @@ test_that("to_spatial_transform inside a convert works the same
 
 test_that("to_spatial_explicit morphs an sfnetwork with spatially implicit
           a network with spatially explicit edges", {
-  expect_false(sfnetworks:::has_spatially_explicit_edges(net_i))
-  expect_true(sfnetworks:::has_spatially_explicit_edges(expl_i))
+  expect_false(sfnetworks:::has_explicit_edges(net_i))
+  expect_true(sfnetworks:::has_explicit_edges(expl_i))
 })
 
 test_that("to_spatial_contracted morphs the sfnetwork into a new network

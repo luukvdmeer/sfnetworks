@@ -44,6 +44,11 @@
 #' \code{'all_simple'} paths are calculated using
 #' \code{\link[igraph]{all_simple_paths}}. Defaults to \code{'shortest'}.
 #'
+#' @param use_names If a column named \code{name} is present in the nodes
+#' table, should these names be used to encode the nodes in a path, instead of
+#' the node indices? Defaults to \code{TRUE}. Ignored when the nodes table does
+#' not have a column named \code{name}.
+#'
 #' @param ... Arguments passed on to the corresponding
 #' \code{\link[igraph:shortest_paths]{igraph}} or
 #' \code{\link[igraph:all_simple_paths]{igraph}} function. Arguments
@@ -148,7 +153,7 @@
 #' @importFrom igraph V
 #' @export
 st_network_paths = function(x, from, to = igraph::V(x), weights = NULL,
-                            type = "shortest", ...) {
+                            type = "shortest", use_names = TRUE, ...) {
   UseMethod("st_network_paths")
 }
 
@@ -157,13 +162,13 @@ st_network_paths = function(x, from, to = igraph::V(x), weights = NULL,
 #' @export
 st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
                                       weights = NULL, type = "shortest",
-                                      ...) {
+                                      use_names = TRUE, ...) {
   # If 'from' points are given as simple feature geometries:
   # --> Convert them to node indices.
-  if (is.sf(from) | is.sfc(from)) from = set_path_endpoints(x, from)
+  if (is.sf(from) | is.sfc(from)) from = get_nearest_node_index(x, from)
   # If 'to' points are given as simple feature geometries:
   # --> Convert them to node indices.
-  if (is.sf(to) | is.sfc(to)) to = set_path_endpoints(x, to)
+  if (is.sf(to) | is.sfc(to)) to = get_nearest_node_index(x, to)
   # Igraph does not support multiple 'from' nodes.
   if (length(from) > 1) raise_multiple_elements("from")
   # Igraph does not support NA values in 'from' and 'to' nodes.
@@ -171,47 +176,60 @@ st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
   # Call paths calculation function according to type argument.
   switch(
     type,
-    shortest = get_shortest_paths(x, from, to, weights, ...),
-    all_shortest = get_all_shortest_paths(x, from, to, weights, ...),
-    all_simple = get_all_simple_paths(x, from, to, ...),
+    shortest = get_shortest_paths(x, from, to, weights, use_names,...),
+    all_shortest = get_all_shortest_paths(x, from, to, weights, use_names,...),
+    all_simple = get_all_simple_paths(x, from, to, use_names,...),
     raise_unknown_input(type)
   )
 }
 
-#' @importFrom igraph shortest_paths
+#' @importFrom igraph shortest_paths vertex_attr_names
 #' @importFrom tibble as_tibble
-get_shortest_paths = function(x, from, to, weights, ...) {
+get_shortest_paths = function(x, from, to, weights, use_names = TRUE, ...) {
   # Set weights.
   weights = set_path_weights(x, weights)
   # Call igraph function.
   paths = shortest_paths(x, from, to, weights = weights, output = "both", ...)
-  # Extract paths of node indices and edge indices.
-  npaths = lapply(paths[[1]], as.integer)
+  # Extract vector of node indices or names.
+  if (use_names && "name" %in% vertex_attr_names(x)) {
+    npaths = lapply(paths[[1]], attr, "names")
+  } else {
+    npaths = lapply(paths[[1]], as.integer)
+  }
+  # Extract vector of edge indices.
   epaths = lapply(paths[[2]], as.integer)
   # Return as columns in a tibble.
   as_tibble(do.call(cbind, list(node_paths = npaths, edge_paths = epaths)))
 }
 
-#' @importFrom igraph all_shortest_paths
+#' @importFrom igraph all_shortest_paths vertex_attr_names
 #' @importFrom tibble as_tibble
-get_all_shortest_paths = function(x, from, to, weights, ...) {
+get_all_shortest_paths = function(x, from, to, weights, use_names = TRUE,...) {
   # Set weights.
   weights = set_path_weights(x, weights)
   # Call igraph function.
   paths = all_shortest_paths(x, from, to, weights = weights, ...)
-  # Extract paths of node indices.
-  npaths = lapply(paths[[1]], as.integer)
+  # Extract vector of node indices or names.
+  if (use_names && "name" %in% vertex_attr_names(x)) {
+    npaths = lapply(paths[[1]], attr, "names")
+  } else {
+    npaths = lapply(paths[[1]], as.integer)
+  }
   # Return as column in a tibble.
   as_tibble(do.call(cbind, list(node_paths = npaths)))
 }
 
-#' @importFrom igraph all_simple_paths
+#' @importFrom igraph all_simple_paths vertex_attr_names
 #' @importFrom tibble as_tibble
-get_all_simple_paths = function(x, from, to, ...) {
+get_all_simple_paths = function(x, from, to, use_names = TRUE, ...) {
   # Call igraph function.
   paths = all_simple_paths(x, from, to, ...)
   # Extract paths of node indices.
-  npaths = lapply(paths, as.integer)
+  if (use_names && "name" %in% vertex_attr_names(x)) {
+    npaths = lapply(paths, attr, "names")
+  } else {
+    npaths = lapply(paths, as.integer)
+  }
   # Return as column in a tibble.
   as_tibble(do.call(cbind, list(node_paths = npaths)))
 }
@@ -235,9 +253,8 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' calculated. By default, all nodes in the network are included.
 #'
 #' @param to The (set of) geospatial point(s) to which the shortest paths will
-#' be calculated. Can be an object of  class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}. Features with duplicated nearest node indices will be
-#' removed before calculating the cost matrix.
+#' be calculated. Can be an object of class \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}.
 #' Alternatively it can be a numeric vector containing the indices of the nodes
 #' to which the shortest paths will be calculated, or a character vector
 #' containing the names of the nodes to which the shortest paths will be
@@ -253,10 +270,19 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' If set to \code{NA}, no weights are used, even if the edges have a
 #' \code{weight} column.
 #'
+#' @param direction The direction of travel. Defaults to \code{'out'}, meaning
+#' that the direction given by the network is followed and costs are calculated
+#' from the points given as argument \code{from}. May be set to \code{'in'},
+#' meaning that the opposite direction is followed an costs are calculated
+#' towards the points given as argument \code{from}. May also be set to
+#' \code{'all'}, meaning that the network is considered to be undirected. This
+#' argument is ignored for undirected networks.
+#'
 #' @param Inf_as_NaN Should the cost values of unconnected nodes be stored as
 #' \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.
 #'
-#' @param ... Arguments passed on to \code{\link[igraph]{distances}}.
+#' @param ... Arguments passed on to \code{\link[igraph]{distances}}. Argument
+#' \code{mode} is ignored. Use \code{direction} instead.
 #'
 #' @details Spatial features provided to the \code{from} and/or
 #' \code{to} argument don't necessarily have to be points. Internally, the
@@ -277,29 +303,14 @@ get_all_simple_paths = function(x, from, to, ...) {
 #'
 #' @seealso \code{\link{st_network_paths}}
 #'
-#' @note By default, \code{\link[igraph]{distances}} calculates costs by
-#' by allowing to travel each edge in both directions, hence by assuming an
-#' undirected network. This is the default even when the input network is
-#' directed! For directed networks, the behaviour can be changed by setting
-#' \code{mode = "out"} to consider only outbound edges, or \code{mode = "in"}
-#' to consider only inbound edges.
-#'
-#' Furthermore, \code{\link[igraph]{distances}} does not allow duplicated
-#' values in the \code{to} argument. This also means that when providing
-#' spatial features, sets of multiple features that happen to have the same
-#' nearest node will be reduced to one by selecting only the first of these
-#' features.
-#'
 #' @return An n times m numeric matrix where n is the length of the \code{from}
-#' argument, and m is the length of unique values in the \code{to} argument.
-#' When the \code{to} argument contains spatial features that have the same
-#' nearest node, these features are considered duplicates.
+#' argument, and m is the length of the \code{to} argument.
 #'
 #' @examples
 #' library(sf, quietly = TRUE)
 #' library(tidygraph, quietly = TRUE)
 #'
-#' # Create a network with edge lenghts as weights.
+#' # Create a network with edge lengths as weights.
 #' # These weights will be used automatically in shortest paths calculation.
 #' net = as_sfnetwork(roxel, directed = FALSE) %>%
 #'   st_transform(3035) %>%
@@ -332,43 +343,64 @@ get_all_simple_paths = function(x, from, to, ...) {
 #' @importFrom igraph V
 #' @export
 st_network_cost = function(x, from = igraph::V(x), to = igraph::V(x),
-                           weights = NULL, Inf_as_NaN = FALSE, ...) {
+                           weights = NULL, direction = "out",
+                           Inf_as_NaN = FALSE, ...) {
   UseMethod("st_network_cost")
 }
 
 #' @importFrom igraph distances V
+#' @importFrom units deparse_unit as_units
 #' @export
 st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
-                                     weights = NULL, Inf_as_NaN = FALSE, ...) {
+                                     weights = NULL, direction = "out",
+                                     Inf_as_NaN = FALSE, ...) {
   # If 'from' and/or 'to' points are given as simple feature geometries:
   # --> Convert them to node indices.
-  if (is.sf(from) | is.sfc(from)) from = set_path_endpoints(x, from)
-  if (is.sf(to) | is.sfc(to)) to = set_path_endpoints(x, to)
+  if (is.sf(from) | is.sfc(from)) from = get_nearest_node_index(x, from)
+  if (is.sf(to) | is.sfc(to)) to = get_nearest_node_index(x, to)
   # Igraph does not support NA values in 'from' and 'to' nodes.
   if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
-  # Igraph does not support duplicated 'to' nodes.
-  # This can happen without the user knowing when POINT geometries
-  # are given to the 'to' argument that happen to snap to a same node.
-  if (any(duplicated(to))) {
-    warning(
-      "Duplicated values in argument 'to' were removed.",
-      call. = FALSE
-    )
-    to = unique(to)
-  }
   # Set weights.
   weights = set_path_weights(x, weights)
-  # Call igraph function.
-  matrix = distances(x, from, to, weights = weights, ...)
+  # Check for mode argument passed to ...
+  dots = list(...)
+  # If mode argument present, ignore it and return a warning.
+  if (!is.null(dots$mode)) {
+    dots$mode = NULL
+    warning(
+      "Argument 'mode' is ignored. Use 'direction' instead",
+      call. = FALSE
+    )
+  }
+  # Igraph does not support duplicated 'to' nodes.
+  if(any(duplicated(to))) {
+    # --> Obtain unique 'to' nodes to pass to igraph.
+    to_unique = unique(to)
+    # --> Find which 'to' nodes are duplicated.
+    match = match(to, to_unique)
+    # Call igraph function.
+    args = list(x, from, to_unique, weights = weights, mode = direction)
+    matrix = do.call(igraph::distances, c(args, dots))
+    # Return the matrix
+    # --> With duplicated 'to' nodes included.
+    matrix = matrix[, match, drop = FALSE]
+  } else {
+    # Call igraph function.
+    args = list(x, from, to, weights = weights, mode = direction)
+    matrix = do.call(igraph::distances, c(args, dots))
+  }
   # Convert Inf to NaN if requested.
-  if (Inf_as_NaN) matrix[matrix == Inf] = NaN
-  # Return the matrix.
-  matrix
-}
-
-#' @importFrom sf st_geometry st_nearest_feature
-set_path_endpoints = function(x, p) {
-  st_nearest_feature(st_geometry(p), nodes_as_sf(x))
+  if (Inf_as_NaN) matrix[is.infinite(matrix)] = NaN
+  # Check if weights parameter inherits units.
+  if (inherits(weights, "units")) {
+    # Fetch weight units to pass onto distance matrix.
+    weights_units = deparse_unit(weights)
+    # Return matrix as units object
+    as_units(matrix, weights_units)
+  } else {
+    # Return the matrix.
+    matrix
+  }
 }
 
 #' @importFrom igraph edge_attr
@@ -376,7 +408,7 @@ set_path_endpoints = function(x, p) {
 set_path_weights = function(x, weights) {
   if (is.character(weights) & length(weights) == 1) {
     # Case 1: Weights is a character pointing to a column in the edges table.
-    # --> Use the values of that column as weight values (if it exsists).
+    # --> Use the values of that column as weight values (if it exists).
     values = edge_attr(x, weights)
     if (is.null(values)) {
       stop(

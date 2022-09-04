@@ -36,7 +36,7 @@ node_geom_colname = function(x) {
 #' @importFrom igraph edge_attr edge_attr_names
 edge_geom_colname = function(x) {
   col = attr(edge_attr(x), "sf_column")
-  if (has_spatially_explicit_edges(x) && is.null(col)) {
+  if (is.null(col) && has_explicit_edges(x)) {
     # Take the name of the first sfc column.
     sfc_idx = which(vapply(edge_attr(x), is.sfc, FUN.VALUE = logical(1)))[1]
     col = edge_attr_names(x)[sfc_idx]
@@ -68,6 +68,43 @@ edge_geom_colname = function(x) {
 `edge_geom_colname<-` = function(x, value) {
   attr(edge_attr(x), "sf_column") = value
   x
+}
+
+#' Pull the geometry column from the active element of a sfnetwork
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently
+#' active element of x will be used.
+#'
+#' @return An object of class \code{\link[sf]{sfc}}.
+#'
+#' @noRd
+pull_geom = function(x, active = NULL) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  switch(
+    active,
+    nodes = pull_node_geom(x),
+    edges = pull_edge_geom(x),
+    raise_unknown_input(active)
+  )
+}
+
+#' @importFrom igraph vertex_attr
+pull_node_geom = function(x) {
+  geom = vertex_attr(x, node_geom_colname(x))
+  if (! is.sfc(geom)) raise_invalid_sf_column()
+  geom
+}
+
+#' @importFrom igraph edge_attr
+pull_edge_geom = function(x) {
+  require_explicit_edges(x)
+  geom = edge_attr(x, edge_geom_colname(x))
+  if (! is.sfc(geom)) raise_invalid_sf_column()
+  geom
 }
 
 #' Mutate the geometry column of the active element of a sfnetwork
@@ -103,7 +140,7 @@ mutate_geom = function(x, y, active = NULL) {
 mutate_node_geom = function(x, y) {
   nodes = nodes_as_sf(x)
   st_geometry(nodes) = y
-  node_graph_attributes(x) = nodes
+  node_attribute_values(x) = nodes
   x
 }
 
@@ -112,7 +149,7 @@ mutate_node_geom = function(x, y) {
 mutate_edge_geom = function(x, y) {
   edges = edges_as_table(x)
   st_geometry(edges) = y
-  edge_graph_attributes(x) = edges
+  edge_attribute_values(x) = edges
   x
 }
 

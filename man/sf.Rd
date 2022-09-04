@@ -3,81 +3,120 @@
 \name{sf}
 \alias{sf}
 \alias{st_as_sf.sfnetwork}
+\alias{st_as_s2.sfnetwork}
 \alias{st_geometry.sfnetwork}
 \alias{st_geometry<-.sfnetwork}
+\alias{st_drop_geometry.sfnetwork}
 \alias{st_bbox.sfnetwork}
 \alias{st_coordinates.sfnetwork}
 \alias{st_is.sfnetwork}
+\alias{st_is_valid.sfnetwork}
 \alias{st_crs.sfnetwork}
 \alias{st_crs<-.sfnetwork}
+\alias{st_precision.sfnetwork}
+\alias{st_set_precision.sfnetwork}
 \alias{st_shift_longitude.sfnetwork}
 \alias{st_transform.sfnetwork}
 \alias{st_wrap_dateline.sfnetwork}
+\alias{st_normalize.sfnetwork}
 \alias{st_zm.sfnetwork}
 \alias{st_m_range.sfnetwork}
 \alias{st_z_range.sfnetwork}
 \alias{st_agr.sfnetwork}
 \alias{st_agr<-.sfnetwork}
-\alias{st_intersects.sfnetwork}
 \alias{st_reverse.sfnetwork}
 \alias{st_simplify.sfnetwork}
 \alias{st_join.sfnetwork}
 \alias{st_join.morphed_sfnetwork}
-\alias{st_crop.sfnetwork}
-\alias{st_crop.morphed_sfnetwork}
 \alias{st_filter.sfnetwork}
 \alias{st_filter.morphed_sfnetwork}
+\alias{st_crop.sfnetwork}
+\alias{st_crop.morphed_sfnetwork}
+\alias{st_difference.sfnetwork}
+\alias{st_difference.morphed_sfnetwork}
+\alias{st_intersection.sfnetwork}
+\alias{st_intersection.morphed_sfnetwork}
+\alias{st_intersects.sfnetwork}
+\alias{st_sample.sfnetwork}
+\alias{st_nearest_points.sfnetwork}
+\alias{st_area.sfnetwork}
 \title{sf methods for sfnetworks}
 \usage{
-\method{st_as_sf}{sfnetwork}(x, active = NULL, ...)
+st_as_sf.sfnetwork(x, active = NULL, ...)
 
-\method{st_geometry}{sfnetwork}(x, active = NULL, ...)
+st_as_s2.sfnetwork(x, active = NULL, ...)
 
-\method{st_geometry}{sfnetwork}(x) <- value
+st_geometry.sfnetwork(x, active = NULL, ...)
 
-\method{st_bbox}{sfnetwork}(x, ...)
+st_geometry.sfnetwork(x) <- value
 
-\method{st_coordinates}{sfnetwork}(x, ...)
+st_drop_geometry.sfnetwork(x, ...)
 
-\method{st_is}{sfnetwork}(x, ...)
+st_bbox.sfnetwork(x, active = NULL, ...)
 
-\method{st_crs}{sfnetwork}(x, ...)
+st_coordinates.sfnetwork(x, active = NULL, ...)
 
-\method{st_crs}{sfnetwork}(x) <- value
+st_is.sfnetwork(x, ...)
 
-\method{st_shift_longitude}{sfnetwork}(x, ...)
+st_is_valid.sfnetwork(x, ...)
 
-\method{st_transform}{sfnetwork}(x, ...)
+st_crs.sfnetwork(x, active = NULL, ...)
 
-\method{st_wrap_dateline}{sfnetwork}(x, ...)
+st_crs.sfnetwork(x) <- value
 
-\method{st_zm}{sfnetwork}(x, ...)
+st_precision.sfnetwork(x, active = NULL, ...)
 
-\method{st_m_range}{sfnetwork}(x, ...)
+st_set_precision.sfnetwork(x, value)
 
-\method{st_z_range}{sfnetwork}(x, ...)
+st_shift_longitude.sfnetwork(x, ...)
 
-\method{st_agr}{sfnetwork}(x, active = NULL, ...)
+st_transform.sfnetwork(x, ...)
 
-\method{st_agr}{sfnetwork}(x) <- value
+st_wrap_dateline.sfnetwork(x, ...)
 
-\method{st_intersects}{sfnetwork}(x, y = x, ...)
+st_normalize.sfnetwork(x, ...)
 
-\method{st_reverse}{sfnetwork}(x, ...)
+st_zm.sfnetwork(x, ...)
 
-\method{st_simplify}{sfnetwork}(x, ...)
+st_m_range.sfnetwork(x, active = NULL, ...)
 
-\method{st_join}{sfnetwork}(x, y, ...)
+st_z_range.sfnetwork(x, active = NULL, ...)
 
-\method{st_join}{morphed_sfnetwork}(x, y, ...)
+st_agr.sfnetwork(x, active = NULL, ...)
 
-\method{st_crop}{sfnetwork}(x, y, ...)
+st_agr.sfnetwork(x) <- value
 
-\method{st_crop}{morphed_sfnetwork}(x, y, ...)
+st_reverse.sfnetwork(x, ...)
 
-\method{st_filter}{sfnetwork}(x, y, ...)
+st_simplify.sfnetwork(x, ...)
 
-\method{st_filter}{morphed_sfnetwork}(x, y, ...)
+st_join.sfnetwork(x, y, ...)
+
+st_join.morphed_sfnetwork(x, y, ...)
+
+st_filter.sfnetwork(x, y, ...)
+
+st_filter.morphed_sfnetwork(x, y, ...)
+
+st_crop.sfnetwork(x, y, ...)
+
+st_crop.morphed_sfnetwork(x, y, ...)
+
+st_difference.sfnetwork(x, y, ...)
+
+st_difference.morphed_sfnetwork(x, y, ...)
+
+st_intersection.sfnetwork(x, y, ...)
+
+st_intersection.morphed_sfnetwork(x, y, ...)
+
+st_intersects.sfnetwork(x, y, ...)
+
+st_sample.sfnetwork(x, ...)
+
+st_nearest_points.sfnetwork(x, y, ...)
+
+st_area.sfnetwork(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
@@ -100,8 +139,10 @@ at the documentation of the corresponding \code{sf} function for details.}
 The \code{sfnetwork} method for \code{\link[sf]{st_as_sf}} returns
 the active element of the network as object of class \code{\link[sf]{sf}}.
 The \code{sfnetwork} and \code{morphed_sfnetwork} methods for
-\code{\link[sf]{st_join}}, \code{\link[sf]{st_filter}} and
-\code{\link[sf]{st_crop}} return an object of class \code{\link{sfnetwork}}
+\code{\link[sf]{st_join}}, \code{\link[sf]{st_filter}},
+\code{\link[sf]{st_intersection}}, \code{\link[sf]{st_difference}},
+\code{\link[sf]{st_crop}} and the setter functions
+ return an object of class \code{\link{sfnetwork}}
 and \code{morphed_sfnetwork} respectively. All other
 methods return the same type of objects as their corresponding sf function.
 See the \code{\link[sf]{sf}} documentation for details.

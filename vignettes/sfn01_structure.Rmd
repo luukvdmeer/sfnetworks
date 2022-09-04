@@ -14,7 +14,9 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 knitr::opts_knit$set(global.par = TRUE)
-geos37 = sf::sf_extSoftVersion()["GEOS"] >= "3.7.0"
+current_geos = numeric_version(sf::sf_extSoftVersion()["GEOS"])
+required_geos = numeric_version("3.7.0")
+geos37 = current_geos >= required_geos
 ```
 
 ```{r plot, echo=FALSE, results='asis'}
@@ -99,16 +101,6 @@ net = sfnetwork(nodes, edges, node_key = "name")
 net
 ```
 
-In a tbl_graph structure, the weights of edges are normally stored in a column named *weight*. You can set edge weights yourself after construction (see the example in the [activation section](#activation-1)). For convenience, you can also tell the construction function to calculate the geographical lengths of the edges and set those as weights during construction.
-
-```{r}
-edges$from = c(1, 1, 3)
-edges$to = c(2, 3, 2)
-
-net = sfnetwork(nodes, edges, length_as_weight = TRUE)
-net
-```
-
 If your edges table does not have linestring geometries, but only references to node indices or keys, you can tell the construction function to create the linestring geometries during construction. This will draw a straight line between the endpoints of each edge.
 
 ```{r, fig.show='hold', out.width='50%'}
@@ -164,7 +156,7 @@ Some of the functions have effects also outside of the active element. For examp
 
 ## Extraction
 
-Neither all sf functions nor all tidyverse verbs can be directly applied to a sfnetwork as described above. That is because there is a clear limitation in the relational data structure that requires rows to maintain their identity. Hence, a verb like `dplyr::summarise()` has no clear application for a network. For sf functions, this means also that the valid spatial network structure should be maintained. That is, functions that summarise geometries, or (may) change their *type*, *shape* or *position*, are not supported directly. These are for example the [geometric binary operations](https://r-spatial.github.io/sf/reference/geos_binary_ops.html), most of the [geometric unary operations](https://r-spatial.github.io/sf/reference/geos_unary.html), `sf::st_union()`, `sf::st_combine()`, `sf::st_cast()`, and `sf::st_jitter()`.
+Neither all sf functions nor all tidyverse verbs can be directly applied to a sfnetwork as described above. That is because there is a clear limitation in the relational data structure that requires rows to maintain their identity. Hence, a verb like `dplyr::summarise()` has no clear application for a network. For sf functions, this means also that the valid spatial network structure should be maintained. That is, functions that summarise geometries of an sf object, or (may) change their *type*, *shape* or *position*, are not supported directly. These are for example most of the [geometric unary operations](https://r-spatial.github.io/sf/reference/geos_unary.html).
 
 These functions cannot be directly applied to a sfnetwork, but no need to panic! The active element of the network can at any time be extracted with `sf::st_as_sf()` (or `tibble::as_tibble()`). This allows you to continue a specific part of your analysis *outside* of the network structure, using a regular sf object. Afterwards you could join inferred information back into the network. See the vignette about [spatial joins](https://luukvdmeer.github.io/sfnetworks/articles/sfn03_join_filter.html) for more details.
 
@@ -213,18 +205,12 @@ ggplot() +
 
 ### Geometries
 
-Geometries of nodes and edges are stored in an 'sf-style' geometry list-column in respectively the nodes and edges tables of the network. The geometries of the active element of the network can be extracted with the sf function `sf::st_geometry()`.
+Geometries of nodes and edges are stored in an 'sf-style' geometry list-column in respectively the nodes and edges tables of the network. The geometries of the active element of the network can be extracted with the sf function `sf::st_geometry()`, or from any element by specifying the element of interest as additional argument, e.g. `sf::st_geometry(net, "edges")`.
 
 ```{r}
 net %>%
   activate("nodes") %>%
   st_geometry()
-```
-
-Just as with `sf::st_as_sf()`, there is also a shortcut to quickly extract geometries from any of the network elements.
-
-```{r}
-st_geometry(net, "edges")
 ```
 
 Geometries can be replaced using either `st_geometry(x) = value` or the pipe-friendly `st_set_geometry(x, value)`. However, a replacement that breaks the valid spatial network structure will throw an error.
@@ -253,7 +239,7 @@ as_sfnetwork(roxel, directed = TRUE) %>%
 
 ### Coordinates
 
-The coordinates of the active element of a sfnetwork can be extracted with the sf function `sf::st_coordinates()`.
+The coordinates of the active element of a sfnetwork can be extracted with the sf function `sf::st_coordinates()`, or from any element by specifying the element of interest as additional argument, e.g. `sf::st_coordinate(net, "edges")`.
 
 ```{r}
 node_coords = net %>%
@@ -291,15 +277,31 @@ The Coordinate Reference System in which the coordinates of the network geometri
 st_crs(net)
 ```
 
-Coordinates can be transformed using the sf function `sf::st_transform()`. Since the CRS is the same for nodes and edges, transforming coordinates of the active element into a different CRS will automatically also transform the coordinates of the inactive element into the same target CRS.
+The CRS can be set using either `st_crs(x) = value` or the pipe-friendly `st_set_crs(x, value)`. The CRS will always be set for both the nodes and edges, no matter which element is active. However, setting the CRS only assigns the given CRS to the network. It does *not* transform the coordinates into a different CRS! Coordinates can be transformed using the sf function `sf::st_transform()`. Since the CRS is the same for nodes and edges, transforming coordinates of the active element into a different CRS will automatically also transform the coordinates of the inactive element into the same target CRS.
 
 ```{r}
 st_transform(net, 3035)
 ```
 
+### Precision
+
+The precision in which the coordinates of the network geometries are stored can be extracted with the sf function `sf::st_precision()`. The precision in a valid spatial network structure is *always* the same for nodes and edges.
+
+```{r}
+st_precision(net)
+```
+
+Precision can be set using `st_set_precision(x, value)`. The precision will always be set for both the nodes and edges, no matter which element is active.
+
+```{r}
+net %>%
+  st_set_precision(1) %>%
+  st_precision()
+```
+
 ### Bounding box
 
-The bounding box of the active element of a sfnetwork can be extracted with the sf function `sf::st_bbox()`.
+The bounding box of the active element of a sfnetwork can be extracted with the sf function `sf::st_bbox()`, or from any element by specifying the element of interest as additional argument, e.g. `sf::st_bbox(net, "edges")`.
 
 ```{r}
 net %>%

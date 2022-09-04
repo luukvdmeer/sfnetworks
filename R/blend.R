@@ -99,7 +99,7 @@ st_network_blend = function(x, y, tolerance = Inf) {
 
 #' @export
 st_network_blend.sfnetwork = function(x, y, tolerance = Inf) {
-  require_spatially_explicit_edges(x)
+  require_explicit_edges(x, hard = TRUE)
   stopifnot(has_single_geom_type(y, "POINT"))
   stopifnot(have_equal_crs(x, y))
   stopifnot(as.numeric(tolerance) >= 0)
@@ -109,8 +109,9 @@ st_network_blend.sfnetwork = function(x, y, tolerance = Inf) {
 
 #' @importFrom dplyr bind_rows full_join
 #' @importFrom igraph is_directed vcount
-#' @importFrom sf st_as_sf st_cast st_crs st_distance st_equals st_geometry
-#' st_intersects st_is_within_distance st_nearest_feature st_nearest_points
+#' @importFrom sf st_as_sf st_cast st_crs st_crs<- st_distance st_equals
+#' st_geometry st_geometry<- st_intersects st_is_within_distance
+#' st_nearest_feature st_nearest_points st_precision st_precision<-
 #' @importFrom sfheaders sfc_linestring sfc_to_df
 #' @importFrom units set_units
 blend_ = function(x, y, tolerance) {
@@ -363,6 +364,7 @@ blend_ = function(x, y, tolerance) {
   # Build the new edge geometries.
   new_edge_geoms = sfc_linestring(new_edge_coords, linestring_id = "edge_id")
   st_crs(new_edge_geoms) = st_crs(edges)
+  st_precision(new_edge_geoms) = st_precision(edges)
   new_edge_coords$edge_id = NULL
   ## ================================
   # STEP VI: RESTORE EDGE ATTRIBUTES
@@ -501,5 +503,5 @@ blend_ = function(x, y, tolerance) {
   # Use the new nodes data and the new edges data to create the new network.
   ## ============================
   x_new = sfnetwork_(new_nodes, new_edges, directed = directed)
-  x_new %preserve_graph_attrs% x
+  x_new %preserve_network_attrs% x
 }

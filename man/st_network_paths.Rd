@@ -10,6 +10,7 @@ st_network_paths(
   to = igraph::V(x),
   weights = NULL,
   type = "shortest",
+  use_names = TRUE,
   ...
 )
 }
@@ -49,6 +50,11 @@ performed. If set to \code{'shortest'} paths are calculated using
 \code{\link[igraph]{all_shortest_paths}}, if set to
 \code{'all_simple'} paths are calculated using
 \code{\link[igraph]{all_simple_paths}}. Defaults to \code{'shortest'}.}
+
+\item{use_names}{If a column named \code{name} is present in the nodes
+table, should these names be used to encode the nodes in a path, instead of
+the node indices? Defaults to \code{TRUE}. Ignored when the nodes table does
+not have a column named \code{name}.}
 
 \item{...}{Arguments passed on to the corresponding
 \code{\link[igraph:shortest_paths]{igraph}} or

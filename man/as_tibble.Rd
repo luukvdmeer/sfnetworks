@@ -5,7 +5,7 @@
 \alias{as_tibble.sfnetwork}
 \title{Extract the active element of a sfnetwork as spatial tibble}
 \usage{
-\method{as_tibble}{sfnetwork}(x, active = NULL, spatial = TRUE, ...)
+as_tibble.sfnetwork(x, active = NULL, spatial = TRUE, ...)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}

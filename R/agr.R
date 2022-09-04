@@ -28,14 +28,14 @@ agr = function(x, active = NULL) {
 #' @importFrom igraph vertex_attr
 node_agr = function(x) {
   agr = attr(vertex_attr(x), "agr")
-  valid_agr(agr, node_spatial_attribute_names(x))
+  valid_agr(agr, node_feature_attribute_names(x))
 }
 
 #' @importFrom igraph edge_attr
 edge_agr = function(x) {
   agr = attr(edge_attr(x), "agr")
-  if (has_spatially_explicit_edges(x)) {
-    agr = valid_agr(agr, edge_spatial_attribute_names(x))
+  if (has_explicit_edges(x)) {
+    agr = valid_agr(agr, edge_feature_attribute_names(x))
   }
   agr
 }

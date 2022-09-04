@@ -1,34 +1,63 @@
-#' Proceed only when edges are spatially explicit
+#' Proceed only when a given network element is active
 #'
-#' @param x An object of class \code{\link{sfnetwork}}.
+#' @details These function are meant to be called in the context of an
+#' operation in which the network that is currently being worked on is known
+#' and thus not needed as an argument to the function.
 #'
-#' @return Nothing when the edges of x are spatially explicit, an error message
-#' otherwise.
+#' @return Nothing when the expected network element is active, an error
+#' message otherwise.
 #'
-#' @details Require will be called when the function needs spatially explicit
-#' edges no matter which element is active. Expect will be called when the
-#' function needs spatially explicit edges when applied to the edges, but will
-#' still work when applied to the nodes.
-#'
-#' @name check_explicitness
+#' @name require_active
+#' @importFrom tidygraph .graph_context
 #' @noRd
-require_spatially_explicit_edges = function(x) {
-  if (! has_spatially_explicit_edges(x)) {
+require_active_nodes <- function() {
+  if (!.graph_context$free() && .graph_context$active() != "nodes") {
     stop(
-      "This call requires spatially explicit edges",
+      "This call requires nodes to be active",
       call. = FALSE
     )
   }
 }
 
-#' @name check_explicitness
+#' @name require_active
+#' @importFrom tidygraph .graph_context
 #' @noRd
-expect_spatially_explicit_edges = function(x) {
-  if (! has_spatially_explicit_edges(x)) {
+require_active_edges <- function() {
+  if (!.graph_context$free() && .graph_context$active() != "edges") {
     stop(
-      "Edges are spatially implicit. Activate nodes first?",
+      "This call requires edges to be active",
       call. = FALSE
     )
+  }
+}
+
+#' Proceed only when edges are spatially explicit
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param hard Is it a hard requirement, meaning that edges need to be
+#' spatially explicit no matter which network element is active? Defaults to
+#' \code{FALSE}, meaning that the error message will suggest to activate nodes
+#' instead.
+#'
+#' @return Nothing when the edges of x are spatially explicit, an error message
+#' otherwise.
+#'
+#' @noRd
+require_explicit_edges = function(x, hard = FALSE) {
+  if (! has_explicit_edges(x)) {
+    if (hard) {
+      stop(
+        "This call requires spatially explicit edges",
+        call. = FALSE
+      )
+    } else{
+      stop(
+        "This call requires spatially explicit edges when applied to the ",
+        "edges table. Activate nodes first?",
+        call. = FALSE
+      )
+    }
   }
 }
 
@@ -52,7 +81,7 @@ expect_spatially_explicit_edges = function(x) {
 require_valid_network_structure = function(x, message = FALSE) {
   if (message) message("Checking if spatial network structure is valid...")
   validate_nodes(x)
-  if (has_spatially_explicit_edges(x)) {
+  if (has_explicit_edges(x)) {
     validate_edges(x)
   }
   if (message) message("Spatial network structure is valid")
@@ -86,6 +115,13 @@ validate_edges = function(x) {
   if (! have_equal_crs(nodes, edges)) {
     stop(
       "Nodes and edges do not have the same CRS",
+      call. = FALSE
+    )
+  }
+  # --> Is the precision of the edges the same as of the nodes?
+  if (! have_equal_precision(nodes, edges)) {
+    stop(
+      "Nodes and edges do not have the same precision",
       call. = FALSE
     )
   }
