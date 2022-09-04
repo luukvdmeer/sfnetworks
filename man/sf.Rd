@@ -42,81 +42,81 @@
 \alias{st_area.sfnetwork}
 \title{sf methods for sfnetworks}
 \usage{
-st_as_sf.sfnetwork(x, active = NULL, ...)
+\method{st_as_sf}{sfnetwork}(x, active = NULL, ...)
 
-st_as_s2.sfnetwork(x, active = NULL, ...)
+\method{st_as_s2}{sfnetwork}(x, active = NULL, ...)
 
-st_geometry.sfnetwork(x, active = NULL, ...)
+\method{st_geometry}{sfnetwork}(x, active = NULL, ...)
 
-st_geometry.sfnetwork(x) <- value
+\method{st_geometry}{sfnetwork}(x) <- value
 
-st_drop_geometry.sfnetwork(x, ...)
+\method{st_drop_geometry}{sfnetwork}(x, ...)
 
-st_bbox.sfnetwork(x, active = NULL, ...)
+\method{st_bbox}{sfnetwork}(x, active = NULL, ...)
 
-st_coordinates.sfnetwork(x, active = NULL, ...)
+\method{st_coordinates}{sfnetwork}(x, active = NULL, ...)
 
-st_is.sfnetwork(x, ...)
+\method{st_is}{sfnetwork}(x, ...)
 
-st_is_valid.sfnetwork(x, ...)
+\method{st_is_valid}{sfnetwork}(x, ...)
 
-st_crs.sfnetwork(x, active = NULL, ...)
+\method{st_crs}{sfnetwork}(x, active = NULL, ...)
 
-st_crs.sfnetwork(x) <- value
+\method{st_crs}{sfnetwork}(x) <- value
 
-st_precision.sfnetwork(x, active = NULL, ...)
+\method{st_precision}{sfnetwork}(x, active = NULL, ...)
 
-st_set_precision.sfnetwork(x, value)
+\method{st_set_precision}{sfnetwork}(x, value)
 
-st_shift_longitude.sfnetwork(x, ...)
+\method{st_shift_longitude}{sfnetwork}(x, ...)
 
-st_transform.sfnetwork(x, ...)
+\method{st_transform}{sfnetwork}(x, ...)
 
-st_wrap_dateline.sfnetwork(x, ...)
+\method{st_wrap_dateline}{sfnetwork}(x, ...)
 
-st_normalize.sfnetwork(x, ...)
+\method{st_normalize}{sfnetwork}(x, ...)
 
-st_zm.sfnetwork(x, ...)
+\method{st_zm}{sfnetwork}(x, ...)
 
-st_m_range.sfnetwork(x, active = NULL, ...)
+\method{st_m_range}{sfnetwork}(x, active = NULL, ...)
 
-st_z_range.sfnetwork(x, active = NULL, ...)
+\method{st_z_range}{sfnetwork}(x, active = NULL, ...)
 
-st_agr.sfnetwork(x, active = NULL, ...)
+\method{st_agr}{sfnetwork}(x, active = NULL, ...)
 
-st_agr.sfnetwork(x) <- value
+\method{st_agr}{sfnetwork}(x) <- value
 
-st_reverse.sfnetwork(x, ...)
+\method{st_reverse}{sfnetwork}(x, ...)
 
-st_simplify.sfnetwork(x, ...)
+\method{st_simplify}{sfnetwork}(x, ...)
 
-st_join.sfnetwork(x, y, ...)
+\method{st_join}{sfnetwork}(x, y, ...)
 
-st_join.morphed_sfnetwork(x, y, ...)
+\method{st_join}{morphed_sfnetwork}(x, y, ...)
 
-st_filter.sfnetwork(x, y, ...)
+\method{st_filter}{sfnetwork}(x, y, ...)
 
-st_filter.morphed_sfnetwork(x, y, ...)
+\method{st_filter}{morphed_sfnetwork}(x, y, ...)
 
-st_crop.sfnetwork(x, y, ...)
+\method{st_crop}{sfnetwork}(x, y, ...)
 
-st_crop.morphed_sfnetwork(x, y, ...)
+\method{st_crop}{morphed_sfnetwork}(x, y, ...)
 
-st_difference.sfnetwork(x, y, ...)
+\method{st_difference}{sfnetwork}(x, y, ...)
 
-st_difference.morphed_sfnetwork(x, y, ...)
+\method{st_difference}{morphed_sfnetwork}(x, y, ...)
 
-st_intersection.sfnetwork(x, y, ...)
+\method{st_intersection}{sfnetwork}(x, y, ...)
 
-st_intersection.morphed_sfnetwork(x, y, ...)
+\method{st_intersection}{morphed_sfnetwork}(x, y, ...)
 
-st_intersects.sfnetwork(x, y, ...)
+\method{st_intersects}{sfnetwork}(x, y, ...)
 
-st_sample.sfnetwork(x, ...)
+\method{st_sample}{sfnetwork}(x, ...)
 
-st_nearest_points.sfnetwork(x, y, ...)
+\method{st_nearest_points}{sfnetwork}(x, y, ...)
 
-st_area.sfnetwork(x, ...)
+\method{st_area}{sfnetwork}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
