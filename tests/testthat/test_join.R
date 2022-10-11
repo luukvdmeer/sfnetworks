@@ -60,8 +60,8 @@ test_that("st_join on the edges results in the correct attributes and number of
 })
 
 ## st_network_join
-test_that("st_network_join creates an sfnetwork before joining an sf to a
-          network", {
-  rdm_net = as_sfnetwork(rdm)
-  expect_setequal(st_network_join(net, rdm_net), st_network_join(net, rdm))
-})
+# test_that("st_network_join creates a sfnetwork before joining an sf to a
+#           network", {
+#   rdm_net = as_sfnetwork(rdm)
+#   expect_setequal(st_network_join(net, rdm_net), st_network_join(net, rdm))
+# })
