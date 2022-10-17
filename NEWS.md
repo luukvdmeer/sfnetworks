@@ -2,7 +2,7 @@
 
 ### Bug fixes
 
-* Rewrite one test to fix a bug on R-devel.
+* Unit tests in `test_join.R` now successfully run also on R-devel.
 
 # sfnetworks v0.6.0 "Coerde"
 
