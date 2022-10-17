@@ -1,3 +1,9 @@
+# sfnetworks v0.6.1
+
+### Bug fixes
+
+* Rewrite one test to fix a bug on R-devel.
+
 # sfnetworks v0.6.0 "Coerde"
 
 ### New features
