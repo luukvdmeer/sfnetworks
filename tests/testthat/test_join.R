@@ -59,9 +59,13 @@ test_that("st_join on the edges results in the correct attributes and number of
   expect_setequal(pull(joined, bar), c(NA, "a", "b"))
 })
 
-## st_network_join
-# test_that("st_network_join creates a sfnetwork before joining an sf to a
-#           network", {
-#   rdm_net = as_sfnetwork(rdm)
-#   expect_setequal(st_network_join(net, rdm_net), st_network_join(net, rdm))
-# })
+# st_network_join
+test_that("st_network_join creates a sfnetwork before joining an sf to a
+          network", {
+  rdm_net = as_sfnetwork(rdm)
+  expect_true(igraph::identical_graphs(
+    st_network_join(net, rdm_net),
+    st_network_join(net, rdm)
+  ))
+  # expect_setequal(st_network_join(net, rdm_net), st_network_join(net, rdm))
+})
