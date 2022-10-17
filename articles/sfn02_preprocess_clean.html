@@ -376,12 +376,12 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="co">#&gt; # Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span></span>
 <span><span class="co">#&gt;    from    to              x  flow type    foo bar  </span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;   &lt;LINESTRING&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt; &lt;chr&gt;</span></span>
-<span><span class="co">#&gt; 1    10     9 (6 1.2, 5.8 1)     4 path      2 f    </span></span>
-<span><span class="co">#&gt; 2    11    10 (6.2 1, 6 1.2)     5 path      5 w    </span></span>
-<span><span class="co">#&gt; 3     9    12 (5.8 1, 6 0.8)     7 path     14 q    </span></span>
-<span><span class="co">#&gt; 4    12    11 (6 0.8, 6.2 1)    10 path     12 h    </span></span>
-<span><span class="co">#&gt; 5    11    15   (6.2 1, 7 1)     4 path      3 o    </span></span>
-<span><span class="co">#&gt; 6    10    13   (6 1.2, 6 2)     8 path      9 u    </span></span>
+<span><span class="co">#&gt; 1    10     9 (6 1.2, 5.8 1)     5 path      3 c    </span></span>
+<span><span class="co">#&gt; 2    11    10 (6.2 1, 6 1.2)     5 path      1 x    </span></span>
+<span><span class="co">#&gt; 3     9    12 (5.8 1, 6 0.8)     5 path      7 g    </span></span>
+<span><span class="co">#&gt; 4    12    11 (6 0.8, 6.2 1)     2 path     12 q    </span></span>
+<span><span class="co">#&gt; 5    11    15   (6.2 1, 7 1)     7 path      5 n    </span></span>
+<span><span class="co">#&gt; 6    10    13   (6 1.2, 6 2)     8 path     11 p    </span></span>
 <span><span class="co">#&gt; # … with 9 more rows</span></span>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # Node Data:     15 × 1</span></span>
@@ -409,8 +409,8 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="co">#&gt; # A tibble: 2 × 7</span></span>
 <span><span class="co">#&gt;    from    to               x  flow type    foo bar  </span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;    &lt;LINESTRING&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt; &lt;chr&gt;</span></span>
-<span><span class="co">#&gt; 1     6     7      (4 3, 4 2)     9 path      6 z    </span></span>
-<span><span class="co">#&gt; 2     6     7 (4 3, 5 2, 4 2)    10 road      4 d</span></span></code></pre>
+<span><span class="co">#&gt; 1     6     7      (4 3, 4 2)     4 path      4 t    </span></span>
+<span><span class="co">#&gt; 2     6     7 (4 3, 5 2, 4 2)     2 road     14 b</span></span></code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define how we want to combine the attributes.</span></span>
 <span><span class="co"># For the flows:</span></span>
@@ -441,7 +441,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="co">#&gt; # A tibble: 1 × 6</span></span>
 <span><span class="co">#&gt;    from    to            x  flow type    .tidygraph_edge_index</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;LINESTRING&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;list&gt;               </span></span>
-<span><span class="co">#&gt; 1     6     7   (4 3, 4 2)    19 unknown &lt;int [2]&gt;</span></span></code></pre>
+<span><span class="co">#&gt; 1     6     7   (4 3, 4 2)     6 unknown &lt;int [2]&gt;</span></span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -518,10 +518,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="co">#&gt; # A tibble: 4 × 6</span></span>
 <span><span class="co">#&gt;    from    to               x  flow type    .tidygraph_edge_index</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;    &lt;LINESTRING&gt; &lt;dbl&gt; &lt;chr&gt;                   &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1     1     2 (0 1, 1 1, 2 1)     2 road                        1</span></span>
-<span><span class="co">#&gt; 2     2     3      (2 1, 3 1)     3 road                        2</span></span>
-<span><span class="co">#&gt; 3     8     9      (4 3, 4 2)    19 unknown                     5</span></span>
-<span><span class="co">#&gt; 4     9     4      (4 2, 4 1)     1 road                        6</span></span></code></pre>
+<span><span class="co">#&gt; 1     1     2 (0 1, 1 1, 2 1)    10 road                        1</span></span>
+<span><span class="co">#&gt; 2     2     3      (2 1, 3 1)     5 road                        2</span></span>
+<span><span class="co">#&gt; 3     8     9      (4 3, 4 2)     6 unknown                     5</span></span>
+<span><span class="co">#&gt; 4     9     4      (4 2, 4 1)     5 road                        6</span></span></code></pre>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Define how we want to combine the attributes.</span></span>
@@ -551,8 +551,8 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="co">#&gt; # A tibble: 2 × 6</span></span>
 <span><span class="co">#&gt;    from    to  flow type    .tidygraph_edge_index                    x</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;list&gt;                        &lt;LINESTRING&gt;</span></span>
-<span><span class="co">#&gt; 1     1     2     5 road    &lt;int [2]&gt;             (0 1, 1 1, 2 1, 3 1)</span></span>
-<span><span class="co">#&gt; 2     7     3    20 unknown &lt;int [2]&gt;                  (4 3, 4 2, 4 1)</span></span></code></pre>
+<span><span class="co">#&gt; 1     1     2    15 road    &lt;int [2]&gt;             (0 1, 1 1, 2 1, 3 1)</span></span>
+<span><span class="co">#&gt; 2     7     3    11 unknown &lt;int [2]&gt;                  (4 3, 4 2, 4 1)</span></span></code></pre>
 <p>Secondly, it is possible to only remove those pseudo nodes for which attributes among their incident edges are equal. To do this, set <code>require_equal = TRUE</code>. Optionally, you can provide a list of attribute names instead, such that only those attributes are checked for equality, instead of all attributes. Again, remember that the geometry-list column, the tidygraph index column, as well as the <em>from</em> and <em>to</em> columns are not considered attributes in this case.</p>
 <p>In our example, our first pseudo node has incident edges of the same type (“road”), while the second pseudo node has incident edges of differing types (“road” and “unknown”). If we require the type attribute to be equal, the second pseudo node will not be removed.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
@@ -628,9 +628,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="co">#&gt; # Bounding box:  xmin: 0 ymin: -1 xmax: 7 ymax: 3</span></span>
 <span><span class="co">#&gt;    from    to  flow type  .tidygraph_edge_index            x</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt; &lt;list&gt;                &lt;LINESTRING&gt;</span></span>
-<span><span class="co">#&gt; 1     2     3     3 road  &lt;int [1]&gt;               (3 1, 4 1)</span></span>
-<span><span class="co">#&gt; 2     3     4     2 path  &lt;int [1]&gt;             (4 1, 5.8 1)</span></span>
-<span><span class="co">#&gt; 3     5     2     7 road  &lt;int [1]&gt;               (3 2, 3 1)</span></span>
+<span><span class="co">#&gt; 1     2     3     5 road  &lt;int [1]&gt;               (3 1, 4 1)</span></span>
+<span><span class="co">#&gt; 2     3     4     3 path  &lt;int [1]&gt;             (4 1, 5.8 1)</span></span>
+<span><span class="co">#&gt; 3     5     2     1 road  &lt;int [1]&gt;               (3 2, 3 1)</span></span>
 <span><span class="co">#&gt; # … with 11 more rows</span></span></code></pre>
 <p>The combination of the cluster index and the component index can now be used to define the groups of nodes to be contracted. Nodes that form a group on their own will remain unchanged.</p>
 <p>A point of attention is that contraction introduces new <em>multiple edges</em> and/or <em>loop edges</em>. Multiple edges are introduced by contraction when there are several connections between the same groups of nodes. Loop edges are introduced by contraction when there are connections within a group. Setting <code>simplify = TRUE</code> will remove the multiple and loop edges after contraction. However, note that this also removes multiple and loop edges that already existed before contraction.</p>
@@ -674,9 +674,9 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="co">#&gt;         x .tidygraph_node_index   cls   cmp is_priority</span></span>
 <span><span class="co">#&gt;   &lt;POINT&gt;                 &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;lgl&gt;      </span></span>
 <span><span class="co">#&gt; 1 (5.8 1)                     5     4     1 TRUE       </span></span>
-<span><span class="co">#&gt; 2 (6 0.8)                    11     4     1 FALSE      </span></span>
+<span><span class="co">#&gt; 2 (6 0.8)                    11     4     1 TRUE       </span></span>
 <span><span class="co">#&gt; 3 (6 1.2)                    12     4     1 TRUE       </span></span>
-<span><span class="co">#&gt; 4 (6.2 1)                    14     4     1 TRUE</span></span></code></pre>
+<span><span class="co">#&gt; 4 (6.2 1)                    14     4     1 FALSE</span></span></code></pre>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define how we want to combine the attributes.</span></span>
 <span><span class="co"># For the boolean is_priority variable:</span></span>
