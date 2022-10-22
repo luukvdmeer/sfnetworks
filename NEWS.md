@@ -4,9 +4,9 @@
 
 * Unit tests in `test_join.R` now successfully run also on R-devel.
 
-### New features
+### Refactoring
 
-* Updated plot algorithm to be faster and more efficient. Refs [#226](https://github.com/luukvdmeer/sfnetworks/issues/226) and [#228](https://github.com/luukvdmeer/sfnetworks/pull/228). Thanks @agila5.
+* Updated plot algorithm to be faster and more efficient. Refs [#226](https://github.com/luukvdmeer/sfnetworks/issues/226).
 
 # sfnetworks v0.6.0 "Coerde"
 
