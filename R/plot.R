@@ -42,24 +42,29 @@
 #' @importFrom sf st_geometry
 #' @export
 plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
+  # The following function was modified after the discussion in #226
+
+  # Extract and setup extra args
   dots = list(...)
-  # Get geometries of nodes.
-  nsf = pull_node_geom(x)
-  # Combine node geometries with edge geometries if needed.
-  use_edges = TRUE
-  if (! has_explicit_edges(x)) {
-    if (draw_lines) {
-      x = explicitize_edges(x)
-    } else {
-      use_edges = FALSE
-    }
-  }
-  dots$x = if (use_edges) c(nsf, pull_edge_geom(x)) else nsf
-  # Use pch of 20 by default.
   pch_missing = is.null(dots$pch)
   dots$pch = if (pch_missing) 20 else dots$pch
-  # Plot.
-  do.call(plot, dots)
+
+  # Get geometries of nodes.
+  nsf = pull_node_geom(x)
+  # Plot the nodes
+  do.call(plot, c(list(nsf), dots))
+
+  # If necessary, plot also the edges
+  if (has_explicit_edges(x) || draw_lines) {
+    x = explicitize_edges(x)
+    esf = pull_edge_geom(x)
+
+    dots$add = TRUE
+    do.call(plot, c(list(esf), dots))
+  }
+
+  # The end
+  invisible()
 }
 
 #' Plot sfnetwork geometries with ggplot2
