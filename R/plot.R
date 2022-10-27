@@ -16,6 +16,8 @@
 #' as can be found in \code{sf}, \code{tmap}, \code{ggplot2}, \code{ggspatial},
 #' and others.
 #'
+#' @return This is a plot method and therefore has no visible return value.
+#'
 #' @examples
 #' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1), mfrow = c(1,1))
