@@ -1,13 +1,11 @@
-This is a resubmission to reinstate the package. I have made the following changes:
-- Regarding comment: "Please add \value to .Rd files regarding exported methods and explain the functions results in the documentation. Please write about the
-structure of the output (class) and also what the output means. (If a function does not return a value, please document that too, e.g. \value{No return value, called for side effects} or similar). Missing Rd-tags: plot.sfnetwork.Rd: \value"
-  - We have double-checked all functions have a \value tag, but left the plot.sfnetwork function without it. Like any plot method, it returns invisibly and it seems to us it is not common to document that explicitly for plot methods, not even in base R.
-  
-- Regarding comment: "Please ensure that your functions do not write by default or in your examples/vignettes/tests in the user's home filespace (including the package directory and getwd()). This is not allowed by CRAN policies. In your examples/vignettes/tests you can write to tempdir()."
-  - We have made sure functions do not write in the user's filespace
+This is a resubmission to reinstate the package. The package was archived because of a failing test, caused by a base R update on R-devel that affected the way the test was executed. The test has been updated accordingly.
 
-- Additionally
-  - Updated plot algorithm to be faster and more efficient. Refs [#226](https://github.com/luukvdmeer/sfnetworks/issues/226).
+In addition, the following changes have been made:
+
+- The return value of plot.sfnetwork is now documented such that the corresponding .Rd file contains the required \value tag.
+- The actual implementation of plot.sfnetwork is updated to be cleaner and more efficient.
+  
+It also has been double-checked that no functions or vignettes write to the filespace of the user.
 
 ## R CMD check results
 
