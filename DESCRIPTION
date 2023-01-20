@@ -1,6 +1,6 @@
 Package: sfnetworks
 Title: Tidy Geospatial Networks
-Version: 0.6.1
+Version: 0.6.2
 Authors@R:
     c(person(given = "Lucas",
              family = "van der Meer",
@@ -64,4 +64,4 @@ VignetteBuilder:
 ByteCompile: true
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
