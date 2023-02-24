@@ -18,11 +18,11 @@ net = as_sfnetwork(st_as_sf(c(e1, e2, e3)))
 pts = st_as_sf(net, "nodes")[1:2, ]
 
 # Create random points inside network bbox
-set.seed(27)
-rdm = net %>%
-  st_bbox() %>%
-  st_as_sfc() %>%
-  st_sample(4, type = "random")
+r1 = st_sfc(st_point(c(-0.8567691, 1.019509)), crs = 4326)
+r2 = st_sfc(st_point(c(0.26821, 0.8845114)), crs = 4326)
+r3 = st_sfc(st_point(c(0.1343684, 1.421266)), crs = 4326)
+r4 = st_sfc(st_point(c(0.7515197, 0.5485984)), crs = 4326)
+rdm = c(r1, r2, r3, r4)
 
 ## st_join
 test_that("st_join gives a warning when there are multiple node matches", {
