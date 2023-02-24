@@ -51,14 +51,13 @@ Suggests:
     fansi,
     ggplot2 (>= 3.0.0),
     knitr,
+    purrr,
     rmarkdown,
+    s2 (>= 1.0.1),
     spatstat.geom,
     spatstat.linnet,
-    spatstat (>= 2.0.0),
     testthat,
-    tidyverse,
-    TSP,
-    s2 (>= 1.0.1)
+    TSP
 VignetteBuilder:
     knitr
 ByteCompile: true

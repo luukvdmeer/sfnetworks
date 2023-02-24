@@ -39,8 +39,8 @@ Both spatial filters and spatial joins use spatial predicate functions to examin
 library(sfnetworks)
 library(sf)
 library(tidygraph)
-library(tidyverse)
 library(igraph)
+library(dplyr)
 ```
 
 ## Spatial filters
