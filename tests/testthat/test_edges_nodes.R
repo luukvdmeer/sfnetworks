@@ -80,8 +80,8 @@ test_that("spatial_edge_measures return correct (known) values", {
 test_that("edge_length returns same output as edge_displacement with
           spatially implicit edges", {
   expect_setequal(
-    displacement,
-    implicit_length
+    as.vector(displacement),
+    as.vector(implicit_length)
   )
 })
 

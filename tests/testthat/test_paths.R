@@ -236,9 +236,9 @@ test_that("... ignores mode argument with a warning", {
 
 test_that("... is passed correcly onto igraph::distances", {
   expect_silent(cost_dijkstra <- st_network_cost(net_dir, from = 1, to = 10,
-                                  direction = "in", algorithm = "dijkstra"))
-  expect_silent(cost_johnson <- st_network_cost(net_dir, from = 1, to = 10,
-                                  direction = "in", algorithm = "johnson"))
-  expect_false(isTRUE(all.equal(cost_dijkstra, cost_johnson)))
+                                  direction = "out", algorithm = "dijkstra"))
+  expect_warning(cost_unweighted <- st_network_cost(net_dir, from = 1, to = 10,
+                                  direction = "out", algorithm = "unweighted"))
+  expect_false(isTRUE(all.equal(cost_dijkstra, cost_unweighted)))
 })
 
