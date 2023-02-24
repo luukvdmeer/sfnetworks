@@ -64,7 +64,7 @@ test_that("NA indices for in from and/or to arguments give an error", {
   expect_error(st_network_paths(
     net,
     from = rdm[1],
-    to = c(rdm, st_sfc(st_point()))
+    to = c(rdm, st_sfc(st_point(), crs = 3035))
   ), "NA values present")
 })
 
