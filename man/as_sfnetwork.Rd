@@ -83,7 +83,7 @@ plot(as_sfnetwork(points))
 par(oldpar)
 
 # From a linnet object.
-if (require(spatstat, quietly = TRUE)) {
+if (require(spatstat.geom, quietly = TRUE)) {
   as_sfnetwork(simplenet)
 }
 
