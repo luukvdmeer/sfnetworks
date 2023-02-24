@@ -33,7 +33,7 @@ The type should be one of the defined types listed below. If you feel artistic, 
 - **test**: Adding, removing or updating tests. No changes to user code. `:test_tube:` :test_tube:
 - **cicd**: Adding, removing or updating CI/CD workflows. No changes to user code. `:robot:` :robot:
 - **deps**: Adding, removing or updating dependencies. `:couple:` :couple:
-- **release**: Preparing a release, e.g. updating version numbers. `:bookmark` :bookmark:
+- **release**: Preparing a release, e.g. updating version numbers. `:bookmark:` :bookmark:
 - **repo**: Changes to the repository that do not involve code/documentation, e.g. adding templates or community files. `:package:` :package:
 
 Example commit messages are:
