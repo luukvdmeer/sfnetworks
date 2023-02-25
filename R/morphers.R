@@ -80,7 +80,7 @@ NULL
 #' \code{TRUE} also removes multiple edges and loop edges that already
 #' existed before contraction. Defaults to \code{FALSE}.
 #'
-#' @importFrom dplyr group_by group_indices group_split
+#' @importFrom dplyr group_by group_indices group_size group_split
 #' @importFrom igraph contract delete_edges delete_vertex_attr which_loop
 #' which_multiple
 #' @importFrom sf st_as_sf st_cast st_centroid st_combine st_geometry
@@ -101,6 +101,8 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
   # Each group of nodes will later be contracted into a single node.
   ## =======================
   nodes = group_by(nodes, ...)
+  # If no group contains more than one node simply return x.
+  if (all(group_size(nodes) == 1)) return(list(contracted = x))
   ## =======================
   # STEP II: EXTRACT GROUPS
   # Split the nodes table into the created groups.
