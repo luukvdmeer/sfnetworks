@@ -1,3 +1,18 @@
+# sfnetworks v0.6.2
+
+### Bug fixes
+
+* The `to_spatial_contracted()` morpher now correctly handles cases for undirected networks in which only loop edges are created after contraction. Refs [#237](https://github.com/luukvdmeer/sfnetworks/issues/237).
+
+### Refactoring
+
+* The `to_spatial_contracted()` morpher now directly returns the original network when none of the contraction groups contain more than one node.
+
+### Other
+
+* Umbrella packages tidyverse and spatstat are no longer suggested packages. Only individual members of these packages are now suggested packages.
+* Updated unit tests.
+
 # sfnetworks v0.6.1
 
 ### Bug fixes
