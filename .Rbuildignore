@@ -6,6 +6,7 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^revdep$
 ^\.github$
 ^CODE_OF_CONDUCT\.md$
 ^CONTRIBUTING\.md$
