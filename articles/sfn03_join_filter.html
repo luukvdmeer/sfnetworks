@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.2</span>
       </span>
     </div>
 
@@ -94,12 +94,12 @@
 
       
 
-      </header><script src="sfn03_join_filter_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>3. Spatial joins and filters</h1>
             
-            <h4 data-toc-skip class="date">2022-11-08</h4>
+            <h4 data-toc-skip class="date">2023-02-25</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/HEAD/vignettes/sfn03_join_filter.Rmd" class="external-link"><code>vignettes/sfn03_join_filter.Rmd</code></a></small>
       <div class="hidden name"><code>sfn03_join_filter.Rmd</code></div>
@@ -111,23 +111,54 @@
 <style type="text/css" scoped>
 PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 </style>
-<p>The integration with <code>sf</code> and addition of several spatial network specific functions in <code>sfnetworks</code> allow to easily filter information from a network based on spatial relationships, and to join new information into a network based on spatial relationships. This vignette presents several ways to do that.</p>
-<p>Both spatial filters and spatial joins use spatial predicate functions to examine spatial relationships. Spatial predicates are mathematically defined binary spatial relations between two simple feature geometries. Often used examples include the predicate <em>equals</em> (geometry x is equal to geometry y) and the predicate <em>intersects</em> (geometry x has at least one point in common with geometry y). For an overview of all available spatial predicate functions in <code>sf</code> and links to detailed explanations of the underlying algorithms, see <a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html" class="external-link">here</a>.</p>
+<p>The integration with <code>sf</code> and addition of several spatial
+network specific functions in <code>sfnetworks</code> allow to easily
+filter information from a network based on spatial relationships, and to
+join new information into a network based on spatial relationships. This
+vignette presents several ways to do that.</p>
+<p>Both spatial filters and spatial joins use spatial predicate
+functions to examine spatial relationships. Spatial predicates are
+mathematically defined binary spatial relations between two simple
+feature geometries. Often used examples include the predicate
+<em>equals</em> (geometry x is equal to geometry y) and the predicate
+<em>intersects</em> (geometry x has at least one point in common with
+geometry y). For an overview of all available spatial predicate
+functions in <code>sf</code> and links to detailed explanations of the
+underlying algorithms, see <a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html" class="external-link">here</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://luukvdmeer.github.io/sfnetworks/" class="external-link">sfnetworks</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidygraph.data-imaginist.com" class="external-link">tidygraph</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://igraph.org" class="external-link">igraph</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://igraph.org" class="external-link">igraph</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="spatial-filters">Spatial filters<a class="anchor" aria-label="anchor" href="#spatial-filters"></a>
 </h2>
 <div class="section level3">
 <h3 id="using-st_filter">Using st_filter<a class="anchor" aria-label="anchor" href="#using-st_filter"></a>
 </h3>
-<p>Information can be filtered from a network by using spatial predicate functions inside the sf function <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_filter()</a></code>, which works as follows: the function is applied to a set of geometries A with respect to another set of geometries B, and removes features from A based on their spatial relation with the features in B. A practical example: when using the predicate <em>intersects</em>, all geometries in A that do not intersect with any geometry in B are removed.</p>
-<p>When applying <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_filter()</a></code> to a sfnetwork, it is internally applied to the active element of that network. For example: filtering information from a network A with activated nodes, using a set of polygons B and the predicate <em>intersects</em>, will remove those nodes that do not intersect with any of the polygons in B from the network. When edges are active, it will remove the edges that do not intersect with any of the polygons in B from the network.</p>
-<p>Although the filter is applied only to the active element of the network, it may also affect the other element. When nodes are removed, their incident edges are removed as well. However, when edges are removed, the nodes at their endpoints remain, even if they don’t have any other incident edges. This behavior is inherited from <code>tidygraph</code> and understandable from a graph theory point of view: by definition nodes can exist peacefully in isolation, while edges can never exist without nodes at their endpoints.</p>
+<p>Information can be filtered from a network by using spatial predicate
+functions inside the sf function <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_filter()</a></code>, which
+works as follows: the function is applied to a set of geometries A with
+respect to another set of geometries B, and removes features from A
+based on their spatial relation with the features in B. A practical
+example: when using the predicate <em>intersects</em>, all geometries in
+A that do not intersect with any geometry in B are removed.</p>
+<p>When applying <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_filter()</a></code> to a sfnetwork, it is
+internally applied to the active element of that network. For example:
+filtering information from a network A with activated nodes, using a set
+of polygons B and the predicate <em>intersects</em>, will remove those
+nodes that do not intersect with any of the polygons in B from the
+network. When edges are active, it will remove the edges that do not
+intersect with any of the polygons in B from the network.</p>
+<p>Although the filter is applied only to the active element of the
+network, it may also affect the other element. When nodes are removed,
+their incident edges are removed as well. However, when edges are
+removed, the nodes at their endpoints remain, even if they don’t have
+any other incident edges. This behavior is inherited from
+<code>tidygraph</code> and understandable from a graph theory point of
+view: by definition nodes can exist peacefully in isolation, while edges
+can never exist without nodes at their endpoints.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4151358</span>, <span class="fl">3208045</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">p2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4151340</span>, <span class="fl">3207120</span><span class="op">)</span><span class="op">)</span></span>
@@ -158,7 +189,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">filtered</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-3-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-3-2.png" width="50%"></p>
-<p>The isolated nodes that remain after filtering the edges can be easily removed using a combination of a regular <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code> verb and the <code><a href="https://tidygraph.data-imaginist.com/reference/node_types.html" class="external-link">tidygraph::node_is_isolated()</a></code> query function.</p>
+<p>The isolated nodes that remain after filtering the edges can be
+easily removed using a combination of a regular
+<code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code> verb and the
+<code><a href="https://tidygraph.data-imaginist.com/reference/node_types.html" class="external-link">tidygraph::node_is_isolated()</a></code> query function.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">filtered</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -184,13 +218,22 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">filtered</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-5-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-5-2.png" width="50%"></p>
-<p>For non-spatial filters applied to attribute columns, simply use <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code> instead of <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_filter()</a></code>.</p>
+<p>For non-spatial filters applied to attribute columns, simply use
+<code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code> instead of
+<code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_filter()</a></code>.</p>
 </div>
 <div class="section level3">
 <h3 id="using-spatial-node-and-edge-query-functions">Using spatial node and edge query functions<a class="anchor" aria-label="anchor" href="#using-spatial-node-and-edge-query-functions"></a>
 </h3>
-<p>In <code>tidygraph</code>, filtering information from networks is done by using specific node or edge query functions inside the <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code> verb. An example was already shown above, where isolated nodes were removed from the network.</p>
-<p>In <code>sfnetworks</code>, several spatial predicates are implemented as node and edge query functions such that you can also do spatial filtering in tidygraph style. See <a href="https://luukvdmeer.github.io/sfnetworks/reference/spatial_node_predicates.html" class="external-link">here</a> for a list of all implemented spatial node query functions, and <a href="https://luukvdmeer.github.io/sfnetworks/reference/spatial_edge_predicates.html" class="external-link">here</a> for the spatial edge query functions.</p>
+<p>In <code>tidygraph</code>, filtering information from networks is
+done by using specific node or edge query functions inside the
+<code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code> verb. An example was already shown above,
+where isolated nodes were removed from the network.</p>
+<p>In <code>sfnetworks</code>, several spatial predicates are
+implemented as node and edge query functions such that you can also do
+spatial filtering in tidygraph style. See <a href="https://luukvdmeer.github.io/sfnetworks/reference/spatial_node_predicates.html" class="external-link">here</a>
+for a list of all implemented spatial node query functions, and <a href="https://luukvdmeer.github.io/sfnetworks/reference/spatial_edge_predicates.html" class="external-link">here</a>
+for the spatial edge query functions.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">filtered</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -203,8 +246,18 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">filtered</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-6-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-6-2.png" width="50%"></p>
-<p>A nice application of this in road networks is to find underpassing and overpassing roads (i.e. edges that cross other edges but are not connected at that point). As we can see in the example below, such roads are not present in our Roxel data, which results in a network without edges.</p>
-<p>The <code><a href="https://tidygraph.data-imaginist.com/reference/context_accessors.html" class="external-link">tidygraph::.E()</a></code> function used in the example makes it possible to directly access the complete edges table inside verbs. In this case, that means that for each edge we evaluate if it crosses with <em>any</em> other edge in the network. Similarly, we can use <code><a href="https://tidygraph.data-imaginist.com/reference/context_accessors.html" class="external-link">tidygraph::.N()</a></code> to access the nodes table and <code><a href="https://tidygraph.data-imaginist.com/reference/context_accessors.html" class="external-link">tidygraph::.G()</a></code> to access the network object as a whole.</p>
+<p>A nice application of this in road networks is to find underpassing
+and overpassing roads (i.e. edges that cross other edges but are not
+connected at that point). As we can see in the example below, such roads
+are not present in our Roxel data, which results in a network without
+edges.</p>
+<p>The <code><a href="https://tidygraph.data-imaginist.com/reference/context_accessors.html" class="external-link">tidygraph::.E()</a></code> function used in the example makes
+it possible to directly access the complete edges table inside verbs. In
+this case, that means that for each edge we evaluate if it crosses with
+<em>any</em> other edge in the network. Similarly, we can use
+<code><a href="https://tidygraph.data-imaginist.com/reference/context_accessors.html" class="external-link">tidygraph::.N()</a></code> to access the nodes table and
+<code><a href="https://tidygraph.data-imaginist.com/reference/context_accessors.html" class="external-link">tidygraph::.G()</a></code> to access the network object as a
+whole.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -229,7 +282,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="co">#&gt; 2 (4151474 3207946)</span></span>
 <span><span class="co">#&gt; 3 (4151398 3207777)</span></span>
 <span><span class="co">#&gt; # … with 698 more rows</span></span></code></pre>
-<p>If you just want to store the information about the investigated spatial relation, without filtering the network, you can also use the spatial node and edge query functions inside a <code><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">dplyr::mutate()</a></code> verb.</p>
+<p>If you just want to store the information about the investigated
+spatial relation, without filtering the network, you can also use the
+spatial node and edge query functions inside a
+<code><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">dplyr::mutate()</a></code> verb.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>in_poly <span class="op">=</span> <span class="fu"><a href="../reference/spatial_node_predicates.html">node_intersects</a></span><span class="op">(</span><span class="va">poly</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -263,7 +319,8 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="co">#&gt; 2     3     4 Pienersallee          secondary   (4151398 3207777, 4151390 32077…</span></span>
 <span><span class="co">#&gt; 3     5     6 Schulte-Bernd-Strasse residential (4151408 3207539, 4151417 32075…</span></span>
 <span><span class="co">#&gt; # … with 848 more rows</span></span></code></pre>
-<p>Besides predicate query functions, you can also use the <a href="https://luukvdmeer.github.io/sfnetworks/reference/node_coordinates.html" class="external-link">coordinate query functions</a> for spatial filters on the nodes. For example:</p>
+<p>Besides predicate query functions, you can also use the <a href="https://luukvdmeer.github.io/sfnetworks/reference/node_coordinates.html" class="external-link">coordinate
+query functions</a> for spatial filters on the nodes. For example:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">v</span> <span class="op">=</span> <span class="fl">4152000</span></span>
 <span><span class="va">l</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_linestring</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">v</span>, <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">[</span><span class="st">"ymin"</span><span class="op">]</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">v</span>, <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">[</span><span class="st">"ymax"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
@@ -281,22 +338,39 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div class="section level3">
 <h3 id="clipping">Clipping<a class="anchor" aria-label="anchor" href="#clipping"></a>
 </h3>
-<p>Filtering returns a subset of the original geometries, but leaves those geometries themselves unchanged. This is different from clipping, in which they get cut at the border of a provided clip feature. There are three ways in which you can do this: <code><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html" class="external-link">sf::st_intersection()</a></code> keeps only those parts of the original geometries that lie within the clip feature, <code><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html" class="external-link">sf::st_difference()</a></code> keeps only those parts of the original geometries that lie outside the clip feature, and <code><a href="https://r-spatial.github.io/sf/reference/st_crop.html" class="external-link">sf::st_crop()</a></code> keeps only those parts of the original geometries that lie within the bounding box of the clip feature.</p>
-<p>Note that in the case of the nodes, clipping is not different from filtering, since point geometries cannot fall party inside and partly outside another feature. However, in the case of the edges, clipping will cut the linestring geometries of the edges at the border of the clip feature (or in the case of cropping, the bounding box of that feature). To preserve a valid spatial network structure, <code>sfnetworks</code> adds new nodes at these cut locations.</p>
+<p>Filtering returns a subset of the original geometries, but leaves
+those geometries themselves unchanged. This is different from clipping,
+in which they get cut at the border of a provided clip feature. There
+are three ways in which you can do this:
+<code><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html" class="external-link">sf::st_intersection()</a></code> keeps only those parts of the
+original geometries that lie within the clip feature,
+<code><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html" class="external-link">sf::st_difference()</a></code> keeps only those parts of the original
+geometries that lie outside the clip feature, and
+<code><a href="https://r-spatial.github.io/sf/reference/st_crop.html" class="external-link">sf::st_crop()</a></code> keeps only those parts of the original
+geometries that lie within the bounding box of the clip feature.</p>
+<p>Note that in the case of the nodes, clipping is not different from
+filtering, since point geometries cannot fall party inside and partly
+outside another feature. However, in the case of the edges, clipping
+will cut the linestring geometries of the edges at the border of the
+clip feature (or in the case of cropping, the bounding box of that
+feature). To preserve a valid spatial network structure,
+<code>sfnetworks</code> adds new nodes at these cut locations.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clipped</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html" class="external-link">st_intersection</a></span><span class="op">(</span><span class="va">poly</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/node_types.html" class="external-link">node_is_isolated</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: attribute variables are assumed to be spatially constant throughout all</span></span>
-<span><span class="co">#&gt; geometries</span></span>
+<span><span class="co">#&gt; Warning: attribute variables are assumed to be spatially constant throughout</span></span>
+<span><span class="co">#&gt; all geometries</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">poly</span>, border <span class="op">=</span> <span class="st">"red"</span>, lty <span class="op">=</span> <span class="fl">4</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">clipped</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-10-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-10-2.png" width="50%"> Note: Neither of the clipping function currently works well with undirected networks!</p>
+<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-10-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-10-2.png" width="50%">
+Note: Neither of the clipping function currently works well with
+undirected networks!</p>
 </div>
 </div>
 <div class="section level2">
@@ -305,9 +379,23 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div class="section level3">
 <h3 id="using-st_join">Using st_join<a class="anchor" aria-label="anchor" href="#using-st_join"></a>
 </h3>
-<p>Information can be spatially joined into a network by using spatial predicate functions inside the sf function <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_join()</a></code>, which works as follows: the function is applied to a set of geometries A with respect to another set of geometries B, and attaches feature attributes from features in B to features in A based on their spatial relation. A practical example: when using the predicate <em>intersects</em>, feature attributes from feature y in B are attached to feature x in A whenever x intersects with y.</p>
-<p>When applying <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_join()</a></code> to a sfnetwork, it is internally applied to the active element of that network. For example: joining information into network A with activated nodes, from a set of polygons B and using the predicate <em>intersects</em>, will attach attributes from a polygon in B to those nodes that intersect with that specific polygon. When edges are active, it will attach the same information but to the intersecting edges instead.</p>
-<p>Lets show this with an example in which we first create imaginary postal code areas for the Roxel dataset.</p>
+<p>Information can be spatially joined into a network by using spatial
+predicate functions inside the sf function <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_join()</a></code>,
+which works as follows: the function is applied to a set of geometries A
+with respect to another set of geometries B, and attaches feature
+attributes from features in B to features in A based on their spatial
+relation. A practical example: when using the predicate
+<em>intersects</em>, feature attributes from feature y in B are attached
+to feature x in A whenever x intersects with y.</p>
+<p>When applying <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_join()</a></code> to a sfnetwork, it is
+internally applied to the active element of that network. For example:
+joining information into network A with activated nodes, from a set of
+polygons B and using the predicate <em>intersects</em>, will attach
+attributes from a polygon in B to those nodes that intersect with that
+specific polygon. When edges are active, it will attach the same
+information but to the intersecting edges instead.</p>
+<p>Lets show this with an example in which we first create imaginary
+postal code areas for the Roxel dataset.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">codes</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_make_grid.html" class="external-link">st_make_grid</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -353,8 +441,24 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">joined</span>, <span class="st">"edges"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">joined</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-11-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-11-2.png" width="50%"></p>
-<p>In the example above, the polygons are spatially distinct. Hence, each node can only intersect with a single polygon. But what would happen if we do a join with polygons that overlap? The attributes from which polygon will then be attached to a node that intersects with multiple polygons at once? In <code>sf</code> this issue is solved by duplicating such a point as much times as the number of polygons it intersects with, and attaching attributes of each intersecting polygon to one of these duplicates. This approach does not fit the network case, however. An edge can only have a single node at each of its endpoints, and thus, the duplicated nodes will be isolated and redundant in the network structure. Therefore, <code>sfnetworks</code> will only join the information from the first match whenever there are multiple matches for a single node. A warning is given in that case such that you are aware of the fact that not all information was joined into the network.</p>
-<p>Note that in the case of joining on the edges, multiple matches per edge are not a problem for the network structure. It will simply duplicate the edge (i.e. creating a set of parallel edges) whenever this occurs.</p>
+<p>In the example above, the polygons are spatially distinct. Hence,
+each node can only intersect with a single polygon. But what would
+happen if we do a join with polygons that overlap? The attributes from
+which polygon will then be attached to a node that intersects with
+multiple polygons at once? In <code>sf</code> this issue is solved by
+duplicating such a point as much times as the number of polygons it
+intersects with, and attaching attributes of each intersecting polygon
+to one of these duplicates. This approach does not fit the network case,
+however. An edge can only have a single node at each of its endpoints,
+and thus, the duplicated nodes will be isolated and redundant in the
+network structure. Therefore, <code>sfnetworks</code> will only join the
+information from the first match whenever there are multiple matches for
+a single node. A warning is given in that case such that you are aware
+of the fact that not all information was joined into the network.</p>
+<p>Note that in the case of joining on the edges, multiple matches per
+edge are not a problem for the network structure. It will simply
+duplicate the edge (i.e. creating a set of parallel edges) whenever this
+occurs.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">two_equal_polys</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">poly</span>, <span class="va">poly</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>foo <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span><span class="op">)</span><span class="op">)</span></span>
@@ -362,8 +466,8 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="co"># Join on nodes gives a warning that only the first match per node is joined.</span></span>
 <span><span class="co"># The number of nodes in the resulting network remains the same.</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">st_join</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">two_equal_polys</span>, join <span class="op">=</span> <span class="va">st_intersects</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Multiple matches were detected from some nodes. Only the first match is</span></span>
-<span><span class="co">#&gt; considered</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning: Multiple matches were detected from some nodes. Only the first match</span></span>
+<span><span class="co">#&gt; is considered</span></span></code></pre></div>
 <pre class="fansi fansi-output"><code><span><span class="co">#&gt; # A sfnetwork with 701 nodes and 851 edges</span></span>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # CRS:  EPSG:3035 </span></span>
@@ -430,12 +534,23 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="co">#&gt; 2 (4151474 3207946)</span></span>
 <span><span class="co">#&gt; 3 (4151398 3207777)</span></span>
 <span><span class="co">#&gt; # … with 698 more rows</span></span></code></pre>
-<p>For non-spatial joins based on attribute columns, simply use a join function from <code>dplyr</code> (e.g. <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::left_join()</a></code> or <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::inner_join()</a></code>) instead of <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_join()</a></code>.</p>
+<p>For non-spatial joins based on attribute columns, simply use a join
+function from <code>dplyr</code> (e.g. <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::left_join()</a></code>
+or <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::inner_join()</a></code>) instead of
+<code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_join()</a></code>.</p>
 </div>
 <div class="section level3">
 <h3 id="snapping-points-to-their-nearest-node-before-joining">Snapping points to their nearest node before joining<a class="anchor" aria-label="anchor" href="#snapping-points-to-their-nearest-node-before-joining"></a>
 </h3>
-<p>Another network specific use-case of spatial joins would be to join information from external points of interest (POIs) into the nodes of the network. However, to do so, such points need to have <em>exactly</em> equal coordinates to one of the nodes. Often this will not be the case. To solve such situations, you will first need to update the coordinates of the POIs to match those of their <em>nearest node</em>. This process is also called <em>snapping</em>. To find the nearest node in the network for each POI, you can use the sf function <code><a href="https://r-spatial.github.io/sf/reference/st_nearest_feature.html" class="external-link">sf::st_nearest_feature()</a></code>.</p>
+<p>Another network specific use-case of spatial joins would be to join
+information from external points of interest (POIs) into the nodes of
+the network. However, to do so, such points need to have
+<em>exactly</em> equal coordinates to one of the nodes. Often this will
+not be the case. To solve such situations, you will first need to update
+the coordinates of the POIs to match those of their <em>nearest
+node</em>. This process is also called <em>snapping</em>. To find the
+nearest node in the network for each POI, you can use the sf function
+<code><a href="https://r-spatial.github.io/sf/reference/st_nearest_feature.html" class="external-link">sf::st_nearest_feature()</a></code>.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create a network.</span></span>
 <span><span class="va">node1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
@@ -470,7 +585,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">snapped_pois</span>, pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-13-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-13-2.png" width="50%"></p>
-<p>After snapping the POIs, we can use <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_join()</a></code> as expected. Do remember that if multiple POIs are snapped to the same node, only the information of the first one is joined into the network.</p>
+<p>After snapping the POIs, we can use <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_join()</a></code> as
+expected. Do remember that if multiple POIs are snapped to the same
+node, only the information of the first one is joined into the
+network.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">st_join</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">snapped_pois</span><span class="op">)</span></span></code></pre></div>
 <pre class="fansi fansi-output"><code><span><span class="co">#&gt; # A sfnetwork with 2 nodes and 1 edges</span></span>
@@ -499,8 +617,21 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div class="section level3">
 <h3 id="blending-points-into-a-network">Blending points into a network<a class="anchor" aria-label="anchor" href="#blending-points-into-a-network"></a>
 </h3>
-<p>In the example above, it makes sense to include the information from the first POI in an already existing node. For the second POI, however, its <em>nearest node</em> is quite far away relative to the <em>nearest location</em> on its <em>nearest edge</em>. In that case, you might want to split the edge at that location, and add a <em>new node</em> to the network. For this combination process we use the metaphor of throwing the network and POIs together in a blender, and mix them smoothly together.</p>
-<p>The function <code><a href="../reference/st_network_blend.html">st_network_blend()</a></code> does exactly that. For each POI, it finds the nearest location <span class="math inline">\(p\)</span> on the nearest edge <span class="math inline">\(e\)</span>. If <span class="math inline">\(p\)</span> is an already existing node (i.e. <span class="math inline">\(p\)</span> is an endpoint of <span class="math inline">\(e\)</span>), it joins the information from the POI into that node. If <span class="math inline">\(p\)</span> is <em>not</em> an already existing node, it subdivides <span class="math inline">\(e\)</span> at <span class="math inline">\(p\)</span>, adds <span class="math inline">\(p\)</span> as a <em>new node</em> to the network, and joins the information from the POI into that new node. For this process, it does <em>not</em> matter if <span class="math inline">\(p\)</span> is an interior point in the linestring geometry of <span class="math inline">\(e\)</span>.</p>
+<p>In the example above, it makes sense to include the information from
+the first POI in an already existing node. For the second POI, however,
+its <em>nearest node</em> is quite far away relative to the <em>nearest
+location</em> on its <em>nearest edge</em>. In that case, you might want
+to split the edge at that location, and add a <em>new node</em> to the
+network. For this combination process we use the metaphor of throwing
+the network and POIs together in a blender, and mix them smoothly
+together.</p>
+<p>The function <code><a href="../reference/st_network_blend.html">st_network_blend()</a></code> does exactly that. For
+each POI, it finds the nearest location <span class="math inline">\(p\)</span> on the nearest edge <span class="math inline">\(e\)</span>. If <span class="math inline">\(p\)</span> is an already existing node (i.e. <span class="math inline">\(p\)</span> is an endpoint of <span class="math inline">\(e\)</span>), it joins the information from the POI
+into that node. If <span class="math inline">\(p\)</span> is
+<em>not</em> an already existing node, it subdivides <span class="math inline">\(e\)</span> at <span class="math inline">\(p\)</span>, adds <span class="math inline">\(p\)</span> as a <em>new node</em> to the network,
+and joins the information from the POI into that new node. For this
+process, it does <em>not</em> matter if <span class="math inline">\(p\)</span> is an interior point in the linestring
+geometry of <span class="math inline">\(e\)</span>.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">blended</span> <span class="op">=</span> <span class="fu"><a href="../reference/st_network_blend.html">st_network_blend</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">pois</span><span class="op">)</span></span>
 <span><span class="va">blended</span></span></code></pre></div>
@@ -541,7 +672,14 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pois</span>, pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">blended</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-15-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-15-2.png" width="50%"></p>
-<p>The <code><a href="../reference/st_network_blend.html">st_network_blend()</a></code> function has a <code>tolerance</code> parameter, which defines the maximum distance a POI can be from the network in order to be blended in. Hence, only the POIs that are at least as close to the network as the tolerance distance will be blended, and all others will be ignored. The tolerance can be specified as a non-negative number. By default it is assumed its units are meters, but this behaviour can be changed by manually setting its units with <code><a href="https://rdrr.io/pkg/units/man/units.html" class="external-link">units::units()</a></code>.</p>
+<p>The <code><a href="../reference/st_network_blend.html">st_network_blend()</a></code> function has a
+<code>tolerance</code> parameter, which defines the maximum distance a
+POI can be from the network in order to be blended in. Hence, only the
+POIs that are at least as close to the network as the tolerance distance
+will be blended, and all others will be ignored. The tolerance can be
+specified as a non-negative number. By default it is assumed its units
+are meters, but this behaviour can be changed by manually setting its
+units with <code><a href="https://rdrr.io/pkg/units/man/units.html" class="external-link">units::units()</a></code>.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pois</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>poi_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"bakery"</span>, <span class="st">"butcher"</span>, <span class="st">"bar"</span><span class="op">)</span>,</span>
 <span>                  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.6</span>, <span class="fl">0.4</span><span class="op">)</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -557,9 +695,26 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="fu">plot_connections</span><span class="op">(</span><span class="va">pois</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pois</span>, pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-16-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-16-2.png" width="50%"></p>
-<p>There are a few important details to be aware of when using <code><a href="../reference/st_network_blend.html">st_network_blend()</a></code>. Firstly: when multiple POIs have the same <em>nearest location on the nearest edge</em>, only the first of them is blended into the network. This is for the same reasons as explained before: in the network structure there is no clear approach for dealing with duplicated nodes. By arranging your table of POIs with <code><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">dplyr::arrange()</a></code> before blending you can influence which (type of) POI is given priority in such cases.</p>
-<p>Secondly: when a single POI has multiple nearest edges, it is only blended into the first of these edges. Therefore, it might be a good idea to run the <code><a href="../reference/spatial_morphers.html">to_spatial_subdivision()</a></code> morpher after blending, such that intersecting but unconnected edges get connected. See the <a href="https://luukvdmeer.github.io/sfnetworks/articles/sfn02_preprocess_clean.html#subdivide-edges" class="external-link">Network pre-processing and cleaning</a> vignette for more details.</p>
-<p>Lastly: it is important to be aware of <em>floating point precision</em>. See the discussion in <a href="https://github.com/r-spatial/sf/issues/790" class="external-link">this GitHub issue</a> for more background. In short: due to internal rounding of rational numbers in R it is actually possible that even the intersection point between two lines is <em>not</em> evaluated as intersecting those lines themselves. Sounds confusing? It is! But see the example below:</p>
+<p>There are a few important details to be aware of when using
+<code><a href="../reference/st_network_blend.html">st_network_blend()</a></code>. Firstly: when multiple POIs have the
+same <em>nearest location on the nearest edge</em>, only the first of
+them is blended into the network. This is for the same reasons as
+explained before: in the network structure there is no clear approach
+for dealing with duplicated nodes. By arranging your table of POIs with
+<code><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">dplyr::arrange()</a></code> before blending you can influence which
+(type of) POI is given priority in such cases.</p>
+<p>Secondly: when a single POI has multiple nearest edges, it is only
+blended into the first of these edges. Therefore, it might be a good
+idea to run the <code><a href="../reference/spatial_morphers.html">to_spatial_subdivision()</a></code> morpher after
+blending, such that intersecting but unconnected edges get connected.
+See the <a href="https://luukvdmeer.github.io/sfnetworks/articles/sfn02_preprocess_clean.html#subdivide-edges" class="external-link">Network
+pre-processing and cleaning</a> vignette for more details.</p>
+<p>Lastly: it is important to be aware of <em>floating point
+precision</em>. See the discussion in <a href="https://github.com/r-spatial/sf/issues/790" class="external-link">this GitHub issue</a>
+for more background. In short: due to internal rounding of rational
+numbers in R it is actually possible that even the intersection point
+between two lines is <em>not</em> evaluated as intersecting those lines
+themselves. Sounds confusing? It is! But see the example below:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create two intersecting lines.</span></span>
 <span><span class="va">p1</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.53236</span>, <span class="fl">1.95377</span><span class="op">)</span><span class="op">)</span></span>
@@ -588,7 +743,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_measures.html" class="external-link">st_distance</a></span><span class="op">(</span><span class="va">l1</span>, <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html" class="external-link">st_intersection</a></span><span class="op">(</span><span class="va">l1</span>, <span class="va">l2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;              [,1]</span></span>
 <span><span class="co">#&gt; [1,] 4.310191e-17</span></span></code></pre></div>
-<p>That is: you would expect an intersection with an edge to be blended into the network even if you set <code>tolerance = 0</code>, but in fact that will not always happen. To avoid having these problems, you can better set the tolerance to a very small number instead of zero.</p>
+<p>That is: you would expect an intersection with an edge to be blended
+into the network even if you set <code>tolerance = 0</code>, but in fact
+that will not always happen. To avoid having these problems, you can
+better set the tolerance to a very small number instead of zero.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">l1</span><span class="op">)</span></span>
 <span><span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html" class="external-link">st_intersection</a></span><span class="op">(</span><span class="va">l1</span>, <span class="va">l2</span><span class="op">)</span></span>
@@ -605,7 +763,23 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <div class="section level3">
 <h3 id="joining-two-networks">Joining two networks<a class="anchor" aria-label="anchor" href="#joining-two-networks"></a>
 </h3>
-<p>In the examples above it was all about joining information from external features into a network. But how about joining two networks? This is what the <code><a href="../reference/st_network_join.html">st_network_join()</a></code> function is for. It takes two sfnetworks as input and makes a spatial full join on the geometries of the nodes data, based on the <em>equals</em> spatial predicate. That means, all nodes from network x <em>and</em> all nodes from network y are present in the joined network, but if there were nodes in x with equal geometries to nodes in y, these nodes become a <em>single node</em> in the joined network. Edge data are combined using a <code><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">dplyr::bind_rows()</a></code> semantic, meaning that data are matched by column name and values are filled with <code>NA</code> if missing in either of the networks. The <em>from</em> and <em>to</em> columns in the edge data are updated automatically such that they correctly match the new node indices of the joined network. There is no spatial join performed on the edges. Hence, if there is an edge in x with an equal geometry to an edge in y, they remain separate edges in the joined network.</p>
+<p>In the examples above it was all about joining information from
+external features into a network. But how about joining two networks?
+This is what the <code><a href="../reference/st_network_join.html">st_network_join()</a></code> function is for. It
+takes two sfnetworks as input and makes a spatial full join on the
+geometries of the nodes data, based on the <em>equals</em> spatial
+predicate. That means, all nodes from network x <em>and</em> all nodes
+from network y are present in the joined network, but if there were
+nodes in x with equal geometries to nodes in y, these nodes become a
+<em>single node</em> in the joined network. Edge data are combined using
+a <code><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">dplyr::bind_rows()</a></code> semantic, meaning that data are
+matched by column name and values are filled with <code>NA</code> if
+missing in either of the networks. The <em>from</em> and <em>to</em>
+columns in the edge data are updated automatically such that they
+correctly match the new node indices of the joined network. There is no
+spatial join performed on the edges. Hence, if there is an edge in x
+with an equal geometry to an edge in y, they remain separate edges in
+the joined network.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">node3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">node4</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st.html" class="external-link">st_point</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
@@ -670,7 +844,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
