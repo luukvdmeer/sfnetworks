@@ -190,7 +190,7 @@ is assigned to, and automatically merge those changes back into the
 <span><span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
 <span><span class="co">#&gt;    from    to name                  type                          geometry group</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;                 &lt;fct&gt;                 &lt;LINESTRING [m]&gt; &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1     1     2 Havixbecker Strasse   residential (4151491 3207923, 4151474…     9</span></span>
+<span><span class="co">#&gt; 1     1     2 Havixbecker Strasse   residential (4151491 3207923, 4151474…    12</span></span>
 <span><span class="co">#&gt; 2     3     4 Pienersallee          secondary   (4151398 3207777, 4151390…     1</span></span>
 <span><span class="co">#&gt; 3     5     6 Schulte-Bernd-Strasse residential (4151408 3207539, 4151417…     1</span></span>
 <span><span class="co">#&gt; # … with 848 more rows</span></span></code></pre>
@@ -643,8 +643,8 @@ to the geometry of the first set member.</p>
 <span><span class="co">#&gt; # A tibble: 2 × 6</span></span>
 <span><span class="co">#&gt;    from    to name         type                                   geometry  flow</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;        &lt;fct&gt;                          &lt;LINESTRING [m]&gt; &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1   118   119 NA           service (4150716 3207080, 4150715 3207108, 415…    57</span></span>
-<span><span class="co">#&gt; 2   118   119 Pienersallee service      (4150716 3207080, 4150752 3207067)    76</span></span></code></pre>
+<span><span class="co">#&gt; 1   118   119 NA           service (4150716 3207080, 4150715 3207108, 415…    34</span></span>
+<span><span class="co">#&gt; 2   118   119 Pienersallee service      (4150716 3207080, 4150752 3207067)    17</span></span></code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Simplify the network.</span></span>
 <span><span class="co"># We summarise the flow attribute by taking the sum of the merged edge flows.</span></span>
@@ -668,7 +668,7 @@ to the geometry of the first set member.</p>
 <span><span class="co">#&gt; # A tibble: 1 × 7</span></span>
 <span><span class="co">#&gt;    from    to name  type                                  geometry  flow .tidy…¹</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;fct&gt;                         &lt;LINESTRING [m]&gt; &lt;dbl&gt; &lt;list&gt; </span></span>
-<span><span class="co">#&gt; 1   118   119 NA    service (4150716 3207080, 4150715 3207108, 41…   133 &lt;int&gt;  </span></span>
+<span><span class="co">#&gt; 1   118   119 NA    service (4150716 3207080, 4150715 3207108, 41…    51 &lt;int&gt;  </span></span>
 <span><span class="co">#&gt; # … with abbreviated variable name ¹​.tidygraph_edge_index</span></span></code></pre>
 </div>
 <div class="section level3">
@@ -802,11 +802,11 @@ example just to get an idea of how this would work:</p>
 <span><span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
 <span><span class="co">#&gt;            geometry building post_code</span></span>
 <span><span class="co">#&gt;         &lt;POINT [m]&gt; &lt;lgl&gt;        &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 (4151491 3207923) FALSE           NA</span></span>
-<span><span class="co">#&gt; 2 (4151474 3207946) FALSE           NA</span></span>
+<span><span class="co">#&gt; 1 (4151491 3207923) TRUE          1020</span></span>
+<span><span class="co">#&gt; 2 (4151474 3207946) TRUE          1020</span></span>
 <span><span class="co">#&gt; 3 (4151398 3207777) FALSE           NA</span></span>
 <span><span class="co">#&gt; 4 (4151370 3207673) FALSE           NA</span></span>
-<span><span class="co">#&gt; 5 (4151408 3207539) TRUE          1020</span></span>
+<span><span class="co">#&gt; 5 (4151408 3207539) FALSE           NA</span></span>
 <span><span class="co">#&gt; 6 (4151421 3207592) TRUE          1020</span></span>
 <span><span class="co">#&gt; # … with 695 more rows</span></span>
 <span><span class="co">#&gt; #</span></span>
@@ -873,8 +873,8 @@ requires a geographic CRS for that.</p>
 <span><span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
 <span><span class="co">#&gt;            geometry building</span></span>
 <span><span class="co">#&gt;         &lt;POINT [m]&gt; &lt;lgl&gt;   </span></span>
-<span><span class="co">#&gt; 1 (4151491 3207923) FALSE   </span></span>
-<span><span class="co">#&gt; 2 (4151474 3207946) FALSE   </span></span>
+<span><span class="co">#&gt; 1 (4151491 3207923) TRUE    </span></span>
+<span><span class="co">#&gt; 2 (4151474 3207946) TRUE    </span></span>
 <span><span class="co">#&gt; 3 (4151398 3207777) FALSE   </span></span>
 <span><span class="co">#&gt; # … with 698 more rows</span></span></code></pre>
 </div>
