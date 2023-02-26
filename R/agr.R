@@ -25,17 +25,21 @@ agr = function(x, active = NULL) {
   )
 }
 
+#' @name agr
 #' @importFrom igraph vertex_attr
+#' @noRd
 node_agr = function(x) {
   agr = attr(vertex_attr(x), "agr")
-  valid_agr(agr, node_feature_attribute_names(x))
+  make_agr_valid(agr, names = node_feature_attribute_names(x))
 }
 
+#' @name agr
 #' @importFrom igraph edge_attr
+#' @noRd
 edge_agr = function(x) {
   agr = attr(edge_attr(x), "agr")
   if (has_explicit_edges(x)) {
-    agr = valid_agr(agr, edge_feature_attribute_names(x))
+    agr = make_agr_valid(agr, names = edge_feature_attribute_names(x))
   }
   agr
 }
@@ -54,13 +58,17 @@ edge_agr = function(x) {
   )
 }
 
+#' @name agr
 #' @importFrom igraph vertex_attr<-
+#' @noRd
 `node_agr<-` = function(x, value) {
   attr(vertex_attr(x), "agr") = value
   x
 }
 
+#' @name agr
 #' @importFrom igraph edge_attr<-
+#' @noRd
 `edge_agr<-` = function(x, value) {
   attr(edge_attr(x), "agr") = value
   x
@@ -88,9 +96,6 @@ empty_agr = function(names) {
 #' @param names A character vector containing the names that should be present
 #' in the agr factor.
 #'
-#' @param levels A character vector containing the levels that should be
-#' present in the agr factor.
-#'
 #' @return A named factor with appropriate levels. Names are guaranteed to
 #' correspond to the attribute columns of the targeted element of x and are
 #' guaranteed to be sorted in the same order as those attribute columns.
@@ -98,11 +103,12 @@ empty_agr = function(names) {
 #' the from and to columns.
 #'
 #' @noRd
-valid_agr = function(agr, names, levels = sf:::agr_levels) {
+make_agr_valid = function(agr, names) {
+  levels = c("constant", "aggregate", "identity")
   if (is.null(agr)) {
-    new_agr = empty_agr(names)
+    valid_agr = empty_agr(names)
   } else {
-    new_agr = structure(agr[names], names = names, levels = levels)
+    valid_agr = structure(agr[names], names = names, levels = levels)
   }
-  new_agr
+  valid_agr
 }
