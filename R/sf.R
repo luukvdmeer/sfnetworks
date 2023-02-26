@@ -810,5 +810,3 @@ st_area.sfnetwork = function(x, ...) {
   active = attr(x, "active")
   st_area(pull_geom(x, active), ...)
 }
-
-
