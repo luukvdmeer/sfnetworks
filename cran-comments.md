@@ -1,5 +1,6 @@
 In this release we have made the following changes:
 
+* The reference to `sf:::agr_levels` is removed, solving the note in the CRAN checks about the usage of the `:::` operator.
 * Unit tests that where failing after an igraph update now run successfully again. Refs [#232](https://github.com/luukvdmeer/sfnetworks/issues/232). This means the CRAN checks that where failing should now be passing successfully again.
 * Unit test stuck in an infinite loop caused by usage of `sf::st_sample()` on a polygon crossing the date line updated accordingly. See [this sf issue](https://github.com/r-spatial/sf/issues/1984) for details on the underlying problem.
 * The `to_spatial_contracted()` morpher now correctly handles cases for undirected networks in which only loop edges are created after contraction. Refs [#237](https://github.com/luukvdmeer/sfnetworks/issues/237).
