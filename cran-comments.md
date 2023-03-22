@@ -1,11 +1,10 @@
 In this release we have made the following changes:
 
-* The reference to `sf:::agr_levels` is removed, solving the note in the CRAN checks about the usage of the `:::` operator.
-* Unit tests that where failing after an igraph update now run successfully again. Refs [#232](https://github.com/luukvdmeer/sfnetworks/issues/232). This means the CRAN checks that where failing should now be passing successfully again.
-* Unit test stuck in an infinite loop caused by usage of `sf::st_sample()` on a polygon crossing the date line updated accordingly. See [this sf issue](https://github.com/r-spatial/sf/issues/1984) for details on the underlying problem.
-* The `to_spatial_contracted()` morpher now correctly handles cases for undirected networks in which only loop edges are created after contraction. Refs [#237](https://github.com/luukvdmeer/sfnetworks/issues/237).
-* The `to_spatial_contracted()` morpher now directly returns the original network when none of the contraction groups contain more than one node.
-* Umbrella packages tidyverse and spatstat are no longer suggested packages. Only individual members of these packages are now suggested packages.
+* Argument names of sfnetwork S3 methods for `sf::st_geometry()`, `sf::st_bbox()`, `sf::st_m_range()` and `sf::st_set_precision()` are updated to be consistent with their corresponding generic functions in sf.
+* Arguments `active` and `...` are removed from the sfnetwork S3 method for `sf::st_precision()` to be consistent with its corresponding generic function in sf.
+* Argument `active` is removed from the sfnetwork S3 method for `sf::st_crs()` to be consistent with the above-mentioned change regarding `sf::st_precision()` (since both CRS and precision can not differ between nodes and edges).
+
+These changes solve the warnings in the CRAN checks regarding S3 method consistency.
 
 ## R CMD check results
 
