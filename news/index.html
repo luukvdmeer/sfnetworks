@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.3</span>
       </span>
     </div>
 
@@ -70,7 +70,16 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.6.2" id="sfnetworks-v062">sfnetworks v0.6.2<a class="anchor" aria-label="anchor" href="#sfnetworks-v062"></a></h2>
+<h2 class="page-header" data-toc-text="0.6.3" id="sfnetworks-v063">sfnetworks v0.6.3<a class="anchor" aria-label="anchor" href="#sfnetworks-v063"></a></h2>
+<div class="section level4">
+<h4 id="bug-fixes-0-6-3">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-6-3"></a></h4>
+<ul><li>Argument names of sfnetwork S3 methods for <code><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">sf::st_geometry()</a></code>, <code><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">sf::st_bbox()</a></code>, <code><a href="https://r-spatial.github.io/sf/reference/st_m_range.html" class="external-link">sf::st_m_range()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/st_precision.html" class="external-link">sf::st_set_precision()</a></code> are updated to be consistent with their corresponding generic functions in sf.</li>
+<li>Arguments <code>active</code> and <code>...</code> are removed from the sfnetwork S3 method for <code><a href="https://r-spatial.github.io/sf/reference/st_precision.html" class="external-link">sf::st_precision()</a></code> to be consistent with its corresponding generic function in sf.</li>
+<li>Argument <code>active</code> is removed from the sfnetwork S3 method for <code><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">sf::st_crs()</a></code> to be consistent with the above-mentioned change regarding <code><a href="https://r-spatial.github.io/sf/reference/st_precision.html" class="external-link">sf::st_precision()</a></code> (since both CRS and precision can not differ between nodes and edges).</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.6.2" id="sfnetworks-v062">sfnetworks v0.6.2<small>2023-02-26</small><a class="anchor" aria-label="anchor" href="#sfnetworks-v062"></a></h2>
 <div class="section level4">
 <h4 id="bug-fixes-0-6-2">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-6-2"></a></h4>
 <ul><li>The <code><a href="../reference/spatial_morphers.html">to_spatial_contracted()</a></code> morpher now correctly handles cases for undirected networks in which only loop edges are created after contraction. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/237" class="external-link">#237</a>.</li>

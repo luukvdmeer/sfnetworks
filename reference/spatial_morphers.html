@@ -28,7 +28,7 @@ crystallise."><meta property="og:image" content="/logo.png"><!-- mathjax --><scr
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.3</span>
       </span>
     </div>
 
@@ -358,24 +358,18 @@ Returns a <code>morphed_sfnetwork</code> containing a single element of class
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">#</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"># An undirected multigraph with 14 components with spatially explicit edges</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">#</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Edge Data:     851 × 7 (active)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Geometry type: LINESTRING</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Dimension:     XY</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    from    to name     type                              geometry weight in_pat…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>                     <span style="color: #949494; font-style: italic;">&lt;LINESTRING [m]&gt;</span>    <span style="color: #949494;">[m]</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     1     2 Havixbe… reside… (4151491 3207923, 4151474 3207946)   28.9 <span style="color: #BB0000;">NA</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>     3     4 Pieners… second… (4151398 3207777, 4151390 3207727…  108.  <span style="color: #BB0000;">NA</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>     5     6 Schulte… reside… (4151408 3207539, 4151417 3207573…   54.4 <span style="color: #BB0000;">NA</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>     7     8 <span style="color: #BB0000;">NA</span>       path    (4151885 3206698, 4151861 3206711…  155.  <span style="color: #BB0000;">NA</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span>     9    10 Welsing… reside… (4151732 3207017, 4151721 3206809)  209.  TRUE   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span>    11    12 <span style="color: #BB0000;">NA</span>       footway (4152152 3206984, 4152143 3206932…   63.0 <span style="color: #BB0000;">NA</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 845 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 851 × 7</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    from    to name                type                   geometry weight in_pa…¹</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;LINESTRING [m]&gt;</span>    <span style="color: #949494;">[m]</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     1     2 Havixbecker Strasse resi… (4151491 3207923, 415147…   28.9 <span style="color: #BB0000;">NA</span>     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>     3     4 Pienersallee        seco… (4151398 3207777, 415139…  108.  <span style="color: #BB0000;">NA</span>     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>     5     6 Schulte-Bernd-Stra… resi… (4151408 3207539, 415141…   54.4 <span style="color: #BB0000;">NA</span>     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>     7     8 <span style="color: #BB0000;">NA</span>                  path  (4151885 3206698, 415186…  155.  <span style="color: #BB0000;">NA</span>     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span>     9    10 Welsingheide        resi… (4151732 3207017, 415172…  209.  TRUE   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span>    11    12 <span style="color: #BB0000;">NA</span>                  foot… (4152152 3206984, 415214…   63.0 <span style="color: #BB0000;">NA</span>     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 845 more rows, and abbreviated variable name ¹​in_paths</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">#</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Node Data:     701 × 1</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Geometry type: POINT</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Dimension:     XY</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 701 × 1</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            geometry</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;POINT [m]&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> (4151491 3207923)</span>
@@ -394,24 +388,18 @@ Returns a <code>morphed_sfnetwork</code> containing a single element of class
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">#</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"># An unrooted tree with spatially explicit edges</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">#</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Edge Data:     17 × 7 (active)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Geometry type: LINESTRING</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Dimension:     XY</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Bounding box:  xmin: 4151491 ymin: 3206809 xmax: 4151802 ymax: 3207923</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    from    to name              type                     geometry weight .tidyg…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 17 × 7</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    from    to name              type                     geometry weight .tidy…¹</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;LINESTRING [m]&gt;</span>    <span style="color: #949494;">[m]</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     2     3 Welsingheide      resid… (4151732 3207017, 4151721…  209.        5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>     2     6 Nottulner Landweg resid… (4151732 3207017, 4151755…   84.4      94</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>     5     8 Roxeler Strasse   secon… (4151531 3207830, 4151535…   98.3     159</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>     8    12 Roxeler Strasse   secon… (4151519 3207865, 4151524…   37.0     295</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span>     5     7 Dorffeldstrasse   resid… (4151620 3207798, 4151621…   49.3     486</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span>     9    15 Dorffeldstrasse   resid… (4151786 3207133, 4151794…   32.7     591</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 11 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     2     3 Welsingheide      reside… (4151732 3207017, 415172…  209.        5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>     2     6 Nottulner Landweg reside… (4151732 3207017, 415175…   84.4      94</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>     5     8 Roxeler Strasse   second… (4151531 3207830, 415153…   98.3     159</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>     8    12 Roxeler Strasse   second… (4151519 3207865, 415152…   37.0     295</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span>     5     7 Dorffeldstrasse   reside… (4151620 3207798, 415162…   49.3     486</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span>     9    15 Dorffeldstrasse   reside… (4151786 3207133, 415179…   32.7     591</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 11 more rows, and abbreviated variable name ¹​.tidygraph_edge_index</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">#</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Node Data:     18 × 2</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Geometry type: POINT</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Dimension:     XY</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Bounding box:  xmin: 4151491 ymin: 3206809 xmax: 4151802 ymax: 3207923</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 18 × 2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            geometry .tidygraph_node_index</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;POINT [m]&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> (4151491 3207923)                     1</span>

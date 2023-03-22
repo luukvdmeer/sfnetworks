@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.3</span>
       </span>
     </div>
 
@@ -99,7 +99,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>4. Routing</h1>
             
-            <h4 data-toc-skip class="date">2023-02-26</h4>
+            <h4 data-toc-skip class="date">2023-03-22</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/HEAD/vignettes/sfn04_routing.Rmd" class="external-link"><code>vignettes/sfn04_routing.Rmd</code></a></small>
       <div class="hidden name"><code>sfn04_routing.Rmd</code></div>
@@ -600,24 +600,18 @@ edge.</p>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # An undirected multigraph with 14 components with spatially explicit edges</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Edge Data:     851 × 8 (active)</span></span>
-<span><span class="co">#&gt; # Geometry type: LINESTRING</span></span>
-<span><span class="co">#&gt; # Dimension:     XY</span></span>
-<span><span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
-<span><span class="co">#&gt;    from    to name     type                          geometry weight speed  time</span></span>
-<span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;    &lt;fct&gt;                 &lt;LINESTRING [m]&gt;    [m] [m/s]   [s]</span></span>
-<span><span class="co">#&gt; 1     1     2 Havixbe… resi… (4151491 3207923, 4151474 32079…   28.9  1.06  27.3</span></span>
-<span><span class="co">#&gt; 2     3     4 Pieners… seco… (4151398 3207777, 4151390 32077…  108.   1.83  58.8</span></span>
-<span><span class="co">#&gt; 3     5     6 Schulte… resi… (4151408 3207539, 4151417 32075…   54.4  1.06  51.4</span></span>
-<span><span class="co">#&gt; 4     7     8 NA       path  (4151885 3206698, 4151861 32067…  155.   1.47 106. </span></span>
-<span><span class="co">#&gt; 5     9    10 Welsing… resi… (4151732 3207017, 4151721 32068…  209.   1.06 197. </span></span>
-<span><span class="co">#&gt; 6    11    12 NA       foot… (4152152 3206984, 4152143 32069…   63.0  1.25  50.6</span></span>
+<span><span class="co">#&gt; # A tibble: 851 × 8</span></span>
+<span><span class="co">#&gt;    from    to name            type                   geometry weight speed  time</span></span>
+<span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;           &lt;fct&gt;          &lt;LINESTRING [m]&gt;    [m] [m/s]   [s]</span></span>
+<span><span class="co">#&gt; 1     1     2 Havixbecker St… resi… (4151491 3207923, 415147…   28.9  1.06  27.3</span></span>
+<span><span class="co">#&gt; 2     3     4 Pienersallee    seco… (4151398 3207777, 415139…  108.   1.83  58.8</span></span>
+<span><span class="co">#&gt; 3     5     6 Schulte-Bernd-… resi… (4151408 3207539, 415141…   54.4  1.06  51.4</span></span>
+<span><span class="co">#&gt; 4     7     8 NA              path  (4151885 3206698, 415186…  155.   1.47 106. </span></span>
+<span><span class="co">#&gt; 5     9    10 Welsingheide    resi… (4151732 3207017, 415172…  209.   1.06 197. </span></span>
+<span><span class="co">#&gt; 6    11    12 NA              foot… (4152152 3206984, 415214…   63.0  1.25  50.6</span></span>
 <span><span class="co">#&gt; # … with 845 more rows</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Node Data:     701 × 1</span></span>
-<span><span class="co">#&gt; # Geometry type: POINT</span></span>
-<span><span class="co">#&gt; # Dimension:     XY</span></span>
-<span><span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
+<span><span class="co">#&gt; # A tibble: 701 × 1</span></span>
 <span><span class="co">#&gt;            geometry</span></span>
 <span><span class="co">#&gt;         &lt;POINT [m]&gt;</span></span>
 <span><span class="co">#&gt; 1 (4151491 3207923)</span></span>

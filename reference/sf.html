@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.3</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/s2.html" class="external-link">st_as_s2</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
-<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">obj</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
@@ -91,7 +91,7 @@
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
-<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="va">obj</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">st_coordinates</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
@@ -103,16 +103,16 @@
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/valid.html" class="external-link">st_is_valid</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
-<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">st_crs</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
-<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_precision.html" class="external-link">st_precision</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_precision.html" class="external-link">st_precision</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
-<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_precision.html" class="external-link">st_set_precision</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">value</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_precision.html" class="external-link">st_set_precision</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">precision</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_shift_longitude.html" class="external-link">st_shift_longitude</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
@@ -130,10 +130,10 @@
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_zm.html" class="external-link">st_zm</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
-<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_m_range.html" class="external-link">st_m_range</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_m_range.html" class="external-link">st_m_range</a></span><span class="op">(</span><span class="va">obj</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
-<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_z_range.html" class="external-link">st_z_range</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_z_range.html" class="external-link">st_z_range</a></span><span class="op">(</span><span class="va">obj</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S3 method for sfnetwork</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_agr.html" class="external-link">st_agr</a></span><span class="op">(</span><span class="va">x</span>, active <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span>
@@ -206,9 +206,18 @@ the given network. Defaults to <code>NULL</code>.</p></dd>
 <dd><p>Arguments passed on the corresponding <code>sf</code> function.</p></dd>
 
 
+<dt>obj</dt>
+<dd><p>An object of class <code><a href="sfnetwork.html">sfnetwork</a></code>.</p></dd>
+
+
 <dt>value</dt>
 <dd><p>The value to be assigned. See the documentation of the
 corresponding sf function for details.</p></dd>
+
+
+<dt>precision</dt>
+<dd><p>The precision to be assigned. See
+<code><a href="https://r-spatial.github.io/sf/reference/st_precision.html" class="external-link">st_precision</a></code> for details.</p></dd>
 
 
 <dt>y</dt>
@@ -371,10 +380,7 @@ See the <code><a href="https://r-spatial.github.io/sf/reference/sf.html" class="
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">#</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"># A directed multigraph with 14 components with spatially explicit edges</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">#</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Node Data:     701 × 2 (active)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Geometry type: POINT</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Dimension:     XY</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 701 × 2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            geometry post_code</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;POINT [m]&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> (4151491 3207923) 1020     </span>
@@ -385,10 +391,7 @@ See the <code><a href="https://r-spatial.github.io/sf/reference/sf.html" class="
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> (4151421 3207592) 1020     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 695 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">#</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Edge Data:     851 × 5</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Geometry type: LINESTRING</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Dimension:     XY</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 851 × 5</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    from    to name                  type                                geometry</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>                       <span style="color: #949494; font-style: italic;">&lt;LINESTRING [m]&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>     1     2 Havixbecker Strasse   residential (4151491 3207923, 4151474 32079…</span>

@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.3</span>
       </span>
     </div>
 
@@ -99,7 +99,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>1. The sfnetwork data structure</h1>
             
-            <h4 data-toc-skip class="date">2023-02-26</h4>
+            <h4 data-toc-skip class="date">2023-03-22</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/HEAD/vignettes/sfn01_structure.Rmd" class="external-link"><code>vignettes/sfn01_structure.Rmd</code></a></small>
       <div class="hidden name"><code>sfn01_structure.Rmd</code></div>
@@ -209,20 +209,14 @@ rownumber). A small toy example:</p>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A directed acyclic simple graph with 1 component with spatially explicit edges</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Node Data:     3 × 1 (active)</span></span>
-<span><span class="co">#&gt; # Geometry type: POINT</span></span>
-<span><span class="co">#&gt; # Dimension:     XY</span></span>
-<span><span class="co">#&gt; # Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span></span>
+<span><span class="co">#&gt; # A tibble: 3 × 1</span></span>
 <span><span class="co">#&gt;             x</span></span>
 <span><span class="co">#&gt;   &lt;POINT [°]&gt;</span></span>
 <span><span class="co">#&gt; 1      (7 51)</span></span>
 <span><span class="co">#&gt; 2      (7 52)</span></span>
 <span><span class="co">#&gt; 3      (8 52)</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Edge Data:     3 × 3</span></span>
-<span><span class="co">#&gt; # Geometry type: LINESTRING</span></span>
-<span><span class="co">#&gt; # Dimension:     XY</span></span>
-<span><span class="co">#&gt; # Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span></span>
+<span><span class="co">#&gt; # A tibble: 3 × 3</span></span>
 <span><span class="co">#&gt;    from    to                    x</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;     &lt;LINESTRING [°]&gt;</span></span>
 <span><span class="co">#&gt; 1     1     2         (7 51, 7 52)</span></span>
@@ -255,20 +249,14 @@ interchangeably.</p>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # An undirected simple graph with 1 component with spatially explicit edges</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Node Data:     3 × 1 (active)</span></span>
-<span><span class="co">#&gt; # Geometry type: POINT</span></span>
-<span><span class="co">#&gt; # Dimension:     XY</span></span>
-<span><span class="co">#&gt; # Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span></span>
+<span><span class="co">#&gt; # A tibble: 3 × 1</span></span>
 <span><span class="co">#&gt;             x</span></span>
 <span><span class="co">#&gt;   &lt;POINT [°]&gt;</span></span>
 <span><span class="co">#&gt; 1      (7 51)</span></span>
 <span><span class="co">#&gt; 2      (7 52)</span></span>
 <span><span class="co">#&gt; 3      (8 52)</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Edge Data:     3 × 3</span></span>
-<span><span class="co">#&gt; # Geometry type: LINESTRING</span></span>
-<span><span class="co">#&gt; # Dimension:     XY</span></span>
-<span><span class="co">#&gt; # Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span></span>
+<span><span class="co">#&gt; # A tibble: 3 × 3</span></span>
 <span><span class="co">#&gt;    from    to                    x</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;     &lt;LINESTRING [°]&gt;</span></span>
 <span><span class="co">#&gt; 1     1     2         (7 51, 7 52)</span></span>
@@ -306,20 +294,14 @@ will then be converted to integer indices.</p>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A directed acyclic simple graph with 1 component with spatially explicit edges</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Node Data:     3 × 2 (active)</span></span>
-<span><span class="co">#&gt; # Geometry type: POINT</span></span>
-<span><span class="co">#&gt; # Dimension:     XY</span></span>
-<span><span class="co">#&gt; # Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span></span>
+<span><span class="co">#&gt; # A tibble: 3 × 2</span></span>
 <span><span class="co">#&gt;             x name   </span></span>
 <span><span class="co">#&gt;   &lt;POINT [°]&gt; &lt;chr&gt;  </span></span>
 <span><span class="co">#&gt; 1      (7 51) city   </span></span>
 <span><span class="co">#&gt; 2      (7 52) village</span></span>
 <span><span class="co">#&gt; 3      (8 52) farm   </span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Edge Data:     3 × 3</span></span>
-<span><span class="co">#&gt; # Geometry type: LINESTRING</span></span>
-<span><span class="co">#&gt; # Dimension:     XY</span></span>
-<span><span class="co">#&gt; # Bounding box:  xmin: 7 ymin: 51 xmax: 8 ymax: 52</span></span>
+<span><span class="co">#&gt; # A tibble: 3 × 3</span></span>
 <span><span class="co">#&gt;    from    to                    x</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;     &lt;LINESTRING [°]&gt;</span></span>
 <span><span class="co">#&gt; 1     1     2         (7 51, 7 52)</span></span>
@@ -436,10 +418,7 @@ weights, and if the network should be treated as directed or not.</p>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A directed multigraph with 14 components with spatially explicit edges</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Node Data:     701 × 2 (active)</span></span>
-<span><span class="co">#&gt; # Geometry type: POINT</span></span>
-<span><span class="co">#&gt; # Dimension:     XY</span></span>
-<span><span class="co">#&gt; # Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span></span>
+<span><span class="co">#&gt; # A tibble: 701 × 2</span></span>
 <span><span class="co">#&gt;              geometry    bc</span></span>
 <span><span class="co">#&gt;           &lt;POINT [°]&gt; &lt;dbl&gt;</span></span>
 <span><span class="co">#&gt; 1 (7.533722 51.95556) 13808</span></span>
@@ -450,10 +429,7 @@ weights, and if the network should be treated as directed or not.</p>
 <span><span class="co">#&gt; 6 (7.532869 51.95257)  9081</span></span>
 <span><span class="co">#&gt; # … with 695 more rows</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Edge Data:     851 × 6</span></span>
-<span><span class="co">#&gt; # Geometry type: LINESTRING</span></span>
-<span><span class="co">#&gt; # Dimension:     XY</span></span>
-<span><span class="co">#&gt; # Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span></span>
+<span><span class="co">#&gt; # A tibble: 851 × 6</span></span>
 <span><span class="co">#&gt;    from    to name                  type                         geometry weight</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;                 &lt;fct&gt;                &lt;LINESTRING [°]&gt;    [m]</span></span>
 <span><span class="co">#&gt; 1     1     2 Havixbecker Strasse   residential (7.533722 51.95556, 7.53…   28.8</span></span>
@@ -643,10 +619,7 @@ to a GEOS version of at least 3.7.0.</p>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A directed multigraph with 14 components with spatially explicit edges</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Edge Data:     851 × 5 (active)</span></span>
-<span><span class="co">#&gt; # Geometry type: LINESTRING</span></span>
-<span><span class="co">#&gt; # Dimension:     XY</span></span>
-<span><span class="co">#&gt; # Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span></span>
+<span><span class="co">#&gt; # A tibble: 851 × 5</span></span>
 <span><span class="co">#&gt;    from    to name                  type                                geometry</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;                 &lt;fct&gt;                       &lt;LINESTRING [°]&gt;</span></span>
 <span><span class="co">#&gt; 1     2     1 Havixbecker Strasse   residential (7.533461 51.95576, 7.533722 51…</span></span>
@@ -657,10 +630,7 @@ to a GEOS version of at least 3.7.0.</p>
 <span><span class="co">#&gt; 6    12    11 NA                    footway     (7.543751 51.94677, 7.54369 51.…</span></span>
 <span><span class="co">#&gt; # … with 845 more rows</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Node Data:     701 × 1</span></span>
-<span><span class="co">#&gt; # Geometry type: POINT</span></span>
-<span><span class="co">#&gt; # Dimension:     XY</span></span>
-<span><span class="co">#&gt; # Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span></span>
+<span><span class="co">#&gt; # A tibble: 701 × 1</span></span>
 <span><span class="co">#&gt;              geometry</span></span>
 <span><span class="co">#&gt;           &lt;POINT [°]&gt;</span></span>
 <span><span class="co">#&gt; 1 (7.533722 51.95556)</span></span>
@@ -681,11 +651,11 @@ e.g. <code>sf::st_coordinate(net, "edges")</code>.</p>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">st_coordinates</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">node_coords</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="op">]</span></span>
-<span><span class="co">#&gt;          X        Y</span></span>
-<span><span class="co">#&gt; 1 7.533722 51.95556</span></span>
-<span><span class="co">#&gt; 2 7.533461 51.95576</span></span>
-<span><span class="co">#&gt; 3 7.532442 51.95422</span></span>
-<span><span class="co">#&gt; 4 7.532090 51.95328</span></span></code></pre></div>
+<span><span class="co">#&gt;             X        Y</span></span>
+<span><span class="co">#&gt; [1,] 7.533722 51.95556</span></span>
+<span><span class="co">#&gt; [2,] 7.533461 51.95576</span></span>
+<span><span class="co">#&gt; [3,] 7.532442 51.95422</span></span>
+<span><span class="co">#&gt; [4,] 7.532090 51.95328</span></span></code></pre></div>
 <p>Besides X and Y coordinates, the features in the network can possibly
 also have Z and M coordinates.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
@@ -704,10 +674,7 @@ also have Z and M coordinates.</p>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A directed multigraph with 14 components with spatially explicit edges</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Node Data:     701 × 2 (active)</span></span>
-<span><span class="co">#&gt; # Geometry type: POINT</span></span>
-<span><span class="co">#&gt; # Dimension:     XYZ</span></span>
-<span><span class="co">#&gt; # Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span></span>
+<span><span class="co">#&gt; # A tibble: 701 × 2</span></span>
 <span><span class="co">#&gt;                  geometry     bc</span></span>
 <span><span class="co">#&gt;               &lt;POINT [°]&gt;  &lt;dbl&gt;</span></span>
 <span><span class="co">#&gt; 1 Z (7.533722 51.95556 0) 12936.</span></span>
@@ -718,10 +685,7 @@ also have Z and M coordinates.</p>
 <span><span class="co">#&gt; 6 Z (7.532869 51.95257 0)  2374 </span></span>
 <span><span class="co">#&gt; # … with 695 more rows</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Edge Data:     851 × 5</span></span>
-<span><span class="co">#&gt; # Geometry type: LINESTRING</span></span>
-<span><span class="co">#&gt; # Dimension:     XYZ</span></span>
-<span><span class="co">#&gt; # Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span></span>
+<span><span class="co">#&gt; # A tibble: 851 × 5</span></span>
 <span><span class="co">#&gt;    from    to name                  type                                geometry</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;                 &lt;fct&gt;                       &lt;LINESTRING [°]&gt;</span></span>
 <span><span class="co">#&gt; 1     1     2 Havixbecker Strasse   residential Z (7.533722 51.95556 0, 7.53346…</span></span>
@@ -750,10 +714,7 @@ much precision as in the geometry list column.</p>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A directed multigraph with 14 components with spatially explicit edges</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Node Data:     701 × 6 (active)</span></span>
-<span><span class="co">#&gt; # Geometry type: POINT</span></span>
-<span><span class="co">#&gt; # Dimension:     XYZ</span></span>
-<span><span class="co">#&gt; # Bounding box:  xmin: 7.522622 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span></span>
+<span><span class="co">#&gt; # A tibble: 701 × 6</span></span>
 <span><span class="co">#&gt;                  geometry     bc     X     Y     Z M    </span></span>
 <span><span class="co">#&gt;               &lt;POINT [°]&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;</span></span>
 <span><span class="co">#&gt; 1 Z (7.533722 51.95556 0) 12936.  7.53  52.0     0 NA   </span></span>
@@ -764,10 +725,7 @@ much precision as in the geometry list column.</p>
 <span><span class="co">#&gt; 6 Z (7.532869 51.95257 0)  2374   7.53  52.0     0 NA   </span></span>
 <span><span class="co">#&gt; # … with 695 more rows</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Edge Data:     851 × 5</span></span>
-<span><span class="co">#&gt; # Geometry type: LINESTRING</span></span>
-<span><span class="co">#&gt; # Dimension:     XYZ</span></span>
-<span><span class="co">#&gt; # Bounding box:  xmin: 7.522594 ymin: 51.94151 xmax: 7.546705 ymax: 51.9612</span></span>
+<span><span class="co">#&gt; # A tibble: 851 × 5</span></span>
 <span><span class="co">#&gt;    from    to name                  type                                geometry</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;                 &lt;fct&gt;                       &lt;LINESTRING [°]&gt;</span></span>
 <span><span class="co">#&gt; 1     1     2 Havixbecker Strasse   residential Z (7.533722 51.95556 0, 7.53346…</span></span>
@@ -823,10 +781,7 @@ element into the same target CRS.</p>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A directed multigraph with 14 components with spatially explicit edges</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Node Data:     701 × 2 (active)</span></span>
-<span><span class="co">#&gt; # Geometry type: POINT</span></span>
-<span><span class="co">#&gt; # Dimension:     XY</span></span>
-<span><span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
+<span><span class="co">#&gt; # A tibble: 701 × 2</span></span>
 <span><span class="co">#&gt;            geometry     bc</span></span>
 <span><span class="co">#&gt;         &lt;POINT [m]&gt;  &lt;dbl&gt;</span></span>
 <span><span class="co">#&gt; 1 (4151491 3207923) 12936.</span></span>
@@ -837,10 +792,7 @@ element into the same target CRS.</p>
 <span><span class="co">#&gt; 6 (4151421 3207592)  2374 </span></span>
 <span><span class="co">#&gt; # … with 695 more rows</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Edge Data:     851 × 5</span></span>
-<span><span class="co">#&gt; # Geometry type: LINESTRING</span></span>
-<span><span class="co">#&gt; # Dimension:     XY</span></span>
-<span><span class="co">#&gt; # Bounding box:  xmin: 4150707 ymin: 3206375 xmax: 4152367 ymax: 3208565</span></span>
+<span><span class="co">#&gt; # A tibble: 851 × 5</span></span>
 <span><span class="co">#&gt;    from    to name                  type                                geometry</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;                 &lt;fct&gt;                       &lt;LINESTRING [m]&gt;</span></span>
 <span><span class="co">#&gt; 1     1     2 Havixbecker Strasse   residential (4151491 3207923, 4151474 32079…</span></span>
