@@ -204,14 +204,8 @@ st_is_valid.sfnetwork = function(x, ...) {
 #'
 #' @importFrom sf st_crs
 #' @export
-st_crs.sfnetwork = function(x, active = NULL, ...) {
-  if (is.null(active)) active = attr(x, "active")
-  switch(
-    active,
-    nodes = st_crs(pull_node_geom(x), ...),
-    edges = st_crs(pull_edge_geom(x), ...),
-    raise_unknown_input(active)
-  )
+st_crs.sfnetwork = function(x, ...) {
+  st_crs(pull_geom(x), ...)
 }
 
 #' @name sf

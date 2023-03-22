@@ -60,7 +60,7 @@
 
 \method{st_is_valid}{sfnetwork}(x, ...)
 
-\method{st_crs}{sfnetwork}(x, active = NULL, ...)
+\method{st_crs}{sfnetwork}(x, ...)
 
 \method{st_crs}{sfnetwork}(x) <- value
 
