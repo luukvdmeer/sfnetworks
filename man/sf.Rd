@@ -46,13 +46,13 @@
 
 \method{st_as_s2}{sfnetwork}(x, active = NULL, ...)
 
-\method{st_geometry}{sfnetwork}(x, active = NULL, ...)
+\method{st_geometry}{sfnetwork}(obj, active = NULL, ...)
 
 \method{st_geometry}{sfnetwork}(x) <- value
 
 \method{st_drop_geometry}{sfnetwork}(x, ...)
 
-\method{st_bbox}{sfnetwork}(x, active = NULL, ...)
+\method{st_bbox}{sfnetwork}(obj, active = NULL, ...)
 
 \method{st_coordinates}{sfnetwork}(x, active = NULL, ...)
 
@@ -60,13 +60,13 @@
 
 \method{st_is_valid}{sfnetwork}(x, ...)
 
-\method{st_crs}{sfnetwork}(x, active = NULL, ...)
+\method{st_crs}{sfnetwork}(x, ...)
 
 \method{st_crs}{sfnetwork}(x) <- value
 
-\method{st_precision}{sfnetwork}(x, active = NULL, ...)
+\method{st_precision}{sfnetwork}(x)
 
-\method{st_set_precision}{sfnetwork}(x, value)
+\method{st_set_precision}{sfnetwork}(x, precision)
 
 \method{st_shift_longitude}{sfnetwork}(x, ...)
 
@@ -78,9 +78,9 @@
 
 \method{st_zm}{sfnetwork}(x, ...)
 
-\method{st_m_range}{sfnetwork}(x, active = NULL, ...)
+\method{st_m_range}{sfnetwork}(obj, active = NULL, ...)
 
-\method{st_z_range}{sfnetwork}(x, active = NULL, ...)
+\method{st_z_range}{sfnetwork}(obj, active = NULL, ...)
 
 \method{st_agr}{sfnetwork}(x, active = NULL, ...)
 
@@ -127,8 +127,13 @@ the given network. Defaults to \code{NULL}.}
 
 \item{...}{Arguments passed on the corresponding \code{sf} function.}
 
+\item{obj}{An object of class \code{\link{sfnetwork}}.}
+
 \item{value}{The value to be assigned. See the documentation of the
 corresponding sf function for details.}
+
+\item{precision}{The precision to be assigned. See
+\code{\link[sf]{st_precision}} for details.}
 
 \item{y}{An object of class \code{\link[sf]{sf}}, or directly convertible to
 it using \code{\link[sf]{st_as_sf}}. In some cases, it can also be an object

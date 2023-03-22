@@ -16,6 +16,8 @@ is.sfg = function(x) {
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
+#' @param obj An object of class \code{\link{sfnetwork}}.
+#'
 #' @param y An object of class \code{\link[sf]{sf}}, or directly convertible to
 #' it using \code{\link[sf]{st_as_sf}}. In some cases, it can also be an object
 #' of \code{\link[sf:st]{sfg}} or \code{\link[sf:st_bbox]{bbox}}. Always look
@@ -29,6 +31,9 @@ is.sfg = function(x) {
 #'
 #' @param value The value to be assigned. See the documentation of the
 #' corresponding sf function for details.
+#'
+#' @param precision The precision to be assigned. See
+#' \code{\link[sf]{st_precision}} for details.
 #'
 #' @return The \code{sfnetwork} method for \code{\link[sf]{st_as_sf}} returns
 #' the active element of the network as object of class \code{\link[sf]{sf}}.
@@ -95,13 +100,7 @@ edges_as_sf = function(x, ...) {
 #' @importFrom sf st_as_s2
 #' @export
 st_as_s2.sfnetwork = function(x, active = NULL, ...) {
-  if (is.null(active)) active = attr(x, "active")
-  switch(
-    active,
-    nodes = st_as_s2(pull_node_geom(x), ...),
-    edges = st_as_s2(pull_edge_geom(x), ...),
-    raise_unknown_input(active)
-  )
+  st_as_s2(pull_geom(x, active), ...)
 }
 
 # =============================================================================
@@ -118,8 +117,8 @@ st_as_s2.sfnetwork = function(x, active = NULL, ...) {
 #'
 #' @importFrom sf st_geometry
 #' @export
-st_geometry.sfnetwork = function(x, active = NULL, ...) {
-  pull_geom(x, active)
+st_geometry.sfnetwork = function(obj, active = NULL, ...) {
+  pull_geom(obj, active)
 }
 
 #' @name sf
@@ -147,45 +146,31 @@ st_drop_geometry.sfnetwork = function(x, ...) {
 #' # Get bbox of the active network element.
 #' st_bbox(net)
 #'
-#' @importFrom sf st_bbox st_geometry
+#' @importFrom sf st_bbox
 #' @export
-st_bbox.sfnetwork = function(x, active = NULL, ...) {
-  if (is.null(active)) active = attr(x, "active")
-  switch(
-    active,
-    nodes = st_bbox(pull_node_geom(x), ...),
-    edges = st_bbox(pull_edge_geom(x), ...),
-    raise_unknown_input(active)
-  )
+st_bbox.sfnetwork = function(obj, active = NULL, ...) {
+  st_bbox(pull_geom(obj, active), ...)
 }
 
 #' @name sf
-#' @importFrom sf st_coordinates st_geometry
+#' @importFrom sf st_coordinates
 #' @export
 st_coordinates.sfnetwork = function(x, active = NULL, ...) {
-  if (is.null(active)) active = attr(x, "active")
-  switch(
-    active,
-    nodes = st_coordinates(pull_node_geom(x), ...),
-    edges = st_coordinates(pull_edge_geom(x), ...),
-    raise_unknown_input(active)
-  )
+  st_coordinates(pull_geom(x, active), ...)
 }
 
 #' @name sf
 #' @importFrom sf st_is
 #' @export
 st_is.sfnetwork = function(x, ...) {
-  active = attr(x, "active")
-  st_is(pull_geom(x, active), ...)
+  st_is(pull_geom(x), ...)
 }
 
 #' @name sf
 #' @importFrom sf st_is_valid
 #' @export
 st_is_valid.sfnetwork = function(x, ...) {
-  active = attr(x, "active")
-  st_is_valid(pull_geom(x, active), ...)
+  st_is_valid(pull_geom(x), ...)
 }
 
 # =============================================================================
@@ -199,14 +184,8 @@ st_is_valid.sfnetwork = function(x, ...) {
 #'
 #' @importFrom sf st_crs
 #' @export
-st_crs.sfnetwork = function(x, active = NULL, ...) {
-  if (is.null(active)) active = attr(x, "active")
-  switch(
-    active,
-    nodes = st_crs(pull_node_geom(x), ...),
-    edges = st_crs(pull_edge_geom(x), ...),
-    raise_unknown_input(active)
-  )
+st_crs.sfnetwork = function(x, ...) {
+  st_crs(pull_geom(x), ...)
 }
 
 #' @name sf
@@ -226,27 +205,21 @@ st_crs.sfnetwork = function(x, active = NULL, ...) {
 #' @name sf
 #' @importFrom sf st_precision
 #' @export
-st_precision.sfnetwork = function(x, active = NULL, ...) {
-  if (is.null(active)) active = attr(x, "active")
-  switch(
-    active,
-    nodes = st_precision(pull_node_geom(x), ...),
-    edges = st_precision(pull_edge_geom(x), ...),
-    raise_unknown_input(active)
-  )
+st_precision.sfnetwork = function(x) {
+  st_precision(pull_geom(x))
 }
 
 #' @name sf
 #' @importFrom sf st_set_precision st_precision<-
 #' @export
-st_set_precision.sfnetwork = function(x, value) {
+st_set_precision.sfnetwork = function(x, precision) {
   if (attr(x, "active") == "edges" || has_explicit_edges(x)) {
     geom = pull_edge_geom(x)
-    st_precision(geom) = value
+    st_precision(geom) = precision
     x = mutate_edge_geom(x, geom)
   }
   geom = pull_node_geom(x)
-  st_precision(geom) = value
+  st_precision(geom) = precision
   mutate_node_geom(x, geom)
 }
 
@@ -286,29 +259,17 @@ st_zm.sfnetwork = function(x, ...) {
 }
 
 #' @name sf
-#' @importFrom sf st_geometry st_m_range
+#' @importFrom sf st_m_range
 #' @export
-st_m_range.sfnetwork = function(x, active = NULL, ...) {
-  if (is.null(active)) active = attr(x, "active")
-  switch(
-    active,
-    nodes = st_m_range(pull_node_geom(x), ...),
-    edges = st_m_range(pull_edge_geom(x), ...),
-    raise_unknown_input(active)
-  )
+st_m_range.sfnetwork = function(obj, active = NULL, ...) {
+  st_m_range(pull_geom(obj, active), ...)
 }
 
 #' @name sf
-#' @importFrom sf st_geometry st_z_range
+#' @importFrom sf st_z_range
 #' @export
-st_z_range.sfnetwork = function(x, active = NULL, ...) {
-  if (is.null(active)) active = attr(x, "active")
-  switch(
-    active,
-    nodes = st_z_range(pull_node_geom(x), ...),
-    edges = st_z_range(pull_edge_geom(x), ...),
-    raise_unknown_input(active)
-  )
+st_z_range.sfnetwork = function(obj, active = NULL, ...) {
+  st_z_range(pull_geom(obj, active), ...)
 }
 
 change_coords = function(x, op, ...) {
@@ -337,13 +298,7 @@ change_coords = function(x, op, ...) {
 #' @importFrom sf st_agr
 #' @export
 st_agr.sfnetwork = function(x, active = NULL, ...) {
-  if (is.null(active)) active = attr(x, "active")
-  switch(
-    active,
-    nodes = node_agr(x),
-    edges = edge_agr(x),
-    raise_unknown_input(active)
-  )
+  agr(x, active)
 }
 
 #' @name sf
@@ -779,11 +734,10 @@ find_indices_to_drop = function(x, y, ..., .operator = sf::st_filter) {
 #' @importFrom sf st_geometry st_intersects
 #' @export
 st_intersects.sfnetwork = function(x, y, ...) {
-  active = attr(x, "active")
   if (missing(y)) {
-    st_intersects(pull_geom(x, active), ...)
+    st_intersects(pull_geom(x), ...)
   } else {
-    st_intersects(pull_geom(x, active), st_geometry(y), ...)
+    st_intersects(pull_geom(x), st_geometry(y), ...)
   }
 }
 
@@ -791,22 +745,19 @@ st_intersects.sfnetwork = function(x, y, ...) {
 #' @importFrom sf st_as_sf st_sample
 #' @export
 st_sample.sfnetwork = function(x, ...) {
-  active = attr(x, "active")
-  st_sample(st_as_sf(x, active), ...)
+  st_sample(st_as_sf(x), ...)
 }
 
 #' @name sf
 #' @importFrom sf st_geometry st_nearest_points
 #' @export
 st_nearest_points.sfnetwork = function(x, y, ...) {
-  active = attr(x, "active")
-  st_nearest_points(pull_geom(x, active), st_geometry(y), ...)
+  st_nearest_points(pull_geom(x), st_geometry(y), ...)
 }
 
 #' @name sf
 #' @importFrom sf st_area
 #' @export
 st_area.sfnetwork = function(x, ...) {
-  active = attr(x, "active")
-  st_area(pull_geom(x, active), ...)
+  st_area(pull_geom(x), ...)
 }
