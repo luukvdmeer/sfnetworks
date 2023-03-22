@@ -10,6 +10,15 @@ These changes solve the warnings in the CRAN checks regarding S3 method consiste
 
 0 errors | 0 warnings | 0 notes
 
+When running checks on R-hub, the following note occured only on Windows (Server 2022, R-devel 64-bit):
+
+```
+* checking for detritus in the temp directory ... NOTE
+Found the following files/directories:
+  'lastMiKTeXException'
+```
+As noted in [R-hub issue #503](https://github.com/r-hub/rhub/issues/503), this is a bug in R-hub rather than a bug in our package, and can likely be ignored.
+
 ## revdepcheck results
 
 We checked 1 reverse dependencies (0 from CRAN + 1 from Bioconductor), comparing R CMD check results across CRAN and dev versions of this package.
