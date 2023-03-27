@@ -99,7 +99,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>3. Spatial joins and filters</h1>
             
-            <h4 data-toc-skip class="date">2023-03-22</h4>
+            <h4 data-toc-skip class="date">2023-03-27</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/HEAD/vignettes/sfn03_join_filter.Rmd" class="external-link"><code>vignettes/sfn03_join_filter.Rmd</code></a></small>
       <div class="hidden name"><code>sfn03_join_filter.Rmd</code></div>
@@ -269,7 +269,7 @@ whole.</p>
 <span><span class="co">#&gt; # A rooted forest with 701 trees with spatially explicit edges</span></span>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A tibble: 0 × 5</span></span>
-<span><span class="co">#&gt; # … with 5 variables: from &lt;int&gt;, to &lt;int&gt;, name &lt;chr&gt;, type &lt;fct&gt;,</span></span>
+<span><span class="co">#&gt; # ℹ 5 variables: from &lt;int&gt;, to &lt;int&gt;, name &lt;chr&gt;, type &lt;fct&gt;,</span></span>
 <span><span class="co">#&gt; #   geometry &lt;GEOMETRY [m]&gt;</span></span>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A tibble: 701 × 1</span></span>
@@ -278,7 +278,7 @@ whole.</p>
 <span><span class="co">#&gt; 1 (4151491 3207923)</span></span>
 <span><span class="co">#&gt; 2 (4151474 3207946)</span></span>
 <span><span class="co">#&gt; 3 (4151398 3207777)</span></span>
-<span><span class="co">#&gt; # … with 698 more rows</span></span></code></pre>
+<span><span class="co">#&gt; # ℹ 698 more rows</span></span></code></pre>
 <p>If you just want to store the information about the investigated
 spatial relation, without filtering the network, you can also use the
 spatial node and edge query functions inside a
@@ -301,7 +301,7 @@ spatial node and edge query functions inside a
 <span><span class="co">#&gt; 4 (4151370 3207673) TRUE   </span></span>
 <span><span class="co">#&gt; 5 (4151408 3207539) TRUE   </span></span>
 <span><span class="co">#&gt; 6 (4151421 3207592) TRUE   </span></span>
-<span><span class="co">#&gt; # … with 695 more rows</span></span>
+<span><span class="co">#&gt; # ℹ 695 more rows</span></span>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A tibble: 851 × 5</span></span>
 <span><span class="co">#&gt;    from    to name                  type                                geometry</span></span>
@@ -309,7 +309,7 @@ spatial node and edge query functions inside a
 <span><span class="co">#&gt; 1     1     2 Havixbecker Strasse   residential (4151491 3207923, 4151474 32079…</span></span>
 <span><span class="co">#&gt; 2     3     4 Pienersallee          secondary   (4151398 3207777, 4151390 32077…</span></span>
 <span><span class="co">#&gt; 3     5     6 Schulte-Bernd-Strasse residential (4151408 3207539, 4151417 32075…</span></span>
-<span><span class="co">#&gt; # … with 848 more rows</span></span></code></pre>
+<span><span class="co">#&gt; # ℹ 848 more rows</span></span></code></pre>
 <p>Besides predicate query functions, you can also use the <a href="https://luukvdmeer.github.io/sfnetworks/reference/node_coordinates.html" class="external-link">coordinate
 query functions</a> for spatial filters on the nodes. For example:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -410,7 +410,7 @@ postal code areas for the Roxel dataset.</p>
 <span><span class="co">#&gt; 4 (4151370 3207673) 1020     </span></span>
 <span><span class="co">#&gt; 5 (4151408 3207539) 1020     </span></span>
 <span><span class="co">#&gt; 6 (4151421 3207592) 1020     </span></span>
-<span><span class="co">#&gt; # … with 695 more rows</span></span>
+<span><span class="co">#&gt; # ℹ 695 more rows</span></span>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A tibble: 851 × 5</span></span>
 <span><span class="co">#&gt;    from    to name                  type                                geometry</span></span>
@@ -418,7 +418,7 @@ postal code areas for the Roxel dataset.</p>
 <span><span class="co">#&gt; 1     1     2 Havixbecker Strasse   residential (4151491 3207923, 4151474 32079…</span></span>
 <span><span class="co">#&gt; 2     3     4 Pienersallee          secondary   (4151398 3207777, 4151390 32077…</span></span>
 <span><span class="co">#&gt; 3     5     6 Schulte-Bernd-Strasse residential (4151408 3207539, 4151417 32075…</span></span>
-<span><span class="co">#&gt; # … with 848 more rows</span></span></code></pre>
+<span><span class="co">#&gt; # ℹ 848 more rows</span></span></code></pre>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">codes</span>, col <span class="op">=</span> <span class="cn">NA</span>, border <span class="op">=</span> <span class="st">"red"</span>, lty <span class="op">=</span> <span class="fl">4</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -468,7 +468,7 @@ occurs.</p>
 <span><span class="co">#&gt; 4 (4151370 3207673) a    </span></span>
 <span><span class="co">#&gt; 5 (4151408 3207539) a    </span></span>
 <span><span class="co">#&gt; 6 (4151421 3207592) a    </span></span>
-<span><span class="co">#&gt; # … with 695 more rows</span></span>
+<span><span class="co">#&gt; # ℹ 695 more rows</span></span>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A tibble: 851 × 5</span></span>
 <span><span class="co">#&gt;    from    to name                  type                                geometry</span></span>
@@ -476,7 +476,7 @@ occurs.</p>
 <span><span class="co">#&gt; 1     1     2 Havixbecker Strasse   residential (4151491 3207923, 4151474 32079…</span></span>
 <span><span class="co">#&gt; 2     3     4 Pienersallee          secondary   (4151398 3207777, 4151390 32077…</span></span>
 <span><span class="co">#&gt; 3     5     6 Schulte-Bernd-Strasse residential (4151408 3207539, 4151417 32075…</span></span>
-<span><span class="co">#&gt; # … with 848 more rows</span></span></code></pre>
+<span><span class="co">#&gt; # ℹ 848 more rows</span></span></code></pre>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Join on edges duplicates edges that have multiple matches.</span></span>
 <span><span class="co"># The number of edges in the resulting network is higher than in the original.</span></span>
@@ -498,7 +498,7 @@ occurs.</p>
 <span><span class="co">#&gt; 4     3     4 Pienersallee          secondary   (4151398 3207777, 4151390… b    </span></span>
 <span><span class="co">#&gt; 5     5     6 Schulte-Bernd-Strasse residential (4151408 3207539, 4151417… a    </span></span>
 <span><span class="co">#&gt; 6     5     6 Schulte-Bernd-Strasse residential (4151408 3207539, 4151417… b    </span></span>
-<span><span class="co">#&gt; # … with 1,091 more rows</span></span>
+<span><span class="co">#&gt; # ℹ 1,091 more rows</span></span>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A tibble: 701 × 1</span></span>
 <span><span class="co">#&gt;            geometry</span></span>
@@ -506,7 +506,7 @@ occurs.</p>
 <span><span class="co">#&gt; 1 (4151491 3207923)</span></span>
 <span><span class="co">#&gt; 2 (4151474 3207946)</span></span>
 <span><span class="co">#&gt; 3 (4151398 3207777)</span></span>
-<span><span class="co">#&gt; # … with 698 more rows</span></span></code></pre>
+<span><span class="co">#&gt; # ℹ 698 more rows</span></span></code></pre>
 <p>For non-spatial joins based on attribute columns, simply use a join
 function from <code>dplyr</code> (e.g. <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::left_join()</a></code>
 or <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">dplyr::inner_join()</a></code>) instead of
@@ -772,7 +772,7 @@ the joined network.</p>
 <span><span class="co">#&gt; 1     1     2   (0 0, 1 0)</span></span>
 <span><span class="co">#&gt; 2     2     3   (1 0, 1 1)</span></span>
 <span><span class="co">#&gt; 3     2     3   (1 0, 1 1)</span></span>
-<span><span class="co">#&gt; # … with 1 more row</span></span></code></pre>
+<span><span class="co">#&gt; # ℹ 1 more row</span></span></code></pre>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, pch <span class="op">=</span> <span class="fl">15</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">other_net</span>, col <span class="op">=</span> <span class="st">"red"</span>, pch <span class="op">=</span> <span class="fl">18</span>, cex <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
