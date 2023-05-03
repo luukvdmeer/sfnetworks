@@ -1,3 +1,36 @@
+# sfnetworks v0.6.3
+
+### Bug fixes
+
+* Argument names of sfnetwork S3 methods for `sf::st_geometry()`, `sf::st_bbox()`, `sf::st_m_range()` and `sf::st_set_precision()` are updated to be consistent with their corresponding generic functions in sf.
+* Arguments `active` and `...` are removed from the sfnetwork S3 method for `sf::st_precision()` to be consistent with its corresponding generic function in sf.
+* Argument `active` is removed from the sfnetwork S3 method for `sf::st_crs()` to be consistent with the above-mentioned change regarding `sf::st_precision()` (since both CRS and precision can not differ between nodes and edges).
+
+# sfnetworks v0.6.2
+
+### Bug fixes
+
+* The `to_spatial_contracted()` morpher now correctly handles cases for undirected networks in which only loop edges are created after contraction. Refs [#237](https://github.com/luukvdmeer/sfnetworks/issues/237).
+
+### Refactoring
+
+* The `to_spatial_contracted()` morpher now directly returns the original network when none of the contraction groups contain more than one node.
+
+### Other
+
+* Umbrella packages tidyverse and spatstat are no longer suggested packages. Only individual members of these packages are now suggested packages.
+* Updated unit tests.
+
+# sfnetworks v0.6.1
+
+### Bug fixes
+
+* Unit tests in `test_join.R` now successfully run also on R-devel.
+
+### Refactoring
+
+* Updated plot algorithm to be faster and more efficient. Refs [#226](https://github.com/luukvdmeer/sfnetworks/issues/226).
+
 # sfnetworks v0.6.0 "Coerde"
 
 ### New features
@@ -13,7 +46,7 @@
   - Cost matrix output now contains units. Refs [#119](
   https://github.com/luukvdmeer/sfnetworks/issues/119).
   - Argument `direction` added to specify if outbound, inbound or all edges should be considered. This replaces the argument `mode` from `igraph::distances()`. The default is "out", while before it was "all". For undirected networks this argument is ignored.
-* Edge measure function gained an argument `degrees` which can be set to `TRUE` to return angles in degrees instead of radians.
+* Edge measure function `edge_azimuth()` gained an argument `degrees` which can be set to `TRUE` to return angles in degrees instead of radians.
 * By default `st_network_paths()` now encodes nodes by their name, whenever a name attribute is present in the nodes table. This can be disabled by setting `use_names = FALSE`. Refs [#154](https://github.com/luukvdmeer/sfnetworks/issues/154).
 * Functions `sf::st_precision()` and `sf::st_set_precision()` now have a method for `sfnetwork` objects, such that coordinate precision can be queried and set. Refs [#209](https://github.com/luukvdmeer/sfnetworks/issues/209).
 * Functions `sf::st_intersection()` and `sf::st_difference()` now have a method for `sfnetwork` objects, such that networks can be spatially clipped. The method for `sf::st_crop()` now uses the same workflow. These functions do not work yet on edges of undirected networks. Refs [#133](https://github.com/luukvdmeer/sfnetworks/issues/133).

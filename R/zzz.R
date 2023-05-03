@@ -7,17 +7,22 @@
   if (has_ggplot2_3.0)
     s3_register("ggplot2::autoplot", "sfnetwork")
 
-  has_spatstat_2.0 =
-    requireNamespace("spatstat", quietly = TRUE) &&
-    utils::packageVersion("spatstat") >= "2.0.0"
+  has_spatstat =
+    requireNamespace("spatstat.linnet", quietly = TRUE) &&
+    requireNamespace("spatstat.geom", quietly = TRUE)
 
-  if (has_spatstat_2.0) {
+  if (has_spatstat) {
     suppressPackageStartupMessages({
       s3_register("spatstat.linnet::as.linnet", "sfnetwork")
     })
   }
 
-  s3_register("s2::as_s2_geography", "sfnetwork")
+  has_sf_1.0 =
+    requireNamespace("sf", quietly = TRUE) &&
+    utils::packageVersion("sf") >= "1.0"
+
+  if (has_sf_1.0)
+    s3_register("s2::as_s2_geography", "sfnetwork")
 
   invisible()
 }

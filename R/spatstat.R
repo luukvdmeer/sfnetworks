@@ -24,8 +24,15 @@ check_spatstat = function(pkg) {
       )
     }
   }
-  # Add an extra check to test the version of sf package. See:
-  # https://github.com/luukvdmeer/sfnetworks/pull/138#issuecomment-803430686
+  check_spatstat_sf()
+}
+
+# Auxiliary function which is used to test that:
+# --> The sf version is compatible with the new spatstat structure
+# For details, see:
+# --> https://github.com/luukvdmeer/sfnetworks/pull/138#issuecomment-803430686
+#' @importFrom utils packageVersion
+check_spatstat_sf = function() {
   if (packageVersion("sf") < "0.9.8") {
     stop(
       "spatstat code requires sf >= 0.9.8; please update sf",
@@ -60,7 +67,6 @@ as.linnet.sfnetwork = function(X, ...) {
   # Check the presence and the version of spatstat.geom and spatstat.linnet
   check_spatstat("spatstat.geom")
   check_spatstat("spatstat.linnet")
-
   # Extract the vertices of the sfnetwork.
   X_vertices_ppp = spatstat.geom::as.ppp(pull_node_geom(X))
   # Extract the edge list.

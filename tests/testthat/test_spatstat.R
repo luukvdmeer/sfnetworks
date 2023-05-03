@@ -1,5 +1,6 @@
-if (requireNamespace("spatstat") && packageVersion("spatstat") >= "2.0.1") {
-  library(spatstat)
+if (requireNamespace("spatstat.linnet") && requireNamespace("spatstat.geom")) {
+  library(spatstat.linnet)
+  library(spatstat.geom)
   test_that("Converting sfnetwork to linnet works with projected coords", {
     roxel_sfn <- as_sfnetwork(roxel) %>% st_transform(3857)
     # I added suppressWarnings since as.linnet returns a few warning messages

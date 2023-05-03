@@ -15,6 +15,9 @@ Ignored when the edges of the network are spatially explicit.}
 
 \item{...}{Arguments passed on to \code{\link[sf:plot]{plot.sf}}}
 }
+\value{
+This is a plot method and therefore has no visible return value.
+}
 \description{
 Plot the geometries of an object of class \code{\link{sfnetwork}}.
 }

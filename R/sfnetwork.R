@@ -289,14 +289,13 @@ as_sfnetwork.sf = function(x, ...) {
 #' @name as_sfnetwork
 #' @examples
 #' # From a linnet object.
-#' if (require(spatstat, quietly = TRUE)) {
+#' if (require(spatstat.geom, quietly = TRUE)) {
 #'   as_sfnetwork(simplenet)
 #' }
 #'
 #' @export
 as_sfnetwork.linnet = function(x, ...) {
   check_spatstat("spatstat.geom")
-
   # The easiest approach is the same as for psp objects, i.e. converting the
   # linnet object into a psp format and then applying the corresponding method.
   x_psp = spatstat.geom::as.psp(x)
@@ -313,17 +312,9 @@ as_sfnetwork.linnet = function(x, ...) {
 #' }
 #'
 #' @importFrom sf st_as_sf st_collection_extract
-#' @importFrom utils packageVersion
 #' @export
 as_sfnetwork.psp = function(x, ...) {
-  # Add an extra check to test the version of sf package. See:
-  # https://github.com/luukvdmeer/sfnetworks/pull/138#issuecomment-803430686
-  if (packageVersion("sf") < "0.9.8") {
-    stop(
-      "spatstat code requires sf >= 0.9.8; please update sf",
-      call. = FALSE
-    )
-  }
+  check_spatstat_sf()
   # The easiest method for transforming a Line Segment Pattern (psp) object
   # into sfnetwork format is to transform it into sf format and then apply
   # the usual methods.

@@ -22,7 +22,9 @@ geom_colname = function(x, active = NULL) {
   )
 }
 
+#' @name geom_colname
 #' @importFrom igraph vertex_attr vertex_attr_names
+#' @noRd
 node_geom_colname = function(x) {
   col = attr(vertex_attr(x), "sf_column")
   if (is.null(col)) {
@@ -33,7 +35,9 @@ node_geom_colname = function(x) {
   col
 }
 
+#' @name geom_colname
 #' @importFrom igraph edge_attr edge_attr_names
+#' @noRd
 edge_geom_colname = function(x) {
   col = attr(edge_attr(x), "sf_column")
   if (is.null(col) && has_explicit_edges(x)) {
@@ -58,13 +62,17 @@ edge_geom_colname = function(x) {
   )
 }
 
+#' @name geom_colname
 #' @importFrom igraph vertex_attr<-
+#' @noRd
 `node_geom_colname<-` = function(x, value) {
   attr(vertex_attr(x), "sf_column") = value
   x
 }
 
+#' @name geom_colname
 #' @importFrom igraph edge_attr<-
+#' @noRd
 `edge_geom_colname<-` = function(x, value) {
   attr(edge_attr(x), "sf_column") = value
   x
@@ -92,14 +100,18 @@ pull_geom = function(x, active = NULL) {
   )
 }
 
+#' @name pull_geom
 #' @importFrom igraph vertex_attr
+#' @noRd
 pull_node_geom = function(x) {
   geom = vertex_attr(x, node_geom_colname(x))
   if (! is.sfc(geom)) raise_invalid_sf_column()
   geom
 }
 
+#' @name pull_geom
 #' @importFrom igraph edge_attr
+#' @noRd
 pull_edge_geom = function(x) {
   require_explicit_edges(x)
   geom = edge_attr(x, edge_geom_colname(x))
@@ -135,8 +147,10 @@ mutate_geom = function(x, y, active = NULL) {
   )
 }
 
+#' @name mutate_geom
 #' @importFrom igraph vertex_attr<-
 #' @importFrom sf st_geometry
+#' @noRd
 mutate_node_geom = function(x, y) {
   nodes = nodes_as_sf(x)
   st_geometry(nodes) = y
@@ -144,8 +158,10 @@ mutate_node_geom = function(x, y) {
   x
 }
 
+#' @name mutate_geom
 #' @importFrom igraph edge_attr<-
 #' @importFrom sf st_geometry
+#' @noRd
 mutate_edge_geom = function(x, y) {
   edges = edges_as_table(x)
   st_geometry(edges) = y
@@ -176,8 +192,10 @@ drop_geom = function(x, active = NULL) {
   )
 }
 
+#' @name drop_geom
 #' @importFrom igraph delete_vertex_attr
 #' @importFrom tidygraph as_tbl_graph
+#' @noRd
 drop_node_geom = function(x) {
   x_new = delete_vertex_attr(x, node_geom_colname(x))
   node_geom_colname(x_new) = NULL
@@ -185,7 +203,9 @@ drop_node_geom = function(x) {
   as_tbl_graph(x_new)
 }
 
+#' @name drop_geom
 #' @importFrom igraph delete_edge_attr
+#' @noRd
 drop_edge_geom = function(x) {
   geom_col = edge_geom_colname(x)
   if (is.null(geom_col)) {

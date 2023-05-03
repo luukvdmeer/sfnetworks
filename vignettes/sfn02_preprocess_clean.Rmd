@@ -40,7 +40,6 @@ Unfortunately real-world datasets are not always as friendly as those used in tu
 library(sfnetworks)
 library(sf)
 library(tidygraph)
-library(tidyverse)
 library(igraph)
 library(dbscan)
 ```

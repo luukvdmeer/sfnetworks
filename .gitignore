@@ -7,5 +7,7 @@
 *.html
 *cache*
 CRAN-RELEASE
+CRAN-SUBMISSION
 docs/
 pkgdown/
+revdep/

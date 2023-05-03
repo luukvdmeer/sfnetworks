@@ -41,7 +41,8 @@ In this regard it is important to remember that `sfnetworks` is a general-purpos
 library(sfnetworks)
 library(sf)
 library(tidygraph)
-library(tidyverse)
+library(dplyr)
+library(purrr)
 library(TSP)
 ```
 

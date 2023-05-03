@@ -80,7 +80,7 @@ NULL
 #' \code{TRUE} also removes multiple edges and loop edges that already
 #' existed before contraction. Defaults to \code{FALSE}.
 #'
-#' @importFrom dplyr group_by group_indices group_split
+#' @importFrom dplyr group_by group_indices group_size group_split
 #' @importFrom igraph contract delete_edges delete_vertex_attr which_loop
 #' which_multiple
 #' @importFrom sf st_as_sf st_cast st_centroid st_combine st_geometry
@@ -101,6 +101,8 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
   # Each group of nodes will later be contracted into a single node.
   ## =======================
   nodes = group_by(nodes, ...)
+  # If no group contains more than one node simply return x.
+  if (all(group_size(nodes) == 1)) return(list(contracted = x))
   ## =======================
   # STEP II: EXTRACT GROUPS
   # Split the nodes table into the created groups.
@@ -179,6 +181,7 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
     x_new = delete_edges(x_new, which(which_loop(x_new)))
     x_new = x_new %preserve_all_attrs% x_new
   }
+  # Secondly we will update the geometries of the remaining affected edges.
   if (has_explicit_edges(x)) {
     # Extract the edges and their geometries from the contracted network.
     new_edges = edges_as_sf(x_new)
@@ -219,11 +222,18 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
     is_loop = (!is.na(from) & !is.na(to)) & (from == to)
     is_from = !is_loop & !is.na(from)
     is_to = !is_loop & !is.na(to)
+    # First handle loop edges (if not removed yet through simplification).
     # Find the indices of:
     # --> Each loop edge.
     # --> The node at the start and end of each loop edge.
-    E1 = which(is_loop)
-    N1 = from[is_loop]
+    # For each detected loop edge:
+    # --> Append the node geometry at each end of the edge geometry.
+    if (any(is_loop)) {
+      E1 = which(is_loop)
+      N1 = from[is_loop]
+      geoms = do.call("c", mapply(append_boundaries, E1, N1, SIMPLIFY = FALSE))
+      new_edge_geoms[E1] = geoms
+    }
     # For from and to edges directed and undirected networks are different.
     # In directed networks:
     # --> The from node geometry is always the start of the edge linestring.
@@ -234,13 +244,25 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
       # Find the indices of:
       # --> Each from edge.
       # --> The node at the start of each from edge.
-      E2 = which(is_from)
-      N2 = from[is_from]
+      # For each detected from edge:
+      # --> Append the node geometry at the start of the edge geometry.
+      if (any(is_from)) {
+        E2 = which(is_from)
+        N2 = from[is_from]
+        geoms = do.call("c", mapply(append_source, E2, N2, SIMPLIFY = FALSE))
+        new_edge_geoms[E2] = geoms
+      }
       # Find the indices of:
       # --> Each to edge.
       # --> The node at the end of each to edge.
-      E3 = which(is_to)
-      N3 = to[is_to]
+      # For each detected to edge:
+      # --> Append the node geometry at the end of the edge geometry.
+      if (any(is_to)) {
+        E3 = which(is_to)
+        N3 = to[is_to]
+        geoms = do.call("c", mapply(append_target, E3, N3, SIMPLIFY = FALSE))
+        new_edge_geoms[E3] = geoms
+      }
     } else {
       # The edges defined before as from/to are incident to contracted nodes.
       # However, we don't know yet if the come from or go to it.
@@ -271,24 +293,27 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
         # Find the indices of:
         # --> Each from edge.
         # --> The node at the start of each from edge.
-        E2 = which(apply(is_from, 1, any))
-        N2 = t(bounds)[t(is_from)]
+        # For each detected from edge:
+        # --> Append the node geometry at the start of the edge geometry.
+        if (any(is_from)) {
+          E2 = which(apply(is_from, 1, any))
+          N2 = t(bounds)[t(is_from)]
+          geoms = do.call("c", mapply(append_source, E2, N2, SIMPLIFY = FALSE))
+          new_edge_geoms[E2] = geoms
+        }
         # Find the indices of:
         # --> Each to edge.
         # --> The node at the end of each to edge.
-        E3 = which(apply(is_to, 1, any))
-        N3 = t(bounds)[t(is_to)]
+        # For each detected to edge:
+        # --> Append the node geometry at the end of the edge geometry.
+        if (any(is_to)) {
+          E3 = which(apply(is_to, 1, any))
+          N3 = t(bounds)[t(is_to)]
+          geoms = do.call("c", mapply(append_target, E3, N3, SIMPLIFY = FALSE))
+          new_edge_geoms[E3] = geoms
+        }
       }
     }
-    # Update the geometries of the loop edges.
-    geoms = do.call("c", mapply(append_boundaries, E1, N1, SIMPLIFY = FALSE))
-    new_edge_geoms[E1] = geoms
-    # Update the geometries of the from edges.
-    geoms = do.call("c", mapply(append_source, E2, N2, SIMPLIFY = FALSE))
-    new_edge_geoms[E2] = geoms
-    # Update the geometries of the to edges.
-    geoms = do.call("c", mapply(append_target, E3, N3, SIMPLIFY = FALSE))
-    new_edge_geoms[E3] = geoms
     # Update the edges table of the contracted network.
     st_geometry(new_edges) = new_edge_geoms
     edge_attribute_values(x_new) = new_edges

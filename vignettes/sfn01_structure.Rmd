@@ -42,8 +42,8 @@ It is possible to apply any function from the [tidyverse packages](https://www.t
 library(sfnetworks)
 library(sf)
 library(tidygraph)
-library(tidyverse)
 library(igraph)
+library(ggplot2)
 ```
 
 ## Philosophy
