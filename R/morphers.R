@@ -148,7 +148,8 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
   # --> Use its original geometry.
   # For each node that was contracted:
   # --> Use the centroid of the geometries of the group members.
-  new_node_geoms = st_geometry(nodes)[!duplicated(all_group_idxs)]
+  new_node_idxs = sapply(new_nodes$.tidygraph_node_index, "[[", 1)
+  new_node_geoms = st_geometry(nodes)[new_node_idxs]
   get_centroid = function(i) {
     comb = st_combine(st_geometry(i))
     suppressWarnings(st_centroid(comb))
