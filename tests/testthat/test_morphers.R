@@ -36,7 +36,7 @@ rect = st_buffer(A, dist = 300, endCapStyle = "SQUARE")
 # Create network from lines
 lines = c(l1, l2, l3, l4, l5, l6, l7)
 net_l = as_sfnetwork(lines) %>%
-  mutate(rdm = sample(1:3, 8, replace = T))
+  mutate(cluster = c(1, 3, 2, 3, 1, 1, 1, 3))
 net_i = as_sfnetwork(lines, edges_as_lines = F)
 
 # Create directed Roxel network
@@ -48,7 +48,7 @@ net_u = as_sfnetwork(roxel, directed = FALSE) %>%
   st_transform(3035)
 
 # Perform spatial contraction
-cont_l = convert(net_l, to_spatial_contracted, rdm)
+cont_l = convert(net_l, to_spatial_contracted, cluster)
 
 # Morph to spatial directed
 dire_u = convert(net_u, to_spatial_directed)
