@@ -5,7 +5,7 @@
 \alias{as.linnet.sfnetwork}
 \title{Convert a sfnetwork into a linnet}
 \usage{
-\method{as.linnet}{sfnetwork}(X, ...)
+as.linnet.sfnetwork(X, ...)
 }
 \arguments{
 \item{X}{An object of class \code{\link{sfnetwork}} with a projected CRS.}
@@ -21,6 +21,9 @@ A method to convert an object of class \code{\link{sfnetwork}} into
 interoperability between \code{sfnetworks} and \code{spatstat}. Use
 this method without the .sfnetwork suffix and after loading the
 \code{spatstat} package.
+}
+\examples{
+#TODO
 }
 \seealso{
 \code{\link{as_sfnetwork}} to convert objects of class
