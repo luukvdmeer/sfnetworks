@@ -1206,7 +1206,7 @@ to_spatial_segmentation = function(x) {
   # The following follows the same ideas as in to_spatial_subdivision so I start
   # from the same point
   require_explicit_edges(x, hard = TRUE)
-  if (will_assume_constant(x)) raise_assume_constant("to_spatial_subdivision")
+  if (will_assume_constant(x)) raise_assume_constant("to_spatial_segmentation")
   edges = edges_as_sf(x)
   directed = is_directed(x)
 
