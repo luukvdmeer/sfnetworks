@@ -13,10 +13,21 @@
 #' @return For the getter, a named agr factor. The setter only modifies x.
 #'
 #' @noRd
-agr = function(x, active = NULL) {
-  if (is.null(active)) {
+
+install.packages("thePackage")
+library(thePackage)
+
+#' function for is.null(active)
+is_null_active <- function(active){
+  if (is.null(active)){
     active = attr(x, "active")
+    return(TRUE)
   }
+}
+
+
+agr = function(x, active = NULL) {
+  is_null_active(active)
   switch(
     active,
     nodes = node_agr(x),
@@ -47,9 +58,7 @@ edge_agr = function(x) {
 #' @name agr
 #' @noRd
 `agr<-` = function(x, active = NULL, value) {
-  if (is.null(active)) {
-    active = attr(x, "active")
-  }
+  is_null_active(active)
   switch(
     active,
     nodes = `node_agr<-`(x, value),
