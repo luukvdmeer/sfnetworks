@@ -21,7 +21,6 @@ library(thePackage)
 is_null_active <- function(active){
   if (is.null(active)){
     active = attr(x, "active")
-    return(TRUE)
   }
 }
 
