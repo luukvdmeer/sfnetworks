@@ -1,60 +1,63 @@
 #' Create a sfnetwork
 #'
-#' \code{sfnetwork} is a tidy data structure for geospatial networks. It
-#' extends the \code{\link[tidygraph]{tbl_graph}} data structure for
-#' relational data into the domain of geospatial networks, with nodes and
-#' edges embedded in geographical space, and offers smooth integration with
-#' \code{\link[sf]{sf}} for spatial data analysis.
+#' \code{sfnetwork} is a tidy data structure for geospatial networks. It extends
+#' the \code{\link[tidygraph]{tbl_graph}} data structure for relational data
+#' into the domain of geospatial networks, with nodes and edges embedded in
+#' geographical space, and offers smooth integration with \code{\link[sf]{sf}}
+#' for spatial data analysis.
 #'
 #' @param nodes The nodes of the network. Should be an object of class
-#' \code{\link[sf]{sf}}, or directly convertible to it using
-#' \code{\link[sf]{st_as_sf}}. All features should have an associated geometry
-#' of type \code{POINT}.
+#'   \code{\link[sf]{sf}}, or directly convertible to it using
+#'   \code{\link[sf]{st_as_sf}}. All features should have an associated geometry
+#'   of type \code{POINT}.
 #'
 #' @param edges The edges of the network. May be an object of class
-#' \code{\link[sf]{sf}}, with all features having an associated geometry of
-#' type \code{LINESTRING}. It may also be a regular \code{\link{data.frame}} or
-#' \code{\link[tibble]{tbl_df}} object. In any case, the nodes at the ends of
-#' each edge must either be encoded in a \code{to} and \code{from} column, as
-#' integers or characters. Integers should refer to the position of a node in
-#' the nodes table, while characters should refer to the name of a node encoded
-#' in the column referred to in the \code{node_key} argument. Setting edges to
-#' \code{NULL} will create a network without edges.
+#'   \code{\link[sf]{sf}}, with all features having an associated geometry of
+#'   type \code{LINESTRING}. It may also be a regular \code{\link{data.frame}}
+#'   or \code{\link[tibble]{tbl_df}} object. In any case, the nodes at the ends
+#'   of each edge must either be encoded in a \code{to} and \code{from} column,
+#'   as integers or characters. Integers should refer to the position of a node
+#'   in the nodes table, while characters should refer to the name of a node
+#'   encoded in the column referred to in the \code{node_key} argument. Setting
+#'   edges to \code{NULL} will create a network without edges.
 #'
 #' @param directed Should the constructed network be directed? Defaults to
-#' \code{TRUE}.
+#'   \code{TRUE}.
 #'
 #' @param node_key The name of the column in the nodes table that character
-#' represented \code{to} and \code{from} columns should be matched against. If
-#' \code{NA}, the first column is always chosen. This setting has no effect if
-#' \code{to} and \code{from} are given as integers. Defaults to \code{'name'}.
+#'   represented \code{to} and \code{from} columns should be matched against. If
+#'   \code{NA}, the first column is always chosen. This setting has no effect if
+#'   \code{to} and \code{from} are given as integers. Defaults to \code{'name'}.
 #'
 #' @param edges_as_lines Should the edges be spatially explicit, i.e. have
-#' \code{LINESTRING} geometries stored in a geometry list column? If
-#' \code{NULL}, this will be automatically defined, by setting the argument to
-#' \code{TRUE} when the edges are given as an object of class
-#' \code{\link[sf]{sf}}, and \code{FALSE} otherwise. Defaults to \code{NULL}.
+#'   \code{LINESTRING} geometries stored in a geometry list column? If
+#'   \code{NULL}, this will be automatically defined, by setting the argument to
+#'   \code{TRUE} when the edges are given as an object of class
+#'   \code{\link[sf]{sf}}, and \code{FALSE} otherwise. Defaults to \code{NULL}.
 #'
 #' @param length_as_weight Should the length of the edges be stored in a column
-#' named \code{weight}? If set to \code{TRUE}, this will calculate the length
-#' of the linestring geometry of the edge in the case of spatially explicit
-#' edges, and the straight-line distance between the source and target node in
-#' the case of spatially implicit edges. If there is already a column named
-#' \code{weight}, it will be overwritten. Defaults to \code{FALSE}.
+#'   named \code{weight}? If set to \code{TRUE}, this will calculate the length
+#'   of the linestring geometry of the edge in the case of spatially explicit
+#'   edges, and the straight-line distance between the source and target node in
+#'   the case of spatially implicit edges. If there is already a column named
+#'   \code{weight}, it will be overwritten. Defaults to \code{FALSE}.
 #'
 #' @param force Should network validity checks be skipped? Defaults to
-#' \code{FALSE}, meaning that network validity checks are executed when
-#' constructing the network. These checks guarantee a valid spatial network
-#' structure. For the nodes, this means that they all should have \code{POINT}
-#' geometries. In the case of spatially explicit edges, it is also checked that
-#' all edges have \code{LINESTRING} geometries, nodes and edges have the same
-#' CRS and boundary points of edges match their corresponding node coordinates.
-#' These checks are important, but also time consuming. If you are already sure
-#' your input data meet the requirements, the checks are unnecessary and can be
-#' turned off to improve performance.
+#'   \code{FALSE}, meaning that network validity checks are executed when
+#'   constructing the network. These checks guarantee a valid spatial network
+#'   structure. For the nodes, this means that they all should have \code{POINT}
+#'   geometries. In the case of spatially explicit edges, it is also checked
+#'   that all edges have \code{LINESTRING} geometries, nodes and edges have the
+#'   same CRS and boundary points of edges match their corresponding node
+#'   coordinates. These checks are important, but also time consuming. If you
+#'   are already sure your input data meet the requirements, the checks are
+#'   unnecessary and can be turned off to improve performance.
+#'
+#' @param message If \code{TRUE}, the function prints informative messages when
+#'   checking the validity of the network structure.
 #'
 #' @param ... Arguments passed on to \code{\link[sf]{st_as_sf}}, if nodes need
-#' to be converted into an \code{\link[sf]{sf}} object during construction.
+#'   to be converted into an \code{\link[sf]{sf}} object during construction.
 #'
 #' @return An object of class \code{sfnetwork}.
 #'
@@ -102,7 +105,7 @@
 #' @export
 sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
                      edges_as_lines = NULL, length_as_weight = FALSE,
-                     force = FALSE, ...) {
+                     force = FALSE, message = TRUE, ...) {
   # Prepare nodes.
   # If nodes is not an sf object:
   # --> Try to convert it to an sf object.
@@ -140,12 +143,12 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
   # --> Adding additional attributes if requested.
   if (is.null(edges)) {
     # Run validity check for nodes only and return the network.
-    if (! force) require_valid_network_structure(x_sfn, message = TRUE)
+    if (! force) require_valid_network_structure(x_sfn, message = message)
     return (x_sfn)
   }
   if (edges_as_lines) {
     # Run validity check before explicitizing edges.
-    if (! force) require_valid_network_structure(x_sfn, message = TRUE)
+    if (! force) require_valid_network_structure(x_sfn, message = message)
     # Add edge geometries if needed.
     if (edges_are_explicit) {
       # Edges already have geometries, we don't need to add them.
@@ -163,7 +166,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
       x_sfn = implicitize_edges(x_sfn)
     }
     # Run validity check after implicitizing edges.
-    if (! force) require_valid_network_structure(x_sfn, message = TRUE)
+    if (! force) require_valid_network_structure(x_sfn, message = message)
   }
   if (length_as_weight) {
     edges = edges_as_sf(x_sfn)
