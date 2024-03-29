@@ -252,8 +252,8 @@ test_that("morphers return same network when there is no morphing
     suppressWarnings(ecount(convert(subd_u, to_spatial_subdivision)))
   )
   expect_equal(
-    is.directed(net_d),
-    is.directed(convert(net_d, to_spatial_directed))
+    is_directed(net_d),
+    is_directed(convert(net_d, to_spatial_directed))
   )
   expect_setequal(
     st_geometry(activate(net_l, "edges")),
