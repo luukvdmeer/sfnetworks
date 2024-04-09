@@ -21,7 +21,7 @@ be snapped to its nearest node before calculating costs."><meta property="og:ima
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.4</span>
       </span>
     </div>
 
@@ -75,7 +75,7 @@ be snapped to its nearest node before calculating costs."><meta property="og:ima
     </div>
 
     <div class="ref-description">
-    <p>Wrapper around <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">distances</a></code> to calculate costs of
+    <p>Wrapper around <code><a href="https://r.igraph.org/reference/distances.html" class="external-link">distances</a></code> to calculate costs of
 pairwise shortest paths between points in a spatial network. It allows to
 provide any set of geospatial point as <code>from</code> and <code>to</code> arguments.
 If such a geospatial point is not equal to a node in the network, it will
@@ -85,8 +85,8 @@ be snapped to its nearest node before calculating costs.</p>
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">st_network_cost</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
-<span>  from <span class="op">=</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span>
-<span>  to <span class="op">=</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span>
+<span>  from <span class="op">=</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span>
+<span>  to <span class="op">=</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span>
 <span>  weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  direction <span class="op">=</span> <span class="st">"out"</span>,</span>
 <span>  Inf_as_NaN <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -148,7 +148,7 @@ argument is ignored for undirected networks.</p></dd>
 
 
 <dt>...</dt>
-<dd><p>Arguments passed on to <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">distances</a></code>. Argument
+<dd><p>Arguments passed on to <code><a href="https://r.igraph.org/reference/distances.html" class="external-link">distances</a></code>. Argument
 <code>mode</code> is ignored. Use <code>direction</code> instead.</p></dd>
 
 </dl></div>
@@ -175,8 +175,8 @@ index should correspond to a row-number of the nodes table of the network.
 A node name should correspond to a value of a column in the nodes table
 named <code>name</code>. This column should contain character values without
 duplicates.</p>
-<p>For more details on the wrapped function from <code><a href="https://rdrr.io/pkg/igraph/man/aaa-igraph-package.html" class="external-link">igraph</a></code>
-see the <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">distances</a></code> documentation page.</p>
+<p>For more details on the wrapped function from <code><a href="https://r.igraph.org/reference/aaa-igraph-package.html" class="external-link">igraph</a></code>
+see the <code><a href="https://r.igraph.org/reference/distances.html" class="external-link">distances</a></code> documentation page.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>

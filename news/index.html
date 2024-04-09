@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.4</span>
       </span>
     </div>
 
@@ -70,6 +70,17 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="0.6.4" id="sfnetworks-v064">sfnetworks v0.6.4<a class="anchor" aria-label="anchor" href="#sfnetworks-v064"></a></h2>
+<div class="section level4">
+<h4 id="new-features-0-6-4">New features<a class="anchor" aria-label="anchor" href="#new-features-0-6-4"></a></h4>
+<ul><li>The <code><a href="../reference/sfnetwork.html">sfnetwork()</a></code> construction function now has an argument <code>message</code> which can be set to <code>FALSE</code> when the network validity checks should not print informational messages to the console. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/261" class="external-link">#261</a>.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="maintenance-0-6-4">Maintenance<a class="anchor" aria-label="anchor" href="#maintenance-0-6-4"></a></h4>
+<ul><li>Code and documentation was updated where needed to align with changes in base R and/or package dependencies. No changes to program logic or behavior.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="0.6.3" id="sfnetworks-v063">sfnetworks v0.6.3<small>2023-03-22</small><a class="anchor" aria-label="anchor" href="#sfnetworks-v063"></a></h2>
 <div class="section level4">
 <h4 id="bug-fixes-0-6-3">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-6-3"></a></h4>
@@ -118,7 +129,7 @@
 <li>Updates to <code><a href="../reference/st_network_cost.html">st_network_cost()</a></code>:
 <ul><li>Duplicated nodes are now accepted in the <code>to</code> argument. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/183" class="external-link">#183</a>.</li>
 <li>Cost matrix output now contains units. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/119" class="external-link">#119</a>.</li>
-<li>Argument <code>direction</code> added to specify if outbound, inbound or all edges should be considered. This replaces the argument <code>mode</code> from <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">igraph::distances()</a></code>. The default is “out”, while before it was “all”. For undirected networks this argument is ignored.</li>
+<li>Argument <code>direction</code> added to specify if outbound, inbound or all edges should be considered. This replaces the argument <code>mode</code> from <code><a href="https://r.igraph.org/reference/distances.html" class="external-link">igraph::distances()</a></code>. The default is “out”, while before it was “all”. For undirected networks this argument is ignored.</li>
 </ul></li>
 <li>Edge measure function <code><a href="../reference/spatial_edge_measures.html">edge_azimuth()</a></code> gained an argument <code>degrees</code> which can be set to <code>TRUE</code> to return angles in degrees instead of radians.</li>
 <li>By default <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> now encodes nodes by their name, whenever a name attribute is present in the nodes table. This can be disabled by setting <code>use_names = FALSE</code>. Refs <a href="https://github.com/luukvdmeer/sfnetworks/issues/154" class="external-link">#154</a>.</li>
@@ -268,7 +279,7 @@
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.0" id="sfnetworks-v040-hiltrup">sfnetworks v0.4.0 “Hiltrup”<a class="anchor" aria-label="anchor" href="#sfnetworks-v040-hiltrup"></a></h2>
 <ul><li>Backward incompatible changes to existing functions:
-<ul><li>Function <code>st_shortest_paths()</code> and <code>st_all_shortest_paths()</code> are now merged into a single function <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code>. By default it call <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">igraph::shortest_paths()</a></code> internally. Setting <code>all = TRUE</code> will make it call <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">igraph::all_shortest_paths()</a></code> instead.</li>
+<ul><li>Function <code>st_shortest_paths()</code> and <code>st_all_shortest_paths()</code> are now merged into a single function <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code>. By default it call <code><a href="https://r.igraph.org/reference/distances.html" class="external-link">igraph::shortest_paths()</a></code> internally. Setting <code>all = TRUE</code> will make it call <code><a href="https://r.igraph.org/reference/distances.html" class="external-link">igraph::all_shortest_paths()</a></code> instead.</li>
 <li>The output format of this <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> function is different from its predecessors. It returns a tibble instead of a list, to fit better in tidyverse workflows. See <a href="https://github.com/luukvdmeer/sfnetworks/issues/77" class="external-link">#77</a>
 </li>
 <li>The <code>snap</code> argument is removed from all shortest paths related functions, which will now always snap geospatial points provides as from or to locations to their nearest node on the network before calculating paths.</li>

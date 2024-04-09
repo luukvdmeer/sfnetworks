@@ -28,7 +28,7 @@ crystallise."><meta property="og:image" content="/logo.png"><!-- mathjax --><scr
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.4</span>
       </span>
     </div>
 
@@ -161,7 +161,7 @@ existed before contraction. Defaults to <code>FALSE</code>.</p></dd>
 <dd><p>Whenever multiple features (i.e. nodes and/or
 edges) are merged into a single feature during morphing, how should their
 attributes be combined? Several options are possible, see
-<code><a href="https://rdrr.io/pkg/igraph/man/igraph-attribute-combination.html" class="external-link">igraph-attribute-combination</a></code> for details.</p></dd>
+<code><a href="https://r.igraph.org/reference/igraph-attribute-combination.html" class="external-link">igraph-attribute-combination</a></code> for details.</p></dd>
 
 
 <dt>store_original_data</dt>
@@ -217,7 +217,7 @@ to <code>TRUE</code>.</p></dd>
 <dd><p>Nodes to be protected from being removed, no matter if they
 are a pseudo node or not. Can be given as a numeric vector containing node
 indices or a character vector containing node names. Can also be a set of
-geospatial features as object of class code<a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">sf</a> or
+geospatial features as object of class <code><a href="https://r-spatial.github.io/sf/reference/sf.html" class="external-link">sf</a></code> or
 <code><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">sfc</a></code>. In that case, for each of these features its nearest
 node in the network will be protected. Defaults to <code>NULL</code>, meaning that
 none of the nodes is protected.</p></dd>

@@ -22,7 +22,7 @@ point (if any) will be joined to that node."><meta property="og:image" content="
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.4</span>
       </span>
     </div>
 
@@ -103,7 +103,7 @@ point (if any) will be joined to that node.</p>
 <dd><p>The tolerance distance to be used. Only features that are
 at least as close to the network as the tolerance distance will be blended.
 Should be a non-negative number preferably given as an object of class
-<code><a href="https://rdrr.io/pkg/units/man/units.html" class="external-link">units</a></code>. Otherwise, it will be assumed that the unit is
+<code><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">units</a></code>. Otherwise, it will be assumed that the unit is
 meters. If set to <code>Inf</code> all features will be blended. Defaults to
 <code>Inf</code>.</p></dd>
 
@@ -192,7 +192,7 @@ even if you only want to blend points that intersect the line.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 8 more rows</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Blend points with a tolerance.</span></span></span>
-<span class="r-in"><span><span class="va">tol</span> <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/units/man/units.html" class="external-link">set_units</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="st">"m"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">tol</span> <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">set_units</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="st">"m"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">b2</span> <span class="op">=</span> <span class="fu">st_network_blend</span><span class="op">(</span><span class="va">net</span>, <span class="va">pts</span>, tolerance <span class="op">=</span> <span class="va">tol</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">b2</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"># A sfnetwork with</span> <span style="color: #555555;">6</span> <span style="color: #555555;">nodes and</span> <span style="color: #555555;">5</span> <span style="color: #555555;">edges</span></span>

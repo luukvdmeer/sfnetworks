@@ -23,7 +23,7 @@ node before calculating the shortest or simple paths."><meta property="og:image"
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.4</span>
       </span>
     </div>
 
@@ -77,9 +77,9 @@ node before calculating the shortest or simple paths."><meta property="og:image"
     </div>
 
     <div class="ref-description">
-    <p>Combined wrapper around <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">shortest_paths</a></code>,
-<code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">all_shortest_paths</a></code> and
-<code><a href="https://rdrr.io/pkg/igraph/man/all_simple_paths.html" class="external-link">all_simple_paths</a></code> from <code><a href="https://rdrr.io/pkg/igraph/man/aaa-igraph-package.html" class="external-link">igraph</a></code>,
+    <p>Combined wrapper around <code><a href="https://r.igraph.org/reference/distances.html" class="external-link">shortest_paths</a></code>,
+<code><a href="https://r.igraph.org/reference/distances.html" class="external-link">all_shortest_paths</a></code> and
+<code><a href="https://r.igraph.org/reference/all_simple_paths.html" class="external-link">all_simple_paths</a></code> from <code><a href="https://r.igraph.org/reference/aaa-igraph-package.html" class="external-link">igraph</a></code>,
 allowing to provide any geospatial point as <code>from</code> argument and any
 set of geospatial points as <code>to</code> argument. If such a geospatial point
 is not equal to a node in the network, it will be snapped to its nearest
@@ -90,7 +90,7 @@ node before calculating the shortest or simple paths.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">st_network_paths</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
 <span>  <span class="va">from</span>,</span>
-<span>  to <span class="op">=</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span>
+<span>  to <span class="op">=</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/V.html" class="external-link">V</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span>
 <span>  weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"shortest"</span>,</span>
 <span>  use_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -139,11 +139,11 @@ If set to <code>NA</code>, no weights are used, even if the edges have a
 <dt>type</dt>
 <dd><p>Character defining which type of path calculation should be
 performed. If set to <code>'shortest'</code> paths are calculated using
-<code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">shortest_paths</a></code>, if set to
+<code><a href="https://r.igraph.org/reference/distances.html" class="external-link">shortest_paths</a></code>, if set to
 <code>'all_shortest'</code> paths are calculated using
-<code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">all_shortest_paths</a></code>, if set to
+<code><a href="https://r.igraph.org/reference/distances.html" class="external-link">all_shortest_paths</a></code>, if set to
 <code>'all_simple'</code> paths are calculated using
-<code><a href="https://rdrr.io/pkg/igraph/man/all_simple_paths.html" class="external-link">all_simple_paths</a></code>. Defaults to <code>'shortest'</code>.</p></dd>
+<code><a href="https://r.igraph.org/reference/all_simple_paths.html" class="external-link">all_simple_paths</a></code>. Defaults to <code>'shortest'</code>.</p></dd>
 
 
 <dt>use_names</dt>
@@ -155,8 +155,8 @@ not have a column named <code>name</code>.</p></dd>
 
 <dt>...</dt>
 <dd><p>Arguments passed on to the corresponding
-<code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">igraph</a></code> or
-<code><a href="https://rdrr.io/pkg/igraph/man/all_simple_paths.html" class="external-link">igraph</a></code> function. Arguments
+<code><a href="https://r.igraph.org/reference/distances.html" class="external-link">igraph</a></code> or
+<code><a href="https://r.igraph.org/reference/all_simple_paths.html" class="external-link">igraph</a></code> function. Arguments
 <code>predecessors</code> and <code>inbound.edges</code> are ignored.</p></dd>
 
 </dl></div>
@@ -188,9 +188,9 @@ index should correspond to a row-number of the nodes table of the network.
 A node name should correspond to a value of a column in the nodes table
 named <code>name</code>. This column should contain character values without
 duplicates.</p>
-<p>For more details on the wrapped functions from <code><a href="https://rdrr.io/pkg/igraph/man/aaa-igraph-package.html" class="external-link">igraph</a></code>
-see the <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">shortest_paths</a></code> or
-<code><a href="https://rdrr.io/pkg/igraph/man/all_simple_paths.html" class="external-link">all_simple_paths</a></code> documentation pages.</p>
+<p>For more details on the wrapped functions from <code><a href="https://r.igraph.org/reference/aaa-igraph-package.html" class="external-link">igraph</a></code>
+see the <code><a href="https://r.igraph.org/reference/distances.html" class="external-link">shortest_paths</a></code> or
+<code><a href="https://r.igraph.org/reference/all_simple_paths.html" class="external-link">all_simple_paths</a></code> documentation pages.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>

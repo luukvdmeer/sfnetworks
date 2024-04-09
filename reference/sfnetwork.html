@@ -21,7 +21,7 @@ sf for spatial data analysis."><meta property="og:image" content="/logo.png"><!-
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.4</span>
       </span>
     </div>
 
@@ -91,6 +91,7 @@ edges embedded in geographical space, and offers smooth integration with
 <span>  edges_as_lines <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  length_as_weight <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  force <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  message <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -156,6 +157,12 @@ CRS and boundary points of edges match their corresponding node coordinates.
 These checks are important, but also time consuming. If you are already sure
 your input data meet the requirements, the checks are unnecessary and can be
 turned off to improve performance.</p></dd>
+
+
+<dt>message</dt>
+<dd><p>Should informational messages (those messages that are
+neither warnings nor errors) be printed when constructing the network?
+Defaults to <code>TRUE</code>.</p></dd>
 
 
 <dt>...</dt>

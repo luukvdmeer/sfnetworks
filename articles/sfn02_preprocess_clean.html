@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.4</span>
       </span>
     </div>
 
@@ -99,7 +99,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>2. Network pre-processing and cleaning</h1>
             
-            <h4 data-toc-skip class="date">2023-03-27</h4>
+            <h4 data-toc-skip class="date">2024-04-09</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/HEAD/vignettes/sfn02_preprocess_clean.Rmd" class="external-link"><code>vignettes/sfn02_preprocess_clean.Rmd</code></a></small>
       <div class="hidden name"><code>sfn02_preprocess_clean.Rmd</code></div>
@@ -119,7 +119,7 @@ some examples that may be of use when going through this phase.</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://luukvdmeer.github.io/sfnetworks/" class="external-link">sfnetworks</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidygraph.data-imaginist.com" class="external-link">tidygraph</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://igraph.org" class="external-link">igraph</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r.igraph.org/" class="external-link">igraph</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mhahsler/dbscan" class="external-link">dbscan</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="common-pre-processing-tasks">Common pre-processing tasks<a class="anchor" aria-label="anchor" href="#common-pre-processing-tasks"></a>
@@ -324,7 +324,7 @@ implemented, lets create a network to be cleaned.</p>
 <span></span>
 <span><span class="va">lines</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">l1</span>, <span class="va">l2</span>, <span class="va">l3</span>, <span class="va">l4</span>, <span class="va">l5</span>, <span class="va">l6</span>, <span class="va">l7</span>, <span class="va">l8</span>, <span class="va">l9</span>, <span class="va">l10</span>, <span class="va">l11</span>, <span class="va">l12</span>, <span class="va">l13</span>, <span class="va">l14</span>, <span class="va">l15</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">edge_colors</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">sf.colors</a></span><span class="op">(</span><span class="fl">12</span>, categorical <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">2</span><span class="op">]</span>, <span class="fl">2</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">edge_colors</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/plot.html" class="external-link">sf.colors</a></span><span class="op">(</span><span class="fl">12</span>, categorical <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">2</span><span class="op">]</span>, <span class="fl">2</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://r.igraph.org/reference/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">lines</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
@@ -420,10 +420,10 @@ first add some attribute columns to the edges, and then specify
 different combination techniques when simplifying the network.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add some attribute columns to the edges table.</span></span>
-<span><span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">flows</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, <span class="fu"><a href="https://r.igraph.org/reference/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">types</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"path"</span>, <span class="fl">8</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"road"</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">foo</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">bar</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">letters</span>, <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">foo</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://r.igraph.org/reference/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://r.igraph.org/reference/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">bar</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">letters</span>, <span class="fu"><a href="https://r.igraph.org/reference/gsize.html" class="external-link">ecount</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">net</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -440,12 +440,12 @@ different combination techniques when simplifying the network.</p>
 <span><span class="co">#&gt; # A tibble: 15 × 7</span></span>
 <span><span class="co">#&gt;    from    to              x  flow type    foo bar  </span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;   &lt;LINESTRING&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt; &lt;chr&gt;</span></span>
-<span><span class="co">#&gt; 1    10     9 (6 1.2, 5.8 1)     5 path     13 n    </span></span>
-<span><span class="co">#&gt; 2    11    10 (6.2 1, 6 1.2)    10 path      9 p    </span></span>
-<span><span class="co">#&gt; 3     9    12 (5.8 1, 6 0.8)     6 path      8 v    </span></span>
-<span><span class="co">#&gt; 4    12    11 (6 0.8, 6.2 1)     6 path      7 f    </span></span>
-<span><span class="co">#&gt; 5    11    15   (6.2 1, 7 1)     7 path      4 r    </span></span>
-<span><span class="co">#&gt; 6    10    13   (6 1.2, 6 2)     3 path     10 h    </span></span>
+<span><span class="co">#&gt; 1    10     9 (6 1.2, 5.8 1)     7 path      8 c    </span></span>
+<span><span class="co">#&gt; 2    11    10 (6.2 1, 6 1.2)     8 path      4 a    </span></span>
+<span><span class="co">#&gt; 3     9    12 (5.8 1, 6 0.8)     6 path     10 w    </span></span>
+<span><span class="co">#&gt; 4    12    11 (6 0.8, 6.2 1)     3 path     14 i    </span></span>
+<span><span class="co">#&gt; 5    11    15   (6.2 1, 7 1)     1 path      3 l    </span></span>
+<span><span class="co">#&gt; 6    10    13   (6 1.2, 6 2)     1 path      6 u    </span></span>
 <span><span class="co">#&gt; # ℹ 9 more rows</span></span>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A tibble: 15 × 1</span></span>
@@ -470,8 +470,8 @@ different combination techniques when simplifying the network.</p>
 <span><span class="co">#&gt; # A tibble: 2 × 7</span></span>
 <span><span class="co">#&gt;    from    to               x  flow type    foo bar  </span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;    &lt;LINESTRING&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt; &lt;chr&gt;</span></span>
-<span><span class="co">#&gt; 1     6     7      (4 3, 4 2)     4 path      2 u    </span></span>
-<span><span class="co">#&gt; 2     6     7 (4 3, 5 2, 4 2)     9 road      3 o</span></span></code></pre>
+<span><span class="co">#&gt; 1     6     7      (4 3, 4 2)     1 path      5 x    </span></span>
+<span><span class="co">#&gt; 2     6     7 (4 3, 5 2, 4 2)     7 road     11 t</span></span></code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define how we want to combine the attributes.</span></span>
 <span><span class="co"># For the flows:</span></span>
@@ -502,7 +502,7 @@ different combination techniques when simplifying the network.</p>
 <span><span class="co">#&gt; # A tibble: 1 × 6</span></span>
 <span><span class="co">#&gt;    from    to            x  flow type    .tidygraph_edge_index</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;LINESTRING&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;list&gt;               </span></span>
-<span><span class="co">#&gt; 1     6     7   (4 3, 4 2)    13 unknown &lt;int [2]&gt;</span></span></code></pre>
+<span><span class="co">#&gt; 1     6     7   (4 3, 4 2)     8 unknown &lt;int [2]&gt;</span></span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -635,10 +635,10 @@ columns are not attributes!</p>
 <span><span class="co">#&gt; # A tibble: 4 × 6</span></span>
 <span><span class="co">#&gt;    from    to               x  flow type    .tidygraph_edge_index</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;    &lt;LINESTRING&gt; &lt;dbl&gt; &lt;chr&gt;                   &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1     1     2 (0 1, 1 1, 2 1)     3 road                        1</span></span>
-<span><span class="co">#&gt; 2     2     3      (2 1, 3 1)     7 road                        2</span></span>
-<span><span class="co">#&gt; 3     8     9      (4 3, 4 2)    13 unknown                     5</span></span>
-<span><span class="co">#&gt; 4     9     4      (4 2, 4 1)     7 road                        6</span></span></code></pre>
+<span><span class="co">#&gt; 1     1     2 (0 1, 1 1, 2 1)     5 road                        1</span></span>
+<span><span class="co">#&gt; 2     2     3      (2 1, 3 1)     8 road                        2</span></span>
+<span><span class="co">#&gt; 3     8     9      (4 3, 4 2)     8 unknown                     5</span></span>
+<span><span class="co">#&gt; 4     9     4      (4 2, 4 1)     4 road                        6</span></span></code></pre>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Define how we want to combine the attributes.</span></span>
@@ -668,8 +668,8 @@ columns are not attributes!</p>
 <span><span class="co">#&gt; # A tibble: 2 × 6</span></span>
 <span><span class="co">#&gt;    from    to  flow type    .tidygraph_edge_index                    x</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;list&gt;                        &lt;LINESTRING&gt;</span></span>
-<span><span class="co">#&gt; 1     1     2    10 road    &lt;int [2]&gt;             (0 1, 1 1, 2 1, 3 1)</span></span>
-<span><span class="co">#&gt; 2     7     3    20 unknown &lt;int [2]&gt;                  (4 3, 4 2, 4 1)</span></span></code></pre>
+<span><span class="co">#&gt; 1     1     2    13 road    &lt;int [2]&gt;             (0 1, 1 1, 2 1, 3 1)</span></span>
+<span><span class="co">#&gt; 2     7     3    12 unknown &lt;int [2]&gt;                  (4 3, 4 2, 4 1)</span></span></code></pre>
 <p>Secondly, it is possible to only remove those pseudo nodes for which
 attributes among their incident edges are equal. To do this, set
 <code>require_equal = TRUE</code>. Optionally, you can provide a list of
@@ -788,9 +788,9 @@ for the sake of completeness, we will still show it:</p>
 <span><span class="co">#&gt; # A tibble: 14 × 6</span></span>
 <span><span class="co">#&gt;    from    to  flow type  .tidygraph_edge_index            x</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt; &lt;list&gt;                &lt;LINESTRING&gt;</span></span>
-<span><span class="co">#&gt; 1     2     3     7 road  &lt;int [1]&gt;               (3 1, 4 1)</span></span>
-<span><span class="co">#&gt; 2     3     4     9 path  &lt;int [1]&gt;             (4 1, 5.8 1)</span></span>
-<span><span class="co">#&gt; 3     5     2     9 road  &lt;int [1]&gt;               (3 2, 3 1)</span></span>
+<span><span class="co">#&gt; 1     2     3     8 road  &lt;int [1]&gt;               (3 1, 4 1)</span></span>
+<span><span class="co">#&gt; 2     3     4     8 path  &lt;int [1]&gt;             (4 1, 5.8 1)</span></span>
+<span><span class="co">#&gt; 3     5     2     4 road  &lt;int [1]&gt;               (3 2, 3 1)</span></span>
 <span><span class="co">#&gt; # ℹ 11 more rows</span></span></code></pre>
 <p>The combination of the cluster index and the component index can now
 be used to define the groups of nodes to be contracted. Nodes that form
@@ -840,7 +840,7 @@ columns are not attributes!</p>
 <span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>is_priority <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/igraph/man/gorder.html" class="external-link">vcount</a></span><span class="op">(</span><span class="va">clustered</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://r.igraph.org/reference/gorder.html" class="external-link">vcount</a></span><span class="op">(</span><span class="va">clustered</span><span class="op">)</span>,</span>
 <span>    replace <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>  <span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -858,9 +858,9 @@ columns are not attributes!</p>
 <span><span class="co">#&gt; # A tibble: 4 × 5</span></span>
 <span><span class="co">#&gt;         x .tidygraph_node_index   cls   cmp is_priority</span></span>
 <span><span class="co">#&gt;   &lt;POINT&gt;                 &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;lgl&gt;      </span></span>
-<span><span class="co">#&gt; 1 (5.8 1)                     5     4     1 TRUE       </span></span>
-<span><span class="co">#&gt; 2 (6 0.8)                    11     4     1 FALSE      </span></span>
-<span><span class="co">#&gt; 3 (6 1.2)                    12     4     1 FALSE      </span></span>
+<span><span class="co">#&gt; 1 (5.8 1)                     5     4     1 FALSE      </span></span>
+<span><span class="co">#&gt; 2 (6 0.8)                    11     4     1 TRUE       </span></span>
+<span><span class="co">#&gt; 3 (6 1.2)                    12     4     1 TRUE       </span></span>
 <span><span class="co">#&gt; 4 (6.2 1)                    14     4     1 TRUE</span></span></code></pre>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define how we want to combine the attributes.</span></span>

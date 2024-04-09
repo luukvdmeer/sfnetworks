@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.4</span>
       </span>
     </div>
 
@@ -99,7 +99,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>4. Routing</h1>
             
-            <h4 data-toc-skip class="date">2023-03-27</h4>
+            <h4 data-toc-skip class="date">2024-04-09</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/HEAD/vignettes/sfn04_routing.Rmd" class="external-link"><code>vignettes/sfn04_routing.Rmd</code></a></small>
       <div class="hidden name"><code>sfn04_routing.Rmd</code></div>
@@ -121,9 +121,9 @@ packages. This vignette demonstrates their functionality.</p>
 analysis, not specifically optimized for a single task. If your
 <em>only</em> purpose is many-to-many routing in large networks, there
 might be other approaches that are faster and fit better to your needs.
-For example, the <a href="https://github.com/ATFutures/dodgr" class="external-link">dodgr</a>
-package was designed for many-to-many routing on large dual-weighted
-graphs, with its main focus on OpenStreetMap road network data. The <a href="https://github.com/vlarmet/cppRouting" class="external-link">cppRouting</a> package
+For example, the <a href="https://github.com/UrbanAnalyst/dodgr" class="external-link">dodgr</a> package was
+designed for many-to-many routing on large dual-weighted graphs, with
+its main focus on OpenStreetMap road network data. The <a href="https://github.com/vlarmet/cppRouting" class="external-link">cppRouting</a> package
 contains functions to calculate shortest paths and
 isochrones/isodistances on weighted graphs. When working with
 OpenStreetMap data, it is also possible to use the interfaces to
@@ -145,7 +145,7 @@ can be happily used <em>alongside</em> <code>sfnetworks</code>.</p>
 <h2 id="calculating-shortest-paths">Calculating shortest paths<a class="anchor" aria-label="anchor" href="#calculating-shortest-paths"></a>
 </h2>
 <p>The function <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> is a wrapper around the
-igraph function <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">igraph::shortest_paths()</a></code>. There are two
+igraph function <code><a href="https://r.igraph.org/reference/distances.html" class="external-link">igraph::shortest_paths()</a></code>. There are two
 main differences:</p>
 <ul>
 <li>Besides node indices and node names, <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code>
@@ -160,7 +160,7 @@ path. The column <em>node_paths</em> contains the ordered list of node
 indices in the path, and the column <em>edge_paths</em> contains the
 ordered list of edge indices in the path.</li>
 </ul>
-<p>Just as <code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">igraph::shortest_paths()</a></code>, the
+<p>Just as <code><a href="https://r.igraph.org/reference/distances.html" class="external-link">igraph::shortest_paths()</a></code>, the
 <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> function is meant for one-to-one and
 one-to-many routing. Hence, it is only possible to provide a single
 <em>from</em> location, while the <em>to</em> locations can be more than
@@ -174,7 +174,7 @@ requires the nodes table to have a column <em>name</em> with a unique
 name for each node.</p>
 <p>We will use geographic edge lengths as the edge weights to be used
 for shortest paths calculation. In weighted networks,
-<code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">igraph::shortest_paths()</a></code> applies the Dijkstra algorithm to
+<code><a href="https://r.igraph.org/reference/distances.html" class="external-link">igraph::shortest_paths()</a></code> applies the Dijkstra algorithm to
 find the shortest paths. In the case of unweighted networks, it uses
 breadth-first search instead.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -298,7 +298,7 @@ it can serve as input to route optimization algorithms, spatial
 clustering algorithms and the calculation of statistical measures based
 on spatial proximity.</p>
 <p>The igraph function for this purpose is
-<code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">igraph::distances()</a></code>, which in <code>sfnetworks</code> is
+<code><a href="https://r.igraph.org/reference/distances.html" class="external-link">igraph::distances()</a></code>, which in <code>sfnetworks</code> is
 wrapped by <code><a href="../reference/st_network_cost.html">st_network_cost()</a></code>, allowing again to provide
 sets of geospatial points as <em>from</em> and <em>to</em> locations.
 Note that the calculated costs refer to the paths between the
@@ -369,7 +369,7 @@ network).</p>
 <span><span class="co">#&gt; [2,] 1614.252    0.000 1315.965</span></span>
 <span><span class="co">#&gt; [3,] 2094.555 1315.965    0.000</span></span></code></pre></div>
 <p>All <code>...</code> arguments are forwarded internally to
-<code><a href="https://rdrr.io/pkg/igraph/man/distances.html" class="external-link">igraph::distances()</a></code>. Among other options, this means that
+<code><a href="https://r.igraph.org/reference/distances.html" class="external-link">igraph::distances()</a></code>. Among other options, this means that
 you can define which algorithm is used for the paths calculation. By
 default, <code>igraph</code> will choose the most suitable algorithm
 based on characteristics of the request, such as the type of weights
@@ -501,7 +501,7 @@ suitable for usage inside the <code>TSP</code> package.</p>
 <code>TOUR</code>. This object contains a named vector specifying the
 indices of the provided locations in the optimal order of visit.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tour</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/TSP/man/solve_TSP.html" class="external-link">solve_TSP</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/TSP/man/TSP.html" class="external-link">TSP</a></span><span class="op">(</span><span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/units/man/drop_units.html" class="external-link">drop_units</a></span><span class="op">(</span><span class="va">cost_matrix</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">tour</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/TSP/man/solve_TSP.html" class="external-link">solve_TSP</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/TSP/man/TSP.html" class="external-link">TSP</a></span><span class="op">(</span><span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://r-quantities.github.io/units/reference/drop_units.html" class="external-link">drop_units</a></span><span class="op">(</span><span class="va">cost_matrix</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">tour_idxs</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">tour</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">tour_idxs</span></span>
 <span><span class="co">#&gt;  [1]  71  61 545 224 252  31  15 510 323 698</span></span>
@@ -589,7 +589,7 @@ edge.</p>
 <span><span class="va">net</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">type</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>speed <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/units/man/units.html" class="external-link">set_units</a></span><span class="op">(</span><span class="va">speeds</span><span class="op">[</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">cur_group_id</a></span><span class="op">(</span><span class="op">)</span><span class="op">]</span>, <span class="st">"m/s"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>speed <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://r-quantities.github.io/units/reference/units.html" class="external-link">set_units</a></span><span class="op">(</span><span class="va">speeds</span><span class="op">[</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">cur_group_id</a></span><span class="op">(</span><span class="op">)</span><span class="op">]</span>, <span class="st">"m/s"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>time <span class="op">=</span> <span class="va">weight</span> <span class="op">/</span> <span class="va">speed</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
