@@ -12,6 +12,7 @@ sfnetwork(
   edges_as_lines = NULL,
   length_as_weight = FALSE,
   force = FALSE,
+  message = TRUE,
   ...
 )
 }
@@ -62,6 +63,10 @@ CRS and boundary points of edges match their corresponding node coordinates.
 These checks are important, but also time consuming. If you are already sure
 your input data meet the requirements, the checks are unnecessary and can be
 turned off to improve performance.}
+
+\item{message}{Should informational messages (those messages that are
+neither warnings nor errors) be printed when constructing the network?
+Defaults to \code{TRUE}.}
 
 \item{...}{Arguments passed on to \code{\link[sf]{st_as_sf}}, if nodes need
 to be converted into an \code{\link[sf]{sf}} object during construction.}

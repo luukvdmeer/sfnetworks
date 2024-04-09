@@ -1,3 +1,13 @@
+# sfnetworks v0.6.4
+
+### New features
+
+* The `sfnetwork()` construction function now has an argument `message` which can be set to `FALSE` when the network validity checks should not print informational messages to the console. Refs [#261](https://github.com/luukvdmeer/sfnetworks/issues/261).
+
+### Maintenance
+
+* Code and documentation was updated where needed to align with changes in base R and/or package dependencies. No changes to program logic or behavior.
+
 # sfnetworks v0.6.3
 
 ### Bug fixes

@@ -109,7 +109,7 @@ to \code{TRUE}.}
 \item{protect}{Nodes to be protected from being removed, no matter if they
 are a pseudo node or not. Can be given as a numeric vector containing node
 indices or a character vector containing node names. Can also be a set of
-geospatial features as object of class code{\link[sf]{sf}} or
+geospatial features as object of class \code{\link[sf]{sf}} or
 \code{\link[sf]{sfc}}. In that case, for each of these features its nearest
 node in the network will be protected. Defaults to \code{NULL}, meaning that
 none of the nodes is protected.}

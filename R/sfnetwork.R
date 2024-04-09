@@ -53,6 +53,10 @@
 #' your input data meet the requirements, the checks are unnecessary and can be
 #' turned off to improve performance.
 #'
+#' @param message Should informational messages (those messages that are
+#' neither warnings nor errors) be printed when constructing the network?
+#' Defaults to \code{TRUE}.
+#'
 #' @param ... Arguments passed on to \code{\link[sf]{st_as_sf}}, if nodes need
 #' to be converted into an \code{\link[sf]{sf}} object during construction.
 #'
@@ -102,7 +106,7 @@
 #' @export
 sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
                      edges_as_lines = NULL, length_as_weight = FALSE,
-                     force = FALSE, ...) {
+                     force = FALSE, message = TRUE, ...) {
   # Prepare nodes.
   # If nodes is not an sf object:
   # --> Try to convert it to an sf object.
@@ -140,12 +144,12 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
   # --> Adding additional attributes if requested.
   if (is.null(edges)) {
     # Run validity check for nodes only and return the network.
-    if (! force) require_valid_network_structure(x_sfn, message = TRUE)
+    if (! force) require_valid_network_structure(x_sfn, message = message)
     return (x_sfn)
   }
   if (edges_as_lines) {
     # Run validity check before explicitizing edges.
-    if (! force) require_valid_network_structure(x_sfn, message = TRUE)
+    if (! force) require_valid_network_structure(x_sfn, message = message)
     # Add edge geometries if needed.
     if (edges_are_explicit) {
       # Edges already have geometries, we don't need to add them.
@@ -163,7 +167,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
       x_sfn = implicitize_edges(x_sfn)
     }
     # Run validity check after implicitizing edges.
-    if (! force) require_valid_network_structure(x_sfn, message = TRUE)
+    if (! force) require_valid_network_structure(x_sfn, message = message)
   }
   if (length_as_weight) {
     edges = edges_as_sf(x_sfn)
