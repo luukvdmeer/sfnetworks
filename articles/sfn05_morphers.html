@@ -99,7 +99,7 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>5. Spatial morphers</h1>
             
-            <h4 data-toc-skip class="date">2024-04-09</h4>
+            <h4 data-toc-skip class="date">2024-04-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/HEAD/vignettes/sfn05_morphers.Rmd" class="external-link"><code>vignettes/sfn05_morphers.Rmd</code></a></small>
       <div class="hidden name"><code>sfn05_morphers.Rmd</code></div>
@@ -184,9 +184,9 @@ is assigned to, and automatically merge those changes back into the
 <span><span class="co">#&gt; # A tibble: 851 × 6</span></span>
 <span><span class="co">#&gt;    from    to name                  type                          geometry group</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;                 &lt;fct&gt;                 &lt;LINESTRING [m]&gt; &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1     1     2 Havixbecker Strasse   residential (4151491 3207923, 4151474…     2</span></span>
+<span><span class="co">#&gt; 1     1     2 Havixbecker Strasse   residential (4151491 3207923, 4151474…    17</span></span>
 <span><span class="co">#&gt; 2     3     4 Pienersallee          secondary   (4151398 3207777, 4151390…     2</span></span>
-<span><span class="co">#&gt; 3     5     6 Schulte-Bernd-Strasse residential (4151408 3207539, 4151417…     1</span></span>
+<span><span class="co">#&gt; 3     5     6 Schulte-Bernd-Strasse residential (4151408 3207539, 4151417…     2</span></span>
 <span><span class="co">#&gt; # ℹ 848 more rows</span></span></code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># The algorithm detected 34 communities.</span></span>
@@ -195,7 +195,7 @@ is assigned to, and automatically merge those changes back into the
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">group</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 34</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 33</span></span></code></pre></div>
 <p>In all grouping functions in <code>tidygraph</code>, the group index
 <code>1</code> belongs the largest group, the index <code>2</code> to
 the second largest group, et cetera. Lets plot only the first third of
@@ -622,8 +622,8 @@ to the geometry of the first set member.</p>
 <span><span class="co">#&gt; # A tibble: 2 × 6</span></span>
 <span><span class="co">#&gt;    from    to name         type                                   geometry  flow</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt;        &lt;fct&gt;                          &lt;LINESTRING [m]&gt; &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1   118   119 NA           service (4150716 3207080, 4150715 3207108, 415…    98</span></span>
-<span><span class="co">#&gt; 2   118   119 Pienersallee service      (4150716 3207080, 4150752 3207067)    28</span></span></code></pre>
+<span><span class="co">#&gt; 1   118   119 NA           service (4150716 3207080, 4150715 3207108, 415…    95</span></span>
+<span><span class="co">#&gt; 2   118   119 Pienersallee service      (4150716 3207080, 4150752 3207067)    43</span></span></code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Simplify the network.</span></span>
 <span><span class="co"># We summarise the flow attribute by taking the sum of the merged edge flows.</span></span>
@@ -647,7 +647,7 @@ to the geometry of the first set member.</p>
 <span><span class="co">#&gt; # A tibble: 1 × 7</span></span>
 <span><span class="co">#&gt;    from    to name  type                    geometry  flow .tidygraph_edge_index</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;fct&gt;           &lt;LINESTRING [m]&gt; &lt;dbl&gt; &lt;list&gt;               </span></span>
-<span><span class="co">#&gt; 1   118   119 NA    servi… (4150716 3207080, 415071…   126 &lt;int [2]&gt;</span></span></code></pre>
+<span><span class="co">#&gt; 1   118   119 NA    servi… (4150716 3207080, 415071…   138 &lt;int [2]&gt;</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="to_spatial_smooth">to_spatial_smooth<a class="anchor" aria-label="anchor" href="#to_spatial_smooth"></a>
@@ -771,12 +771,12 @@ example just to get an idea of how this would work:</p>
 <span><span class="co">#&gt; # A tibble: 701 × 3</span></span>
 <span><span class="co">#&gt;            geometry building post_code</span></span>
 <span><span class="co">#&gt;         &lt;POINT [m]&gt; &lt;lgl&gt;        &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 (4151491 3207923) FALSE           NA</span></span>
+<span><span class="co">#&gt; 1 (4151491 3207923) TRUE          1020</span></span>
 <span><span class="co">#&gt; 2 (4151474 3207946) FALSE           NA</span></span>
 <span><span class="co">#&gt; 3 (4151398 3207777) TRUE          1020</span></span>
 <span><span class="co">#&gt; 4 (4151370 3207673) FALSE           NA</span></span>
 <span><span class="co">#&gt; 5 (4151408 3207539) FALSE           NA</span></span>
-<span><span class="co">#&gt; 6 (4151421 3207592) FALSE           NA</span></span>
+<span><span class="co">#&gt; 6 (4151421 3207592) TRUE          1020</span></span>
 <span><span class="co">#&gt; # ℹ 695 more rows</span></span>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A tibble: 851 × 5</span></span>
@@ -833,7 +833,7 @@ requires a geographic CRS for that.</p>
 <span><span class="co">#&gt; # A tibble: 701 × 2</span></span>
 <span><span class="co">#&gt;            geometry building</span></span>
 <span><span class="co">#&gt;         &lt;POINT [m]&gt; &lt;lgl&gt;   </span></span>
-<span><span class="co">#&gt; 1 (4151491 3207923) FALSE   </span></span>
+<span><span class="co">#&gt; 1 (4151491 3207923) TRUE    </span></span>
 <span><span class="co">#&gt; 2 (4151474 3207946) FALSE   </span></span>
 <span><span class="co">#&gt; 3 (4151398 3207777) TRUE    </span></span>
 <span><span class="co">#&gt; # ℹ 698 more rows</span></span></code></pre>
