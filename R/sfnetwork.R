@@ -129,6 +129,12 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
   # --> Therefore it has to be converted into a regular data frame (or tibble).
   edges_are_explicit = is.sf(edges)
   if (edges_are_explicit) {
+    if (!force && !all(c("from", "to") %in% names(edges))) {
+      stop(
+        "Edges are spatially explicit, but 'from' and 'to' columns are missing",
+        call. = FALSE
+      )
+    }
     edges_df = structure(edges, class = setdiff(class(edges), "sf"))
     if (is.null(edges_as_lines)) edges_as_lines = TRUE
   } else {
