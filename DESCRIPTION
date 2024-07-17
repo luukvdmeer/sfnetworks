@@ -34,6 +34,7 @@ BugReports: https://github.com/luukvdmeer/sfnetworks/issues/
 Depends:
     R (>= 3.6)
 Imports:
+    cli,
     crayon,
     dplyr,
     graphics,

@@ -132,7 +132,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
   # --> Adding additional attributes if requested.
   if (is.null(edges)) {
     # Run validity check for nodes only and return the network.
-    if (! force) require_valid_network_structure(x_sfn, message = message)
+    if (! force) validate_network(x_sfn, message = message)
     return (x_sfn)
   }
   if (is.sf(edges)) {
@@ -145,10 +145,10 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
       x_sfn = implicitize_edges(x_sfn)
     }
     # Run validity check after implicitizing edges.
-    if (! force) require_valid_network_structure(x_sfn, message = message)
+    if (! force) validate_network(x_sfn, message = message)
   } else {
     # Run validity check before explicitizing edges.
-    if (! force) require_valid_network_structure(x_sfn, message = message)
+    if (! force) validate_network(x_sfn, message = message)
     # Add edge geometries if requested.
     if (isTRUE(edges_as_lines)) {
       x_sfn = explicitize_edges(x_sfn)

@@ -129,7 +129,7 @@ st_geometry.sfnetwork = function(obj, active = NULL, ...) {
     x_new = drop_geom(x)
   } else  {
     x_new = mutate_geom(x, value)
-    require_valid_network_structure(x_new)
+    validate_network(x_new, message = FALSE)
   }
   x_new
 }
