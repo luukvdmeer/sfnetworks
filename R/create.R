@@ -1,6 +1,6 @@
 #' Create a spatial network from linestring geometries
 #'
-#' @param x An object of class \code{\link[sf]{sf}} or \\code{\link[sf]{sfc}}
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 #' with \code{LINESTRING} geometries.
 #'
 #' @details It is assumed that the given lines geometries form the edges in the
@@ -47,7 +47,7 @@ create_from_spatial_lines = function(x, ...) {
 
 #' Create a spatial network from point geometries
 #'
-#' @param x An object of class \code{\link[sf]{sf}} or \\code{\link[sf]{sfc}}
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 #' with \code{POINT} geometries.
 #'
 #' @param method The method used to connect the given point geometries to each

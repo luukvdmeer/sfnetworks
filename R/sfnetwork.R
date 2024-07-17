@@ -15,9 +15,9 @@
 #' \code{\link[sf]{sf}}, with all features having an associated geometry of
 #' type \code{LINESTRING}. It may also be a regular \code{\link{data.frame}} or
 #' \code{\link[tibble]{tbl_df}} object. In any case, the nodes at the ends of
-#' each edge must either be encoded in a \code{to} and \code{from} column, as
+#' each edge must be referenced in a \code{to} and \code{from} column, as
 #' integers or characters. Integers should refer to the position of a node in
-#' the nodes table, while characters should refer to the name of a node encoded
+#' the nodes table, while characters should refer to the name of a node stored
 #' in the column referred to in the \code{node_key} argument. Setting edges to
 #' \code{NULL} will create a network without edges.
 #'
@@ -192,7 +192,7 @@ tbg_to_sfn = function(x) {
 #'
 #' Convert a given object into an object of class \code{\link{sfnetwork}}.
 #'
-#' @param x Object to be converted into an \code{\link{sfnetwork}}.
+#' @param x Object to be converted into a \code{\link{sfnetwork}}.
 #'
 #' @param ... Arguments passed on to the \code{\link{sfnetwork}} construction
 #' function, unless specified otherwise.
@@ -217,7 +217,7 @@ as_sfnetwork.default = function(x, ...) {
 }
 
 #' @describeIn as_sfnetwork Convert spatial features of class
-#' \code{\link[sf]{sf}} directly into an \code{\link{sfnetwork}}.
+#' \code{\link[sf]{sf}} directly into a \code{\link{sfnetwork}}.
 #' Supported geometry types are either \code{LINESTRING} or \code{POINT}. In
 #' the first case, the lines become the edges in the network, and nodes are
 #' placed at their boundary points. All arguments are forwarded to
@@ -255,7 +255,8 @@ as_sfnetwork.sf = function(x, ...) {
 #' @describeIn as_sfnetwork Convert spatial linear networks of class
 #' \code{\link[spatstat.linnet]{linnet}} directly into an
 #' \code{\link{sfnetwork}}. This requires the
-#' \code{\link[spatstat.geom]{spatstat.geom-package}} to be installed.
+#' \code{\link[spatstat.geom:spatstat.geom-package]{spatstat.geom}} package
+#' to be installed.
 #'
 #' @examples
 #' # From a linnet object.
@@ -273,7 +274,7 @@ as_sfnetwork.linnet = function(x, ...) {
 }
 
 #' @describeIn as_sfnetwork Convert spatial line segments of class
-#' \code{\link[spatstat.geom]{psp}} directly into an \code{\link{sfnetwork}}.
+#' \code{\link[spatstat.geom]{psp}} directly into a \code{\link{sfnetwork}}.
 #' The lines become the edges in the network, and nodes are placed at their
 #' boundary points.
 #'
@@ -302,7 +303,7 @@ as_sfnetwork.psp = function(x, ...) {
 }
 
 #' @describeIn as_sfnetwork Convert spatial geometries of class
-#' \code{\link[sf]{sfc}} directly into an \code{\link{sfnetwork}}.
+#' \code{\link[sf]{sfc}} directly into a \code{\link{sfnetwork}}.
 #' Supported geometry types are either \code{LINESTRING} or \code{POINT}. In
 #' the first case, the lines become the edges in the network, and nodes are
 #' placed at their boundary points. All arguments are forwarded to
@@ -318,10 +319,11 @@ as_sfnetwork.sfc = function(x, ...) {
 }
 
 #' @describeIn as_sfnetwork Convert spatial networks of class
-#' \code{\link[stplanr]{sfNetwork}} directly into an \code{\link{sfnetwork}}.
-#' This will extract the edges as an \code{\link[sf]{sf}} object and re-create
-#' the network structure. The directness of the provided object is preserved
-#' unless specified otherwise through the \code{directed} argument.
+#' \code{\link[stplanr:sfNetwork-class]{sfNetwork}} directly into a
+#' \code{\link{sfnetwork}}. This will extract the edges as an
+#' \code{\link[sf]{sf}} object and re-create the network structure. The
+#' directness of the original network is preserved unless specified otherwise
+#' through the \code{directed} argument.
 #'
 #' @importFrom igraph is_directed
 #' @export
@@ -337,10 +339,10 @@ as_sfnetwork.sfNetwork = function(x, ...) {
 }
 
 #' @describeIn as_sfnetwork Convert graph objects of class
-#' \code{\link[tidygraph]{tbl_graph}} directly into an \code{\link{sfnetwork}}.
+#' \code{\link[tidygraph]{tbl_graph}} directly into a \code{\link{sfnetwork}}.
 #' This will work if at least the nodes can be converted to an
 #' \code{\link[sf]{sf}} object through \code{\link[sf]{st_as_sf}}. The
-#' directness of the provided object is preserved unless specified otherwise
+#' directness of the original graph is preserved unless specified otherwise
 #' through the \code{directed} argument.
 #'
 #' @importFrom igraph is_directed

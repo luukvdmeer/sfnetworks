@@ -7,7 +7,7 @@
 create_from_spatial_lines(x, ...)
 }
 \arguments{
-\item{x}{An object of class \code{\link[sf]{sf}} or \\code{\link[sf]{sfc}}
+\item{x}{An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 with \code{LINESTRING} geometries.}
 }
 \value{

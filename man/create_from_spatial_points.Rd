@@ -7,7 +7,7 @@
 create_from_spatial_points(x, method = "sequence", ...)
 }
 \arguments{
-\item{x}{An object of class \code{\link[sf]{sf}} or \\code{\link[sf]{sfc}}
+\item{x}{An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 with \code{POINT} geometries.}
 
 \item{method}{The method used to connect the given point geometries to each
