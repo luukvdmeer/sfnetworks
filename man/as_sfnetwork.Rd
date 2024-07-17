@@ -8,7 +8,6 @@
 \alias{as_sfnetwork.psp}
 \alias{as_sfnetwork.sfc}
 \alias{as_sfnetwork.sfNetwork}
-\alias{as_sfnetwork.sfnetwork}
 \alias{as_sfnetwork.tbl_graph}
 \title{Convert a foreign object to a sfnetwork}
 \usage{
@@ -26,60 +25,82 @@ as_sfnetwork(x, ...)
 
 \method{as_sfnetwork}{sfNetwork}(x, ...)
 
-\method{as_sfnetwork}{sfnetwork}(x, ...)
-
 \method{as_sfnetwork}{tbl_graph}(x, ...)
 }
 \arguments{
 \item{x}{Object to be converted into an \code{\link{sfnetwork}}.}
 
 \item{...}{Arguments passed on to the \code{\link{sfnetwork}} construction
-function.}
+function, unless specified otherwise.}
 }
 \value{
 An object of class \code{\link{sfnetwork}}.
 }
 \description{
 Convert a given object into an object of class \code{\link{sfnetwork}}.
-If an object can be read by \code{\link[tidygraph]{as_tbl_graph}} and the
-nodes can be read by \code{\link[sf]{st_as_sf}}, it is automatically
-supported.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{as_sfnetwork(sf)}: Only sf objects with either exclusively geometries
-of type \code{LINESTRING} or exclusively geometries of type \code{POINT} are
-supported. For lines, is assumed that the given features form the edges.
-Nodes are created at the endpoints of the lines. Endpoints which are shared
-between multiple edges become a single node. For points, it is assumed that
-the given features geometries form the nodes. They will be connected by
-edges sequentially. Hence, point 1 to point 2, point 2 to point 3, etc.
+\item \code{as_sfnetwork(default)}: By default, the provided object is first converted
+into a \code{\link[tidygraph]{tbl_graph}} using
+\code{\link[tidygraph]{as_tbl_graph}}. Further conversion into an
+\code{\link{sfnetwork}} will work as long as the nodes can be converted to
+an \code{\link[sf]{sf}} object through \code{\link[sf]{st_as_sf}}.
+
+\item \code{as_sfnetwork(sf)}: Convert spatial features of class
+\code{\link[sf]{sf}} directly into an \code{\link{sfnetwork}}.
+Supported geometry types are either \code{LINESTRING} or \code{POINT}. In
+the first case, the lines become the edges in the network, and nodes are
+placed at their boundary points. All arguments are forwarded to
+\code{\link{create_from_spatial_lines}}. In the latter case, the points
+become the nodes in the network, and are connected by edges according to a
+specified method. All arguments are forwarded to
+\code{\link{create_from_spatial_points}}.
+
+\item \code{as_sfnetwork(linnet)}: Convert spatial linear networks of class
+\code{\link[spatstat.linnet]{linnet}} directly into an
+\code{\link{sfnetwork}}. This requires the
+\code{\link[spatstat.geom]{spatstat.geom-package}} to be installed.
+
+\item \code{as_sfnetwork(psp)}: Convert spatial line segments of class
+\code{\link[spatstat.geom]{psp}} directly into an \code{\link{sfnetwork}}.
+The lines become the edges in the network, and nodes are placed at their
+boundary points.
+
+\item \code{as_sfnetwork(sfc)}: Convert spatial geometries of class
+\code{\link[sf]{sfc}} directly into an \code{\link{sfnetwork}}.
+Supported geometry types are either \code{LINESTRING} or \code{POINT}. In
+the first case, the lines become the edges in the network, and nodes are
+placed at their boundary points. All arguments are forwarded to
+\code{\link{create_from_spatial_lines}}. In the latter case, the points
+become the nodes in the network, and are connected by edges according to a
+specified method. All arguments are forwarded to
+\code{\link{create_from_spatial_points}}.
+
+\item \code{as_sfnetwork(sfNetwork)}: Convert spatial networks of class
+\code{\link[stplanr]{sfNetwork}} directly into an \code{\link{sfnetwork}}.
+This will extract the edges as an \code{\link[sf]{sf}} object and re-create
+the network structure. The directness of the provided object is preserved
+unless specified otherwise through the \code{directed} argument.
+
+\item \code{as_sfnetwork(tbl_graph)}: Convert graph objects of class
+\code{\link[tidygraph]{tbl_graph}} directly into an \code{\link{sfnetwork}}.
+This will work if at least the nodes can be converted to an
+\code{\link[sf]{sf}} object through \code{\link[sf]{st_as_sf}}. The
+directness of the provided object is preserved unless specified otherwise
+through the \code{directed} argument.
 
 }}
 \examples{
-# From an sf object.
+# From an sf object with LINESTRING geometries.
 library(sf, quietly = TRUE)
 
-# With LINESTRING geometries.
 as_sfnetwork(roxel)
 
 oldpar = par(no.readonly = TRUE)
 par(mar = c(1,1,1,1), mfrow = c(1,2))
 plot(st_geometry(roxel))
 plot(as_sfnetwork(roxel))
-par(oldpar)
-
-# With POINT geometries.
-p1 = st_point(c(7, 51))
-p2 = st_point(c(7, 52))
-p3 = st_point(c(8, 52))
-points = st_as_sf(st_sfc(p1, p2, p3))
-as_sfnetwork(points)
-
-oldpar = par(no.readonly = TRUE)
-par(mar = c(1,1,1,1), mfrow = c(1,2))
-plot(st_geometry(points))
-plot(as_sfnetwork(points))
 par(oldpar)
 
 # From a linnet object.

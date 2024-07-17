@@ -191,14 +191,11 @@ tbg_to_sfn = function(x) {
 #' Convert a foreign object to a sfnetwork
 #'
 #' Convert a given object into an object of class \code{\link{sfnetwork}}.
-#' If an object can be read by \code{\link[tidygraph]{as_tbl_graph}} and the
-#' nodes can be read by \code{\link[sf]{st_as_sf}}, it is automatically
-#' supported.
 #'
 #' @param x Object to be converted into an \code{\link{sfnetwork}}.
 #'
 #' @param ... Arguments passed on to the \code{\link{sfnetwork}} construction
-#' function.
+#' function, unless specified otherwise.
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
@@ -207,25 +204,32 @@ as_sfnetwork = function(x, ...) {
   UseMethod("as_sfnetwork")
 }
 
-#' @name as_sfnetwork
+#' @describeIn as_sfnetwork By default, the provided object is first converted
+#' into a \code{\link[tidygraph]{tbl_graph}} using
+#' \code{\link[tidygraph]{as_tbl_graph}}. Further conversion into an
+#' \code{\link{sfnetwork}} will work as long as the nodes can be converted to
+#' an \code{\link[sf]{sf}} object through \code{\link[sf]{st_as_sf}}.
+#'
 #' @importFrom tidygraph as_tbl_graph
 #' @export
 as_sfnetwork.default = function(x, ...) {
   as_sfnetwork(as_tbl_graph(x), ...)
 }
 
-#' @describeIn as_sfnetwork Only sf objects with either exclusively geometries
-#' of type \code{LINESTRING} or exclusively geometries of type \code{POINT} are
-#' supported. For lines, is assumed that the given features form the edges.
-#' Nodes are created at the endpoints of the lines. Endpoints which are shared
-#' between multiple edges become a single node. For points, it is assumed that
-#' the given features geometries form the nodes. They will be connected by
-#' edges sequentially. Hence, point 1 to point 2, point 2 to point 3, etc.
+#' @describeIn as_sfnetwork Convert spatial features of class
+#' \code{\link[sf]{sf}} directly into an \code{\link{sfnetwork}}.
+#' Supported geometry types are either \code{LINESTRING} or \code{POINT}. In
+#' the first case, the lines become the edges in the network, and nodes are
+#' placed at their boundary points. All arguments are forwarded to
+#' \code{\link{create_from_spatial_lines}}. In the latter case, the points
+#' become the nodes in the network, and are connected by edges according to a
+#' specified method. All arguments are forwarded to
+#' \code{\link{create_from_spatial_points}}.
+#'
 #' @examples
-#' # From an sf object.
+#' # From an sf object with LINESTRING geometries.
 #' library(sf, quietly = TRUE)
 #'
-#' # With LINESTRING geometries.
 #' as_sfnetwork(roxel)
 #'
 #' oldpar = par(no.readonly = TRUE)
@@ -234,43 +238,25 @@ as_sfnetwork.default = function(x, ...) {
 #' plot(as_sfnetwork(roxel))
 #' par(oldpar)
 #'
-#' # With POINT geometries.
-#' p1 = st_point(c(7, 51))
-#' p2 = st_point(c(7, 52))
-#' p3 = st_point(c(8, 52))
-#' points = st_as_sf(st_sfc(p1, p2, p3))
-#' as_sfnetwork(points)
-#'
-#' oldpar = par(no.readonly = TRUE)
-#' par(mar = c(1,1,1,1), mfrow = c(1,2))
-#' plot(st_geometry(points))
-#' plot(as_sfnetwork(points))
-#' par(oldpar)
-#'
 #' @export
 as_sfnetwork.sf = function(x, ...) {
   if (has_single_geom_type(x, "LINESTRING")) {
-    # Workflow:
-    # It is assumed that the given LINESTRING geometries form the edges.
-    # Nodes need to be created at the boundary points of the edges.
-    # Identical boundary points should become the same node.
-    n_lst = create_nodes_from_edges(x)
+    create_from_spatial_lines(x, ...)
   } else if (has_single_geom_type(x, "POINT")) {
-    # Workflow:
-    # It is assumed that the given POINT geometries form the nodes.
-    # Edges need to be created as linestrings between those nodes.
-    # It is assumed that the given nodes are connected sequentially.
-    n_lst = create_edges_from_nodes(x)
+    create_from_spatial_points(x, ...)
   } else {
     stop(
       "Geometries are not all of type LINESTRING, or all of type POINT",
       call. = FALSE
     )
   }
-  sfnetwork(n_lst$nodes, n_lst$edges, force = TRUE, ...)
 }
 
-#' @name as_sfnetwork
+#' @describeIn as_sfnetwork Convert spatial linear networks of class
+#' \code{\link[spatstat.linnet]{linnet}} directly into an
+#' \code{\link{sfnetwork}}. This requires the
+#' \code{\link[spatstat.geom]{spatstat.geom-package}} to be installed.
+#'
 #' @examples
 #' # From a linnet object.
 #' if (require(spatstat.geom, quietly = TRUE)) {
@@ -286,7 +272,11 @@ as_sfnetwork.linnet = function(x, ...) {
   as_sfnetwork(x_psp, ...)
 }
 
-#' @name as_sfnetwork
+#' @describeIn as_sfnetwork Convert spatial line segments of class
+#' \code{\link[spatstat.geom]{psp}} directly into an \code{\link{sfnetwork}}.
+#' The lines become the edges in the network, and nodes are placed at their
+#' boundary points.
+#'
 #' @examples
 #' # From a psp object.
 #' if (require(spatstat.geom, quietly = TRUE)) {
@@ -311,14 +301,28 @@ as_sfnetwork.psp = function(x, ...) {
   as_sfnetwork(x_linestring, ...)
 }
 
-#' @name as_sfnetwork
+#' @describeIn as_sfnetwork Convert spatial geometries of class
+#' \code{\link[sf]{sfc}} directly into an \code{\link{sfnetwork}}.
+#' Supported geometry types are either \code{LINESTRING} or \code{POINT}. In
+#' the first case, the lines become the edges in the network, and nodes are
+#' placed at their boundary points. All arguments are forwarded to
+#' \code{\link{create_from_spatial_lines}}. In the latter case, the points
+#' become the nodes in the network, and are connected by edges according to a
+#' specified method. All arguments are forwarded to
+#' \code{\link{create_from_spatial_points}}.
+#'
 #' @importFrom sf st_as_sf
 #' @export
 as_sfnetwork.sfc = function(x, ...) {
   as_sfnetwork(st_as_sf(x), ...)
 }
 
-#' @name as_sfnetwork
+#' @describeIn as_sfnetwork Convert spatial networks of class
+#' \code{\link[stplanr]{sfNetwork}} directly into an \code{\link{sfnetwork}}.
+#' This will extract the edges as an \code{\link[sf]{sf}} object and re-create
+#' the network structure. The directness of the provided object is preserved
+#' unless specified otherwise through the \code{directed} argument.
+#'
 #' @importFrom igraph is_directed
 #' @export
 as_sfnetwork.sfNetwork = function(x, ...) {
@@ -332,13 +336,13 @@ as_sfnetwork.sfNetwork = function(x, ...) {
   do.call("as_sfnetwork.sf", args)
 }
 
-#' @name as_sfnetwork
-#' @export
-as_sfnetwork.sfnetwork = function(x, ...) {
-  as_sfnetwork(as_tbl_graph(x), ...)
-}
-
-#' @name as_sfnetwork
+#' @describeIn as_sfnetwork Convert graph objects of class
+#' \code{\link[tidygraph]{tbl_graph}} directly into an \code{\link{sfnetwork}}.
+#' This will work if at least the nodes can be converted to an
+#' \code{\link[sf]{sf}} object through \code{\link[sf]{st_as_sf}}. The
+#' directness of the provided object is preserved unless specified otherwise
+#' through the \code{directed} argument.
+#'
 #' @importFrom igraph is_directed
 #' @export
 as_sfnetwork.tbl_graph = function(x, ...) {
