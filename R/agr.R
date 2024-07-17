@@ -30,7 +30,8 @@ agr = function(x, active = NULL) {
 #' @noRd
 node_agr = function(x) {
   agr = attr(vertex_attr(x), "agr")
-  make_agr_valid(agr, names = node_feature_attribute_names(x))
+  colnames = node_attribute_names(x, geom = FALSE)
+  make_agr_valid(agr, names = colnames)
 }
 
 #' @name agr
@@ -38,10 +39,8 @@ node_agr = function(x) {
 #' @noRd
 edge_agr = function(x) {
   agr = attr(edge_attr(x), "agr")
-  if (has_explicit_edges(x)) {
-    agr = make_agr_valid(agr, names = edge_feature_attribute_names(x))
-  }
-  agr
+  colnames = edge_attribute_names(x, idxs = TRUE, geom = FALSE)
+  make_agr_valid(agr, names = colnames)
 }
 
 #' @name agr

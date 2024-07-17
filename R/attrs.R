@@ -112,38 +112,25 @@ sf_attr = function(x, name, active = NULL) {
 #' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently
 #' active element of x will be used.
 #'
+#' @param idxs Should the columns storing indices of start and end nodes in the
+#' edges table (i.e. the from and to columns) be considered attribute columns?
+#' Defaults to \code{FALSE}.
+#'
+#' @param geom Should the geometry column be considered an attribute column?
+#' Defaults to \code{TRUE}.
+#'
 #' @return A character vector.
-#'
-#' @details Which columns in the nodes or edges table of the network are
-#' considered attribute columns can be different depending on our perspective.
-#'
-#' From the graph-centric point of view, the geometry is considered an
-#' attribute of a node or edge. Edges are defined by the nodes they connect,
-#' and hence the from and to columns in the edges table define the edges,
-#' rather than being attributes of them. Therefore, the function
-#' \code{attribute_names} will return a vector of names that includes the name
-#' of the geometry column, but - when \code{active = "edges"} - not the names
-#' of the to and from columns.
-#'
-#' However, when we take a geometry-centric point of view, the geometries are
-#' spatial features that contain attributes. Such a feature is defined by its
-#' geometry, and hence the geometry list-column is not considered an attribute
-#' column. The indices of the start and end nodes, however, are considered
-#' attributes of the edge linestring features. Therefore, the function
-#' \code{feature_attribute_names} will return a vector of names that does not
-#' include the name of the geometry column, but - when \code{active = "edges"}
-#' - does include the names of the to and from columns.
 #'
 #' @name attr_names
 #' @noRd
-attribute_names = function(x, active = NULL) {
+attribute_names = function(x, active = NULL, idxs = FALSE, geom = TRUE) {
   if (is.null(active)) {
     active = attr(x, "active")
   }
   switch(
     active,
-    nodes = node_attribute_names(x),
-    edges = edge_attribute_names(x),
+    nodes = node_attribute_names(x, geom = geom),
+    edges = edge_attribute_names(x, idxs = idxs, geom = geom),
     raise_unknown_input(active)
   )
 }
@@ -151,48 +138,29 @@ attribute_names = function(x, active = NULL) {
 #' @name attr_names
 #' @noRd
 #' @importFrom igraph vertex_attr_names
-node_attribute_names = function(x) {
-  vertex_attr_names(x)
+node_attribute_names = function(x, geom = TRUE) {
+  attrs = vertex_attr_names(x)
+  if (! geom) {
+    attrs = attrs[attrs != node_geom_colname(x)]
+  }
+  attrs
 }
 
 #' @name attr_names
 #' @noRd
 #' @importFrom igraph edge_attr_names
-edge_attribute_names = function(x) {
-  edge_attr_names(x)
-}
-
-#' @name attr_names
-#' @noRd
-feature_attribute_names = function(x, active = NULL) {
-  if (is.null(active)) {
-    active = attr(x, "active")
+edge_attribute_names = function(x, idxs = FALSE, geom = TRUE) {
+  attrs = edge_attr_names(x)
+  if (idxs) {
+    attrs = c("from", "to", attrs)
   }
-  switch(
-    active,
-    nodes = node_feature_attribute_names(x),
-    edges = edge_feature_attribute_names(x),
-    raise_unknown_input(active)
-  )
-}
-
-#' @name attr_names
-#' @noRd
-node_feature_attribute_names = function(x) {
-  g_attrs = node_attribute_names(x)
-  g_attrs[g_attrs != node_geom_colname(x)]
-}
-
-#' @name attr_names
-#' @noRd
-edge_feature_attribute_names = function(x) {
-  g_attrs = edge_attribute_names(x)
-  geom_colname = edge_geom_colname(x)
-  if (is.null(geom_colname)) {
-    character(0)
-  } else {
-    c("from", "to", g_attrs[g_attrs != geom_colname])
+  if (! geom) {
+    geom_colname = edge_geom_colname(x)
+    if (! is.null(geom_colname)) {
+      attrs = attrs[attrs != geom_colname]
+    }
   }
+  attrs
 }
 
 #' Set or replace attribute column values of the active element of a sfnetwork
@@ -209,9 +177,9 @@ edge_feature_attribute_names = function(x) {
 #'
 #' @return An object of class \code{\link{sfnetwork}} with updated attributes.
 #'
-#' @details From the network-centric point of view, the geometry is considered
-#' an attribute of a node or edge, and the indices of the start and end nodes
-#' of an edge are not considered attributes of that edge.
+#' @details For these functions, the geometry is considered an attribute of a
+#' node or edge, and the indices of the start and end nodes of an edge are not
+#' considered attributes of that edge.
 #'
 #' @name attr_values
 #' @noRd
