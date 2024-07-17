@@ -213,6 +213,5 @@ drop_edge_geom = function(x) {
   }
   x_new = delete_edge_attr(x, edge_geom_colname(x))
   edge_geom_colname(x_new) = NULL
-  edge_agr(x_new) = NULL
   x_new
 }
