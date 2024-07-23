@@ -4,14 +4,33 @@
 \alias{create_from_spatial_points}
 \title{Create a spatial network from point geometries}
 \usage{
-create_from_spatial_points(x, method = "sequence", ...)
+create_from_spatial_points(
+  x,
+  connections = "complete",
+  directed = TRUE,
+  edges_as_lines = TRUE,
+  k = 1
+)
 }
 \arguments{
 \item{x}{An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 with \code{POINT} geometries.}
 
-\item{method}{The method used to connect the given point geometries to each
-other.}
+\item{connections}{How to connect the given point geometries to each other?
+Can be specified either as an adjacency matrix, or as a character
+describing a specific method to define the connections.}
+
+\item{directed}{Should the constructed network be directed? Defaults to
+\code{TRUE}.}
+
+\item{edges_as_lines}{Should the created edges be spatially explicit, i.e.
+have \code{LINESTRING} geometries stored in a geometry list column? Defaults
+to \code{TRUE}.}
+
+\item{k}{The amount of neighbors to connect to if
+\code{connections = 'knn'}. Defaults to \code{1}, meaning that nodes are
+only connected to their nearest neighbor. Ignored for any other value of the
+\code{connected} argument.}
 }
 \value{
 An object of class \code{\link{sfnetwork}}.
@@ -21,5 +40,52 @@ Create a spatial network from point geometries
 }
 \details{
 It is assumed that the given points form the nodes in the network.
-How those nodes are connected by edges depends on the selected method.
+How those nodes are connected by edges depends on the \code{connections}
+argument.
+
+The connections can be specified through an adjacency matrix A, which is an
+n x n matrix with n being the number of nodes, and element Aij holding a
+\code{TRUE} value if there is an edge from node i to node j, and a
+\code{FALSE} value otherwise. In the case of undirected networks, the matrix
+is not tested for symmetry, and an edge will exist between node i and node j
+if either element Aij or element Aji is \code{TRUE}.
+
+Alternatively, the connections can be specified by providing the name of a
+specific method that will create the adjacency matrix internally. Valid
+options are:
+
+\itemize{
+  \item \code{complete}: All nodes are directly connected to each other.
+  \item \code{sequence}: The nodes are sequentially connected to each other,
+  meaning that the first node is connected to the second node, the second
+  node is connected to the third node, et cetera.
+  \item \code{mst}: The nodes are connected by their spatial
+  \href{https://en.wikipedia.org/wiki/Minimum_spanning_tree}{minimum
+  spanning tree}, i.e. the set of edges with the minimum total edge length
+  required to connect all nodes. Can also be specified as
+  \code{minimum_spanning_tree}.
+  \item \code{delaunay}: The nodes are connected by their
+  \href{https://en.wikipedia.org/wiki/Delaunay_triangulation}{Delaunay
+  triangulation}.
+  Requires the \href{https://r-spatial.github.io/spdep/index.html}{spdep}
+  package to be installed, and assumes planar coordinates.
+  \item \code{gabriel}: The nodes are connected as a
+  \href{https://en.wikipedia.org/wiki/Gabriel_graph}{Gabriel graph}.
+  Requires the \href{https://r-spatial.github.io/spdep/index.html}{spdep}
+  package to be installed, and assumes planar coordinates.
+  \item \code{rn}: The nodes are connected as a
+  \href{https://en.wikipedia.org/wiki/Relative_neighborhood_graph}{relative
+  neighborhood graph}. Can also be specified as \code{relative_neighborhood}
+  or \code{relative_neighbourhood}.
+  Requires the \href{https://r-spatial.github.io/spdep/index.html}{spdep}
+  package to be installed, and assumes planar coordinates.
+  \item \code{knn}: Each node is connected to its k nearest neighbors, with
+  \code{k} being specified through the \code{k} argument. By default,
+  \code{k = 1}, meaning that the nodes are connected as a
+  \href{https://en.wikipedia.org/wiki/Nearest_neighbor_graph}{nearest
+  neighbor graph}. Can also be specified as \code{nearest_neighbors} or
+  \code{nearest_neighbours}.
+  Requires the \href{https://r-spatial.github.io/spdep/index.html}{spdep}
+  package to be installed.
+}
 }

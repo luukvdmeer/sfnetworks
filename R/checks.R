@@ -121,6 +121,17 @@ have_equal_geometries = function(x, y) {
   diag(st_equals(x, y, sparse = FALSE))
 }
 
+#' Check if an object is a single string
+#'
+#' @param x The object to be checked.
+#'
+#' @return \code{TRUE} if \code{x} is a single string, \code{FALSE} otherwise.
+#'
+#' @noRd
+is_single_string = function(x) {
+  is.character(x) && length(x) == 1
+}
+
 #' Check if any boundary point of an edge is equal to any of its boundary nodes
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.

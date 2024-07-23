@@ -4,11 +4,14 @@
 \alias{create_from_spatial_lines}
 \title{Create a spatial network from linestring geometries}
 \usage{
-create_from_spatial_lines(x, ...)
+create_from_spatial_lines(x, directed = TRUE)
 }
 \arguments{
 \item{x}{An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 with \code{LINESTRING} geometries.}
+
+\item{directed}{Should the constructed network be directed? Defaults to
+\code{TRUE}.}
 }
 \value{
 An object of class \code{\link{sfnetwork}}.
