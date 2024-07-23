@@ -24,3 +24,17 @@ It is assumed that the given lines geometries form the edges in the
 network. Nodes are created at the boundary points of the edges. Boundary
 points at equal locations become the same node.
 }
+\examples{
+library(sf, quietly = TRUE)
+
+as_sfnetwork(roxel)
+
+oldpar = par(no.readonly = TRUE)
+par(mar = c(1,1,1,1), mfrow = c(1,2))
+
+plot(st_geometry(roxel))
+plot(as_sfnetwork(roxel))
+
+par(oldpar)
+
+}

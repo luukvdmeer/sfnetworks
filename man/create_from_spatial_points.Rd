@@ -89,3 +89,51 @@ options are:
   package to be installed.
 }
 }
+\examples{
+library(sf, quietly = TRUE)
+
+oldpar = par(no.readonly = TRUE)
+par(mar = c(1,1,1,1))
+
+pts = roxel[seq(1, 100, by = 10),]) |>
+  st_geometry() |>
+  st_centroid() |>
+  st_transform(3035)
+
+# Using an adjacency matrix
+adj = matrix(c(rep(TRUE, 10), rep(FALSE, 90)), nrow = 10)
+net = as_sfnetwork(pts, connections = adj)
+
+plot(net)
+
+# Using a adjacency matrix from a spatial predicate
+dst = units::set_units(500, "m")
+adj = st_is_within_distance(pts, dist = dst, sparse = FALSE)
+net = as_sfnetwork(pts, connections = adj)
+
+plot(net)
+
+# Using pre-defined methods
+cnet = as_sfnetwork(pts, connections = "complete")
+snet = as_sfnetwork(pts, connections = "sequence")
+mnet = as_sfnetwork(pts, connections = "mst")
+dnet = as_sfnetwork(pts, connections = "delaunay")
+gnet = as_sfnetwork(pts, connections = "gabriel")
+rnet = as_sfnetwork(pts, connections = "rn")
+nnet = as_sfnetwork(pts, connections = "knn")
+knet = as_sfnetwork(pts, connections = "knn", k = 2)
+
+par(mar = c(1,1,1,1), mfrow = c(4,2))
+
+plot(cnet, main = "complete")
+plot(snet, main = "sequence")
+plot(mnet, main = "minimum spanning tree")
+plot(dnet, main = "delaunay triangulation")
+plot(gnet, main = "gabriel graph")
+plot(rnet, main = "relative neighborhood graph")
+plot(nnet, main = "nearest neighbor graph")
+plot(knet, main = "k nearest neighbor graph (k = 2)")
+
+par(oldpar)
+
+}

@@ -234,8 +234,26 @@ as_sfnetwork.default = function(x, ...) {
 #'
 #' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1), mfrow = c(1,2))
+#'
 #' plot(st_geometry(roxel))
 #' plot(as_sfnetwork(roxel))
+#'
+#' par(oldpar)
+#'
+#' # From an sf object with POINT geometries.
+#' # For more examples see create_from_spatial_points.
+#' library(sf, quietly = TRUE)
+#'
+#' pts = st_centroid(roxel[10:15, ])
+#'
+#' as_sfnetwork(pts)
+#'
+#' oldpar = par(no.readonly = TRUE)
+#' par(mar = c(1,1,1,1), mfrow = c(1,2))
+#'
+#' plot(st_geometry(pts))
+#' plot(as_sfnetwork(pts))
+#'
 #' par(oldpar)
 #'
 #' @export
@@ -344,6 +362,15 @@ as_sfnetwork.sfNetwork = function(x, ...) {
 #' \code{\link[sf]{sf}} object through \code{\link[sf]{st_as_sf}}. The
 #' directness of the original graph is preserved unless specified otherwise
 #' through the \code{directed} argument.
+#'
+#' @examples
+#' # From a tbl_graph with coordinate columns.
+#' library(tidygraph, quietly = TRUE)
+#'
+#' nodes = data.frame(lat = c(7, 7, 8), lon = c(51, 52, 52))
+#' edges = data.frame(from = c(1, 1, 3), to = c(2, 3, 2))
+#' tbl_net = tbl_graph(nodes, edges)
+#' as_sfnetwork(tbl_net, coords = c("lon", "lat"), crs = 4326)
 #'
 #' @importFrom igraph is_directed
 #' @export
