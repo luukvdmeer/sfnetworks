@@ -11,7 +11,7 @@ sfnetwork(
   node_key = "name",
   edges_as_lines = NULL,
   compute_length = FALSE,
-  length_as_weight = FALSE,
+  length_as_weight = deprecated(),
   force = FALSE,
   message = TRUE,
   ...
@@ -48,18 +48,16 @@ represented \code{to} and \code{from} columns should be matched against. If
 \code{\link[sf]{sf}}, and \code{FALSE} otherwise. Defaults to \code{NULL}.}
 
 \item{compute_length}{Should the geographic length of the edges be stored in
-a column named \code{length}? If set to \code{TRUE}, this will calculate the
-length of the linestring geometry of the edge in the case of spatially
-explicit edges, and the straight-line distance between the source and target
-node in the case of spatially implicit edges. If there is already a column
-named \code{length}, it will be overwritten. Defaults to \code{FALSE}.}
+a column named \code{length}? Uses \code{\link[sf]{st_length}} to compute
+the length of the edge geometries when edges are spatially explicit, and
+\code{\link[sf]{st_distance}} to compute the distance between boundary nodes
+when edges are spatially implicit. If there is already a column named
+\code{length}, it will be overwritten. Please note that the values in this
+column are \strong{not} automatically recognized as edge weights. This needs
+to be specified explicitly when calling a function that uses edge weights.
+Defaults to \code{FALSE}.}
 
-\item{length_as_weight}{Should the length of the edges be stored in a column
-named \code{weight}? If set to \code{TRUE}, this will calculate the length
-of the linestring geometry of the edge in the case of spatially explicit
-edges, and the straight-line distance between the source and target node in
-the case of spatially implicit edges. If there is already a column named
-\code{weight}, it will be overwritten. Defaults to \code{FALSE}.}
+\item{length_as_weight}{Deprecated, use \code{compute_length} instead.}
 
 \item{force}{Should network validity checks be skipped? Defaults to
 \code{FALSE}, meaning that network validity checks are executed when

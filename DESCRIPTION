@@ -39,6 +39,7 @@ Imports:
     dplyr,
     graphics,
     igraph,
+    lifecycle,
     lwgeom,
     rlang,
     sf,

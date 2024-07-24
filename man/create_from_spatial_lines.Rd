@@ -14,8 +14,12 @@ with \code{LINESTRING} geometries.}
 \code{TRUE}.}
 
 \item{compute_length}{Should the geographic length of the edges be stored in
-a column named \code{length}? If there is already a column named
-\code{length}, it will be overwritten. Defaults to \code{FALSE}.}
+a column named \code{length}? Uses \code{\link[sf]{st_length}} to compute
+the length of the edge geometries. If there is already a column named
+\code{length}, it will be overwritten. Please note that the values in this
+column are \strong{not} automatically recognized as edge weights. This needs
+to be specified explicitly when calling a function that uses edge weights.
+Defaults to \code{FALSE}.}
 }
 \value{
 An object of class \code{\link{sfnetwork}}.

@@ -36,18 +36,16 @@
 #' \code{\link[sf]{sf}}, and \code{FALSE} otherwise. Defaults to \code{NULL}.
 #'
 #' @param compute_length Should the geographic length of the edges be stored in
-#' a column named \code{length}? If set to \code{TRUE}, this will calculate the
-#' length of the linestring geometry of the edge in the case of spatially
-#' explicit edges, and the straight-line distance between the source and target
-#' node in the case of spatially implicit edges. If there is already a column
-#' named \code{length}, it will be overwritten. Defaults to \code{FALSE}.
+#' a column named \code{length}? Uses \code{\link[sf]{st_length}} to compute
+#' the length of the edge geometries when edges are spatially explicit, and
+#' \code{\link[sf]{st_distance}} to compute the distance between boundary nodes
+#' when edges are spatially implicit. If there is already a column named
+#' \code{length}, it will be overwritten. Please note that the values in this
+#' column are \strong{not} automatically recognized as edge weights. This needs
+#' to be specified explicitly when calling a function that uses edge weights.
+#' Defaults to \code{FALSE}.
 #'
-#' @param length_as_weight Should the length of the edges be stored in a column
-#' named \code{weight}? If set to \code{TRUE}, this will calculate the length
-#' of the linestring geometry of the edge in the case of spatially explicit
-#' edges, and the straight-line distance between the source and target node in
-#' the case of spatially implicit edges. If there is already a column named
-#' \code{weight}, it will be overwritten. Defaults to \code{FALSE}.
+#' @param length_as_weight Deprecated, use \code{compute_length} instead.
 #'
 #' @param force Should network validity checks be skipped? Defaults to
 #' \code{FALSE}, meaning that network validity checks are executed when
@@ -103,12 +101,13 @@
 #' sfnetwork(nodes, edges, compute_length = TRUE)
 #'
 #' @importFrom igraph edge_attr<-
+#' @importFrom lifecycle deprecated deprecate_stop
 #' @importFrom sf st_as_sf
 #' @importFrom tidygraph tbl_graph with_graph
 #' @export
 sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
                      edges_as_lines = NULL, compute_length = FALSE,
-                     length_as_weight = FALSE,
+                     length_as_weight = deprecated(),
                      force = FALSE, message = TRUE, ...) {
   # Prepare nodes.
   # If nodes is not an sf object:
@@ -157,6 +156,15 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
       x_sfn = explicitize_edges(x_sfn)
     }
   }
+  ## DEPRECATION INFO ##
+  if (isTRUE(length_as_weight)) {
+    deprecate_stop(
+      when = "v1.0",
+      what = "sfnetwork(length_as_weight)",
+      with = "sfnetwork(compute_length)"
+    )
+  }
+  ## END OF DEPRECATION INFO ##
   if (compute_length) {
     if ("length" %in% names(edges)) {
       raise_overwrite("length")
@@ -195,8 +203,8 @@ tbg_to_sfn = function(x) {
 #'
 #' @param x Object to be converted into a \code{\link{sfnetwork}}.
 #'
-#' @param ... Arguments passed on to the \code{\link{sfnetwork}} construction
-#' function, unless specified otherwise.
+#' @param ... Additional arguments passed on to the \code{\link{sfnetwork}}
+#' construction function, unless specified otherwise.
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
@@ -209,7 +217,10 @@ as_sfnetwork = function(x, ...) {
 #' into a \code{\link[tidygraph]{tbl_graph}} using
 #' \code{\link[tidygraph]{as_tbl_graph}}. Further conversion into an
 #' \code{\link{sfnetwork}} will work as long as the nodes can be converted to
-#' an \code{\link[sf]{sf}} object through \code{\link[sf]{st_as_sf}}.
+#' an \code{\link[sf]{sf}} object through \code{\link[sf]{st_as_sf}}. Arguments
+#' to \code{\link[sf]{st_as_sf}} can be provided as additional arguments and
+#' will be forwarded to \code{\link[sf]{st_as_sf}} through the
+#' code{\link{sfnetwork}} construction function.
 #'
 #' @importFrom tidygraph as_tbl_graph
 #' @export
@@ -221,10 +232,10 @@ as_sfnetwork.default = function(x, ...) {
 #' \code{\link[sf]{sf}} directly into a \code{\link{sfnetwork}}.
 #' Supported geometry types are either \code{LINESTRING} or \code{POINT}. In
 #' the first case, the lines become the edges in the network, and nodes are
-#' placed at their boundary points. All arguments are forwarded to
+#' placed at their boundaries. Additional arguments are forwarded to
 #' \code{\link{create_from_spatial_lines}}. In the latter case, the points
 #' become the nodes in the network, and are connected by edges according to a
-#' specified method. All arguments are forwarded to
+#' specified method. Additional arguments are forwarded to
 #' \code{\link{create_from_spatial_points}}.
 #'
 #' @examples
@@ -257,9 +268,48 @@ as_sfnetwork.default = function(x, ...) {
 #'
 #' par(oldpar)
 #'
+#' @importFrom lifecycle deprecate_stop
 #' @export
 as_sfnetwork.sf = function(x, ...) {
+  ## DEPRECATION INFO ##
+  dots = list(...)
+  if (isTRUE(dots$length_as_weight)) {
+    deprecate_stop(
+      when = "v1.0",
+      what = "as_sfnetwork.sf(length_as_weight)",
+      with = "as_sfnetwork.sf(compute_length)",
+      details = c(
+        i = paste(
+          "The sf method of `as_sfnetwork()` now forwards `...` to",
+          "`create_from_spatial_lines()` for linestring geometries",
+          "and to `create_from_spatial_points()` for point geometries."
+        )
+      )
+    )
+  }
+  ## END OF DEPRECATION INFO ##
   if (has_single_geom_type(x, "LINESTRING")) {
+    ## DEPRECATION INFO ##
+    if (isFALSE(dots$edges_as_lines)) {
+      deprecate_stop(
+        when = "v1.0",
+        what = paste(
+          "as_sfnetwork.sf(edges_as_lines = 'is deprecated for",
+          "linestring geometries')"
+        ),
+        details = c(
+          i = paste(
+            "The sf method of `as_sfnetwork()` now forwards `...` to",
+            "`create_from_spatial_lines()` for linestring geometries."
+          ),
+          i = paste(
+            "An sfnetwork created from linestring geometries will now",
+            "always have spatially explicit edges."
+          )
+        )
+      )
+    }
+    ## END OF DEPRECATION INFO ##
     create_from_spatial_lines(x, ...)
   } else if (has_single_geom_type(x, "POINT")) {
     create_from_spatial_points(x, ...)
@@ -269,6 +319,22 @@ as_sfnetwork.sf = function(x, ...) {
       call. = FALSE
     )
   }
+}
+
+#' @describeIn as_sfnetwork Convert spatial geometries of class
+#' \code{\link[sf]{sfc}} directly into a \code{\link{sfnetwork}}.
+#' Supported geometry types are either \code{LINESTRING} or \code{POINT}. In
+#' the first case, the lines become the edges in the network, and nodes are
+#' placed at their boundaries. Additional arguments are forwarded to
+#' \code{\link{create_from_spatial_lines}}. In the latter case, the points
+#' become the nodes in the network, and are connected by edges according to a
+#' specified method. Additional arguments are forwarded to
+#' \code{\link{create_from_spatial_points}}.
+#'
+#' @importFrom sf st_as_sf
+#' @export
+as_sfnetwork.sfc = function(x, ...) {
+  as_sfnetwork(st_as_sf(x), ...)
 }
 
 #' @describeIn as_sfnetwork Convert spatial linear networks of class
@@ -319,22 +385,6 @@ as_sfnetwork.psp = function(x, ...) {
   x_linestring = st_collection_extract(x_sf, "LINESTRING")
   # Apply as_sfnetwork.sf.
   as_sfnetwork(x_linestring, ...)
-}
-
-#' @describeIn as_sfnetwork Convert spatial geometries of class
-#' \code{\link[sf]{sfc}} directly into a \code{\link{sfnetwork}}.
-#' Supported geometry types are either \code{LINESTRING} or \code{POINT}. In
-#' the first case, the lines become the edges in the network, and nodes are
-#' placed at their boundary points. All arguments are forwarded to
-#' \code{\link{create_from_spatial_lines}}. In the latter case, the points
-#' become the nodes in the network, and are connected by edges according to a
-#' specified method. All arguments are forwarded to
-#' \code{\link{create_from_spatial_points}}.
-#'
-#' @importFrom sf st_as_sf
-#' @export
-as_sfnetwork.sfc = function(x, ...) {
-  as_sfnetwork(st_as_sf(x), ...)
 }
 
 #' @describeIn as_sfnetwork Convert spatial networks of class

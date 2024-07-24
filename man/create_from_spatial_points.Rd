@@ -29,7 +29,14 @@ have \code{LINESTRING} geometries stored in a geometry list column? Defaults
 to \code{TRUE}.}
 
 \item{compute_length}{Should the geographic length of the edges be stored in
-a column named \code{length}? Defaults to \code{FALSE}.}
+a column named \code{length}? Uses \code{\link[sf]{st_length}} to compute
+the length of the edge geometries when edges are spatially explicit, and
+\code{\link[sf]{st_distance}} to compute the distance between boundary nodes
+when edges are spatially implicit. If there is already a column named
+\code{length}, it will be overwritten. Please note that the values in this
+column are \strong{not} automatically recognized as edge weights. This needs
+to be specified explicitly when calling a function that uses edge weights.
+Defaults to \code{FALSE}.}
 
 \item{k}{The amount of neighbors to connect to if
 \code{connections = 'knn'}. Defaults to \code{1}, meaning that nodes are
