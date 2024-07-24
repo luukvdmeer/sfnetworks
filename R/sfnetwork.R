@@ -35,6 +35,13 @@
 #' \code{TRUE} when the edges are given as an object of class
 #' \code{\link[sf]{sf}}, and \code{FALSE} otherwise. Defaults to \code{NULL}.
 #'
+#' @param compute_length Should the geographic length of the edges be stored in
+#' a column named \code{length}? If set to \code{TRUE}, this will calculate the
+#' length of the linestring geometry of the edge in the case of spatially
+#' explicit edges, and the straight-line distance between the source and target
+#' node in the case of spatially implicit edges. If there is already a column
+#' named \code{length}, it will be overwritten. Defaults to \code{FALSE}.
+#'
 #' @param length_as_weight Should the length of the edges be stored in a column
 #' named \code{weight}? If set to \code{TRUE}, this will calculate the length
 #' of the linestring geometry of the edge in the case of spatially explicit
@@ -65,7 +72,6 @@
 #' @examples
 #' library(sf, quietly = TRUE)
 #'
-#' ## Create sfnetwork from sf objects
 #' p1 = st_point(c(7, 51))
 #' p2 = st_point(c(7, 52))
 #' p3 = st_point(c(8, 52))
@@ -93,19 +99,16 @@
 #' # Spatially implicit edges.
 #' sfnetwork(nodes, edges, edges_as_lines = FALSE)
 #'
-#' # Store edge lenghts in a weight column.
-#' sfnetwork(nodes, edges, length_as_weight = TRUE)
+#' # Store edge lenghts in a column named 'length'.
+#' sfnetwork(nodes, edges, compute_length = TRUE)
 #'
-#' # Adjust the number of features printed by active and inactive components
-#' oldoptions = options(sfn_max_print_active = 1, sfn_max_print_inactive = 2)
-#' sfnetwork(nodes, edges)
-#' options(oldoptions)
-#'
-#' @importFrom sf st_as_sf st_length
-#' @importFrom tidygraph tbl_graph
+#' @importFrom igraph edge_attr<-
+#' @importFrom sf st_as_sf
+#' @importFrom tidygraph tbl_graph with_graph
 #' @export
 sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
-                     edges_as_lines = NULL, length_as_weight = FALSE,
+                     edges_as_lines = NULL, compute_length = FALSE,
+                     length_as_weight = FALSE,
                      force = FALSE, message = TRUE, ...) {
   # Prepare nodes.
   # If nodes is not an sf object:
@@ -154,13 +157,11 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
       x_sfn = explicitize_edges(x_sfn)
     }
   }
-  if (length_as_weight) {
-    edges = edges_as_sf(x_sfn)
-    if ("weight" %in% names(edges)) {
-      raise_overwrite("weight")
+  if (compute_length) {
+    if ("length" %in% names(edges)) {
+      raise_overwrite("length")
     }
-    edges$weight = st_length(edges)
-    edge_attribute_values(x_sfn) = edges
+    edge_attr(x_sfn, "length") = with_graph(x_sfn, edge_length())
   }
   x_sfn
 }

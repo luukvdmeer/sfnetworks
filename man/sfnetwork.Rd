@@ -10,6 +10,7 @@ sfnetwork(
   directed = TRUE,
   node_key = "name",
   edges_as_lines = NULL,
+  compute_length = FALSE,
   length_as_weight = FALSE,
   force = FALSE,
   message = TRUE,
@@ -45,6 +46,13 @@ represented \code{to} and \code{from} columns should be matched against. If
 \code{NULL}, this will be automatically defined, by setting the argument to
 \code{TRUE} when the edges are given as an object of class
 \code{\link[sf]{sf}}, and \code{FALSE} otherwise. Defaults to \code{NULL}.}
+
+\item{compute_length}{Should the geographic length of the edges be stored in
+a column named \code{length}? If set to \code{TRUE}, this will calculate the
+length of the linestring geometry of the edge in the case of spatially
+explicit edges, and the straight-line distance between the source and target
+node in the case of spatially implicit edges. If there is already a column
+named \code{length}, it will be overwritten. Defaults to \code{FALSE}.}
 
 \item{length_as_weight}{Should the length of the edges be stored in a column
 named \code{weight}? If set to \code{TRUE}, this will calculate the length
@@ -84,7 +92,6 @@ edges embedded in geographical space, and offers smooth integration with
 \examples{
 library(sf, quietly = TRUE)
 
-## Create sfnetwork from sf objects
 p1 = st_point(c(7, 51))
 p2 = st_point(c(7, 52))
 p3 = st_point(c(8, 52))
@@ -112,12 +119,7 @@ sfnetwork(nodes, edges, node_key = "name")
 # Spatially implicit edges.
 sfnetwork(nodes, edges, edges_as_lines = FALSE)
 
-# Store edge lenghts in a weight column.
-sfnetwork(nodes, edges, length_as_weight = TRUE)
-
-# Adjust the number of features printed by active and inactive components
-oldoptions = options(sfn_max_print_active = 1, sfn_max_print_inactive = 2)
-sfnetwork(nodes, edges)
-options(oldoptions)
+# Store edge lenghts in a column named 'length'.
+sfnetwork(nodes, edges, compute_length = TRUE)
 
 }
