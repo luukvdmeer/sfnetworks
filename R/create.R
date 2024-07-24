@@ -6,9 +6,13 @@
 #' @param directed Should the constructed network be directed? Defaults to
 #' \code{TRUE}.
 #'
-#' @details It is assumed that the given lines geometries form the edges in the
-#' network. Nodes are created at the boundary points of the edges. Boundary
-#' points at equal locations become the same node.
+#' @param compute_length Should the geographic length of the edges be stored in
+#' a column named \code{length}? If there is already a column named
+#' \code{length}, it will be overwritten. Defaults to \code{FALSE}.
+#'
+#' @details It is assumed that the given linestring geometries form the edges
+#' in the network. Nodes are created at the line boundaries. Shared boundaries
+#' between multiple linestrings become the same node.
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
@@ -27,7 +31,8 @@
 #'
 #' @importFrom sf st_as_sf st_sf
 #' @export
-create_from_spatial_lines = function(x, directed = TRUE) {
+create_from_spatial_lines = function(x, directed = TRUE,
+                                     compute_length = FALSE) {
   # The provided lines will form the edges of the network.
   edges = st_as_sf(x)
   # Get the boundary points of the edges.
@@ -56,9 +61,13 @@ create_from_spatial_lines = function(x, directed = TRUE) {
   # For example an sf tibble instead of a sf data frame.
   class(nodes) = class(edges)
   # Create a network out of the created nodes and the provided edges.
-  # The ... arguments are forwarded to the sfnetwork construction function.
   # Force to skip network validity tests because we already know they pass.
-  sfnetwork_(nodes, edges, directed = directed)
+  sfnetwork(nodes, edges,
+    directed = directed,
+    edges_as_lines = TRUE,
+    compute_length = compute_length,
+    force = TRUE
+  )
 }
 
 #' Create a spatial network from point geometries
@@ -77,6 +86,9 @@ create_from_spatial_lines = function(x, directed = TRUE) {
 #' have \code{LINESTRING} geometries stored in a geometry list column? Defaults
 #' to \code{TRUE}.
 #'
+#' @param compute_length Should the geographic length of the edges be stored in
+#' a column named \code{length}? Defaults to \code{FALSE}.
+#'
 #' @param k The amount of neighbors to connect to if
 #' \code{connections = 'knn'}. Defaults to \code{1}, meaning that nodes are
 #' only connected to their nearest neighbor. Ignored for any other value of the
@@ -91,7 +103,8 @@ create_from_spatial_lines = function(x, directed = TRUE) {
 #' \code{TRUE} value if there is an edge from node i to node j, and a
 #' \code{FALSE} value otherwise. In the case of undirected networks, the matrix
 #' is not tested for symmetry, and an edge will exist between node i and node j
-#' if either element Aij or element Aji is \code{TRUE}.
+#' if either element Aij or element Aji is \code{TRUE}. Non-logical matrices
+#' are first converted into logical matrices using \code{\link{as.logical}}.
 #'
 #' Alternatively, the connections can be specified by providing the name of a
 #' specific method that will create the adjacency matrix internally. Valid
@@ -105,7 +118,10 @@ create_from_spatial_lines = function(x, directed = TRUE) {
 #'   \item \code{mst}: The nodes are connected by their spatial
 #'   \href{https://en.wikipedia.org/wiki/Minimum_spanning_tree}{minimum
 #'   spanning tree}, i.e. the set of edges with the minimum total edge length
-#'   required to connect all nodes. Can also be specified as
+#'   required to connect all nodes. The tree is always constructed on an
+#'   undirected network, regardless of the value of the \code{directed}.
+#'   argument. If \code{directed = TRUE}, each edge is duplicated and reversed
+#'   to ensure full connectivity of the network. Can also be specified as
 #'   \code{minimum_spanning_tree}.
 #'   \item \code{delaunay}: The nodes are connected by their
 #'   \href{https://en.wikipedia.org/wiki/Delaunay_triangulation}{Delaunay
@@ -140,7 +156,7 @@ create_from_spatial_lines = function(x, directed = TRUE) {
 #' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1))
 #'
-#' pts = roxel[seq(1, 100, by = 10),]) |>
+#' pts = roxel[seq(1, 100, by = 10),] |>
 #'   st_geometry() |>
 #'   st_centroid() |>
 #'   st_transform(3035)
@@ -184,113 +200,167 @@ create_from_spatial_lines = function(x, directed = TRUE) {
 #' @export
 create_from_spatial_points = function(x, connections = "complete",
                                       directed = TRUE, edges_as_lines = TRUE,
-                                      k = 1) {
+                                      compute_length = FALSE, k = 1) {
   if (is_single_string(connections)) {
-    switch(
+    nblist = switch(
       connections,
-      complete = create_spatial_complete(x, directed, edges_as_lines),
-      sequence = create_spatial_sequence(x, directed, edges_as_lines),
-      mst = create_spatial_mst(x, directed, edges_as_lines),
-      delaunay = create_spatial_delaunay(x, directed, edges_as_lines),
-      gabriel = create_spatial_gabriel(x, directed, edges_as_lines),
-      rn = create_spatial_rn(x, directed, edges_as_lines),
-      knn = create_spatial_knn(x, k, directed, edges_as_lines),
-      minimum_spanning_tree = create_spatial_mst(x, directed, edges_as_lines),
-      relative_neighborhood = create_spatial_rn(x, directed, edges_as_lines),
-      relative_neighbourhood = create_spatial_rn(x, directed, edges_as_lines),
-      nearest_neighbors = create_spatial_knn(x, k, directed, edges_as_lines),
-      nearest_neighbours = create_spatial_knn(x, k, directed, edges_as_lines),
+      complete = complete_neighbors(x),
+      sequence = sequential_neighbors(x),
+      mst = mst_neighbors(x),
+      delaunay = delaunay_neighbors(x),
+      gabriel = gabriel_neighbors(x),
+      rn = relative_neighbors(x),
+      knn = nearest_neighbors(x, k),
+      minimum_spanning_tree = mst_neighbors(x),
+      relative_neighborhood = relative_neighbors(x),
+      relative_neighbourhood = relative_neighbors(x),
+      nearest_neighbors = nearest_neighbors(x, k),
+      nearest_neighbours = nearest_neighbors(x, k),
       raise_unknown_input(connections)
     )
   } else {
-    create_spatial_custom(x, connections, directed, edges_as_lines)
+    nblist = custom_neighbors(x, connections)
   }
+  nb2net(nblist, x, directed, edges_as_lines, compute_length)
 }
 
-create_spatial_custom = function(x, connections, directed = TRUE,
-                                 edges_as_lines = TRUE) {
-  nblist = adj2nb(connections)
-  nb2net(nblist, x, directed, edges_as_lines)
+custom_neighbors = function(x, connections) {
+  adj2nb(connections)
 }
 
 #' @importFrom sf st_geometry
-create_spatial_complete = function(x, directed = TRUE, edges_as_lines = TRUE) {
+complete_neighbors = function(x) {
   n_nodes = length(st_geometry(x))
   # Create the adjacency matrix, with everything connected to everything.
   connections = matrix(TRUE, ncol = n_nodes, nrow = n_nodes)
   diag(connections) = FALSE # No loop edges.
-  # Create the network from the adjacency matrix.
-  create_spatial_custom(x, connections, directed, edges_as_lines)
+  # Return as neighbor list.
+  adj2nb(connections)
 }
 
 #' @importFrom sf st_geometry
-create_spatial_sequence = function(x, directed = TRUE, edges_as_lines = TRUE) {
+sequential_neighbors = function(x) {
+  # Each node in x is connected to the next node in x.
   n_nodes = length(st_geometry(x))
-  # Create the adjacency matrix.
-  # Each node is connected to the next node.
-  connections = matrix(FALSE, ncol = n_nodes - 1, nrow = n_nodes - 1)
-  diag(connections) = TRUE
-  connections = cbind(rep(FALSE, nrow(connections)), connections)
-  connections = rbind(connections, rep(FALSE, ncol(connections)))
-  # Create the network from the adjacency matrix.
-  create_spatial_custom(x, connections, directed, edges_as_lines)
+  lapply(c(1:(n_nodes - 1)), \(x) x + 1)
 }
 
-#' @importFrom igraph mst
-#' @importFrom tidygraph with_graph
-create_spatial_mst = function(x, directed = TRUE, edges_as_lines = TRUE) {
-  complete_net = create_spatial_complete(x, directed, edges_as_lines)
-  edge_lengths = with_graph(complete_net, edge_length())
-  mst_net = mst(complete_net, weights = edge_lengths)
-  tbg_to_sfn(as_tbl_graph(mst_net))
-}
-
-#' @importFrom sf st_geometry
-#' @importFrom tibble tibble
-create_spatial_delaunay = function(x, directed = TRUE, edges_as_lines = TRUE) {
-  requireNamespace("spdep") # Package spdep is required for this function.
-  nblist = tri2nb(st_geometry(x))
-  nb2net(nblist, x, directed, edges_as_lines)
-}
-
-#' @importFrom sf st_geometry
-#' @importFrom tibble tibble
-create_spatial_gabriel = function(x, directed = TRUE, edges_as_lines = TRUE) {
-  requireNamespace("spdep") # Package spdep is required for this function.
-  nbgraph = spdep::gabrielneigh(st_geometry(x))
-  nblist = spdep::graph2nb(nbgraph, sym = TRUE)
-  nb2net(nblist, x, directed, edges_as_lines)
+#' @importFrom igraph as_edgelist graph_from_adjacency_matrix igraph_opt
+#' igraph_options mst as_adj_list
+#' @importFrom sf st_distance st_geometry
+mst_neighbors = function(x, directed = TRUE, edges_as_lines = TRUE) {
+  # Change default igraph options.
+  # This prevents igraph returns node or edge indices as formatted sequences.
+  # We only need the "raw" integer indices.
+  # Changing this option improves performance especially on large networks.
+  default_igraph_opt = igraph_opt("return.vs.es")
+  igraph_options(return.vs.es = FALSE)
+  on.exit(igraph_options(return.vs.es = default_igraph_opt))
+  # Create a complete graph.
+  n_nodes = length(st_geometry(x))
+  connections = upper.tri(matrix(FALSE, ncol = n_nodes, nrow = n_nodes))
+  net = graph_from_adjacency_matrix(connections, mode = "undirected")
+  # Compute distances between adjacent nodes for each edge in that graph.
+  dists = st_distance(x)[as_edgelist(net, names = FALSE)]
+  # Compute minimum spanning tree of the weighted complete graph.
+  mst = mst(net, weights = dists)
+  # Return as a neighbor list.
+  as_adj_list(mst)
 }
 
 #' @importFrom sf st_geometry
-create_spatial_rn = function(x, directed = TRUE, edges_as_lines = TRUE) {
+delaunay_neighbors = function(x) {
   requireNamespace("spdep") # Package spdep is required for this function.
-  nbgraph = spdep::relativeneigh(st_geometry(x))
-  nblist = spdep::graph2nb(nbgraph, sym = TRUE)
-  nb2net(nblist, x, directed, edges_as_lines)
+  tri2nb(st_geometry(x))
 }
 
 #' @importFrom sf st_geometry
-create_spatial_knn = function(x, k = 1, directed = TRUE, edges_as_lines = TRUE) {
+gabriel_neighbors = function(x) {
   requireNamespace("spdep") # Package spdep is required for this function.
-  nbmat = spdep::knearneigh(st_geometry(x), k = k)
-  nblist = spdep::knn2nb(nbmat, sym = FALSE)
-  nb2net(nblist, x, directed, edges_as_lines)
+  spdep::graph2nb(spdep::gabrielneigh(st_geometry(x)), sym = TRUE)
 }
 
+#' @importFrom sf st_geometry
+relative_neighbors = function(x) {
+  requireNamespace("spdep") # Package spdep is required for this function.
+  spdep::graph2nb(spdep::relativeneigh(st_geometry(x)), sym = TRUE)
+}
+
+#' @importFrom sf st_geometry
+nearest_neighbors = function(x, k = 1) {
+  requireNamespace("spdep") # Package spdep is required for this function.
+  spdep::knn2nb(spdep::knearneigh(st_geometry(x), k = k), sym = FALSE)
+}
+
+#' Convert an adjacency matrix into a neighbor list
+#'
+#' Adjacency matrices of networks are n x n matrices with n being the number of
+#' nodes, and element Aij holding a \code{TRUE} value if node i is adjacent to
+#' node j, and a \code{FALSE} value otherwise. Neighbor lists are the sparse
+#' version of these matrices, coming in the form of a list with one element per
+#' node, holding the indices of the nodes it is adjacent to.
+#'
+#' @param x An adjacency matrix of class \code{\link{matrix}}. Non-logical
+#' matrices are first converted into logical matrices using
+#' \code{\link{as.logical}}.
+#'
+#' @return The sparse adjacency matrix as object of class \code{\link{list}}.
+#'
+#' @noRd
 adj2nb = function(x) {
-  apply(x, 1, which, simplify = FALSE)
+  if (! is.logical(x)) {
+    apply(x, 1, \(x) which(as.logical(x)), simplify = FALSE)
+  } else {
+    apply(x, 1, which, simplify = FALSE)
+  }
 }
 
+#' Convert a neighbor list into a sfnetwork
+#'
+#' Neighbor lists are sparse adjacency matrices that specify for each node to
+#' which other nodes it is adjacent.
+#'
+#' @param neighbors A list with one element per node, holding the indices of
+#' the nodes it is adjacent to.
+#'
+#' @param nodes The nodes themselves as an object of class \code{\link[sf]{sf}}
+#' or \code{\link[sf]{sfc}} with \code{POINT} geometries.
+#'
+#' @param directed Should the constructed network be directed? Defaults to
+#' \code{TRUE}.
+#'
+#' @param edges_as_lines Should the created edges be spatially explicit, i.e.
+#' have \code{LINESTRING} geometries stored in a geometry list column? Defaults
+#' to \code{TRUE}.
+#'
+#' @param compute_length Should the geographic length of the edges be stored in
+#' a column named \code{length}? Defaults to \code{FALSE}.
+#'
+#' @return An object of class \code{\link{sfnetwork}}.
+#'
 #' @importFrom tibble tibble
-nb2net = function(neighbors, nodes, directed = TRUE, edges_as_lines = TRUE) {
-  from_ids = rep(c(1:length(neighbors)), lengths(neighbors))
-  to_ids = do.call("c", neighbors)
+#' @noRd
+nb2net = function(neighbors, nodes, directed = TRUE, edges_as_lines = TRUE,
+                  compute_length = FALSE) {
+  # Define the edges by their from and to nodes.
+  # An edge will be created between each neighboring node pair.
+  edges = rbind(
+    rep(c(1:length(neighbors)), lengths(neighbors)),
+    do.call("c", neighbors)
+  )
+  if (! directed) {
+    # If the network is undirected:
+    # --> Edges i -> j and j -> i are the same.
+    # --> We create the network only with unique edges.
+    edges = unique(apply(edges, 2, sort), MARGIN = 2)
+  }
+  # Create the sfnetwork object.
   sfnetwork(
     nodes = nodes,
-    edges = tibble(from = from_ids, to = to_ids),
+    edges = tibble(from = edges[1, ], to = edges[2, ]),
     directed = directed,
     edges_as_lines = edges_as_lines,
+    compute_length = compute_length,
     force = TRUE
   )
 }

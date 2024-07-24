@@ -4,7 +4,7 @@
 \alias{create_from_spatial_lines}
 \title{Create a spatial network from linestring geometries}
 \usage{
-create_from_spatial_lines(x, directed = TRUE)
+create_from_spatial_lines(x, directed = TRUE, compute_length = FALSE)
 }
 \arguments{
 \item{x}{An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
@@ -12,6 +12,10 @@ with \code{LINESTRING} geometries.}
 
 \item{directed}{Should the constructed network be directed? Defaults to
 \code{TRUE}.}
+
+\item{compute_length}{Should the geographic length of the edges be stored in
+a column named \code{length}? If there is already a column named
+\code{length}, it will be overwritten. Defaults to \code{FALSE}.}
 }
 \value{
 An object of class \code{\link{sfnetwork}}.
@@ -20,9 +24,9 @@ An object of class \code{\link{sfnetwork}}.
 Create a spatial network from linestring geometries
 }
 \details{
-It is assumed that the given lines geometries form the edges in the
-network. Nodes are created at the boundary points of the edges. Boundary
-points at equal locations become the same node.
+It is assumed that the given linestring geometries form the edges
+in the network. Nodes are created at the line boundaries. Shared boundaries
+between multiple linestrings become the same node.
 }
 \examples{
 library(sf, quietly = TRUE)

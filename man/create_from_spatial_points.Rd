@@ -9,6 +9,7 @@ create_from_spatial_points(
   connections = "complete",
   directed = TRUE,
   edges_as_lines = TRUE,
+  compute_length = FALSE,
   k = 1
 )
 }
@@ -26,6 +27,9 @@ describing a specific method to define the connections.}
 \item{edges_as_lines}{Should the created edges be spatially explicit, i.e.
 have \code{LINESTRING} geometries stored in a geometry list column? Defaults
 to \code{TRUE}.}
+
+\item{compute_length}{Should the geographic length of the edges be stored in
+a column named \code{length}? Defaults to \code{FALSE}.}
 
 \item{k}{The amount of neighbors to connect to if
 \code{connections = 'knn'}. Defaults to \code{1}, meaning that nodes are
@@ -48,7 +52,8 @@ n x n matrix with n being the number of nodes, and element Aij holding a
 \code{TRUE} value if there is an edge from node i to node j, and a
 \code{FALSE} value otherwise. In the case of undirected networks, the matrix
 is not tested for symmetry, and an edge will exist between node i and node j
-if either element Aij or element Aji is \code{TRUE}.
+if either element Aij or element Aji is \code{TRUE}. Non-logical matrices
+are first converted into logical matrices using \code{\link{as.logical}}.
 
 Alternatively, the connections can be specified by providing the name of a
 specific method that will create the adjacency matrix internally. Valid
@@ -62,7 +67,10 @@ options are:
   \item \code{mst}: The nodes are connected by their spatial
   \href{https://en.wikipedia.org/wiki/Minimum_spanning_tree}{minimum
   spanning tree}, i.e. the set of edges with the minimum total edge length
-  required to connect all nodes. Can also be specified as
+  required to connect all nodes. The tree is always constructed on an
+  undirected network, regardless of the value of the \code{directed}.
+  argument. If \code{directed = TRUE}, each edge is duplicated and reversed
+  to ensure full connectivity of the network. Can also be specified as
   \code{minimum_spanning_tree}.
   \item \code{delaunay}: The nodes are connected by their
   \href{https://en.wikipedia.org/wiki/Delaunay_triangulation}{Delaunay
@@ -95,7 +103,7 @@ library(sf, quietly = TRUE)
 oldpar = par(no.readonly = TRUE)
 par(mar = c(1,1,1,1))
 
-pts = roxel[seq(1, 100, by = 10),]) |>
+pts = roxel[seq(1, 100, by = 10),] |>
   st_geometry() |>
   st_centroid() |>
   st_transform(3035)
