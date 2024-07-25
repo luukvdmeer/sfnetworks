@@ -167,6 +167,24 @@ edge_boundary_point_indices = function(x, matrix = FALSE) {
     if (matrix) t(matrix(idxs_vct, nrow = 2)) else idxs_vct
 }
 
+#' Extract the edges as a table
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @return An object of class \code{\link[sf]{sf}} if the edges are spatially
+#' explicit, and object of class \code{\link[tibble]{tibble}}.
+#'
+#' @importFrom tibble as_tibble
+#' @importFrom tidygraph as_tbl_graph
+#' @noRd
+edges_as_table = function(x) {
+  if (has_explicit_edges(x)) {
+    edges_as_sf(x)
+  } else {
+    as_tibble(as_tbl_graph(x), "edges")
+  }
+}
+
 #' Make edges spatially explicit
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.

@@ -1,3 +1,440 @@
+#' Create a sfnetwork
+#'
+#' \code{sfnetwork} is a tidy data structure for geospatial networks. It
+#' extends the \code{\link[tidygraph]{tbl_graph}} data structure for
+#' relational data into the domain of geospatial networks, with nodes and
+#' edges embedded in geographical space, and offers smooth integration with
+#' \code{\link[sf]{sf}} for spatial data analysis.
+#'
+#' @param nodes The nodes of the network. Should be an object of class
+#' \code{\link[sf]{sf}}, or directly convertible to it using
+#' \code{\link[sf]{st_as_sf}}. All features should have an associated geometry
+#' of type \code{POINT}.
+#'
+#' @param edges The edges of the network. May be an object of class
+#' \code{\link[sf]{sf}}, with all features having an associated geometry of
+#' type \code{LINESTRING}. It may also be a regular \code{\link{data.frame}} or
+#' \code{\link[tibble]{tbl_df}} object. In any case, the nodes at the ends of
+#' each edge must be referenced in a \code{to} and \code{from} column, as
+#' integers or characters. Integers should refer to the position of a node in
+#' the nodes table, while characters should refer to the name of a node stored
+#' in the column referred to in the \code{node_key} argument. Setting edges to
+#' \code{NULL} will create a network without edges.
+#'
+#' @param directed Should the constructed network be directed? Defaults to
+#' \code{TRUE}.
+#'
+#' @param node_key The name of the column in the nodes table that character
+#' represented \code{to} and \code{from} columns should be matched against. If
+#' \code{NA}, the first column is always chosen. This setting has no effect if
+#' \code{to} and \code{from} are given as integers. Defaults to \code{'name'}.
+#'
+#' @param edges_as_lines Should the edges be spatially explicit, i.e. have
+#' \code{LINESTRING} geometries stored in a geometry list column? If
+#' \code{NULL}, this will be automatically defined, by setting the argument to
+#' \code{TRUE} when the edges are given as an object of class
+#' \code{\link[sf]{sf}}, and \code{FALSE} otherwise. Defaults to \code{NULL}.
+#'
+#' @param compute_length Should the geographic length of the edges be stored in
+#' a column named \code{length}? Uses \code{\link[sf]{st_length}} to compute
+#' the length of the edge geometries when edges are spatially explicit, and
+#' \code{\link[sf]{st_distance}} to compute the distance between boundary nodes
+#' when edges are spatially implicit. If there is already a column named
+#' \code{length}, it will be overwritten. Please note that the values in this
+#' column are \strong{not} automatically recognized as edge weights. This needs
+#' to be specified explicitly when calling a function that uses edge weights.
+#' Defaults to \code{FALSE}.
+#'
+#' @param length_as_weight Deprecated, use \code{compute_length} instead.
+#'
+#' @param force Should network validity checks be skipped? Defaults to
+#' \code{FALSE}, meaning that network validity checks are executed when
+#' constructing the network. These checks guarantee a valid spatial network
+#' structure. For the nodes, this means that they all should have \code{POINT}
+#' geometries. In the case of spatially explicit edges, it is also checked that
+#' all edges have \code{LINESTRING} geometries, nodes and edges have the same
+#' CRS and boundary points of edges match their corresponding node coordinates.
+#' These checks are important, but also time consuming. If you are already sure
+#' your input data meet the requirements, the checks are unnecessary and can be
+#' turned off to improve performance.
+#'
+#' @param message Should informational messages (those messages that are
+#' neither warnings nor errors) be printed when constructing the network?
+#' Defaults to \code{TRUE}.
+#'
+#' @param ... Arguments passed on to \code{\link[sf]{st_as_sf}}, if nodes need
+#' to be converted into an \code{\link[sf]{sf}} object during construction.
+#'
+#' @return An object of class \code{sfnetwork}.
+#'
+#' @examples
+#' library(sf, quietly = TRUE)
+#'
+#' p1 = st_point(c(7, 51))
+#' p2 = st_point(c(7, 52))
+#' p3 = st_point(c(8, 52))
+#' nodes = st_as_sf(st_sfc(p1, p2, p3, crs = 4326))
+#'
+#' e1 = st_cast(st_union(p1, p2), "LINESTRING")
+#' e2 = st_cast(st_union(p1, p3), "LINESTRING")
+#' e3 = st_cast(st_union(p3, p2), "LINESTRING")
+#' edges = st_as_sf(st_sfc(e1, e2, e3, crs = 4326))
+#' edges$from = c(1, 1, 3)
+#' edges$to = c(2, 3, 2)
+#'
+#' # Default.
+#' sfnetwork(nodes, edges)
+#'
+#' # Undirected network.
+#' sfnetwork(nodes, edges, directed = FALSE)
+#'
+#' # Using character encoded from and to columns.
+#' nodes$name = c("city", "village", "farm")
+#' edges$from = c("city", "city", "farm")
+#' edges$to = c("village", "farm", "village")
+#' sfnetwork(nodes, edges, node_key = "name")
+#'
+#' # Spatially implicit edges.
+#' sfnetwork(nodes, edges, edges_as_lines = FALSE)
+#'
+#' # Store edge lenghts in a column named 'length'.
+#' sfnetwork(nodes, edges, compute_length = TRUE)
+#'
+#' @importFrom igraph edge_attr<-
+#' @importFrom lifecycle deprecated deprecate_stop
+#' @importFrom sf st_as_sf
+#' @importFrom tidygraph tbl_graph with_graph
+#' @export
+sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
+                     edges_as_lines = NULL, compute_length = FALSE,
+                     length_as_weight = deprecated(),
+                     force = FALSE, message = TRUE, ...) {
+  # Prepare nodes.
+  # If nodes is not an sf object:
+  # --> Try to convert it to an sf object.
+  # --> Arguments passed in ... will be passed on to st_as_sf.
+  if (! is.sf(nodes)) {
+    nodes = tryCatch(
+      st_as_sf(nodes, ...),
+      error = function(e) {
+        stop(
+          "Failed to convert nodes to sf object because: ",
+          e,
+          call. = FALSE
+        )
+      }
+    )
+  }
+  # Create network.
+  x_tbg = tbl_graph(nodes, edges, directed, node_key)
+  x_sfn = structure(x_tbg, class = c("sfnetwork", class(x_tbg)))
+  # Post-process network. This includes:
+  # --> Checking if the network has a valid spatial network structure.
+  # --> Making edges spatially explicit or implicit if requested.
+  # --> Adding additional attributes if requested.
+  if (is.null(edges)) {
+    # Run validity check for nodes only and return the network.
+    if (! force) validate_network(x_sfn, message = message)
+    return (x_sfn)
+  }
+  if (is.sf(edges)) {
+    # Add sf attributes to the edges table.
+    # They were removed when creating the tbl_graph.
+    edge_geom_colname(x_sfn) = attr(edges, "sf_column")
+    edge_agr(x_sfn) = attr(edges, "agr")
+    # Remove edge geometries if requested.
+    if (isFALSE(edges_as_lines)) {
+      x_sfn = implicitize_edges(x_sfn)
+    }
+    # Run validity check after implicitizing edges.
+    if (! force) validate_network(x_sfn, message = message)
+  } else {
+    # Run validity check before explicitizing edges.
+    if (! force) validate_network(x_sfn, message = message)
+    # Add edge geometries if requested.
+    if (isTRUE(edges_as_lines)) {
+      x_sfn = explicitize_edges(x_sfn)
+    }
+  }
+  ## DEPRECATION INFO ##
+  if (isTRUE(length_as_weight)) {
+    deprecate_stop(
+      when = "v1.0",
+      what = "sfnetwork(length_as_weight)",
+      with = "sfnetwork(compute_length)"
+    )
+  }
+  ## END OF DEPRECATION INFO ##
+  if (compute_length) {
+    if ("length" %in% names(edges)) {
+      raise_overwrite("length")
+    }
+    edge_attr(x_sfn, "length") = with_graph(x_sfn, edge_length())
+  }
+  x_sfn
+}
+
+# Simplified construction function.
+# Must be sure that nodes and edges together form a valid sfnetwork.
+# ONLY FOR INTERNAL USE!
+
+#' @importFrom tidygraph tbl_graph
+sfnetwork_ = function(nodes, edges = NULL, directed = TRUE) {
+  x_tbg = tbl_graph(nodes, edges, directed)
+  if (! is.null(edges)) {
+    edge_geom_colname(x_tbg) = attr(edges, "sf_column")
+    edge_agr(x_tbg) = attr(edges, "agr")
+  }
+  structure(x_tbg, class = c("sfnetwork", class(x_tbg)))
+}
+
+# Fast function to convert from tbl_graph to sfnetwork.
+# Must be sure that tbl_graph has already a valid sfnetwork structure.
+# ONLY FOR INTERNAL USE!
+
+tbg_to_sfn = function(x) {
+  class(x) = c("sfnetwork", class(x))
+  x
+}
+
+#' Convert a foreign object to a sfnetwork
+#'
+#' Convert a given object into an object of class \code{\link{sfnetwork}}.
+#'
+#' @param x Object to be converted into a \code{\link{sfnetwork}}.
+#'
+#' @param ... Additional arguments passed on to the \code{\link{sfnetwork}}
+#' construction function, unless specified otherwise.
+#'
+#' @return An object of class \code{\link{sfnetwork}}.
+#'
+#' @export
+as_sfnetwork = function(x, ...) {
+  UseMethod("as_sfnetwork")
+}
+
+#' @describeIn as_sfnetwork By default, the provided object is first converted
+#' into a \code{\link[tidygraph]{tbl_graph}} using
+#' \code{\link[tidygraph]{as_tbl_graph}}. Further conversion into an
+#' \code{\link{sfnetwork}} will work as long as the nodes can be converted to
+#' an \code{\link[sf]{sf}} object through \code{\link[sf]{st_as_sf}}. Arguments
+#' to \code{\link[sf]{st_as_sf}} can be provided as additional arguments and
+#' will be forwarded to \code{\link[sf]{st_as_sf}} through the
+#' code{\link{sfnetwork}} construction function.
+#'
+#' @importFrom tidygraph as_tbl_graph
+#' @export
+as_sfnetwork.default = function(x, ...) {
+  as_sfnetwork(as_tbl_graph(x), ...)
+}
+
+#' @describeIn as_sfnetwork Convert spatial features of class
+#' \code{\link[sf]{sf}} directly into a \code{\link{sfnetwork}}.
+#' Supported geometry types are either \code{LINESTRING} or \code{POINT}. In
+#' the first case, the lines become the edges in the network, and nodes are
+#' placed at their boundaries. Additional arguments are forwarded to
+#' \code{\link{create_from_spatial_lines}}. In the latter case, the points
+#' become the nodes in the network, and are connected by edges according to a
+#' specified method. Additional arguments are forwarded to
+#' \code{\link{create_from_spatial_points}}.
+#'
+#' @examples
+#' # From an sf object with LINESTRING geometries.
+#' library(sf, quietly = TRUE)
+#'
+#' as_sfnetwork(roxel)
+#'
+#' oldpar = par(no.readonly = TRUE)
+#' par(mar = c(1,1,1,1), mfrow = c(1,2))
+#'
+#' plot(st_geometry(roxel))
+#' plot(as_sfnetwork(roxel))
+#'
+#' par(oldpar)
+#'
+#' # From an sf object with POINT geometries.
+#' # For more examples see create_from_spatial_points.
+#' library(sf, quietly = TRUE)
+#'
+#' pts = st_centroid(roxel[10:15, ])
+#'
+#' as_sfnetwork(pts)
+#'
+#' oldpar = par(no.readonly = TRUE)
+#' par(mar = c(1,1,1,1), mfrow = c(1,2))
+#'
+#' plot(st_geometry(pts))
+#' plot(as_sfnetwork(pts))
+#'
+#' par(oldpar)
+#'
+#' @importFrom lifecycle deprecate_stop
+#' @export
+as_sfnetwork.sf = function(x, ...) {
+  ## DEPRECATION INFO ##
+  dots = list(...)
+  if (isTRUE(dots$length_as_weight)) {
+    deprecate_stop(
+      when = "v1.0",
+      what = "as_sfnetwork.sf(length_as_weight)",
+      with = "as_sfnetwork.sf(compute_length)",
+      details = c(
+        i = paste(
+          "The sf method of `as_sfnetwork()` now forwards `...` to",
+          "`create_from_spatial_lines()` for linestring geometries",
+          "and to `create_from_spatial_points()` for point geometries."
+        )
+      )
+    )
+  }
+  ## END OF DEPRECATION INFO ##
+  if (has_single_geom_type(x, "LINESTRING")) {
+    ## DEPRECATION INFO ##
+    if (isFALSE(dots$edges_as_lines)) {
+      deprecate_stop(
+        when = "v1.0",
+        what = paste(
+          "as_sfnetwork.sf(edges_as_lines = 'is deprecated for",
+          "linestring geometries')"
+        ),
+        details = c(
+          i = paste(
+            "The sf method of `as_sfnetwork()` now forwards `...` to",
+            "`create_from_spatial_lines()` for linestring geometries."
+          ),
+          i = paste(
+            "An sfnetwork created from linestring geometries will now",
+            "always have spatially explicit edges."
+          )
+        )
+      )
+    }
+    ## END OF DEPRECATION INFO ##
+    create_from_spatial_lines(x, ...)
+  } else if (has_single_geom_type(x, "POINT")) {
+    create_from_spatial_points(x, ...)
+  } else {
+    stop(
+      "Geometries are not all of type LINESTRING, or all of type POINT",
+      call. = FALSE
+    )
+  }
+}
+
+#' @describeIn as_sfnetwork Convert spatial geometries of class
+#' \code{\link[sf]{sfc}} directly into a \code{\link{sfnetwork}}.
+#' Supported geometry types are either \code{LINESTRING} or \code{POINT}. In
+#' the first case, the lines become the edges in the network, and nodes are
+#' placed at their boundaries. Additional arguments are forwarded to
+#' \code{\link{create_from_spatial_lines}}. In the latter case, the points
+#' become the nodes in the network, and are connected by edges according to a
+#' specified method. Additional arguments are forwarded to
+#' \code{\link{create_from_spatial_points}}.
+#'
+#' @importFrom sf st_as_sf
+#' @export
+as_sfnetwork.sfc = function(x, ...) {
+  as_sfnetwork(st_as_sf(x), ...)
+}
+
+#' @describeIn as_sfnetwork Convert spatial linear networks of class
+#' \code{\link[spatstat.linnet]{linnet}} directly into an
+#' \code{\link{sfnetwork}}. This requires the
+#' \code{\link[spatstat.geom:spatstat.geom-package]{spatstat.geom}} package
+#' to be installed.
+#'
+#' @examples
+#' # From a linnet object.
+#' if (require(spatstat.geom, quietly = TRUE)) {
+#'   as_sfnetwork(simplenet)
+#' }
+#'
+#' @export
+as_sfnetwork.linnet = function(x, ...) {
+  check_spatstat("spatstat.geom")
+  # The easiest approach is the same as for psp objects, i.e. converting the
+  # linnet object into a psp format and then applying the corresponding method.
+  x_psp = spatstat.geom::as.psp(x)
+  as_sfnetwork(x_psp, ...)
+}
+
+#' @describeIn as_sfnetwork Convert spatial line segments of class
+#' \code{\link[spatstat.geom]{psp}} directly into a \code{\link{sfnetwork}}.
+#' The lines become the edges in the network, and nodes are placed at their
+#' boundary points.
+#'
+#' @examples
+#' # From a psp object.
+#' if (require(spatstat.geom, quietly = TRUE)) {
+#'   set.seed(42)
+#'   test_psp = psp(runif(10), runif(10), runif(10), runif(10), window=owin())
+#'   as_sfnetwork(test_psp)
+#' }
+#'
+#' @importFrom sf st_as_sf st_collection_extract
+#' @export
+as_sfnetwork.psp = function(x, ...) {
+  check_spatstat_sf()
+  # The easiest method for transforming a Line Segment Pattern (psp) object
+  # into sfnetwork format is to transform it into sf format and then apply
+  # the usual methods.
+  x_sf = st_as_sf(x)
+  # x_sf is an sf object composed by 1 POLYGON (the window of the psp object)
+  # and several LINESTRINGs (the line segments). I'm not sure if and how we can
+  # use the window object so I will extract only the LINESTRINGs.
+  x_linestring = st_collection_extract(x_sf, "LINESTRING")
+  # Apply as_sfnetwork.sf.
+  as_sfnetwork(x_linestring, ...)
+}
+
+#' @describeIn as_sfnetwork Convert spatial networks of class
+#' \code{\link[stplanr:sfNetwork-class]{sfNetwork}} directly into a
+#' \code{\link{sfnetwork}}. This will extract the edges as an
+#' \code{\link[sf]{sf}} object and re-create the network structure. The
+#' directness of the original network is preserved unless specified otherwise
+#' through the \code{directed} argument.
+#'
+#' @importFrom igraph is_directed
+#' @export
+as_sfnetwork.sfNetwork = function(x, ...) {
+  args = list(...)
+  # Retrieve the @sl slot, which contains the linestring of the network.
+  args$x = x@sl
+  # Define the directed argument automatically if not given, using the @g slot.
+  dir_missing = is.null(args$directed)
+  args$directed = if (dir_missing) is_directed(x@g) else args$directed
+  # Call as_sfnetwork.sf to build the sfnetwork.
+  do.call("as_sfnetwork.sf", args)
+}
+
+#' @describeIn as_sfnetwork Convert graph objects of class
+#' \code{\link[tidygraph]{tbl_graph}} directly into a \code{\link{sfnetwork}}.
+#' This will work if at least the nodes can be converted to an
+#' \code{\link[sf]{sf}} object through \code{\link[sf]{st_as_sf}}. The
+#' directness of the original graph is preserved unless specified otherwise
+#' through the \code{directed} argument.
+#'
+#' @examples
+#' # From a tbl_graph with coordinate columns.
+#' library(tidygraph, quietly = TRUE)
+#'
+#' nodes = data.frame(lat = c(7, 7, 8), lon = c(51, 52, 52))
+#' edges = data.frame(from = c(1, 1, 3), to = c(2, 3, 2))
+#' tbl_net = tbl_graph(nodes, edges)
+#' as_sfnetwork(tbl_net, coords = c("lon", "lat"), crs = 4326)
+#'
+#' @importFrom igraph is_directed
+#' @export
+as_sfnetwork.tbl_graph = function(x, ...) {
+  # Get nodes and edges from the graph and add to the other given arguments.
+  args = c(as.list(x), list(...))
+  # If no directedness is specified, use the directedness from the tbl_graph.
+  dir_missing = is.null(args$directed)
+  args$directed = if (dir_missing) is_directed(x) else args$directed
+  # Call the sfnetwork construction function.
+  do.call("sfnetwork", args)
+}
+
 #' Create a spatial network from linestring geometries
 #'
 #' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}

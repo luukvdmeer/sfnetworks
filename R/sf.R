@@ -1,15 +1,3 @@
-is.sf = function(x) {
-  inherits(x, "sf")
-}
-
-is.sfc = function(x) {
-  inherits(x, "sfc")
-}
-
-is.sfg = function(x) {
-  inherits(x, "sfg")
-}
-
 #' sf methods for sfnetworks
 #'
 #' \code{\link[sf]{sf}} methods for \code{\link{sfnetwork}} objects.

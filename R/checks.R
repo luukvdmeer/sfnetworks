@@ -1,3 +1,58 @@
+#' Check if an object is a sfnetwork
+#'
+#' @param x Object to be checked.
+#'
+#' @return \code{TRUE} if the given object is an object of class
+#' \code{\link{sfnetwork}}, \code{FALSE} otherwise.
+#'
+#' @examples
+#' library(tidygraph, quietly = TRUE, warn.conflicts = FALSE)
+#'
+#' net = as_sfnetwork(roxel)
+#' is.sfnetwork(net)
+#' is.sfnetwork(as_tbl_graph(net))
+#'
+#' @export
+is.sfnetwork = function(x) {
+  inherits(x, "sfnetwork")
+}
+
+#' Check if an object is an sf object
+#'
+#' @param x Object to be checked.
+#'
+#' @return \code{TRUE} if the given object is an object of class
+#' \code{\link[sf]{sf}}, \code{FALSE} otherwise.
+#'
+#' @noRd
+is.sf = function(x) {
+  inherits(x, "sf")
+}
+
+#' Check if an object is an sfc object
+#'
+#' @param x Object to be checked.
+#'
+#' @return \code{TRUE} if the given object is an object of class
+#' \code{\link[sf]{sfc}}, \code{FALSE} otherwise.
+#'
+#' @noRd
+is.sfc = function(x) {
+  inherits(x, "sfc")
+}
+
+#' Check if an object is an sfg object
+#'
+#' @param x Object to be checked.
+#'
+#' @return \code{TRUE} if the given object is an object of class
+#' \code{\link[sf:st]{sfg}}, \code{FALSE} otherwise.
+#'
+#' @noRd
+is.sfg = function(x) {
+  inherits(x, "sfg")
+}
+
 #' Check if a table has spatial information stored in a geometry list column
 #'
 #' @param x A flat table, such as an sf object, data.frame or tibble.
@@ -194,4 +249,82 @@ will_assume_constant = function(x) {
 #' @noRd
 will_assume_planar = function(x) {
   (!is.na(st_crs(x)) && st_is_longlat(x)) && !sf_use_s2()
+}
+
+#' Proceed only when a given network element is active
+#'
+#' @details These function are meant to be called in the context of an
+#' operation in which the network that is currently being worked on is known
+#' and thus not needed as an argument to the function.
+#'
+#' @return Nothing when the expected network element is active, an error
+#' message otherwise.
+#'
+#' @name require_active
+#' @importFrom tidygraph .graph_context
+#' @noRd
+require_active_nodes <- function() {
+  if (!.graph_context$free() && .graph_context$active() != "nodes") {
+    stop(
+      "This call requires nodes to be active",
+      call. = FALSE
+    )
+  }
+}
+
+#' @name require_active
+#' @importFrom tidygraph .graph_context
+#' @noRd
+require_active_edges <- function() {
+  if (!.graph_context$free() && .graph_context$active() != "edges") {
+    stop(
+      "This call requires edges to be active",
+      call. = FALSE
+    )
+  }
+}
+
+#' Proceed only when edges are spatially explicit
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param hard Is it a hard requirement, meaning that edges need to be
+#' spatially explicit no matter which network element is active? Defaults to
+#' \code{FALSE}, meaning that the error message will suggest to activate nodes
+#' instead.
+#'
+#' @return Nothing when the edges of x are spatially explicit, an error message
+#' otherwise.
+#'
+#' @noRd
+require_explicit_edges = function(x, hard = FALSE) {
+  if (! has_explicit_edges(x)) {
+    if (hard) {
+      stop(
+        "This call requires spatially explicit edges",
+        call. = FALSE
+      )
+    } else{
+      stop(
+        "This call requires spatially explicit edges when applied to the ",
+        "edges table. Activate nodes first?",
+        call. = FALSE
+      )
+    }
+  }
+}
+
+#' Proceed only when the network has a valid sfnetwork structure
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param message Should messages be printed during validation? Defaults to
+#' \code{TRUE}.
+#'
+#' @return Nothing when the network has a valid sfnetwork structure, an error
+#' message otherwise.
+#'
+#' @noRd
+require_valid_network_structure = function(x, message = FALSE) {
+  validate_network(x, message)
 }
