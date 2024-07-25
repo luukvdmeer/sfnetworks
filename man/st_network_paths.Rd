@@ -8,7 +8,7 @@ st_network_paths(
   x,
   from,
   to = igraph::V(x),
-  weights = NULL,
+  weights = edge_length(),
   type = "shortest",
   use_names = TRUE,
   ...
@@ -35,13 +35,15 @@ containing the names of the nodes to which the paths will be
 calculated. By default, all nodes in the network are included.}
 
 \item{weights}{The edge weights to be used in the shortest path calculation.
-Can be a numeric vector giving edge weights, or a column name referring to
-an attribute column in the edges table containing those weights. If set to
-\code{NULL}, the values of a column named \code{weight} in the edges table
-will be used automatically, as long as this column is present. If not, the
-geographic edge lengths will be calculated internally and used as weights.
-If set to \code{NA}, no weights are used, even if the edges have a
-\code{weight} column. Ignored when \code{type = 'all_simple'}.}
+Can be a numeric vector of the same length as the number of edges, a
+\link[=spatial_edge_measures]{spatial edge measure function}, or a column in
+the edges table of the network. Tidy evaluation is used such that column
+names can be specified as if they were variables in the environment (e.g.
+simply \code{length} instead of \code{igraph::edge_attr(x, "length")}).
+If set to \code{NULL} or \code{NA} no edge weights are used, and the
+shortest path is the path with the fewest number of edges, ignoring space.
+The default is \code{\link{edge_length}}, which computes the geographic
+lengths of the edges.}
 
 \item{type}{Character defining which type of path calculation should be
 performed. If set to \code{'shortest'} paths are calculated using
@@ -102,31 +104,34 @@ see the \code{\link[igraph]{shortest_paths}} or
 library(sf, quietly = TRUE)
 library(tidygraph, quietly = TRUE)
 
-# Create a network with edge lengths as weights.
-# These weights will be used automatically in shortest paths calculation.
-net = as_sfnetwork(roxel, directed = FALSE) \%>\%
-  st_transform(3035) \%>\%
-  activate("edges") \%>\%
-  mutate(weight = edge_length())
+net = as_sfnetwork(roxel, directed = FALSE) |>
+  st_transform(3035)
 
-# Providing node indices.
+# Compute the shortest path between two nodes.
+# Note that geographic edge length is used as edge weights by default.
 paths = st_network_paths(net, from = 495, to = 121)
 paths
 
-node_path = paths \%>\%
-  slice(1) \%>\%
-  pull(node_paths) \%>\%
+node_path = paths |>
+  slice(1) |>
+  pull(node_paths) |>
   unlist()
+
 node_path
 
 oldpar = par(no.readonly = TRUE)
 par(mar = c(1,1,1,1))
+
 plot(net, col = "grey")
-plot(slice(activate(net, "nodes"), node_path), col = "red", add = TRUE)
+plot(slice(net, node_path), col = "red", add = TRUE)
 par(oldpar)
 
-# Providing nodes as spatial points.
-# Points that don't equal a node will be snapped to their nearest node.
+# Compute the shortest paths from one to multiple nodes.
+# This will return a tibble with one row per path.
+st_network_paths(net, from = 495, to = c(121, 131, 141))
+
+# Compute the shortest path between two spatial point features.
+# These are snapped to their nearest node before finding the path.
 p1 = st_geometry(net, "nodes")[495] + st_sfc(st_point(c(50, -50)))
 st_crs(p1) = st_crs(net)
 p2 = st_geometry(net, "nodes")[121] + st_sfc(st_point(c(-10, 100)))
@@ -135,36 +140,39 @@ st_crs(p2) = st_crs(net)
 paths = st_network_paths(net, from = p1, to = p2)
 paths
 
-node_path = paths \%>\%
-  slice(1) \%>\%
-  pull(node_paths) \%>\%
+node_path = paths |>
+  slice(1) |>
+  pull(node_paths) |>
   unlist()
+
 node_path
 
 oldpar = par(no.readonly = TRUE)
 par(mar = c(1,1,1,1))
+
 plot(net, col = "grey")
 plot(c(p1, p2), col = "black", pch = 8, add = TRUE)
-plot(slice(activate(net, "nodes"), node_path), col = "red", add = TRUE)
+plot(slice(net, node_path), col = "red", add = TRUE)
 par(oldpar)
 
-# Using another column for weights.
-net \%>\%
-  activate("edges") \%>\%
-  mutate(foo = runif(n(), min = 0, max = 1)) \%>\%
-  st_network_paths(p1, p2, weights = "foo")
+# Use a spatial edge measure to specify edge weights.
+# By default edge_length() is used.
+st_network_paths(net, p1, p2, weights = edge_displacement())
 
-# Obtaining all simple paths between two nodes.
-# Beware, this function can take long when:
-# --> Providing a lot of 'to' nodes.
-# --> The network is large and dense.
-net = as_sfnetwork(roxel, directed = TRUE)
-st_network_paths(net, from = 1, to = 12, type = "all_simple")
+# Use a column in the edges table to specify edge weights.
+# This uses tidy evaluation.
+net |>
+  activate("edges") |>
+  mutate(foo = runif(n(), min = 0, max = 1)) |>
+  st_network_paths(p1, p2, weights = foo)
 
-# Obtaining all shortest paths between two nodes.
-# Not using edge weights.
-# Hence, a shortest path is the paths with the least number of edges.
-st_network_paths(net, from = 5, to = 1, weights = NA, type = "all_shortest")
+# Compute the shortest paths without edge weights.
+# This is the path with the fewest number of edges, ignoring space.
+st_network_paths(net, p1, p2, weights = NULL)
+
+# Compute all shortest paths between two nodes.
+# If there is more than one shortest path, this returns one path per row.
+st_network_paths(net, from = 5, to = 1, type = "all_shortest")
 
 }
 \seealso{

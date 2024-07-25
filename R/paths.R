@@ -28,13 +28,15 @@
 #' calculated. By default, all nodes in the network are included.
 #'
 #' @param weights The edge weights to be used in the shortest path calculation.
-#' Can be a numeric vector giving edge weights, or a column name referring to
-#' an attribute column in the edges table containing those weights. If set to
-#' \code{NULL}, the values of a column named \code{weight} in the edges table
-#' will be used automatically, as long as this column is present. If not, the
-#' geographic edge lengths will be calculated internally and used as weights.
-#' If set to \code{NA}, no weights are used, even if the edges have a
-#' \code{weight} column. Ignored when \code{type = 'all_simple'}.
+#' Can be a numeric vector of the same length as the number of edges, a
+#' \link[=spatial_edge_measures]{spatial edge measure function}, or a column in
+#' the edges table of the network. Tidy evaluation is used such that column
+#' names can be specified as if they were variables in the environment (e.g.
+#' simply \code{length} instead of \code{igraph::edge_attr(x, "length")}).
+#' If set to \code{NULL} or \code{NA} no edge weights are used, and the
+#' shortest path is the path with the fewest number of edges, ignoring space.
+#' The default is \code{\link{edge_length}}, which computes the geographic
+#' lengths of the edges.
 #'
 #' @param type Character defining which type of path calculation should be
 #' performed. If set to \code{'shortest'} paths are calculated using
@@ -86,31 +88,34 @@
 #' library(sf, quietly = TRUE)
 #' library(tidygraph, quietly = TRUE)
 #'
-#' # Create a network with edge lengths as weights.
-#' # These weights will be used automatically in shortest paths calculation.
-#' net = as_sfnetwork(roxel, directed = FALSE) %>%
-#'   st_transform(3035) %>%
-#'   activate("edges") %>%
-#'   mutate(weight = edge_length())
+#' net = as_sfnetwork(roxel, directed = FALSE) |>
+#'   st_transform(3035)
 #'
-#' # Providing node indices.
+#' # Compute the shortest path between two nodes.
+#' # Note that geographic edge length is used as edge weights by default.
 #' paths = st_network_paths(net, from = 495, to = 121)
 #' paths
 #'
-#' node_path = paths %>%
-#'   slice(1) %>%
-#'   pull(node_paths) %>%
+#' node_path = paths |>
+#'   slice(1) |>
+#'   pull(node_paths) |>
 #'   unlist()
+#'
 #' node_path
 #'
 #' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1))
+#'
 #' plot(net, col = "grey")
-#' plot(slice(activate(net, "nodes"), node_path), col = "red", add = TRUE)
+#' plot(slice(net, node_path), col = "red", add = TRUE)
 #' par(oldpar)
 #'
-#' # Providing nodes as spatial points.
-#' # Points that don't equal a node will be snapped to their nearest node.
+#' # Compute the shortest paths from one to multiple nodes.
+#' # This will return a tibble with one row per path.
+#' st_network_paths(net, from = 495, to = c(121, 131, 141))
+#'
+#' # Compute the shortest path between two spatial point features.
+#' # These are snapped to their nearest node before finding the path.
 #' p1 = st_geometry(net, "nodes")[495] + st_sfc(st_point(c(50, -50)))
 #' st_crs(p1) = st_crs(net)
 #' p2 = st_geometry(net, "nodes")[121] + st_sfc(st_point(c(-10, 100)))
@@ -119,60 +124,111 @@
 #' paths = st_network_paths(net, from = p1, to = p2)
 #' paths
 #'
-#' node_path = paths %>%
-#'   slice(1) %>%
-#'   pull(node_paths) %>%
+#' node_path = paths |>
+#'   slice(1) |>
+#'   pull(node_paths) |>
 #'   unlist()
+#'
 #' node_path
 #'
 #' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1))
+#'
 #' plot(net, col = "grey")
 #' plot(c(p1, p2), col = "black", pch = 8, add = TRUE)
-#' plot(slice(activate(net, "nodes"), node_path), col = "red", add = TRUE)
+#' plot(slice(net, node_path), col = "red", add = TRUE)
 #' par(oldpar)
 #'
-#' # Using another column for weights.
-#' net %>%
-#'   activate("edges") %>%
-#'   mutate(foo = runif(n(), min = 0, max = 1)) %>%
-#'   st_network_paths(p1, p2, weights = "foo")
+#' # Use a spatial edge measure to specify edge weights.
+#' # By default edge_length() is used.
+#' st_network_paths(net, p1, p2, weights = edge_displacement())
 #'
-#' # Obtaining all simple paths between two nodes.
-#' # Beware, this function can take long when:
-#' # --> Providing a lot of 'to' nodes.
-#' # --> The network is large and dense.
-#' net = as_sfnetwork(roxel, directed = TRUE)
-#' st_network_paths(net, from = 1, to = 12, type = "all_simple")
+#' # Use a column in the edges table to specify edge weights.
+#' # This uses tidy evaluation.
+#' net |>
+#'   activate("edges") |>
+#'   mutate(foo = runif(n(), min = 0, max = 1)) |>
+#'   st_network_paths(p1, p2, weights = foo)
 #'
-#' # Obtaining all shortest paths between two nodes.
-#' # Not using edge weights.
-#' # Hence, a shortest path is the paths with the least number of edges.
-#' st_network_paths(net, from = 5, to = 1, weights = NA, type = "all_shortest")
+#' # Compute the shortest paths without edge weights.
+#' # This is the path with the fewest number of edges, ignoring space.
+#' st_network_paths(net, p1, p2, weights = NULL)
+#'
+#' # Compute all shortest paths between two nodes.
+#' # If there is more than one shortest path, this returns one path per row.
+#' st_network_paths(net, from = 5, to = 1, type = "all_shortest")
 #'
 #' @importFrom igraph V
 #' @export
-st_network_paths = function(x, from, to = igraph::V(x), weights = NULL,
-                            type = "shortest", use_names = TRUE, ...) {
+st_network_paths = function(x, from, to = igraph::V(x),
+                            weights = edge_length(), type = "shortest",
+                            use_names = TRUE, ...) {
   UseMethod("st_network_paths")
 }
 
 #' @importFrom igraph V
+#' @importFrom lifecycle deprecate_warn
+#' @importFrom rlang enquo eval_tidy expr
 #' @importFrom sf st_geometry
+#' @importFrom tidygraph .E .register_graph_context
 #' @export
 st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
-                                      weights = NULL, type = "shortest",
+                                      weights = edge_length(),
+                                      type = "shortest",
                                       use_names = TRUE, ...) {
-  # If 'from' points are given as simple feature geometries:
-  # --> Convert them to node indices.
+  # Parse from and to arguments.
+  # --> Convert geometries to node indices.
+  # --> Raise warnings when igraph requirements are not met.
   if (is.sf(from) | is.sfc(from)) from = get_nearest_node_index(x, from)
-  # If 'to' points are given as simple feature geometries:
-  # --> Convert them to node indices.
   if (is.sf(to) | is.sfc(to)) to = get_nearest_node_index(x, to)
-  # Igraph does not support multiple 'from' nodes.
   if (length(from) > 1) raise_multiple_elements("from")
-  # Igraph does not support NA values in 'from' and 'to' nodes.
   if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
+  # Parse weights argument using tidy evaluation on the network edges.
+  .register_graph_context(x, free = TRUE)
+  weights = enquo(weights)
+  weights = eval_tidy(weights, .E())
+  if (is_single_string(weights)) {
+    # Allow character values for backward compatibility and non-tidyversers.
+    ## DEPRECATION INFO ##
+    deprecate_warn(
+      when = "v1.0",
+      what = "st_network_paths(weights = 'uses tidy evaluation')",
+      details = c(
+        i = paste(
+          "This means you can forward column names without quotations, e.g.",
+          "`weights = length` instead of `weights = 'length'`. Quoted column",
+          "names are currently still supported for backward compatibility,",
+          "but this may be removed in future versions."
+        )
+      )
+    )
+    ## END OF DEPRECATION INFO ##
+    weights = eval_tidy(expr(.data[[weights]]), .E())
+  }
+  if (is.null(weights)) {
+    # Convert NULL to NA to align with tidygraph instead of igraph.
+    ## DEPRECATION INFO ##
+    deprecate_warn(
+      when = "v1.0",
+      what = paste(
+        "st_network_paths(weights = 'if set to NULL means",
+        "no edge weights are used')"
+      ),
+      details = c(
+        i = paste(
+          "If you want to use geographic length as edge weights, use",
+          "`weights = edge_length()` or provide a column in which the edge",
+          "lengths are stored, e.g. `weights = length`."
+        ),
+        i = paste(
+          "If you want to use the weight column for edge weights, specify",
+          "this explicitly through `weights = weight`."
+        )
+      )
+    )
+    ## END OF DEPRECATION INFO ##
+    weights = NA
+  }
   # Call paths calculation function according to type argument.
   switch(
     type,
@@ -186,8 +242,6 @@ st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
 #' @importFrom igraph shortest_paths vertex_attr_names
 #' @importFrom tibble as_tibble
 get_shortest_paths = function(x, from, to, weights, use_names = TRUE, ...) {
-  # Set weights.
-  weights = set_path_weights(x, weights)
   # Call igraph function.
   paths = shortest_paths(x, from, to, weights = weights, output = "both", ...)
   # Extract vector of node indices or names.
@@ -205,8 +259,6 @@ get_shortest_paths = function(x, from, to, weights, use_names = TRUE, ...) {
 #' @importFrom igraph all_shortest_paths vertex_attr_names
 #' @importFrom tibble as_tibble
 get_all_shortest_paths = function(x, from, to, weights, use_names = TRUE,...) {
-  # Set weights.
-  weights = set_path_weights(x, weights)
   # Call igraph function.
   paths = all_shortest_paths(x, from, to, weights = weights, ...)
   # Extract vector of node indices or names.
@@ -262,13 +314,15 @@ get_all_simple_paths = function(x, from, to, use_names = TRUE, ...) {
 #' matrix. By default, all nodes in the network are included.
 #'
 #' @param weights The edge weights to be used in the shortest path calculation.
-#' Can be a numeric vector giving edge weights, or a column name referring to
-#' an attribute column in the edges table containing those weights. If set to
-#' \code{NULL}, the values of a column named \code{weight} in the edges table
-#' will be used automatically, as long as this column is present. If not, the
-#' geographic edge lengths will be calculated internally and used as weights.
-#' If set to \code{NA}, no weights are used, even if the edges have a
-#' \code{weight} column.
+#' Can be a numeric vector of the same length as the number of edges, a
+#' \link[=spatial_edge_measures]{spatial edge measure function}, or a column in
+#' the edges table of the network. Tidy evaluation is used such that column
+#' names can be specified as if they were variables in the environment (e.g.
+#' simply \code{length} instead of \code{igraph::edge_attr(x, "length")}).
+#' If set to \code{NULL} or \code{NA} no edge weights are used, and the
+#' shortest path is the path with the fewest number of edges, ignoring space.
+#' The default is \code{\link{edge_length}}, which computes the geographic
+#' lengths of the edges.
 #'
 #' @param direction The direction of travel. Defaults to \code{'out'}, meaning
 #' that the direction given by the network is followed and costs are calculated
@@ -310,18 +364,15 @@ get_all_simple_paths = function(x, from, to, use_names = TRUE, ...) {
 #' library(sf, quietly = TRUE)
 #' library(tidygraph, quietly = TRUE)
 #'
-#' # Create a network with edge lengths as weights.
-#' # These weights will be used automatically in shortest paths calculation.
-#' net = as_sfnetwork(roxel, directed = FALSE) %>%
-#'   st_transform(3035) %>%
-#'   activate("edges") %>%
-#'   mutate(weight = edge_length())
+#' net = as_sfnetwork(roxel, directed = FALSE) |>
+#'   st_transform(3035)
 #'
-#' # Providing node indices.
+#' # Compute the network cost matrix between node pairs.
+#' # Note that geographic edge length is used as edge weights by default.
 #' st_network_cost(net, from = c(495, 121), to = c(495, 121))
 #'
-#' # Providing nodes as spatial points.
-#' # Points that don't equal a node will be snapped to their nearest node.
+#' # Compute the network cost matrix between spatial point features.
+#' # These are snapped to their nearest node before computing costs.
 #' p1 = st_geometry(net, "nodes")[495] + st_sfc(st_point(c(50, -50)))
 #' st_crs(p1) = st_crs(net)
 #' p2 = st_geometry(net, "nodes")[121] + st_sfc(st_point(c(-10, 100)))
@@ -329,11 +380,20 @@ get_all_simple_paths = function(x, from, to, use_names = TRUE, ...) {
 #'
 #' st_network_cost(net, from = c(p1, p2), to = c(p1, p2))
 #'
-#' # Using another column for weights.
-#' net %>%
-#'   activate("edges") %>%
-#'   mutate(foo = runif(n(), min = 0, max = 1)) %>%
-#'   st_network_cost(c(p1, p2), c(p1, p2), weights = "foo")
+#' # Use a spatial edge measure to specify edge weights.
+#' # By default edge_length() is used.
+#' st_network_cost(net, c(p1, p2), c(p1, p2), weights = edge_displacement())
+#'
+#' # Use a column in the edges table to specify edge weights.
+#' # This uses tidy evaluation.
+#' net |>
+#'   activate("edges") |>
+#'   mutate(foo = runif(n(), min = 0, max = 1)) |>
+#'   st_network_cost(c(p1, p2), c(p1, p2), weights = foo)
+#'
+#' # Compute the cost matrix without edge weights.
+#' # Here the cost is defined by the number of edges, ignoring space.
+#' st_network_cost(net, c(p1, p2), c(p1, p2), weights = NULL)
 #'
 #' # Not providing any from or to points includes all nodes by default.
 #' with_graph(net, graph_order()) # Our network has 701 nodes.
@@ -343,95 +403,105 @@ get_all_simple_paths = function(x, from, to, use_names = TRUE, ...) {
 #' @importFrom igraph V
 #' @export
 st_network_cost = function(x, from = igraph::V(x), to = igraph::V(x),
-                           weights = NULL, direction = "out",
+                           weights = edge_length(), direction = "out",
                            Inf_as_NaN = FALSE, ...) {
   UseMethod("st_network_cost")
 }
 
 #' @importFrom igraph distances V
-#' @importFrom units deparse_unit as_units
+#' @importFrom lifecycle deprecate_warn
+#' @importFrom rlang enquo eval_tidy expr
+#' @importFrom tidygraph .E .register_graph_context
+#' @importFrom units as_units deparse_unit
 #' @export
 st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
-                                     weights = NULL, direction = "out",
+                                     weights = edge_length(),
+                                     direction = "out",
                                      Inf_as_NaN = FALSE, ...) {
-  # If 'from' and/or 'to' points are given as simple feature geometries:
-  # --> Convert them to node indices.
+  # Parse from and to arguments.
+  # --> Convert geometries to node indices.
+  # --> Raise warnings when igraph requirements are not met.
   if (is.sf(from) | is.sfc(from)) from = get_nearest_node_index(x, from)
   if (is.sf(to) | is.sfc(to)) to = get_nearest_node_index(x, to)
-  # Igraph does not support NA values in 'from' and 'to' nodes.
   if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
-  # Set weights.
-  weights = set_path_weights(x, weights)
-  # Check for mode argument passed to ...
+  # Parse weights argument using tidy evaluation on the network edges.
+  .register_graph_context(x, free = TRUE)
+  weights = enquo(weights)
+  weights = eval_tidy(weights, .E())
+  if (is_single_string(weights)) {
+    # Allow character values for backward compatibility and non-tidyversers.
+    ## DEPRECATION INFO ##
+    deprecate_warn(
+      when = "v1.0",
+      what = "st_network_paths(weights = 'uses tidy evaluation')",
+      details = c(
+        i = paste(
+          "This means you can forward column names without quotations, e.g.",
+          "`weights = length` instead of `weights = 'length'`. Quoted column",
+          "names are currently still supported for backward compatibility,",
+          "but this may be removed in future versions."
+        )
+      )
+    )
+    ## END OF DEPRECATION INFO ##
+    weights = eval_tidy(expr(.data[[weights]]), .E())
+  }
+  if (is.null(weights)) {
+    # Convert NULL to NA to align with tidygraph instead of igraph.
+    ## DEPRECATION INFO ##
+    deprecate_warn(
+      when = "v1.0",
+      what = paste(
+        "st_network_paths(weights = 'if set to NULL means",
+        "no edge weights are used')"
+      ),
+      details = c(
+        i = paste(
+          "If you want to use geographic length as edge weights, use",
+          "`weights = edge_length()` or provide a column in which the edge",
+          "lengths are stored, e.g. `weights = length`."
+        ),
+        i = paste(
+          "If you want to use the weight column for edge weights, specify",
+          "this explicitly through `weights = weight`."
+        )
+      )
+    )
+    ## END OF DEPRECATION INFO ##
+    weights = NA
+  }
+  # Parse other arguments.
+  # --> The mode argument in ... is ignored in favor of the direction argument.
   dots = list(...)
-  # If mode argument present, ignore it and return a warning.
   if (!is.null(dots$mode)) {
     dots$mode = NULL
     warning(
-      "Argument 'mode' is ignored. Use 'direction' instead",
+      "Argument `mode` is ignored, use `direction` instead.",
       call. = FALSE
     )
   }
-  # Igraph does not support duplicated 'to' nodes.
+  # Call the igraph distances function to compute the cost matrix.
+  # Special attention is required if there are duplicated 'to' nodes:
+  # --> In igraph this cannot be handled.
+  # --> Therefore we call igraph::distances with unique 'to' nodes.
+  # --> Afterwards we copy cost values to duplicated 'to' nodes.
   if(any(duplicated(to))) {
-    # --> Obtain unique 'to' nodes to pass to igraph.
     to_unique = unique(to)
-    # --> Find which 'to' nodes are duplicated.
     match = match(to, to_unique)
-    # Call igraph function.
     args = list(x, from, to_unique, weights = weights, mode = direction)
     matrix = do.call(igraph::distances, c(args, dots))
-    # Return the matrix
-    # --> With duplicated 'to' nodes included.
     matrix = matrix[, match, drop = FALSE]
   } else {
-    # Call igraph function.
     args = list(x, from, to, weights = weights, mode = direction)
     matrix = do.call(igraph::distances, c(args, dots))
   }
-  # Convert Inf to NaN if requested.
+  # Post-process and return.
+  # --> Convert Inf to NaN if requested.
+  # --> Attach units if the provided weights had units.
   if (Inf_as_NaN) matrix[is.infinite(matrix)] = NaN
-  # Check if weights parameter inherits units.
   if (inherits(weights, "units")) {
-    # Fetch weight units to pass onto distance matrix.
-    weights_units = deparse_unit(weights)
-    # Return matrix as units object
-    as_units(matrix, weights_units)
+    as_units(matrix, deparse_unit(weights))
   } else {
-    # Return the matrix.
     matrix
-  }
-}
-
-#' @importFrom igraph edge_attr
-#' @importFrom tidygraph activate with_graph
-set_path_weights = function(x, weights) {
-  if (is.character(weights) & length(weights) == 1) {
-    # Case 1: Weights is a character pointing to a column in the edges table.
-    # --> Use the values of that column as weight values (if it exists).
-    values = edge_attr(x, weights)
-    if (is.null(values)) {
-      stop(
-        "Edge attribute '", weights, "' not found",
-        call. = FALSE
-      )
-    } else {
-      values
-    }
-  } else if (is.null(weights)) {
-    values = edge_attr(x, "weight")
-    if (is.null(values)) {
-      # Case 2: Weights is NULL and the edges don't have a weight attribute.
-      # --> Use the length of the edge linestrings as weight values.
-      with_graph(x, edge_length())
-    } else {
-      # Case 3: Weights is NULL and the edges have a weight attribute.
-      # --> Use the values of the weight attribute as weight values
-      values
-    }
-  } else {
-    # All other cases: igraph will handle the given weights.
-    # No need for pre-processing.
-    weights
   }
 }

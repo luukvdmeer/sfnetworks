@@ -8,7 +8,7 @@ st_network_cost(
   x,
   from = igraph::V(x),
   to = igraph::V(x),
-  weights = NULL,
+  weights = edge_length(),
   direction = "out",
   Inf_as_NaN = FALSE,
   ...
@@ -35,13 +35,15 @@ calculated. Duplicated values will be removed before calculating the cost
 matrix. By default, all nodes in the network are included.}
 
 \item{weights}{The edge weights to be used in the shortest path calculation.
-Can be a numeric vector giving edge weights, or a column name referring to
-an attribute column in the edges table containing those weights. If set to
-\code{NULL}, the values of a column named \code{weight} in the edges table
-will be used automatically, as long as this column is present. If not, the
-geographic edge lengths will be calculated internally and used as weights.
-If set to \code{NA}, no weights are used, even if the edges have a
-\code{weight} column.}
+Can be a numeric vector of the same length as the number of edges, a
+\link[=spatial_edge_measures]{spatial edge measure function}, or a column in
+the edges table of the network. Tidy evaluation is used such that column
+names can be specified as if they were variables in the environment (e.g.
+simply \code{length} instead of \code{igraph::edge_attr(x, "length")}).
+If set to \code{NULL} or \code{NA} no edge weights are used, and the
+shortest path is the path with the fewest number of edges, ignoring space.
+The default is \code{\link{edge_length}}, which computes the geographic
+lengths of the edges.}
 
 \item{direction}{The direction of travel. Defaults to \code{'out'}, meaning
 that the direction given by the network is followed and costs are calculated
@@ -90,18 +92,15 @@ see the \code{\link[igraph]{distances}} documentation page.
 library(sf, quietly = TRUE)
 library(tidygraph, quietly = TRUE)
 
-# Create a network with edge lengths as weights.
-# These weights will be used automatically in shortest paths calculation.
-net = as_sfnetwork(roxel, directed = FALSE) \%>\%
-  st_transform(3035) \%>\%
-  activate("edges") \%>\%
-  mutate(weight = edge_length())
+net = as_sfnetwork(roxel, directed = FALSE) |>
+  st_transform(3035)
 
-# Providing node indices.
+# Compute the network cost matrix between node pairs.
+# Note that geographic edge length is used as edge weights by default.
 st_network_cost(net, from = c(495, 121), to = c(495, 121))
 
-# Providing nodes as spatial points.
-# Points that don't equal a node will be snapped to their nearest node.
+# Compute the network cost matrix between spatial point features.
+# These are snapped to their nearest node before computing costs.
 p1 = st_geometry(net, "nodes")[495] + st_sfc(st_point(c(50, -50)))
 st_crs(p1) = st_crs(net)
 p2 = st_geometry(net, "nodes")[121] + st_sfc(st_point(c(-10, 100)))
@@ -109,11 +108,20 @@ st_crs(p2) = st_crs(net)
 
 st_network_cost(net, from = c(p1, p2), to = c(p1, p2))
 
-# Using another column for weights.
-net \%>\%
-  activate("edges") \%>\%
-  mutate(foo = runif(n(), min = 0, max = 1)) \%>\%
-  st_network_cost(c(p1, p2), c(p1, p2), weights = "foo")
+# Use a spatial edge measure to specify edge weights.
+# By default edge_length() is used.
+st_network_cost(net, c(p1, p2), c(p1, p2), weights = edge_displacement())
+
+# Use a column in the edges table to specify edge weights.
+# This uses tidy evaluation.
+net |>
+  activate("edges") |>
+  mutate(foo = runif(n(), min = 0, max = 1)) |>
+  st_network_cost(c(p1, p2), c(p1, p2), weights = foo)
+
+# Compute the cost matrix without edge weights.
+# Here the cost is defined by the number of edges, ignoring space.
+st_network_cost(net, c(p1, p2), c(p1, p2), weights = NULL)
 
 # Not providing any from or to points includes all nodes by default.
 with_graph(net, graph_order()) # Our network has 701 nodes.
