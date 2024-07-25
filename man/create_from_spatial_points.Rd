@@ -62,6 +62,10 @@ is not tested for symmetry, and an edge will exist between node i and node j
 if either element Aij or element Aji is \code{TRUE}. Non-logical matrices
 are first converted into logical matrices using \code{\link{as.logical}}.
 
+The provided adjacency matrix may also be a list-formatted sparse matrix.
+This is a list with one element per node, holding the integer indices of the
+nodes it is adjacent to. An example are \code{\link[sf]{sgbp}} objects.
+
 Alternatively, the connections can be specified by providing the name of a
 specific method that will create the adjacency matrix internally. Valid
 options are:
@@ -121,9 +125,9 @@ net = as_sfnetwork(pts, connections = adj)
 
 plot(net)
 
-# Using a adjacency matrix from a spatial predicate
+# Using a sparse adjacency matrix from a spatial predicate
 dst = units::set_units(500, "m")
-adj = st_is_within_distance(pts, dist = dst, sparse = FALSE)
+adj = st_is_within_distance(pts, dist = dst)
 net = as_sfnetwork(pts, connections = adj)
 
 plot(net)

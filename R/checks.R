@@ -334,3 +334,64 @@ require_explicit_edges = function(x, hard = FALSE) {
 require_valid_network_structure = function(x, message = FALSE) {
   validate_network(x, message)
 }
+
+#' Proceed only if the given object is a valid adjacency matrix
+#'
+#' Adjacency matrices of networks are n x n matrices with n being the number of
+#' nodes, and element Aij holding a \code{TRUE} value if node i is adjacent to
+#' node j, and a \code{FALSE} value otherwise.
+#'
+#' @param x Object to be checked.
+#'
+#' @param nodes The nodes that are referenced in the matrix as an object
+#' of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}} with \code{POINT}
+#' geometries.
+#'
+#' @return Nothing if the given object is a valid adjacency matrix
+#' referencing the given nodes, an error message otherwise.
+#'
+#' @importFrom sf st_geometry
+#' @noRd
+require_valid_adjacency_matrix = function(x, nodes) {
+  n_nodes = length(st_geometry(nodes))
+  if (! (nrow(x) == n_nodes && ncol(x) == n_nodes)) {
+    stop(
+      "The dimensions of the adjacency matrix should match the ",
+      " number of nodes (", n_nodes, ").",
+      call. = FALSE
+    )
+  }
+}
+
+#' Proceed only if the given object is a valid neighbor list
+#'
+#' Neighbor lists are sparse adjacency matrices in list format that specify for
+#' each node to which other nodes it is adjacent.
+#'
+#' @param x Object to be checked.
+#'
+#' @param nodes The nodes that are referenced in the neighbor list as an object
+#' of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}} with \code{POINT}
+#' geometries.
+#'
+#' @return Nothing if the given object is a valid neighbor list referencing
+#' the given nodes, and error message afterwards.
+#'
+#' @importFrom sf st_geometry
+#' @noRd
+require_valid_neighbor_list = function(x, nodes) {
+  n_nodes = length(st_geometry(nodes))
+  if (! length(x) == n_nodes) {
+    stop(
+      "The length of the sparse adjacency matrix should match the ",
+      " number of nodes (", n_nodes, ").",
+      call. = FALSE
+    )
+  }
+  if (! all(vapply(x, is.integer, FUN.VALUE = logical(1)))) {
+    stop(
+      "The sparse adjacency matrix should contain integer node indices.",
+      call. = FALSE
+    )
+  }
+}
