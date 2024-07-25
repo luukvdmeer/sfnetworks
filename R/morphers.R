@@ -425,7 +425,7 @@ to_spatial_neighborhood = function(x, node, threshold, weights = NULL,
   # Parse node argument.
   # If 'node' is given as a geometry, find the index of the nearest node.
   # When multiple nodes are given only the first one is taken.
-  if (is.sf(node) | is.sfc(node)) node = get_nearest_node_index(x, node)
+  if (is_sf(node) | is_sfc(node)) node = get_nearest_node_index(x, node)
   if (length(node) > 1) raise_multiple_elements("node")
   # Parse weights argument.
   # This can be done equal to setting weights for path calculations.
@@ -602,7 +602,7 @@ to_spatial_smooth = function(x,
   # --> Check if x has spatially explicit edges.
   # --> Retrieve the name of the geometry column of the edges in x.
   directed = is_directed(x)
-  spatial = is.sf(edges)
+  spatial = is_sf(edges)
   geom_colname = attr(edges, "sf_column")
   ## ==========================
   # STEP I: DETECT PSEUDO NODES
@@ -655,7 +655,7 @@ to_spatial_smooth = function(x,
         )
       }
       protect = matched_names
-    } else if (is.sf(protect) | is.sfc(protect)) {
+    } else if (is_sf(protect) | is_sfc(protect)) {
       protect = get_nearest_node_index(x, protect)
     }
     # Mark all protected nodes as not being a pseudo node.

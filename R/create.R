@@ -113,7 +113,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
   # If nodes is not an sf object:
   # --> Try to convert it to an sf object.
   # --> Arguments passed in ... will be passed on to st_as_sf.
-  if (! is.sf(nodes)) {
+  if (! is_sf(nodes)) {
     nodes = tryCatch(
       st_as_sf(nodes, ...),
       error = function(e) {
@@ -137,7 +137,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
     if (! force) validate_network(x_sfn, message = message)
     return (x_sfn)
   }
-  if (is.sf(edges)) {
+  if (is_sf(edges)) {
     # Add sf attributes to the edges table.
     # They were removed when creating the tbl_graph.
     edge_geom_colname(x_sfn) = attr(edges, "sf_column")

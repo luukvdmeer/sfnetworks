@@ -49,7 +49,7 @@ st_network_join = function(x, y, ...) {
 
 #' @export
 st_network_join.sfnetwork = function(x, y, ...) {
-  if (! is.sfnetwork(y)) y = as_sfnetwork(y)
+  if (! is_sfnetwork(y)) y = as_sfnetwork(y)
   stopifnot(have_equal_crs(x, y))
   stopifnot(have_equal_edge_type(x, y))
   spatial_join_network(x, y, ...)

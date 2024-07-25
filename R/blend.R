@@ -445,7 +445,7 @@ blend_ = function(x, y, tolerance) {
   new_feat_idxs = edge_pts$feat_id[is_new]
   # Join the orignal node data and the blended features.
   # Different scenarios require a different approach.
-  if (is.sf(y) && ncol(y) > 1) {
+  if (is_sf(y) && ncol(y) > 1) {
     # Scenario I: the features in y have attributes.
     # This requires:
     # --> A full join between the original node data and the features.

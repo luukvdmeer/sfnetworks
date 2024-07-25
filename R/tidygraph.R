@@ -36,7 +36,7 @@ morph.sfnetwork = function(.data, ...) {
   # If morphed data still consist of valid sfnetworks:
   # --> Convert the morphed_tbl_graph into a morphed_sfnetwork.
   # --> Otherwise, just return the morphed_tbl_graph.
-  if (is.sfnetwork(morphed_data[[1]])) {
+  if (is_sfnetwork(morphed_data[[1]])) {
     structure(
       morphed_data,
       class = c("morphed_sfnetwork", class(morphed_data))

@@ -179,8 +179,8 @@ st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
   # Parse from and to arguments.
   # --> Convert geometries to node indices.
   # --> Raise warnings when igraph requirements are not met.
-  if (is.sf(from) | is.sfc(from)) from = get_nearest_node_index(x, from)
-  if (is.sf(to) | is.sfc(to)) to = get_nearest_node_index(x, to)
+  if (is_sf(from) | is_sfc(from)) from = get_nearest_node_index(x, from)
+  if (is_sf(to) | is_sfc(to)) to = get_nearest_node_index(x, to)
   if (length(from) > 1) raise_multiple_elements("from")
   if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
   # Parse weights argument using tidy evaluation on the network edges.
@@ -421,8 +421,8 @@ st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
   # Parse from and to arguments.
   # --> Convert geometries to node indices.
   # --> Raise warnings when igraph requirements are not met.
-  if (is.sf(from) | is.sfc(from)) from = get_nearest_node_index(x, from)
-  if (is.sf(to) | is.sfc(to)) to = get_nearest_node_index(x, to)
+  if (is_sf(from) | is_sfc(from)) from = get_nearest_node_index(x, from)
+  if (is_sf(to) | is_sfc(to)) to = get_nearest_node_index(x, to)
   if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
   # Parse weights argument using tidy evaluation on the network edges.
   .register_graph_context(x, free = TRUE)

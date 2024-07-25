@@ -9,12 +9,18 @@
 #' library(tidygraph, quietly = TRUE, warn.conflicts = FALSE)
 #'
 #' net = as_sfnetwork(roxel)
-#' is.sfnetwork(net)
-#' is.sfnetwork(as_tbl_graph(net))
+#' is_sfnetwork(net)
+#' is_sfnetwork(as_tbl_graph(net))
 #'
 #' @export
-is.sfnetwork = function(x) {
+is_sfnetwork = function(x) {
   inherits(x, "sfnetwork")
+}
+
+#' @name is_sfnetwork
+#' @export
+is.sfnetwork = function(x) {
+  is_sfnetwork(x)
 }
 
 #' Check if an object is an sf object
@@ -25,7 +31,7 @@ is.sfnetwork = function(x) {
 #' \code{\link[sf]{sf}}, \code{FALSE} otherwise.
 #'
 #' @noRd
-is.sf = function(x) {
+is_sf = function(x) {
   inherits(x, "sf")
 }
 
@@ -37,7 +43,7 @@ is.sf = function(x) {
 #' \code{\link[sf]{sfc}}, \code{FALSE} otherwise.
 #'
 #' @noRd
-is.sfc = function(x) {
+is_sfc = function(x) {
   inherits(x, "sfc")
 }
 
@@ -49,7 +55,7 @@ is.sfc = function(x) {
 #' \code{\link[sf:st]{sfg}}, \code{FALSE} otherwise.
 #'
 #' @noRd
-is.sfg = function(x) {
+is_sfg = function(x) {
   inherits(x, "sfg")
 }
 
@@ -62,7 +68,7 @@ is.sfg = function(x) {
 #'
 #' @noRd
 has_sfc = function(x) {
-  any(vapply(x, is.sfc, FUN.VALUE = logical(1)), na.rm = TRUE)
+  any(vapply(x, is_sfc, FUN.VALUE = logical(1)), na.rm = TRUE)
 }
 
 #' Check if geometries are all of a specific type
@@ -89,7 +95,7 @@ has_single_geom_type = function(x, type) {
 #'
 #' @noRd
 has_spatial_nodes = function(x) {
-  any(vapply(vertex_attr(x), is.sfc, FUN.VALUE = logical(1)), na.rm = TRUE)
+  any(vapply(vertex_attr(x), is_sfc, FUN.VALUE = logical(1)), na.rm = TRUE)
 }
 
 #' Check if a sfnetwork has spatially explicit edges
@@ -102,7 +108,7 @@ has_spatial_nodes = function(x) {
 #' @importFrom igraph edge_attr
 #' @noRd
 has_explicit_edges = function(x) {
-  any(vapply(edge_attr(x), is.sfc, FUN.VALUE = logical(1)), na.rm = TRUE)
+  any(vapply(edge_attr(x), is_sfc, FUN.VALUE = logical(1)), na.rm = TRUE)
 }
 
 #' Check if the CRS of two objects are the same

@@ -29,7 +29,7 @@ node_geom_colname = function(x) {
   col = attr(vertex_attr(x), "sf_column")
   if (is.null(col)) {
     # Take the name of the first sfc column.
-    sfc_idx = which(vapply(vertex_attr(x), is.sfc, FUN.VALUE = logical(1)))[1]
+    sfc_idx = which(vapply(vertex_attr(x), is_sfc, FUN.VALUE = logical(1)))[1]
     col = vertex_attr_names(x)[sfc_idx]
   }
   col
@@ -42,7 +42,7 @@ edge_geom_colname = function(x) {
   col = attr(edge_attr(x), "sf_column")
   if (is.null(col) && has_explicit_edges(x)) {
     # Take the name of the first sfc column.
-    sfc_idx = which(vapply(edge_attr(x), is.sfc, FUN.VALUE = logical(1)))[1]
+    sfc_idx = which(vapply(edge_attr(x), is_sfc, FUN.VALUE = logical(1)))[1]
     col = edge_attr_names(x)[sfc_idx]
   }
   col
@@ -105,7 +105,7 @@ pull_geom = function(x, active = NULL) {
 #' @noRd
 pull_node_geom = function(x) {
   geom = vertex_attr(x, node_geom_colname(x))
-  if (! is.sfc(geom)) raise_invalid_sf_column()
+  if (! is_sfc(geom)) raise_invalid_sf_column()
   geom
 }
 
@@ -115,7 +115,7 @@ pull_node_geom = function(x) {
 pull_edge_geom = function(x) {
   require_explicit_edges(x)
   geom = edge_attr(x, edge_geom_colname(x))
-  if (! is.sfc(geom)) raise_invalid_sf_column()
+  if (! is_sfc(geom)) raise_invalid_sf_column()
   geom
 }
 
