@@ -26,7 +26,14 @@ to_spatial_directed(x)
 
 to_spatial_explicit(x, ...)
 
-to_spatial_neighborhood(x, node, threshold, weights = NULL, from = TRUE, ...)
+to_spatial_neighborhood(
+  x,
+  node,
+  threshold,
+  weights = edge_length(),
+  from = TRUE,
+  ...
+)
 
 to_spatial_shortest_paths(x, ...)
 
@@ -90,12 +97,16 @@ threshold distance from the reference node will be included in the
 neighborhood. Should be a numeric value in the same units as the weight
 values used for distance calculation.}
 
-\item{weights}{The edge weights used to calculate distances on the network.
-Can be a numeric vector giving edge weights, or a column name referring to
-an attribute column in the edges table containing those weights. If set to
-\code{NULL}, the values of a column named \code{weight} in the edges table
-will be used automatically, as long as this column is present. If not, the
-geographic edge lengths will be calculated internally and used as weights.}
+\item{weights}{The edge weights to be used in the shortest path calculation.
+Can be a numeric vector of the same length as the number of edges, a
+\link[=spatial_edge_measures]{spatial edge measure function}, or a column in
+the edges table of the network. Tidy evaluation is used such that column
+names can be specified as if they were variables in the environment (e.g.
+simply \code{length} instead of \code{igraph::edge_attr(x, "length")}).
+If set to \code{NULL} or \code{NA} no edge weights are used, and the
+shortest path is the path with the fewest number of edges, ignoring space.
+The default is \code{\link{edge_length}}, which computes the geographic
+lengths of the edges.}
 
 \item{from}{Should distances be calculated from the reference node towards
 the other nodes? Defaults to \code{TRUE}. If set to \code{FALSE}, distances
