@@ -133,11 +133,6 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
   # --> Checking if the network has a valid spatial network structure.
   # --> Making edges spatially explicit or implicit if requested.
   # --> Adding additional attributes if requested.
-  if (is.null(edges)) {
-    # Run validity check for nodes only and return the network.
-    if (! force) validate_network(x_sfn, message = message)
-    return (x_sfn)
-  }
   if (is_sf(edges)) {
     # Add sf attributes to the edges table.
     # They were removed when creating the tbl_graph.
