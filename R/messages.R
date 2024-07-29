@@ -117,7 +117,7 @@ deprecate_edges_as_lines = function() {
 deprecate_weights_is_string = function(caller) {
   deprecate_warn(
       when = "v1.0",
-      what = paste(caller, "(weights = 'uses tidy evaluation')"),
+      what = paste0(caller, "(weights = 'uses tidy evaluation')"),
       details = c(
         i = paste(
           "This means you can forward column names without quotations, e.g.",
@@ -133,7 +133,7 @@ deprecate_weights_is_string = function(caller) {
 deprecate_weights_is_null = function(caller) {
   deprecate_warn(
     when = "v1.0",
-    what = paste(
+    what = paste0(
       caller,
       "(weights = 'if set to NULL means no edge weights are used')"
     ),
@@ -146,6 +146,20 @@ deprecate_weights_is_null = function(caller) {
       i = paste(
         "If you want to use the weight column for edge weights, specify",
         "this explicitly through `weights = weight`."
+      )
+    )
+  )
+}
+
+deprecate_from = function() {
+  deprecate_warn(
+    when = "v1.0",
+    what = "to_spatial_neighborhood(from)",
+    with = "to_spatial_neighborhood(direction)",
+    details = c(
+      i = paste(
+        "If `from = FALSE` this will for now be automatically translated into",
+        "`direction = 'in'`, but this may be removed in future versions."
       )
     )
   )

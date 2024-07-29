@@ -387,78 +387,49 @@ to_spatial_explicit = function(x, ...) {
 }
 
 #' @describeIn spatial_morphers Limit a network to the spatial neighborhood of
-#' a specific node. \code{...} is forwarded to
-#' \code{\link[tidygraph]{node_distance_from}} (if \code{from} is \code{TRUE})
-#' or \code{\link[tidygraph]{node_distance_to}} (if \code{from} is
-#' \code{FALSE}). Returns a \code{morphed_sfnetwork} containing a single
-#' element of class \code{\link{sfnetwork}}.
+#' a specific node. \code{...} is forwarded to \code{\link{st_network_cost}} to
+#' compute the travel cost from the source node to all other nodes in the
+#' network. Returns a \code{morphed_sfnetwork} containing a single element of
+#' class \code{\link{sfnetwork}}.
 #'
-#' @param node The geospatial point for which the neighborhood will be
-#' calculated. Can be an integer, referring to the index of the node for which
-#' the neighborhood will be calculated. Can also be an object of class
-#' \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}, containing a single feature.
-#' In that case, this point will be snapped to its nearest node before
-#' calculating the neighborhood. When multiple indices or features are given,
-#' only the first one is taken.
+#' @param node The node for which the neighborhood will be calculated. Can be
+#' an integer specifying its index. Can also be an object of class
+#' \code{\link[sf]{sf}} or \code{\link[sf]{sfc}} containing a single spatial
+#' feature. In that case, this feature will be snapped to its nearest node
+#' before calculating the neighborhood. When multiple indices or features are
+#' given, only the first one is used.
 #'
 #' @param threshold The threshold distance to be used. Only nodes within the
 #' threshold distance from the reference node will be included in the
 #' neighborhood. Should be a numeric value in the same units as the weight
-#' values used for distance calculation.
-#'
-#' @param weights The edge weights to be used in the shortest path calculation.
-#' Can be a numeric vector of the same length as the number of edges, a
-#' \link[=spatial_edge_measures]{spatial edge measure function}, or a column in
-#' the edges table of the network. Tidy evaluation is used such that column
-#' names can be specified as if they were variables in the environment (e.g.
-#' simply \code{length} instead of \code{igraph::edge_attr(x, "length")}).
-#' If set to \code{NULL} or \code{NA} no edge weights are used, and the
-#' shortest path is the path with the fewest number of edges, ignoring space.
-#' The default is \code{\link{edge_length}}, which computes the geographic
-#' lengths of the edges.
-#'
-#' @param from Should distances be calculated from the reference node towards
-#' the other nodes? Defaults to \code{TRUE}. If set to \code{FALSE}, distances
-#' will be calculated from the other nodes towards the reference node instead.
+#' values used for the cost matrix computation. Alternatively, units can be
+#' specified explicitly by providing a \code{\link[units]{units}} object.
 #'
 #' @importFrom igraph induced_subgraph
-#' @importFrom rlang enquo eval_tidy expr
-#' @importFrom tidygraph node_distance_from node_distance_to with_graph
-#' .register_graph_context
+#' @importFrom units as_units deparse_unit
 #' @export
-to_spatial_neighborhood = function(x, node, threshold, weights = edge_length(),
-                                   from = TRUE, ...) {
+to_spatial_neighborhood = function(x, node, threshold, ...) {
   # Parse node argument.
   # If 'node' is given as a geometry, find the index of the nearest node.
   # When multiple nodes are given only the first one is taken.
   if (is_sf(node) | is_sfc(node)) node = get_nearest_node_index(x, node)
   if (length(node) > 1) raise_multiple_elements("node")
-  # Parse weights argument using tidy evaluation on the network edges.
-  # This can be done equal to setting weights for path calculations.
-  # Note that once deprecation is settled we can just remove this.
-  # In that case tidygraph will take care of parsing the weights argument.
-  .register_graph_context(x, free = TRUE)
-  weights = enquo(weights)
-  weights = eval_tidy(weights, .E())
-  if (is_single_string(weights)) {
-    # Allow character values for backward compatibility.
-    deprecate_weights_is_string("to_spatial_neighborhood")
-    weights = eval_tidy(expr(.data[[weights]]), .E())
+  # Compute the cost matrix from the source node.
+  # By calling st_network_cost with the given arguments.
+  args = list(...)
+  if (isFALSE(args$from)) {
+    # Deprecate the former "from" argument specifying routing direction.
+    deprecate_from()
+    args$direction = "in"
   }
-  if (is.null(weights)) {
-    # Convert NULL to NA to align with tidygraph instead of igraph.
-    deprecate_weights_is_null("to_spatial_neighborhood")
-    weights = NA
-  }
-  # Calculate the distances from/to the reference node to/from all other nodes.
-  # Use the provided weights as edge weights in the distance calculation.
-  if (from) {
-    dist = with_graph(x, node_distance_from(node, weights = weights, ...))
-  } else {
-    dist = with_graph(x, node_distance_to(node, weights = weights, ...))
-  }
+  args$x = x
+  args$from = node
+  costs = do.call("st_network_cost", args)
   # Use the given threshold to define which nodes are in the neighborhood.
-  in_neighborhood = dist <= threshold
+  if (inherits(costs, "units") && ! inherits(threshold, "units")) {
+    threshold = as_units(threshold, deparse_unit(costs))
+  }
+  in_neighborhood = costs[1, ] <= threshold
   # Subset the network to keep only the nodes in the neighborhood.
   x_new = induced_subgraph(x, in_neighborhood)
   # Return in a list.
