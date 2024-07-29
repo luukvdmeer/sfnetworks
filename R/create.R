@@ -101,7 +101,7 @@
 #' sfnetwork(nodes, edges, compute_length = TRUE)
 #'
 #' @importFrom igraph edge_attr<-
-#' @importFrom lifecycle deprecated deprecate_stop
+#' @importFrom lifecycle deprecated
 #' @importFrom sf st_as_sf
 #' @importFrom tidygraph tbl_graph with_graph
 #' @export
@@ -109,6 +109,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
                      edges_as_lines = NULL, compute_length = FALSE,
                      length_as_weight = deprecated(),
                      force = FALSE, message = TRUE, ...) {
+  if (isTRUE(length_as_weight)) deprecate_length_as_weight("sfnetwork")
   # Prepare nodes.
   # If nodes is not an sf object:
   # --> Try to convert it to an sf object.
@@ -156,15 +157,6 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
       x_sfn = explicitize_edges(x_sfn)
     }
   }
-  ## DEPRECATION INFO ##
-  if (isTRUE(length_as_weight)) {
-    deprecate_stop(
-      when = "v1.0",
-      what = "sfnetwork(length_as_weight)",
-      with = "sfnetwork(compute_length)"
-    )
-  }
-  ## END OF DEPRECATION INFO ##
   if (compute_length) {
     if ("length" %in% names(edges)) {
       raise_overwrite("length")
@@ -268,48 +260,12 @@ as_sfnetwork.default = function(x, ...) {
 #'
 #' par(oldpar)
 #'
-#' @importFrom lifecycle deprecate_stop
 #' @export
 as_sfnetwork.sf = function(x, ...) {
-  ## DEPRECATION INFO ##
   dots = list(...)
-  if (isTRUE(dots$length_as_weight)) {
-    deprecate_stop(
-      when = "v1.0",
-      what = "as_sfnetwork.sf(length_as_weight)",
-      with = "as_sfnetwork.sf(compute_length)",
-      details = c(
-        i = paste(
-          "The sf method of `as_sfnetwork()` now forwards `...` to",
-          "`create_from_spatial_lines()` for linestring geometries",
-          "and to `create_from_spatial_points()` for point geometries."
-        )
-      )
-    )
-  }
-  ## END OF DEPRECATION INFO ##
+  if (! is.null(dots$length_as_weight)) deprecate_length_as_weight("as_sfnetwork.sf")
   if (has_single_geom_type(x, "LINESTRING")) {
-    ## DEPRECATION INFO ##
-    if (isFALSE(dots$edges_as_lines)) {
-      deprecate_stop(
-        when = "v1.0",
-        what = paste(
-          "as_sfnetwork.sf(edges_as_lines = 'is deprecated for",
-          "linestring geometries')"
-        ),
-        details = c(
-          i = paste(
-            "The sf method of `as_sfnetwork()` now forwards `...` to",
-            "`create_from_spatial_lines()` for linestring geometries."
-          ),
-          i = paste(
-            "An sfnetwork created from linestring geometries will now",
-            "always have spatially explicit edges."
-          )
-        )
-      )
-    }
-    ## END OF DEPRECATION INFO ##
+    if (! is.null(dots$edges_as_lines)) deprecate_edges_as_lines()
     create_from_spatial_lines(x, ...)
   } else if (has_single_geom_type(x, "POINT")) {
     create_from_spatial_points(x, ...)

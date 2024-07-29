@@ -167,7 +167,6 @@ st_network_paths = function(x, from, to = igraph::V(x),
 }
 
 #' @importFrom igraph V
-#' @importFrom lifecycle deprecate_warn
 #' @importFrom rlang enquo eval_tidy expr
 #' @importFrom sf st_geometry
 #' @importFrom tidygraph .E .register_graph_context
@@ -188,45 +187,13 @@ st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
   weights = enquo(weights)
   weights = eval_tidy(weights, .E())
   if (is_single_string(weights)) {
-    # Allow character values for backward compatibility and non-tidyversers.
-    ## DEPRECATION INFO ##
-    deprecate_warn(
-      when = "v1.0",
-      what = "st_network_paths(weights = 'uses tidy evaluation')",
-      details = c(
-        i = paste(
-          "This means you can forward column names without quotations, e.g.",
-          "`weights = length` instead of `weights = 'length'`. Quoted column",
-          "names are currently still supported for backward compatibility,",
-          "but this may be removed in future versions."
-        )
-      )
-    )
-    ## END OF DEPRECATION INFO ##
+    # Allow character values for backward compatibility.
+    deprecate_weights_is_string("st_network_paths")
     weights = eval_tidy(expr(.data[[weights]]), .E())
   }
   if (is.null(weights)) {
     # Convert NULL to NA to align with tidygraph instead of igraph.
-    ## DEPRECATION INFO ##
-    deprecate_warn(
-      when = "v1.0",
-      what = paste(
-        "st_network_paths(weights = 'if set to NULL means",
-        "no edge weights are used')"
-      ),
-      details = c(
-        i = paste(
-          "If you want to use geographic length as edge weights, use",
-          "`weights = edge_length()` or provide a column in which the edge",
-          "lengths are stored, e.g. `weights = length`."
-        ),
-        i = paste(
-          "If you want to use the weight column for edge weights, specify",
-          "this explicitly through `weights = weight`."
-        )
-      )
-    )
-    ## END OF DEPRECATION INFO ##
+    deprecate_weights_is_null("st_network_paths")
     weights = NA
   }
   # Call paths calculation function according to type argument.
@@ -409,7 +376,6 @@ st_network_cost = function(x, from = igraph::V(x), to = igraph::V(x),
 }
 
 #' @importFrom igraph distances V
-#' @importFrom lifecycle deprecate_warn
 #' @importFrom rlang enquo eval_tidy expr
 #' @importFrom tidygraph .E .register_graph_context
 #' @importFrom units as_units deparse_unit
@@ -429,45 +395,13 @@ st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
   weights = enquo(weights)
   weights = eval_tidy(weights, .E())
   if (is_single_string(weights)) {
-    # Allow character values for backward compatibility and non-tidyversers.
-    ## DEPRECATION INFO ##
-    deprecate_warn(
-      when = "v1.0",
-      what = "st_network_paths(weights = 'uses tidy evaluation')",
-      details = c(
-        i = paste(
-          "This means you can forward column names without quotations, e.g.",
-          "`weights = length` instead of `weights = 'length'`. Quoted column",
-          "names are currently still supported for backward compatibility,",
-          "but this may be removed in future versions."
-        )
-      )
-    )
-    ## END OF DEPRECATION INFO ##
+    # Allow character values for backward compatibility.
+    deprecate_weights_is_string("st_network_cost")
     weights = eval_tidy(expr(.data[[weights]]), .E())
   }
   if (is.null(weights)) {
     # Convert NULL to NA to align with tidygraph instead of igraph.
-    ## DEPRECATION INFO ##
-    deprecate_warn(
-      when = "v1.0",
-      what = paste(
-        "st_network_paths(weights = 'if set to NULL means",
-        "no edge weights are used')"
-      ),
-      details = c(
-        i = paste(
-          "If you want to use geographic length as edge weights, use",
-          "`weights = edge_length()` or provide a column in which the edge",
-          "lengths are stored, e.g. `weights = length`."
-        ),
-        i = paste(
-          "If you want to use the weight column for edge weights, specify",
-          "this explicitly through `weights = weight`."
-        )
-      )
-    )
-    ## END OF DEPRECATION INFO ##
+    deprecate_weights_is_null("st_network_cost")
     weights = NA
   }
   # Parse other arguments.
