@@ -54,7 +54,7 @@ nb2net = function(neighbors, nodes, directed = TRUE, edges_as_lines = TRUE,
     rep(c(1:length(neighbors)), lengths(neighbors)),
     do.call("c", neighbors)
   )
-  if (! directed) {
+  if (! directed && length(edges) > 0) {
     # If the network is undirected:
     # --> Edges i -> j and j -> i are the same.
     # --> We create the network only with unique edges.
