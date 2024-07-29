@@ -32,8 +32,7 @@ to \code{TRUE}.}
 a column named \code{length}? Uses \code{\link[sf]{st_length}} to compute
 the length of the edge geometries when edges are spatially explicit, and
 \code{\link[sf]{st_distance}} to compute the distance between boundary nodes
-when edges are spatially implicit. If there is already a column named
-\code{length}, it will be overwritten. Please note that the values in this
+when edges are spatially implicit. Please note that the values in this
 column are \strong{not} automatically recognized as edge weights. This needs
 to be specified explicitly when calling a function that uses edge weights.
 Defaults to \code{FALSE}.}
