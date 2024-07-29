@@ -265,14 +265,18 @@ edges_as_table = function(x) {
 #' @return An object of class \code{\link{sfnetwork}} with spatially explicit
 #' edges.
 #'
-#' @importFrom rlang !! :=
-#' @importFrom sf st_geometry
+#' @importFrom igraph ecount
+#' @importFrom sf st_crs st_geometry st_sfc
 #' @importFrom tidygraph mutate
 #' @noRd
 explicitize_edges = function(x) {
   if (has_explicit_edges(x)) {
     x
   } else {
+    # Add empty geometry column if there are no edges.
+    if (ecount(x) == 0) {
+      return(mutate_edge_geom(x, st_sfc(crs = st_crs(x))))
+    }
     # Extract the node geometries from the network.
     nodes = pull_node_geom(x)
     # Get the indices of the boundary nodes of each edge.
