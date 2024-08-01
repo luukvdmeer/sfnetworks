@@ -142,7 +142,8 @@ straight_line_distance = function(x) {
 #' object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
 #'
 #' @param ... Arguments passed on to the corresponding spatial predicate
-#' function of sf. See \code{\link[sf]{geos_binary_pred}}.
+#' function of sf. See \code{\link[sf]{geos_binary_pred}}. The argument
+#' \code{sparse} should not be set.
 #'
 #' @return A logical vector of the same length as the number of edges in the
 #' network.
@@ -208,7 +209,7 @@ NULL
 edge_intersects = function(y, ...) {
   require_active_edges()
   x = .G()
-  lengths(st_intersects(pull_edge_geom(x), y, ...)) > 0
+  evaluate_edge_predicate(st_intersects, x, y, ...)
 }
 
 #' @name spatial_edge_predicates
@@ -217,7 +218,7 @@ edge_intersects = function(y, ...) {
 edge_is_disjoint = function(y, ...) {
   require_active_edges()
   x = .G()
-  lengths(st_disjoint(pull_edge_geom(x), y, ...)) > 0
+  evaluate_edge_predicate(st_disjoint, x, y, ...)
 }
 
 #' @name spatial_edge_predicates
@@ -226,7 +227,7 @@ edge_is_disjoint = function(y, ...) {
 edge_touches = function(y, ...) {
   require_active_edges()
   x = .G()
-  lengths(st_touches(pull_edge_geom(x), y, ...)) > 0
+  evaluate_edge_predicate(st_touches, x, y, ...)
 }
 
 #' @name spatial_edge_predicates
@@ -235,7 +236,7 @@ edge_touches = function(y, ...) {
 edge_crosses = function(y, ...) {
   require_active_edges()
   x = .G()
-  lengths(st_crosses(pull_edge_geom(x), y, ...)) > 0
+  evaluate_edge_predicate(st_crosses, x, y, ...)
 }
 
 #' @name spatial_edge_predicates
@@ -244,7 +245,7 @@ edge_crosses = function(y, ...) {
 edge_is_within = function(y, ...) {
   require_active_edges()
   x = .G()
-  lengths(st_within(pull_edge_geom(x), y, ...)) > 0
+  evaluate_edge_predicate(st_within, x, y, ...)
 }
 
 #' @name spatial_edge_predicates
@@ -253,7 +254,7 @@ edge_is_within = function(y, ...) {
 edge_contains = function(y, ...) {
   require_active_edges()
   x = .G()
-  lengths(st_contains(pull_edge_geom(x), y, ...)) > 0
+  evaluate_edge_predicate(st_contains, x, y, ...)
 }
 
 #' @name spatial_edge_predicates
@@ -262,7 +263,7 @@ edge_contains = function(y, ...) {
 edge_contains_properly = function(y, ...) {
   require_active_edges()
   x = .G()
-  lengths(st_contains_properly(pull_edge_geom(x), y, ...)) > 0
+  evaluate_edge_predicate(st_contains_properly, x, y, ...)
 }
 
 #' @name spatial_edge_predicates
@@ -271,7 +272,7 @@ edge_contains_properly = function(y, ...) {
 edge_overlaps = function(y, ...) {
   require_active_edges()
   x = .G()
-  lengths(st_overlaps(pull_edge_geom(x), y, ...)) > 0
+  evaluate_edge_predicate(st_overlaps, x, y, ...)
 }
 
 #' @name spatial_edge_predicates
@@ -280,7 +281,7 @@ edge_overlaps = function(y, ...) {
 edge_equals = function(y, ...) {
   require_active_edges()
   x = .G()
-  lengths(st_equals(pull_edge_geom(x), y, ...)) > 0
+  evaluate_edge_predicate(st_equals, x, y, ...)
 }
 
 #' @name spatial_edge_predicates
@@ -289,7 +290,7 @@ edge_equals = function(y, ...) {
 edge_covers = function(y, ...) {
   require_active_edges()
   x = .G()
-  lengths(st_covers(pull_edge_geom(x), y, ...)) > 0
+  evaluate_edge_predicate(st_covers, x, y, ...)
 }
 
 #' @name spatial_edge_predicates
@@ -298,7 +299,7 @@ edge_covers = function(y, ...) {
 edge_is_covered_by = function(y, ...) {
   require_active_edges()
   x = .G()
-  lengths(st_covered_by(pull_edge_geom(x), y, ...)) > 0
+  evaluate_edge_predicate(st_covered_by, x, y, ...)
 }
 
 #' @name spatial_edge_predicates
@@ -307,7 +308,7 @@ edge_is_covered_by = function(y, ...) {
 edge_is_within_distance = function(y, ...) {
   require_active_edges()
   x = .G()
-  lengths(st_is_within_distance(pull_edge_geom(x), y, ...)) > 0
+  evaluate_edge_predicate(st_is_within_distance, x, y, ...)
 }
 
 #' @name spatial_edge_predicates
@@ -318,4 +319,8 @@ edge_is_nearest = function(y) {
   vec = rep(FALSE, n_edges(x))
   vec[nearest_edge_ids(x, y)] = TRUE
   vec
+}
+
+evaluate_edge_predicate = function(predicate, x, y, ...) {
+  lengths(predicate(pull_edge_geom(x), y, sparse = TRUE, ...)) > 0
 }

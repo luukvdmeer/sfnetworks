@@ -33,7 +33,8 @@ node_is_nearest(y)
 object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.}
 
 \item{...}{Arguments passed on to the corresponding spatial predicate
-function of sf. See \code{\link[sf]{geos_binary_pred}}.}
+function of sf. See \code{\link[sf]{geos_binary_pred}}. The argument
+\code{sparse} should not be set.}
 }
 \value{
 A logical vector of the same length as the number of nodes in the

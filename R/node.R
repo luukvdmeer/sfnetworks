@@ -101,7 +101,8 @@ get_coords = function(x, value) {
 #' object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
 #'
 #' @param ... Arguments passed on to the corresponding spatial predicate
-#' function of sf. See \code{\link[sf]{geos_binary_pred}}.
+#' function of sf. See \code{\link[sf]{geos_binary_pred}}. The argument
+#' \code{sparse} should not be set.
 #'
 #' @return A logical vector of the same length as the number of nodes in the
 #' network.
@@ -173,7 +174,7 @@ NULL
 node_intersects = function(y, ...) {
   require_active_nodes()
   x = .G()
-  lengths(st_intersects(pull_node_geom(x), y, ...)) > 0
+  evaluate_node_predicate(st_intersects, x, y, ...)
 }
 
 #' @name spatial_node_predicates
@@ -182,7 +183,7 @@ node_intersects = function(y, ...) {
 node_is_disjoint = function(y, ...) {
   require_active_nodes()
   x = .G()
-  lengths(st_disjoint(pull_node_geom(x), y, ...)) > 0
+  evaluate_node_predicate(st_disjoint, x, y, ...)
 }
 
 #' @name spatial_node_predicates
@@ -191,7 +192,7 @@ node_is_disjoint = function(y, ...) {
 node_touches = function(y, ...) {
   require_active_nodes()
   x = .G()
-  lengths(st_touches(pull_node_geom(x), y, ...)) > 0
+  evaluate_node_predicate(st_touches, x, y, ...)
 }
 
 #' @name spatial_node_predicates
@@ -200,7 +201,7 @@ node_touches = function(y, ...) {
 node_is_within = function(y, ...) {
   require_active_nodes()
   x = .G()
-  lengths(st_within(pull_node_geom(x), y, ...)) > 0
+  evaluate_node_predicate(st_within, x, y, ...)
 }
 
 #' @name spatial_node_predicates
@@ -209,7 +210,7 @@ node_is_within = function(y, ...) {
 node_equals = function(y, ...) {
   require_active_nodes()
   x = .G()
-  lengths(st_equals(pull_node_geom(x), y, ...)) > 0
+  evaluate_node_predicate(st_equals, x, y, ...)
 }
 
 #' @name spatial_node_predicates
@@ -218,7 +219,7 @@ node_equals = function(y, ...) {
 node_is_covered_by = function(y, ...) {
   require_active_nodes()
   x = .G()
-  lengths(st_covered_by(pull_node_geom(x), y, ...)) > 0
+  evaluate_node_predicate(st_covered_by, x, y, ...)
 }
 
 #' @name spatial_node_predicates
@@ -227,7 +228,7 @@ node_is_covered_by = function(y, ...) {
 node_is_within_distance = function(y, ...) {
   require_active_nodes()
   x = .G()
-  lengths(st_is_within_distance(pull_node_geom(x), y, ...)) > 0
+  evaluate_node_predicate(st_is_within_distance, x, y, ...)
 }
 
 #' @name spatial_node_predicates
@@ -238,4 +239,8 @@ node_is_nearest = function(y) {
   vec = rep(FALSE, n_nodes(x))
   vec[nearest_node_ids(x, y)] = TRUE
   vec
+}
+
+evaluate_node_predicate = function(predicate, x, y, ...) {
+  lengths(predicate(pull_node_geom(x), y, sparse = TRUE, ...)) > 0
 }
