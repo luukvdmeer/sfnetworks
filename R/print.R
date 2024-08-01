@@ -1,4 +1,3 @@
-#' @importFrom igraph ecount vcount
 #' @importFrom sf st_crs
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph
@@ -8,8 +7,8 @@ print.sfnetwork = function(x, ...) {
   active = attr(x, "active")
   inactive = if (active == "nodes") "edges" else "nodes"
   # Count number of nodes and edges in the network.
-  nN = vcount(x) # Number of nodes in network.
-  nE = ecount(x) # Number of edges in network.
+  nN = n_nodes(x) # Number of nodes in network.
+  nE = n_edges(x) # Number of edges in network.
   # Print header.
   cat_subtle(c("# A sfnetwork with", nN, "nodes and", nE, "edges\n"))
   cat_subtle("#\n")

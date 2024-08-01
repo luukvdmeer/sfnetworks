@@ -75,7 +75,6 @@ node_M = function() {
   get_coords(pull_node_geom(x), "M")
 }
 
-#' @importFrom igraph vcount
 #' @importFrom sf st_coordinates
 get_coords = function(x, value) {
   all_coords = st_coordinates(x)

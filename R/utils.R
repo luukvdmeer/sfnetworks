@@ -1,3 +1,149 @@
+#' Count the number of nodes or edges in a network
+#'
+#' @param x An object of class \code{\link{sfnetwork}}, or any other network
+#' object inheriting from \code{\link[igraph]{igraph}}.
+#'
+#' @return An integer.
+#'
+#' @examples
+#' net = as_sfnetwork(roxel)
+#' n_nodes(net)
+#' n_edges(net)
+#'
+#' @name n
+#' @importFrom igraph vcount
+#' @export
+n_nodes = function(x) {
+  vcount(x)
+}
+
+#' @name n
+#' @importFrom igraph ecount
+#' @export
+n_edges = function(x) {
+  ecount(x)
+}
+
+#' Extract the indices of nodes or edges from a network
+#'
+#' @param x An object of class \code{\link{sfnetwork}}, or any other network
+#' object inheriting from \code{\link[igraph]{igraph}}.
+#'
+#' @details The indices in these objects are always integers that correspond to
+#' rownumbers in respectively the nodes or edges table.
+#'
+#' @return An vector of integers.
+#'
+#' @examples
+#' net = as_sfnetwork(roxel[1:10, ])
+#' node_ids(net)
+#' edge_ids(net)
+#'
+#' @name ids
+#' @export
+node_ids = function(x) {
+  seq_len(n_nodes(x))
+}
+
+#' @name ids
+#' @export
+edge_ids = function(x) {
+  seq_len(n_edges(x))
+}
+
+#' Extract the nearest nodes or edges to given spatial features
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param y Spatial features as object of class \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}.
+#'
+#' @details To determine the nearest node or edge to each feature in \code{y}
+#' the function \code{\link[sf]{st_nearest_feature}} is used. When extracting
+#' nearest edges, spatially explicit edges are required, i.e. the edges table
+#' should have a geometry column.
+#'
+#' @return An object of class \code{\link[sf]{sf}} with each row containing
+#' the nearest node or edge to the corresponding spatial features in \code{y}.
+#'
+#' @examples
+#' library(sf, quietly = TRUE)
+#'
+#' net = as_sfnetwork(roxel)
+#' pts = st_sample(st_bbox(roxel))
+#'
+#' nodes = nearest_nodes(net, pts)
+#' edges = nearest_edges(net, pts)
+#'
+#' oldpar = par(no.readonly = TRUE)
+#' par(mar = c(1,1,1,1), mfrow = c(1,2))
+#'
+#' plot(net, main = "Nearest nodes")
+#' plot(pts, cex = 2, col = "red", pch = 20, add = TRUE)
+#' plot(st_geometry(nodes), cex = 2, col = "orange", pch = 20, add = TRUE)
+#'
+#' plot(net, main = "Nearest edges")
+#' plot(pts, cex = 2, col = "red", pch = 20, add = TRUE)
+#' plot(st_geometry(edges), lwd = 2, col = "orange", pch = 20, add = TRUE)
+#'
+#' par(oldpar)
+#'
+#' @name nearest
+#' @importFrom sf st_geometry st_nearest_feature
+#' @export
+nearest_nodes = function(x, y) {
+  nodes = nodes_as_sf(x)
+  nodes[st_nearest_feature(st_geometry(y), nodes), ]
+}
+
+#' @name nearest
+#' @importFrom sf st_geometry st_nearest_feature
+#' @export
+nearest_edges = function(x, y) {
+  edges = edges_as_sf(x)
+  edges[st_nearest_feature(st_geometry(y), edges), ]
+}
+
+#' Extract the indices of nearest nodes or edges to given spatial features
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param y Spatial features as object of class \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}.
+#'
+#' @details To determine the nearest node or edge to each feature in \code{y}
+#' the function \code{\link[sf]{st_nearest_feature}} is used. When extracting
+#' nearest edges, spatially explicit edges are required, i.e. the edges table
+#' should have a geometry column.
+#'
+#' @return An integer vector with each element containing the index of the
+#' nearest node or edge to the corresponding spatial features in \code{y}.
+#'
+#' @examples
+#' library(sf, quietly = TRUE)
+#'
+#' net = as_sfnetwork(roxel)
+#' pts = st_sample(st_bbox(roxel))
+#'
+#' nearest_node_ids(net, pts)
+#' nearest_edge_ids(net, pts)
+#'
+#' @name nearest_ids
+#' @importFrom sf st_geometry st_nearest_feature
+#' @export
+nearest_node_ids = function(x, y) {
+  st_nearest_feature(st_geometry(y), nodes_as_sf(x))
+}
+
+#' @name nearest_ids
+#' @importFrom sf st_geometry st_nearest_feature
+#' @export
+nearest_edge_ids = function(x, y) {
+  st_nearest_feature(st_geometry(y), edges_as_sf(x))
+}
+
+#' Get the nearest
+
 #' Convert an adjacency matrix into a neighbor list
 #'
 #' Adjacency matrices of networks are n x n matrices with n being the number of
@@ -212,7 +358,6 @@ edge_boundary_points = function(x) {
 #' indices of the start points of the edges, the seconds column contains the
 #' node indices of the end points of the edges.
 #'
-#' @importFrom igraph ecount
 #' @importFrom sf st_equals
 #' @noRd
 edge_boundary_point_indices = function(x, matrix = FALSE) {
@@ -224,7 +369,7 @@ edge_boundary_point_indices = function(x, matrix = FALSE) {
     # However, this is not a requirement.
     # There may be cases where multiple nodes share the same geometry.
     # Then some more processing is needed to find the correct indices.
-    if (length(idxs_vct) != ecount(x) * 2) {
+    if (length(idxs_vct) != n_edges(x) * 2) {
       n = length(idxs_lst)
       from = idxs_lst[seq(1, n - 1, 2)]
       to = idxs_lst[seq(2, n, 2)]
@@ -265,7 +410,6 @@ edges_as_table = function(x) {
 #' @return An object of class \code{\link{sfnetwork}} with spatially explicit
 #' edges.
 #'
-#' @importFrom igraph ecount
 #' @importFrom sf st_crs st_geometry st_sfc
 #' @importFrom tidygraph mutate
 #' @noRd
@@ -274,7 +418,7 @@ explicitize_edges = function(x) {
     x
   } else {
     # Add empty geometry column if there are no edges.
-    if (ecount(x) == 0) {
+    if (n_edges(x) == 0) {
       return(mutate_edge_geom(x, st_sfc(crs = st_crs(x))))
     }
     # Extract the node geometries from the network.
@@ -288,40 +432,6 @@ explicitize_edges = function(x) {
     # Draw linestring geometries between the boundary nodes of each edge.
     mutate_edge_geom(x, draw_lines(from, to))
   }
-}
-
-#' Get the nearest nodes to given features
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @param y Spatial features as object of class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}.
-#'
-#' @return An object of class \code{\link[sf]{sf}} containing \code{POINT}
-#' geometry. The number of rows will be equal to the amount of features in
-#' \code{y}.
-#'
-#' @importFrom sf st_geometry st_nearest_feature
-#' @noRd
-get_nearest_node = function(x, y) {
-  nodes = nodes_as_sf(x)
-  nodes[st_nearest_feature(st_geometry(y), nodes), ]
-}
-
-#' Get the index of the nearest nodes to given features
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @param y Spatial features as object of class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}.
-#'
-#' @return An vector integers. The length of the vector will be equal to the
-#' amount of features in \code{y}.
-#'
-#' @importFrom sf st_geometry st_nearest_feature
-#' @noRd
-get_nearest_node_index = function(x, y) {
-  st_nearest_feature(st_geometry(y), nodes_as_sf(x))
 }
 
 #' Make edges spatially implicit

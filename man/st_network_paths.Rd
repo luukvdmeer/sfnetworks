@@ -7,7 +7,7 @@
 st_network_paths(
   x,
   from,
-  to = igraph::V(x),
+  to = node_ids(x),
   weights = edge_length(),
   type = "shortest",
   use_names = TRUE,

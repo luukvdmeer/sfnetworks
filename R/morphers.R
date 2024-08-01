@@ -412,7 +412,7 @@ to_spatial_neighborhood = function(x, node, threshold, ...) {
   # Parse node argument.
   # If 'node' is given as a geometry, find the index of the nearest node.
   # When multiple nodes are given only the first one is taken.
-  if (is_sf(node) | is_sfc(node)) node = get_nearest_node_index(x, node)
+  if (is_sf(node) | is_sfc(node)) node = nearest_node_ids(x, node)
   if (length(node) > 1) raise_multiple_elements("node")
   # Compute the cost matrix from the source node.
   # By calling st_network_cost with the given arguments.
@@ -647,7 +647,7 @@ to_spatial_smooth = function(x,
       }
       protect = matched_names
     } else if (is_sf(protect) | is_sfc(protect)) {
-      protect = get_nearest_node_index(x, protect)
+      protect = nearest_node_ids(x, protect)
     }
     # Mark all protected nodes as not being a pseudo node.
     pseudo[protect] = FALSE

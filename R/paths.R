@@ -160,7 +160,7 @@
 #'
 #' @importFrom igraph V
 #' @export
-st_network_paths = function(x, from, to = igraph::V(x),
+st_network_paths = function(x, from, to = node_ids(x),
                             weights = edge_length(), type = "shortest",
                             use_names = TRUE, ...) {
   UseMethod("st_network_paths")
@@ -171,15 +171,15 @@ st_network_paths = function(x, from, to = igraph::V(x),
 #' @importFrom sf st_geometry
 #' @importFrom tidygraph .E .register_graph_context
 #' @export
-st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
+st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
                                       weights = edge_length(),
                                       type = "shortest",
                                       use_names = TRUE, ...) {
   # Parse from and to arguments.
   # --> Convert geometries to node indices.
   # --> Raise warnings when igraph requirements are not met.
-  if (is_sf(from) | is_sfc(from)) from = get_nearest_node_index(x, from)
-  if (is_sf(to) | is_sfc(to)) to = get_nearest_node_index(x, to)
+  if (is_sf(from) | is_sfc(from)) from = nearest_node_ids(x, from)
+  if (is_sf(to) | is_sfc(to)) to = nearest_node_ids(x, to)
   if (length(from) > 1) raise_multiple_elements("from")
   if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
   # Parse weights argument using tidy evaluation on the network edges.
@@ -369,7 +369,7 @@ get_all_simple_paths = function(x, from, to, use_names = TRUE, ...) {
 #'
 #' @importFrom igraph V
 #' @export
-st_network_cost = function(x, from = igraph::V(x), to = igraph::V(x),
+st_network_cost = function(x, from = node_ids(x), to = node_ids(x),
                            weights = edge_length(), direction = "out",
                            Inf_as_NaN = FALSE, ...) {
   UseMethod("st_network_cost")
@@ -380,15 +380,15 @@ st_network_cost = function(x, from = igraph::V(x), to = igraph::V(x),
 #' @importFrom tidygraph .E .register_graph_context
 #' @importFrom units as_units deparse_unit
 #' @export
-st_network_cost.sfnetwork = function(x, from = igraph::V(x), to = igraph::V(x),
+st_network_cost.sfnetwork = function(x, from = node_ids(x), to = node_ids(x),
                                      weights = edge_length(),
                                      direction = "out",
                                      Inf_as_NaN = FALSE, ...) {
   # Parse from and to arguments.
   # --> Convert geometries to node indices.
   # --> Raise warnings when igraph requirements are not met.
-  if (is_sf(from) | is_sfc(from)) from = get_nearest_node_index(x, from)
-  if (is_sf(to) | is_sfc(to)) to = get_nearest_node_index(x, to)
+  if (is_sf(from) | is_sfc(from)) from = nearest_node_ids(x, from)
+  if (is_sf(to) | is_sfc(to)) to = nearest_node_ids(x, to)
   if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
   # Parse weights argument using tidy evaluation on the network edges.
   .register_graph_context(x, free = TRUE)

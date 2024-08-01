@@ -108,7 +108,7 @@ st_network_blend.sfnetwork = function(x, y, tolerance = Inf) {
 }
 
 #' @importFrom dplyr bind_rows full_join
-#' @importFrom igraph is_directed vcount
+#' @importFrom igraph is_directed
 #' @importFrom sf st_as_sf st_cast st_crs st_crs<- st_distance st_equals
 #' st_geometry st_geometry<- st_intersects st_is_within_distance
 #' st_nearest_feature st_nearest_points st_precision st_precision<-
@@ -129,7 +129,7 @@ blend_ = function(x, y, tolerance) {
   # --> Count the number of nodes in x.
   # --> Retrieve the name of the geometry column of the nodes in x.
   directed = is_directed(x)
-  ncount = vcount(x)
+  ncount = n_nodes(x)
   geom_colname = attr(nodes, "sf_column")
   ## ===========================
   # STEP I: PARSE THE TOLERANCE

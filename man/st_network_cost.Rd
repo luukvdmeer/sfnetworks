@@ -6,8 +6,8 @@
 \usage{
 st_network_cost(
   x,
-  from = igraph::V(x),
-  to = igraph::V(x),
+  from = node_ids(x),
+  to = node_ids(x),
   weights = edge_length(),
   direction = "out",
   Inf_as_NaN = FALSE,
