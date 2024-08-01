@@ -14,6 +14,7 @@
 \alias{edge_covers}
 \alias{edge_is_covered_by}
 \alias{edge_is_within_distance}
+\alias{edge_is_nearest}
 \title{Query edges with spatial predicates}
 \usage{
 edge_intersects(y, ...)
@@ -39,6 +40,8 @@ edge_covers(y, ...)
 edge_is_covered_by(y, ...)
 
 edge_is_within_distance(y, ...)
+
+edge_is_nearest(y)
 }
 \arguments{
 \item{y}{The geospatial features to test the edges against, either as an
@@ -56,20 +59,23 @@ These functions allow to interpret spatial relations between edges and
 other geospatial features directly inside \code{\link[tidygraph]{filter}}
 and \code{\link[tidygraph]{mutate}} calls. All functions return a logical
 vector of the same length as the number of edges in the network. Element i
-in that vector is \code{TRUE} whenever \code{any(predicate(x[i], y[j]))} is
-\code{TRUE}. Hence, in the case of using \code{edge_intersects}, element i
-in the returned vector is \code{TRUE} when edge i intersects with any of
-the features given in y.
+in that vector is \code{TRUE} whenever the chosen spatial predicate applies
+to the spatial relation between the i-th edge and any of the features in
+\code{y}.
 }
 \details{
 See \code{\link[sf]{geos_binary_pred}} for details on each spatial
-predicate. Just as with all query functions in tidygraph, these functions
-are meant to be called inside tidygraph verbs such as
-\code{\link[tidygraph]{mutate}} or \code{\link[tidygraph]{filter}}, where
-the network that is currently being worked on is known and thus not needed
-as an argument to the function. If you want to use an algorithm outside of
-the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to
-set the context temporarily while the algorithm is being evaluated.
+predicate. The function \code{edge_is_nearest} instead wraps around
+\code{\link[sf]{st_nearest_feature}} and returns \code{TRUE} for element i
+if the i-th edge is the nearest edge to any of the features in \code{y}.
+
+Just as with all query functions in tidygraph, these functions are meant to
+be called inside tidygraph verbs such as \code{\link[tidygraph]{mutate}} or
+\code{\link[tidygraph]{filter}}, where the network that is currently being
+worked on is known and thus not needed as an argument to the function. If
+you want to use an algorithm outside of the tidygraph framework you can use
+\code{\link[tidygraph]{with_graph}} to set the context temporarily while the
+algorithm is being evaluated.
 }
 \note{
 Note that \code{edge_is_within_distance} is a wrapper around the

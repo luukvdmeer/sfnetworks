@@ -93,10 +93,9 @@ get_coords = function(x, value) {
 #' other geospatial features directly inside \code{\link[tidygraph]{filter}}
 #' and \code{\link[tidygraph]{mutate}} calls. All functions return a logical
 #' vector of the same length as the number of nodes in the network. Element i
-#' in that vector is \code{TRUE} whenever \code{any(predicate(x[i], y[j]))} is
-#' \code{TRUE}. Hence, in the case of using \code{node_intersects}, element i
-#' in the returned vector is \code{TRUE} when node i intersects with any of
-#' the features given in y.
+#' in that vector is \code{TRUE} whenever the chosen spatial predicate applies
+#' to the spatial relation between the i-th node and any of the features in
+#' \code{y}.
 #'
 #' @param y The geospatial features to test the nodes against, either as an
 #' object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
@@ -108,13 +107,17 @@ get_coords = function(x, value) {
 #' network.
 #'
 #' @details See \code{\link[sf]{geos_binary_pred}} for details on each spatial
-#' predicate. Just as with all query functions in tidygraph, these functions
-#' are meant to be called inside tidygraph verbs such as
-#' \code{\link[tidygraph]{mutate}} or \code{\link[tidygraph]{filter}}, where
-#' the network that is currently being worked on is known and thus not needed
-#' as an argument to the function. If you want to use an algorithm outside of
-#' the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to
-#' set the context temporarily while the algorithm is being evaluated.
+#' predicate. The function \code{node_is_nearest} instead wraps around
+#' \code{\link[sf]{st_nearest_feature}} and returns \code{TRUE} for element i
+#' if the i-th node is the nearest node to any of the features in \code{y}.
+#'
+#' Just as with all query functions in tidygraph, these functions are meant to
+#' be called inside tidygraph verbs such as \code{\link[tidygraph]{mutate}} or
+#' \code{\link[tidygraph]{filter}}, where the network that is currently being
+#' worked on is known and thus not needed as an argument to the function. If
+#' you want to use an algorithm outside of the tidygraph framework you can use
+#' \code{\link[tidygraph]{with_graph}} to set the context temporarily while the
+#' algorithm is being evaluated.
 #'
 #' @note Note that \code{node_is_within_distance} is a wrapper around the
 #' \code{st_is_within_distance} predicate from sf. Hence, it is based on
@@ -225,4 +228,14 @@ node_is_within_distance = function(y, ...) {
   require_active_nodes()
   x = .G()
   lengths(st_is_within_distance(pull_node_geom(x), y, ...)) > 0
+}
+
+#' @name spatial_node_predicates
+#' @export
+node_is_nearest = function(y) {
+  require_active_nodes()
+  x = .G()
+  vec = rep(FALSE, n_nodes(x))
+  vec[nearest_node_ids(x, y)] = TRUE
+  vec
 }
