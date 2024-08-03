@@ -234,19 +234,6 @@ bind_rows_list = function(...) {
   mutate(out, across(which(!is_listcol), unlist))
 }
 
-#' Print a string with a subtle style.
-#'
-#' @param ... A string to print.
-#'
-#' @return A printed string to console with subtle style.
-#'
-#' @importFrom crayon silver
-#' @noRd
-cat_subtle = function(...) { # nocov start
-  # Util function for print method, testing should be up to crayon
-  cat(silver(...))
-} # nocov end
-
 #' Draw lines between two sets of points, row-wise
 #'
 #' @param x An object of class \code{\link[sf]{sfc}} with \code{POINT}
@@ -549,6 +536,68 @@ multilinestrings_to_linestrings = function(x) {
   st_crs(lines) = st_crs(x)
   st_precision(lines) = st_precision(x)
   lines
+}
+
+#' Merge two spatial bounding box objects
+#'
+#' @param a An object of class \code{\link[sf:st_bbox]{bbox}}.
+#'
+#' @param b An object of class \code{\link[sf:st_bbox]{bbox}}.
+#'
+#' @note This function assumes that \code{a} and \code{b} have equal coordinate
+#' reference systems.
+#'
+#' @return An object of class \code{\link[sf:st_bbox]{bbox}} containing the
+#' most extreme coordinates of \code{a} and \code{b}.
+#'
+#' @noRd
+merge_bboxes = function(a, b) {
+  ab = a
+  ab["xmin"] = min(a["xmin"], b["xmin"])
+  ab["ymin"] = min(a["ymin"], b["ymin"])
+  ab["xmax"] = max(a["xmax"], b["xmax"])
+  ab["ymax"] = max(a["ymax"], b["ymax"])
+  ab
+}
+
+#' Merge two spatial z range objects
+#'
+#' @param a An object of class \code{\link[sf:st_z_range]{z_range}}.
+#'
+#' @param b An object of class \code{\link[sf:st_z_range]{z_range}}.
+#'
+#' @note This function assumes that \code{a} and \code{b} have equal coordinate
+#' reference systems.
+#'
+#' @return An object of class \code{\link[sf:st_z_range]{z_range}} containing
+#' the most extreme coordinates of \code{a} and \code{b}.
+#'
+#' @noRd
+merge_zranges = function(a, b) {
+  ab = a
+  ab["zmin"] = min(a["zmin"], b["zmin"])
+  ab["zmax"] = max(a["zmax"], b["zmax"])
+  ab
+}
+
+#' Merge two spatial m range objects
+#'
+#' @param a An object of class \code{\link[sf:st_m_range]{m_range}}.
+#'
+#' @param b An object of class \code{\link[sf:st_m_range]{m_range}}.
+#'
+#' @note This function assumes that \code{a} and \code{b} have equal coordinate
+#' reference systems.
+#'
+#' @return An object of class \code{\link[sf:st_m_range]{m_range}} containing
+#' the most extreme coordinates of \code{a} and \code{b}.
+#'
+#' @noRd
+merge_mranges = function(a, b) {
+  ab = a
+  ab["mmin"] = min(a["mmin"], b["mmin"])
+  ab["mmax"] = max(a["mmax"], b["mmax"])
+  ab
 }
 
 #' Determine duplicated geometries
