@@ -365,14 +365,14 @@ to_spatial_directed = function(x) {
 #' drawn between the source and target node of each edge. Returns a
 #' \code{morphed_sfnetwork} containing a single element of class
 #' \code{\link{sfnetwork}}.
+#' @importFrom rlang dots_n
 #' @importFrom sf st_as_sf
 #' @export
 to_spatial_explicit = function(x, ...) {
   # Workflow:
   # --> If ... is given, convert edges to sf by forwarding ... to st_as_sf.
   # --> If ... is not given, draw straight lines from source to target nodes.
-  args = list(...)
-  if (length(args) > 0) {
+  if (dots_n > 0) {
     edges = edges_as_table(x)
     new_edges = st_as_sf(edges, ...)
     x_new = x
@@ -393,11 +393,11 @@ to_spatial_explicit = function(x, ...) {
 #' class \code{\link{sfnetwork}}.
 #'
 #' @param node The node for which the neighborhood will be calculated. Can be
-#' an integer specifying its index. Can also be an object of class
-#' \code{\link[sf]{sf}} or \code{\link[sf]{sfc}} containing a single spatial
-#' feature. In that case, this feature will be snapped to its nearest node
-#' before calculating the neighborhood. When multiple indices or features are
-#' given, only the first one is used.
+#' an integer specifying its index or a character specifying its name. Can also
+#' be an object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+#' containing a single spatial feature. In that case, this feature will be
+#' snapped to its nearest node before calculating the neighborhood. When
+#' multiple indices, names or features are given, only the first one is used.
 #'
 #' @param threshold The threshold distance to be used. Only nodes within the
 #' threshold distance from the reference node will be included in the
@@ -406,6 +406,7 @@ to_spatial_explicit = function(x, ...) {
 #' specified explicitly by providing a \code{\link[units]{units}} object.
 #'
 #' @importFrom igraph induced_subgraph
+#' @importFrom methods hasArg
 #' @importFrom units as_units deparse_unit
 #' @export
 to_spatial_neighborhood = function(x, node, threshold, ...) {
@@ -416,15 +417,13 @@ to_spatial_neighborhood = function(x, node, threshold, ...) {
   if (length(node) > 1) raise_multiple_elements("node")
   # Compute the cost matrix from the source node.
   # By calling st_network_cost with the given arguments.
-  args = list(...)
-  if (isFALSE(args$from)) {
+  if (hasArg("from") && isFALSE(from)) {
     # Deprecate the former "from" argument specifying routing direction.
     deprecate_from()
-    args$direction = "in"
+    costs = st_network_cost(x, from = node, direction = "in", ...)
+  } else {
+    costs = st_network_cost(x, from = node, ...)
   }
-  args$x = x
-  args$from = node
-  costs = do.call("st_network_cost", args)
   # Use the given threshold to define which nodes are in the neighborhood.
   if (inherits(costs, "units") && ! inherits(threshold, "units")) {
     threshold = as_units(threshold, deparse_unit(costs))
@@ -449,11 +448,9 @@ to_spatial_neighborhood = function(x, node, threshold, ...) {
 #' @importFrom igraph delete_edges delete_vertices edge_attr vertex_attr
 #' @export
 to_spatial_shortest_paths = function(x, ...) {
-  args = list(...)
-  args$x = x
-  args$type = "shortest"
   # Call st_network_paths with the given arguments.
-  paths = do.call("st_network_paths", args)
+  if (hasArg("type")) raise_unsupported_arg("type")
+  paths = st_network_paths(x, ..., type = "shortest")
   # Retrieve original node and edge indices from the network.
   orig_node_idxs = vertex_attr(x, ".tidygraph_node_index")
   orig_edge_idxs = edge_attr(x, ".tidygraph_edge_index")
@@ -581,7 +578,7 @@ to_spatial_smooth = function(x,
   # Change default igraph options.
   # This prevents igraph returns node or edge indices as formatted sequences.
   # We only need the "raw" integer indices.
-  # Changing this option can lead to quiet a performance improvement.
+  # Changing this option improves performance especially on large networks.
   default_igraph_opt = igraph_opt("return.vs.es")
   igraph_options(return.vs.es = FALSE)
   on.exit(igraph_options(return.vs.es = default_igraph_opt))

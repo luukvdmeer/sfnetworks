@@ -142,8 +142,6 @@ nearest_edge_ids = function(x, y) {
   st_nearest_feature(st_geometry(y), edges_as_sf(x))
 }
 
-#' Get the nearest
-
 #' Convert an adjacency matrix into a neighbor list
 #'
 #' Adjacency matrices of networks are n x n matrices with n being the number of

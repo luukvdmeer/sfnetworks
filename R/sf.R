@@ -263,11 +263,11 @@ st_z_range.sfnetwork = function(obj, active = NULL, ...) {
 change_coords = function(x, op, ...) {
   if (attr(x, "active") == "edges" || has_explicit_edges(x)) {
     geom = pull_edge_geom(x)
-    new_geom = do.call(match.fun(op), list(geom, ...))
+    new_geom = op(geom, ...)
     x = mutate_edge_geom(x, new_geom)
   }
   geom = pull_node_geom(x)
-  new_geom = do.call(match.fun(op), list(geom, ...))
+  new_geom = op(geom, ...)
   mutate_node_geom(x, new_geom)
 }
 
@@ -354,7 +354,7 @@ st_simplify.sfnetwork = function(x, ...) {
 #' @importFrom sf st_as_sf st_geometry
 geom_unary_ops = function(op, x, active, ...) {
   x_sf = st_as_sf(x, active = active)
-  d_tmp = do.call(match.fun(op), list(x_sf, ...))
+  d_tmp = op(x_sf, ...)
   mutate_geom(x, st_geometry(d_tmp), active = active)
 }
 
@@ -401,6 +401,7 @@ st_join.morphed_sfnetwork = function(x, y, ...) {
 }
 
 #' @importFrom igraph delete_vertices vertex_attr<-
+#' @importFrom methods hasArg
 #' @importFrom sf st_as_sf st_join
 spatial_join_nodes = function(x, y, ...) {
   # Convert x and y to sf.
@@ -430,8 +431,7 @@ spatial_join_nodes = function(x, y, ...) {
   # If an inner join was requested instead of a left join:
   # --> This means only nodes in x that had a match in y are preserved.
   # --> The other nodes need to be removed.
-  args = list(...)
-  if (!is.null(args$left) && !args$left) {
+  if (hasArg("left") && ! left) {
     keep = n_new$.sfnetwork_index
     drop = if (length(keep) == 0) orig_idxs else orig_idxs[-keep]
     x = delete_vertices(x, drop) %preserve_all_attrs% x
@@ -608,8 +608,7 @@ spatial_clip_edges = function(x, y, ..., .operator = sf::st_intersection) {
   ## ===========================
   # Clip the edges using the given operator.
   # Possible operators are st_intersection, st_difference and st_crop.
-  args = list(edges_as_sf(x), st_geometry(y), ...)
-  e_new = do.call(match.fun(.operator), args)
+  e_new = .operator(edges_as_sf(x), st_geometry(y), ...)
   # A few issues need to be resolved before moving on.
   # 1) An edge shares a single point with the clipper:
   # --> The operator includes it as a point in the output.
@@ -690,7 +689,7 @@ find_indices_to_drop = function(x, y, ..., .operator = sf::st_filter) {
   orig_idxs = seq_len(nrow(x))
   x$.sfnetwork_index = orig_idxs
   # Filter with the given operator.
-  filtered = do.call(match.fun(.operator), list(x, y, ...))
+  filtered = .operator(x, y, ...)
   # Subset the original network based on the result of the filter operation.
   keep = filtered$.sfnetwork_index
   drop = if (length(keep) == 0) orig_idxs else orig_idxs[-keep]

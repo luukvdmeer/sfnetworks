@@ -41,23 +41,27 @@
 #' par(oldpar)
 #'
 #' @importFrom graphics plot
+#' @importFrom methods hasArg
 #' @importFrom sf st_geometry
 #' @export
 plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
-  # Extract and setup extra args.
-  dots = list(...)
-  pch_missing = is.null(dots$pch)
-  dots$pch = if (pch_missing) 20 else dots$pch
-  # Get geometries of nodes.
-  nsf = pull_node_geom(x)
   # Plot the nodes.
-  do.call(plot, c(list(nsf), dots))
-  # If necessary, plot also the edges.
-  if (draw_lines) {
-    x = explicitize_edges(x)
-    esf = pull_edge_geom(x)
-    dots$add = TRUE
-    do.call(plot, c(list(esf), dots))
+  # Default pch should be 20.
+  node_geoms = pull_node_geom(x)
+  if (hasArg("pch")) {
+    plot(node_geoms, ...)
+  } else {
+    plot(node_geoms, pch = 20, ...)
+  }
+  # Plot the edges.
+  if (has_explicit_edges(x)) {
+    plot(pull_edge_geom(x), ..., add = TRUE)
+  } else {
+    if (draw_lines) {
+      bids = edge_boundary_node_indices(x, matrix = TRUE)
+      lines = draw_lines(node_geoms[bids[, 1]], node_geoms[bids[, 2]])
+      plot(lines, ..., add = TRUE)
+    }
   }
   invisible()
 }

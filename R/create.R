@@ -255,12 +255,16 @@ as_sfnetwork.default = function(x, ...) {
 #'
 #' par(oldpar)
 #'
+#' @importFrom methods hasArg
 #' @export
 as_sfnetwork.sf = function(x, ...) {
-  dots = list(...)
-  if (! is.null(dots$length_as_weight)) deprecate_length_as_weight("as_sfnetwork.sf")
+  if (hasArg("length_as_weight") && length_as_weight) {
+    deprecate_length_as_weight("as_sfnetwork.sf")
+  }
   if (has_single_geom_type(x, "LINESTRING")) {
-    if (! is.null(dots$edges_as_lines)) deprecate_edges_as_lines()
+    if (hasArg("edges_as_lines") && ! is.null(dots$edges_as_lines)) {
+      deprecate_edges_as_lines()
+    }
     create_from_spatial_lines(x, ...)
   } else if (has_single_geom_type(x, "POINT")) {
     create_from_spatial_points(x, ...)
@@ -346,16 +350,14 @@ as_sfnetwork.psp = function(x, ...) {
 #' through the \code{directed} argument.
 #'
 #' @importFrom igraph is_directed
+#' @importFrom methods hasArg
 #' @export
 as_sfnetwork.sfNetwork = function(x, ...) {
-  args = list(...)
-  # Retrieve the @sl slot, which contains the linestring of the network.
-  args$x = x@sl
-  # Define the directed argument automatically if not given, using the @g slot.
-  dir_missing = is.null(args$directed)
-  args$directed = if (dir_missing) is_directed(x@g) else args$directed
-  # Call as_sfnetwork.sf to build the sfnetwork.
-  do.call("as_sfnetwork.sf", args)
+  if (hasArg("directed")) {
+    as_sfnetwork(x@sl, ...)
+  } else {
+    as_sfnetwork(x@sl, directed = is_directed(x@g), ...)
+  }
 }
 
 #' @describeIn as_sfnetwork Convert graph objects of class
@@ -375,15 +377,14 @@ as_sfnetwork.sfNetwork = function(x, ...) {
 #' as_sfnetwork(tbl_net, coords = c("lon", "lat"), crs = 4326)
 #'
 #' @importFrom igraph is_directed
+#' @importFrom methods hasArg
 #' @export
 as_sfnetwork.tbl_graph = function(x, ...) {
-  # Get nodes and edges from the graph and add to the other given arguments.
-  args = c(as.list(x), list(...))
-  # If no directedness is specified, use the directedness from the tbl_graph.
-  dir_missing = is.null(args$directed)
-  args$directed = if (dir_missing) is_directed(x) else args$directed
-  # Call the sfnetwork construction function.
-  do.call("sfnetwork", args)
+  if (hasArg("directed")) {
+    sfnetwork(as.list(x), ...)
+  } else {
+    sfnetwork(as.list(x), directed = is_directed(x), ...)
+  }
 }
 
 #' Create a spatial network from linestring geometries

@@ -78,11 +78,11 @@ column named \code{.orig_data}. This is in line with the design principles
 of \code{tidygraph}. Defaults to \code{FALSE}.}
 
 \item{node}{The node for which the neighborhood will be calculated. Can be
-an integer specifying its index. Can also be an object of class
-\code{\link[sf]{sf}} or \code{\link[sf]{sfc}} containing a single spatial
-feature. In that case, this feature will be snapped to its nearest node
-before calculating the neighborhood. When multiple indices or features are
-given, only the first one is used.}
+an integer specifying its index or a character specifying its name. Can also
+be an object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+containing a single spatial feature. In that case, this feature will be
+snapped to its nearest node before calculating the neighborhood. When
+multiple indices, names or features are given, only the first one is used.}
 
 \item{threshold}{The threshold distance to be used. Only nodes within the
 threshold distance from the reference node will be included in the
