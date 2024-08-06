@@ -12,6 +12,8 @@ st_network_paths(
   type = "shortest",
   direction = "out",
   use_names = TRUE,
+  return_cost = TRUE,
+  return_geometry = TRUE,
   ...
 )
 }
@@ -63,18 +65,46 @@ table, should these names be used to encode the nodes in a path, instead of
 the node indices? Defaults to \code{TRUE}. Ignored when the nodes table does
 not have a column named \code{name}.}
 
+\item{return_cost}{Should the total cost of each path be computed? Defaults
+to \code{TRUE}. Ignored if \code{type = 'all_simple'}.}
+
+\item{return_geometry}{Should a linestring geometry be constructed for each
+path? Defaults to \code{TRUE}. The geometries are constructed by calling
+\code{\link[sf]{st_line_merge}} on the linestring geometries of the edges in
+the path. Ignored if \code{type = 'all_simple'} and for networks with
+spatially implicit edges.}
+
 \item{...}{Additional arguments passed on to the wrapped igraph functions.
 Arguments \code{predecessors} and \code{inbound.edges} are ignored.
 Instead of the \code{mode} argument, use the \code{direction} argument.}
 }
 \value{
-An object of class \code{\link[tibble]{tbl_df}} with one row per
-returned path. Depending on the setting of the \code{type} argument,
-columns can be \code{node_paths} (a list column with for each path the
-ordered indices of nodes present in that path) and \code{edge_paths}
-(a list column with for each path the ordered indices of edges present in
-that path). Type \code{'all_simple'} returns only \code{node_paths}, while
-\code{'shortest'} and \code{'all_shortest'} return both.
+An object of class \code{\link[tibble]{tbl_df}} or
+\code{\link[sf]{sf}} with one row per path. If \code{type = 'shortest'}, the
+number of rows is always equal to the number of requested paths, meaning
+that node pairs for which no path could be found are still part of the
+output. For all other path types, the output only contains finite paths.
+
+Depending on the argument setting, the output may include the following
+columns:
+
+\itemize{
+  \item \code{from}: The index of the node at the start of the path.
+  \item \code{to}: The index of the node at the end of the path.
+  \item \code{nodes}: A vector containing the indices of all nodes on the
+  path, in order of visit.
+  \item \code{edges}: A vector containing the indices of all edges on the
+  path, in order of visit. Not returned if \code{type = 'all_simple'}.
+  \item \code{path_found}: A boolean describing if a path was found between
+  the two nodes. Returned only if \code{type = 'shortest'}.
+  \item \code{cost}: The total cost of the path, obtained by summing the
+  weights of all visited edges. Returned only if \code{return_cost = TRUE}.
+  Never returned if \code{type = 'all_simple'}.
+  \item \code{geometry}: The geometry of the path, obtained by merging the
+  geometries of all visited edges. Returned only if
+  \code{return_geometry = TRUE} and the network has spatially explicit
+  edges. Never returned if \code{type = 'all_simple'}.
+}
 }
 \description{
 A function implementing one-to-one and one-to-many routing on spatial
@@ -97,6 +127,11 @@ A node name should correspond to a value of a column in the nodes table
 named \code{name}. This column should contain character values without
 duplicates.
 
+When computing simple paths by setting \code{type = 'all_simple'}, note that
+potentially there are exponentially many paths between two nodes, and you
+may run out of memory especially in undirected, dense, and/or lattice-like
+networks.
+
 For more details on the wrapped igraph functions see the
 \code{\link[igraph]{distances}} and
 \code{\link[igraph]{all_simple_paths}} documentation pages.
@@ -104,6 +139,9 @@ For more details on the wrapped igraph functions see the
 \examples{
 library(sf, quietly = TRUE)
 library(tidygraph, quietly = TRUE)
+
+oldpar = par(no.readonly = TRUE)
+par(mar = c(1,1,1,1))
 
 net = as_sfnetwork(roxel, directed = FALSE) |>
   st_transform(3035)
@@ -113,19 +151,8 @@ net = as_sfnetwork(roxel, directed = FALSE) |>
 paths = st_network_paths(net, from = 495, to = 121)
 paths
 
-node_path = paths |>
-  slice(1) |>
-  pull(node_paths) |>
-  unlist()
-
-node_path
-
-oldpar = par(no.readonly = TRUE)
-par(mar = c(1,1,1,1))
-
 plot(net, col = "grey")
-plot(slice(net, node_path), col = "red", add = TRUE)
-par(oldpar)
+plot(st_geometry(paths), col = "red", lwd = 1.5, add = TRUE)
 
 # Compute the shortest paths from one to multiple nodes.
 # This will return a tibble with one row per path.
@@ -141,20 +168,9 @@ st_crs(p2) = st_crs(net)
 paths = st_network_paths(net, from = p1, to = p2)
 paths
 
-node_path = paths |>
-  slice(1) |>
-  pull(node_paths) |>
-  unlist()
-
-node_path
-
-oldpar = par(no.readonly = TRUE)
-par(mar = c(1,1,1,1))
-
 plot(net, col = "grey")
 plot(c(p1, p2), col = "black", pch = 8, add = TRUE)
-plot(slice(net, node_path), col = "red", add = TRUE)
-par(oldpar)
+plot(st_geometry(paths), col = "red", lwd = 1.5, add = TRUE)
 
 # Use a spatial edge measure to specify edge weights.
 # By default edge_length() is used.
@@ -171,9 +187,7 @@ net |>
 # This is the path with the fewest number of edges, ignoring space.
 st_network_paths(net, p1, p2, weights = NULL)
 
-# Compute all shortest paths between two nodes.
-# If there is more than one shortest path, this returns one path per row.
-st_network_paths(net, from = 5, to = 1, type = "all_shortest")
+par(oldpar)
 
 }
 \seealso{

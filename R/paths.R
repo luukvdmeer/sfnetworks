@@ -52,6 +52,15 @@
 #' the node indices? Defaults to \code{TRUE}. Ignored when the nodes table does
 #' not have a column named \code{name}.
 #'
+#' @param return_cost Should the total cost of each path be computed? Defaults
+#' to \code{TRUE}. Ignored if \code{type = 'all_simple'}.
+#'
+#' @param return_geometry Should a linestring geometry be constructed for each
+#' path? Defaults to \code{TRUE}. The geometries are constructed by calling
+#' \code{\link[sf]{st_line_merge}} on the linestring geometries of the edges in
+#' the path. Ignored if \code{type = 'all_simple'} and for networks with
+#' spatially implicit edges.
+#'
 #' @param ... Additional arguments passed on to the wrapped igraph functions.
 #' Arguments \code{predecessors} and \code{inbound.edges} are ignored.
 #' Instead of the \code{mode} argument, use the \code{direction} argument.
@@ -70,23 +79,50 @@
 #' named \code{name}. This column should contain character values without
 #' duplicates.
 #'
+#' When computing simple paths by setting \code{type = 'all_simple'}, note that
+#' potentially there are exponentially many paths between two nodes, and you
+#' may run out of memory especially in undirected, dense, and/or lattice-like
+#' networks.
+#'
 #' For more details on the wrapped igraph functions see the
 #' \code{\link[igraph]{distances}} and
 #' \code{\link[igraph]{all_simple_paths}} documentation pages.
 #'
 #' @seealso \code{\link{st_network_cost}}
 #'
-#' @return An object of class \code{\link[tibble]{tbl_df}} with one row per
-#' returned path. Depending on the setting of the \code{type} argument,
-#' columns can be \code{node_paths} (a list column with for each path the
-#' ordered indices of nodes present in that path) and \code{edge_paths}
-#' (a list column with for each path the ordered indices of edges present in
-#' that path). Type \code{'all_simple'} returns only \code{node_paths}, while
-#' \code{'shortest'} and \code{'all_shortest'} return both.
+#' @return An object of class \code{\link[tibble]{tbl_df}} or
+#' \code{\link[sf]{sf}} with one row per path. If \code{type = 'shortest'}, the
+#' number of rows is always equal to the number of requested paths, meaning
+#' that node pairs for which no path could be found are still part of the
+#' output. For all other path types, the output only contains finite paths.
+#'
+#' Depending on the argument setting, the output may include the following
+#' columns:
+#'
+#' \itemize{
+#'   \item \code{from}: The index of the node at the start of the path.
+#'   \item \code{to}: The index of the node at the end of the path.
+#'   \item \code{nodes}: A vector containing the indices of all nodes on the
+#'   path, in order of visit.
+#'   \item \code{edges}: A vector containing the indices of all edges on the
+#'   path, in order of visit. Not returned if \code{type = 'all_simple'}.
+#'   \item \code{path_found}: A boolean describing if a path was found between
+#'   the two nodes. Returned only if \code{type = 'shortest'}.
+#'   \item \code{cost}: The total cost of the path, obtained by summing the
+#'   weights of all visited edges. Returned only if \code{return_cost = TRUE}.
+#'   Never returned if \code{type = 'all_simple'}.
+#'   \item \code{geometry}: The geometry of the path, obtained by merging the
+#'   geometries of all visited edges. Returned only if
+#'   \code{return_geometry = TRUE} and the network has spatially explicit
+#'   edges. Never returned if \code{type = 'all_simple'}.
+#' }
 #'
 #' @examples
 #' library(sf, quietly = TRUE)
 #' library(tidygraph, quietly = TRUE)
+#'
+#' oldpar = par(no.readonly = TRUE)
+#' par(mar = c(1,1,1,1))
 #'
 #' net = as_sfnetwork(roxel, directed = FALSE) |>
 #'   st_transform(3035)
@@ -96,19 +132,8 @@
 #' paths = st_network_paths(net, from = 495, to = 121)
 #' paths
 #'
-#' node_path = paths |>
-#'   slice(1) |>
-#'   pull(node_paths) |>
-#'   unlist()
-#'
-#' node_path
-#'
-#' oldpar = par(no.readonly = TRUE)
-#' par(mar = c(1,1,1,1))
-#'
 #' plot(net, col = "grey")
-#' plot(slice(net, node_path), col = "red", add = TRUE)
-#' par(oldpar)
+#' plot(st_geometry(paths), col = "red", lwd = 1.5, add = TRUE)
 #'
 #' # Compute the shortest paths from one to multiple nodes.
 #' # This will return a tibble with one row per path.
@@ -124,20 +149,9 @@
 #' paths = st_network_paths(net, from = p1, to = p2)
 #' paths
 #'
-#' node_path = paths |>
-#'   slice(1) |>
-#'   pull(node_paths) |>
-#'   unlist()
-#'
-#' node_path
-#'
-#' oldpar = par(no.readonly = TRUE)
-#' par(mar = c(1,1,1,1))
-#'
 #' plot(net, col = "grey")
 #' plot(c(p1, p2), col = "black", pch = 8, add = TRUE)
-#' plot(slice(net, node_path), col = "red", add = TRUE)
-#' par(oldpar)
+#' plot(st_geometry(paths), col = "red", lwd = 1.5, add = TRUE)
 #'
 #' # Use a spatial edge measure to specify edge weights.
 #' # By default edge_length() is used.
@@ -154,32 +168,32 @@
 #' # This is the path with the fewest number of edges, ignoring space.
 #' st_network_paths(net, p1, p2, weights = NULL)
 #'
-#' # Compute all shortest paths between two nodes.
-#' # If there is more than one shortest path, this returns one path per row.
-#' st_network_paths(net, from = 5, to = 1, type = "all_shortest")
+#' par(oldpar)
 #'
 #' @export
 st_network_paths = function(x, from, to = node_ids(x),
                             weights = edge_length(), type = "shortest",
-                            direction = "out", use_names = TRUE, ...) {
+                            direction = "out", use_names = TRUE,
+                            return_cost = TRUE, return_geometry = TRUE, ...) {
   UseMethod("st_network_paths")
 }
 
 #' @importFrom igraph vertex_attr vertex_attr_names
-#' @importFrom rlang enquo eval_tidy expr
-#' @importFrom tibble as_tibble
+#' @importFrom rlang enquo eval_tidy expr has_name
+#' @importFrom sf st_as_sf
 #' @importFrom tidygraph .E .register_graph_context
 #' @export
 st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
                                       weights = edge_length(),
                                       type = "shortest", direction = "out",
-                                      use_names = TRUE, ...) {
-    # Parse from and to arguments.
+                                      use_names = TRUE, return_cost = TRUE,
+                                      return_geometry = TRUE, ...) {
+  # Parse from and to arguments.
   # --> Convert geometries to node indices.
   # --> Raise warnings when igraph requirements are not met.
   if (is_sf(from) | is_sfc(from)) from = nearest_node_ids(x, from)
   if (is_sf(to) | is_sfc(to)) to = nearest_node_ids(x, to)
-  if (length(from) > 1) raise_multiple_elements("from")
+  if (length(from) > 1) raise_multiple_elements("from"); from = from[1]
   if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
   # Parse weights argument using tidy evaluation on the network edges.
   .register_graph_context(x, free = TRUE)
@@ -200,15 +214,38 @@ st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
   # Convert node indices to node names if requested.
   if (use_names && "name" %in% vertex_attr_names(x)) {
     nnames = vertex_attr(x, "name")
-    paths$node_paths = lapply(paths$node_paths, \(x) nnames[x])
+    paths$from = do.call("c", lapply(paths$from, \(x) nnames[x]))
+    paths$to = do.call("c", lapply(paths$to, \(x) nnames[x]))
+    paths$nodes = lapply(paths$nodes, \(x) nnames[x])
   }
-  # Return as a tibble.
-  as_tibble(do.call(cbind, paths))
+  # Enrich the paths with additional information.
+  if (has_name(paths, "edges")) {
+    E = paths$edges
+    # Compute total cost of each path if requested.
+    if (return_cost) {
+      if (length(weights) == 1 && is.na(weights)) {
+        costs = do.call("c", lapply(paths$edges, length))
+      } else {
+        costs = do.call("c", lapply(paths$edges, \(x) sum(weights[x])))
+      }
+      if (has_name(paths, "path_found")) costs[paths$path_found] = Inf
+      paths$cost = costs
+    }
+    # Construct path geometries of requested.
+    if (return_geometry && has_explicit_edges(x)) {
+      egeom = pull_edge_geom(x)
+      pgeom = do.call("c", lapply(paths$edges, \(x) merge_lines(egeom[x])))
+      paths$geometry = pgeom
+      paths = st_as_sf(paths)
+    }
+  }
+  paths
 }
 
 #' @importFrom igraph all_shortest_paths all_simple_paths shortest_paths
 #' igraph_opt igraph_options
 #' @importFrom methods hasArg
+#' @importFrom tibble tibble
 igraph_paths = function(x, from, to, weights, type = "shortest",
                         direction = "out", ...) {
   # Change default igraph options.
@@ -247,8 +284,22 @@ igraph_paths = function(x, from, to, weights, type = "shortest",
   # Extract the nodes in the paths, and the edges in the paths (if given).
   npaths = paths[[1]]
   epaths = if (length(paths) > 1) paths[[2]] else NULL
-  # Return in a list.
-  list(node_paths = npaths, edge_paths = epaths)
+  # Define the nodes from which the returned paths start and at which they end.
+  if (type == "shortest") {
+    starts = rep(from, length(to))
+    ends = to
+    path_found = lengths(epaths) > 0 | starts == ends
+  } else {
+    starts = do.call("c", lapply(npaths, `[`, 1))
+    ends = do.call("c", lapply(npaths, last_element))
+    path_found = NULL
+  }
+  # Return in a tibble.
+  tibble(
+    from = starts, to = ends,
+    nodes = npaths, edges = epaths,
+    path_found = path_found
+  )
 }
 
 #' Compute a cost matrix of a spatial network

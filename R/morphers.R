@@ -450,14 +450,21 @@ to_spatial_neighborhood = function(x, node, threshold, ...) {
 to_spatial_shortest_paths = function(x, ...) {
   # Call st_network_paths with the given arguments.
   if (hasArg("type")) raise_unsupported_arg("type")
-  paths = st_network_paths(x, ..., type = "shortest")
+  paths = st_network_paths(
+    x,
+    ...,
+    type = "shortest",
+    use_names = FALSE,
+    return_cost = FALSE,
+    return_geometry = FALSE
+  )
   # Retrieve original node and edge indices from the network.
   orig_node_idxs = vertex_attr(x, ".tidygraph_node_index")
   orig_edge_idxs = edge_attr(x, ".tidygraph_edge_index")
   # Subset the network for each computed shortest path.
   get_single_path = function(i) {
-    edge_idxs = as.integer(paths$edge_paths[[i]])
-    node_idxs = as.integer(paths$node_paths[[i]])
+    edge_idxs = as.integer(paths$edges[[i]])
+    node_idxs = as.integer(paths$nodes[[i]])
     x_new = delete_edges(x, orig_edge_idxs[-edge_idxs])
     x_new = delete_vertices(x_new, orig_node_idxs[-node_idxs])
     x_new %preserve_all_attrs% x

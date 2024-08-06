@@ -232,6 +232,22 @@ bind_rows_list = function(...) {
   mutate(out, across(which(!is_listcol), unlist))
 }
 
+#' Get the last element of a vector
+#'
+#' @param x A vector.
+#'
+#' @return The last element of \code{x}.
+#'
+#' @noRd
+last_element = function(x) {
+  n = length(x)
+  if (n > 0) {
+    x[n]
+  } else {
+    x[1]
+  }
+}
+
 #' Draw lines between two sets of points, row-wise
 #'
 #' @param x An object of class \code{\link[sf]{sfc}} with \code{POINT}
@@ -257,6 +273,29 @@ draw_lines = function(x, y) {
   st_crs(lines) = st_crs(x)
   st_precision(lines) = st_precision(x)
   lines
+}
+
+#' Merge multiple linestring geometries into one linestring
+#'
+#' @param x An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
+#' geometries.
+#'
+#' @details If linestrings share endpoints they will be connected and form a
+#' single linestring. If there are multiple disconnected components the result
+#' will be a multi-linestring. If \code{x} does not contain any geometries, the
+#' result will be an empty linestring.
+#'
+#' @return An object of class \code{\link[sf]{sfc}} with a single
+#' \code{LINESTRING} or \code{MULTILINESTRING} geometry.
+#'
+#' @importFrom sf st_crs st_linestring st_line_merge st_sfc
+#' @noRd
+merge_lines = function(x) {
+  if (length(x) == 0) {
+    st_sfc(st_linestring(), crs = st_crs(x))
+  } else {
+    st_line_merge(st_combine(x))
+  }
 }
 
 #' Get the geometries of the boundary nodes of edges in an sfnetwork
