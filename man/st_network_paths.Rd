@@ -2,7 +2,7 @@
 % Please edit documentation in R/paths.R
 \name{st_network_paths}
 \alias{st_network_paths}
-\title{Paths between points in geographical space}
+\title{Find paths between nodes in a spatial network}
 \usage{
 st_network_paths(
   x,
@@ -10,6 +10,7 @@ st_network_paths(
   to = node_ids(x),
   weights = edge_length(),
   type = "shortest",
+  direction = "out",
   use_names = TRUE,
   ...
 )
@@ -17,22 +18,19 @@ st_network_paths(
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
 
-\item{from}{The geospatial point from which the paths will be
-calculated. Can be an object an object of class \code{\link[sf]{sf}} or
-\code{\link[sf]{sfc}}, containing a single feature. When multiple features
-are given, only the first one is used.
-Alternatively, it can be an integer, referring to the index of the
-node from which the paths will be calculated, or a character,
-referring to the name of the node from which the paths will be
-calculated.}
+\item{from}{The node where the paths should start. Can be an integer
+specifying its index or a character specifying its name. Can also be an
+object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}} containing a
+single spatial feature. In that case, this feature will be snapped to its
+nearest node before finding the paths. When multiple indices, names or
+features are given, only the first one is used.}
 
-\item{to}{The (set of) geospatial point(s) to which the paths will be
-calculated. Can be an object of  class \code{\link[sf]{sf}} or
-\code{\link[sf]{sfc}}.
-Alternatively it can be a numeric vector containing the indices of the nodes
-to which the paths will be calculated, or a character vector
-containing the names of the nodes to which the paths will be
-calculated. By default, all nodes in the network are included.}
+\item{to}{The nodes where the paths should end. Can be an integer vector
+specifying their indices or a character vector specifying their name. Can
+also be an object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+containing spatial features. In that case, these feature will be snapped to
+their nearest node before finding the paths. By default, all nodes in the
+network are included.}
 
 \item{weights}{The edge weights to be used in the shortest path calculation.
 Can be a numeric vector of the same length as the number of edges, a
@@ -46,22 +44,28 @@ The default is \code{\link{edge_length}}, which computes the geographic
 lengths of the edges.}
 
 \item{type}{Character defining which type of path calculation should be
-performed. If set to \code{'shortest'} paths are calculated using
-\code{\link[igraph]{shortest_paths}}, if set to
-\code{'all_shortest'} paths are calculated using
-\code{\link[igraph]{all_shortest_paths}}, if set to
-\code{'all_simple'} paths are calculated using
+performed. If set to \code{'shortest'} paths are found using
+\code{\link[igraph]{shortest_paths}}, if set to \code{'all_shortest'} paths
+are found using \code{\link[igraph]{all_shortest_paths}}, if set to
+\code{'all_simple'} paths are found using
 \code{\link[igraph]{all_simple_paths}}. Defaults to \code{'shortest'}.}
+
+\item{direction}{The direction of travel. Defaults to \code{'out'}, meaning
+that the direction given by the network is followed and paths are found from
+the node given as argument \code{from}. May be set to \code{'in'}, meaning
+that the opposite direction is followed an paths are found towards the node
+given as argument \code{from}. May also be set to \code{'all'}, meaning that
+the network is considered to be undirected. This argument is ignored for
+undirected networks.}
 
 \item{use_names}{If a column named \code{name} is present in the nodes
 table, should these names be used to encode the nodes in a path, instead of
 the node indices? Defaults to \code{TRUE}. Ignored when the nodes table does
 not have a column named \code{name}.}
 
-\item{...}{Arguments passed on to the corresponding
-\code{\link[igraph:shortest_paths]{igraph}} or
-\code{\link[igraph:all_simple_paths]{igraph}} function. Arguments
-\code{predecessors} and \code{inbound.edges} are ignored.}
+\item{...}{Additional arguments passed on to the wrapped igraph functions.
+Arguments \code{predecessors} and \code{inbound.edges} are ignored.
+Instead of the \code{mode} argument, use the \code{direction} argument.}
 }
 \value{
 An object of class \code{\link[tibble]{tbl_df}} with one row per
@@ -69,17 +73,14 @@ returned path. Depending on the setting of the \code{type} argument,
 columns can be \code{node_paths} (a list column with for each path the
 ordered indices of nodes present in that path) and \code{edge_paths}
 (a list column with for each path the ordered indices of edges present in
-that path). \code{'all_shortest'} and \code{'all_simple'} return only
-\code{node_paths}, while \code{'shortest'} returns both.
+that path). Type \code{'all_simple'} returns only \code{node_paths}, while
+\code{'shortest'} and \code{'all_shortest'} return both.
 }
 \description{
-Combined wrapper around \code{\link[igraph]{shortest_paths}},
-\code{\link[igraph]{all_shortest_paths}} and
-\code{\link[igraph]{all_simple_paths}} from \code{\link[igraph]{igraph}},
-allowing to provide any geospatial point as \code{from} argument and any
-set of geospatial points as \code{to} argument. If such a geospatial point
-is not equal to a node in the network, it will be snapped to its nearest
-node before calculating the shortest or simple paths.
+A function implementing one-to-one and one-to-many routing on spatial
+networks. It can be used to either find one shortest path, all shortest
+paths, or all simple paths between one node and one or
+more other nodes in the network.
 }
 \details{
 Spatial features provided to the \code{from} and/or
@@ -96,8 +97,8 @@ A node name should correspond to a value of a column in the nodes table
 named \code{name}. This column should contain character values without
 duplicates.
 
-For more details on the wrapped functions from \code{\link[igraph]{igraph}}
-see the \code{\link[igraph]{shortest_paths}} or
+For more details on the wrapped igraph functions see the
+\code{\link[igraph]{distances}} and
 \code{\link[igraph]{all_simple_paths}} documentation pages.
 }
 \examples{

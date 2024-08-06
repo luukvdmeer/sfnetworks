@@ -19,17 +19,18 @@ raise_assume_planar = function(caller) {
 
 raise_multiple_elements = function(arg) {
   warning(
-    "Although argument ",
+    "Although argument `",
     arg,
-    " has length > 1, only the first element is used",
+    "` has length > 1, only the first element is used",
     call. = FALSE
   )
 }
 
 raise_na_values = function(arg) {
   stop(
-    "NA values present in argument ",
+    "NA values present in argument `",
     arg,
+    "`",
     call. = FALSE
   )
 }
@@ -44,9 +45,9 @@ raise_overwrite = function(value) {
 
 raise_reserved_attr = function(value) {
   stop(
-    "The attribute name '",
+    "The attribute name `",
     value,
-    "' is reserved",
+    "` is reserved",
     call. = FALSE
   )
 }
@@ -57,6 +58,26 @@ raise_unknown_input = function(value) {
     value,
     call. = FALSE
   )
+}
+
+raise_unsupported_arg = function(arg, replacement = NULL) {
+  if (is.null(replacement)) {
+    stop(
+      "Setting argument `",
+      name,
+      "` is not supported",
+      call. = FALSE
+    )
+  } else {
+    stop(
+      "Setting argument `",
+      name,
+      "` is not supported, use `",
+      replacement,
+      "` instead",
+      call. = FALSE
+    )
+  }
 }
 
 raise_invalid_sf_column = function() {

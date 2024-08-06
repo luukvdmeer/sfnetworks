@@ -17,22 +17,19 @@ st_network_cost(
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
 
-\item{from}{The (set of) geospatial point(s) from which the shortest paths
-will be calculated. Can be an object of  class \code{\link[sf]{sf}} or
-\code{\link[sf]{sfc}}.
-Alternatively it can be a numeric vector containing the indices of the nodes
-from which the shortest paths will be calculated, or a character vector
-containing the names of the nodes from which the shortest paths will be
-calculated. By default, all nodes in the network are included.}
+\item{from}{The nodes where the paths should start. Can be an integer vector
+specifying their indices or a character vector specifying their name. Can
+also be an object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+containing spatial features. In that case, these feature will be snapped to
+their nearest node before finding the paths. By default, all nodes in the
+network are included.}
 
-\item{to}{The (set of) geospatial point(s) to which the shortest paths will
-be calculated. Can be an object of class \code{\link[sf]{sf}} or
-\code{\link[sf]{sfc}}.
-Alternatively it can be a numeric vector containing the indices of the nodes
-to which the shortest paths will be calculated, or a character vector
-containing the names of the nodes to which the shortest paths will be
-calculated. Duplicated values will be removed before calculating the cost
-matrix. By default, all nodes in the network are included.}
+\item{to}{The nodes where the paths should end. Can be an integer vector
+specifying their indices or a character vector specifying their name. Can
+also be an object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+containing spatial features. In that case, these feature will be snapped to
+their nearest node before finding the paths. By default, all nodes in the
+network are included.}
 
 \item{weights}{The edge weights to be used in the shortest path calculation.
 Can be a numeric vector of the same length as the number of edges, a
@@ -46,9 +43,9 @@ The default is \code{\link{edge_length}}, which computes the geographic
 lengths of the edges.}
 
 \item{direction}{The direction of travel. Defaults to \code{'out'}, meaning
-that the direction given by the network is followed and costs are calculated
+that the direction given by the network is followed and costs are computed
 from the points given as argument \code{from}. May be set to \code{'in'},
-meaning that the opposite direction is followed an costs are calculated
+meaning that the opposite direction is followed an costs are computed
 towards the points given as argument \code{from}. May also be set to
 \code{'all'}, meaning that the network is considered to be undirected. This
 argument is ignored for undirected networks.}
@@ -56,19 +53,16 @@ argument is ignored for undirected networks.}
 \item{Inf_as_NaN}{Should the cost values of unconnected nodes be stored as
 \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.}
 
-\item{...}{Arguments passed on to \code{\link[igraph]{distances}}. Argument
-\code{mode} is ignored. Use \code{direction} instead.}
+\item{...}{Additional arguments passed on to \code{\link[igraph]{distances}}.
+Instead of the \code{mode} argument, use the \code{direction} argument.}
 }
 \value{
 An n times m numeric matrix where n is the length of the \code{from}
 argument, and m is the length of the \code{to} argument.
 }
 \description{
-Wrapper around \code{\link[igraph]{distances}} to calculate costs of
-pairwise shortest paths between points in a spatial network. It allows to
-provide any set of geospatial point as \code{from} and \code{to} arguments.
-If such a geospatial point is not equal to a node in the network, it will
-be snapped to its nearest node before calculating costs.
+A function to compute total travel costs of shortest paths between nodes
+in a spatial network.
 }
 \details{
 Spatial features provided to the \code{from} and/or
@@ -85,8 +79,8 @@ A node name should correspond to a value of a column in the nodes table
 named \code{name}. This column should contain character values without
 duplicates.
 
-For more details on the wrapped function from \code{\link[igraph]{igraph}}
-see the \code{\link[igraph]{distances}} documentation page.
+For more details on the wrapped igraph function see the
+\code{\link[igraph]{distances}} documentation page.
 }
 \examples{
 library(sf, quietly = TRUE)

@@ -1,31 +1,25 @@
-#' Paths between points in geographical space
+#' Find paths between nodes in a spatial network
 #'
-#' Combined wrapper around \code{\link[igraph]{shortest_paths}},
-#' \code{\link[igraph]{all_shortest_paths}} and
-#' \code{\link[igraph]{all_simple_paths}} from \code{\link[igraph]{igraph}},
-#' allowing to provide any geospatial point as \code{from} argument and any
-#' set of geospatial points as \code{to} argument. If such a geospatial point
-#' is not equal to a node in the network, it will be snapped to its nearest
-#' node before calculating the shortest or simple paths.
+#' A function implementing one-to-one and one-to-many routing on spatial
+#' networks. It can be used to either find one shortest path, all shortest
+#' paths, or all simple paths between one node and one or
+#' more other nodes in the network.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @param from The geospatial point from which the paths will be
-#' calculated. Can be an object an object of class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}, containing a single feature. When multiple features
-#' are given, only the first one is used.
-#' Alternatively, it can be an integer, referring to the index of the
-#' node from which the paths will be calculated, or a character,
-#' referring to the name of the node from which the paths will be
-#' calculated.
+#' @param from The node where the paths should start. Can be an integer
+#' specifying its index or a character specifying its name. Can also be an
+#' object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}} containing a
+#' single spatial feature. In that case, this feature will be snapped to its
+#' nearest node before finding the paths. When multiple indices, names or
+#' features are given, only the first one is used.
 #'
-#' @param to The (set of) geospatial point(s) to which the paths will be
-#' calculated. Can be an object of  class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}.
-#' Alternatively it can be a numeric vector containing the indices of the nodes
-#' to which the paths will be calculated, or a character vector
-#' containing the names of the nodes to which the paths will be
-#' calculated. By default, all nodes in the network are included.
+#' @param to The nodes where the paths should end. Can be an integer vector
+#' specifying their indices or a character vector specifying their name. Can
+#' also be an object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+#' containing spatial features. In that case, these feature will be snapped to
+#' their nearest node before finding the paths. By default, all nodes in the
+#' network are included.
 #'
 #' @param weights The edge weights to be used in the shortest path calculation.
 #' Can be a numeric vector of the same length as the number of edges, a
@@ -39,22 +33,28 @@
 #' lengths of the edges.
 #'
 #' @param type Character defining which type of path calculation should be
-#' performed. If set to \code{'shortest'} paths are calculated using
-#' \code{\link[igraph]{shortest_paths}}, if set to
-#' \code{'all_shortest'} paths are calculated using
-#' \code{\link[igraph]{all_shortest_paths}}, if set to
-#' \code{'all_simple'} paths are calculated using
+#' performed. If set to \code{'shortest'} paths are found using
+#' \code{\link[igraph]{shortest_paths}}, if set to \code{'all_shortest'} paths
+#' are found using \code{\link[igraph]{all_shortest_paths}}, if set to
+#' \code{'all_simple'} paths are found using
 #' \code{\link[igraph]{all_simple_paths}}. Defaults to \code{'shortest'}.
+#'
+#' @param direction The direction of travel. Defaults to \code{'out'}, meaning
+#' that the direction given by the network is followed and paths are found from
+#' the node given as argument \code{from}. May be set to \code{'in'}, meaning
+#' that the opposite direction is followed an paths are found towards the node
+#' given as argument \code{from}. May also be set to \code{'all'}, meaning that
+#' the network is considered to be undirected. This argument is ignored for
+#' undirected networks.
 #'
 #' @param use_names If a column named \code{name} is present in the nodes
 #' table, should these names be used to encode the nodes in a path, instead of
 #' the node indices? Defaults to \code{TRUE}. Ignored when the nodes table does
 #' not have a column named \code{name}.
 #'
-#' @param ... Arguments passed on to the corresponding
-#' \code{\link[igraph:shortest_paths]{igraph}} or
-#' \code{\link[igraph:all_simple_paths]{igraph}} function. Arguments
-#' \code{predecessors} and \code{inbound.edges} are ignored.
+#' @param ... Additional arguments passed on to the wrapped igraph functions.
+#' Arguments \code{predecessors} and \code{inbound.edges} are ignored.
+#' Instead of the \code{mode} argument, use the \code{direction} argument.
 #'
 #' @details Spatial features provided to the \code{from} and/or
 #' \code{to} argument don't necessarily have to be points. Internally, the
@@ -70,8 +70,8 @@
 #' named \code{name}. This column should contain character values without
 #' duplicates.
 #'
-#' For more details on the wrapped functions from \code{\link[igraph]{igraph}}
-#' see the \code{\link[igraph]{shortest_paths}} or
+#' For more details on the wrapped igraph functions see the
+#' \code{\link[igraph]{distances}} and
 #' \code{\link[igraph]{all_simple_paths}} documentation pages.
 #'
 #' @seealso \code{\link{st_network_cost}}
@@ -81,8 +81,8 @@
 #' columns can be \code{node_paths} (a list column with for each path the
 #' ordered indices of nodes present in that path) and \code{edge_paths}
 #' (a list column with for each path the ordered indices of edges present in
-#' that path). \code{'all_shortest'} and \code{'all_simple'} return only
-#' \code{node_paths}, while \code{'shortest'} returns both.
+#' that path). Type \code{'all_simple'} returns only \code{node_paths}, while
+#' \code{'shortest'} and \code{'all_shortest'} return both.
 #'
 #' @examples
 #' library(sf, quietly = TRUE)
@@ -158,24 +158,23 @@
 #' # If there is more than one shortest path, this returns one path per row.
 #' st_network_paths(net, from = 5, to = 1, type = "all_shortest")
 #'
-#' @importFrom igraph V
 #' @export
 st_network_paths = function(x, from, to = node_ids(x),
                             weights = edge_length(), type = "shortest",
-                            use_names = TRUE, ...) {
+                            direction = "out", use_names = TRUE, ...) {
   UseMethod("st_network_paths")
 }
 
-#' @importFrom igraph V
+#' @importFrom igraph vertex_attr vertex_attr_names
 #' @importFrom rlang enquo eval_tidy expr
-#' @importFrom sf st_geometry
+#' @importFrom tibble as_tibble
 #' @importFrom tidygraph .E .register_graph_context
 #' @export
 st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
                                       weights = edge_length(),
-                                      type = "shortest",
+                                      type = "shortest", direction = "out",
                                       use_names = TRUE, ...) {
-  # Parse from and to arguments.
+    # Parse from and to arguments.
   # --> Convert geometries to node indices.
   # --> Raise warnings when igraph requirements are not met.
   if (is_sf(from) | is_sfc(from)) from = nearest_node_ids(x, from)
@@ -196,89 +195,82 @@ st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
     deprecate_weights_is_null("st_network_paths")
     weights = NA
   }
-  # Call paths calculation function according to type argument.
-  switch(
+  # Compute the shortest paths.
+  paths = igraph_paths(x, from, to, weights, type, direction, ...)
+  # Convert node indices to node names if requested.
+  if (use_names && "name" %in% vertex_attr_names(x)) {
+    nnames = vertex_attr(x, "name")
+    paths$node_paths = lapply(paths$node_paths, \(x) nnames[x])
+  }
+  # Return as a tibble.
+  as_tibble(do.call(cbind, paths))
+}
+
+#' @importFrom igraph all_shortest_paths all_simple_paths shortest_paths
+#' igraph_opt igraph_options
+#' @importFrom methods hasArg
+igraph_paths = function(x, from, to, weights, type = "shortest",
+                        direction = "out", ...) {
+  # Change default igraph options.
+  # This prevents igraph returns node or edge indices as formatted sequences.
+  # We only need the "raw" integer indices.
+  # Changing this option improves performance especially on large networks.
+  default_igraph_opt = igraph_opt("return.vs.es")
+  igraph_options(return.vs.es = FALSE)
+  on.exit(igraph_options(return.vs.es = default_igraph_opt))
+  # The direction argument is used instead of igraphs mode argument.
+  # This means the mode argument should not be set.
+  if (hasArg("mode")) raise_unsupported_arg("mode", replacement = "direction")
+  # Call igraph paths calculation function according to type argument.
+  paths = switch(
     type,
-    shortest = get_shortest_paths(x, from, to, weights, use_names,...),
-    all_shortest = get_all_shortest_paths(x, from, to, weights, use_names,...),
-    all_simple = get_all_simple_paths(x, from, to, use_names,...),
+    shortest = shortest_paths(
+      x, from, to,
+      weights = weights,
+      output = "both",
+      mode = direction,
+      ...
+    ),
+    all_shortest = all_shortest_paths(
+      x, from, to,
+      weights = weights,
+      mode = direction,
+      ...
+    ),
+    all_simple = list(vpaths = all_simple_paths(
+      x, from, to,
+      mode = direction,
+      ...
+    )),
     raise_unknown_input(type)
   )
-}
-
-#' @importFrom igraph shortest_paths vertex_attr_names
-#' @importFrom tibble as_tibble
-get_shortest_paths = function(x, from, to, weights, use_names = TRUE, ...) {
-  # Call igraph function.
-  paths = shortest_paths(x, from, to, weights = weights, output = "both", ...)
-  # Extract vector of node indices or names.
-  if (use_names && "name" %in% vertex_attr_names(x)) {
-    npaths = lapply(paths[[1]], attr, "names")
-  } else {
-    npaths = lapply(paths[[1]], as.integer)
-  }
-  # Extract vector of edge indices.
-  epaths = lapply(paths[[2]], as.integer)
-  # Return as columns in a tibble.
-  as_tibble(do.call(cbind, list(node_paths = npaths, edge_paths = epaths)))
-}
-
-#' @importFrom igraph all_shortest_paths vertex_attr_names
-#' @importFrom tibble as_tibble
-get_all_shortest_paths = function(x, from, to, weights, use_names = TRUE,...) {
-  # Call igraph function.
-  paths = all_shortest_paths(x, from, to, weights = weights, ...)
-  # Extract vector of node indices or names.
-  if (use_names && "name" %in% vertex_attr_names(x)) {
-    npaths = lapply(paths[[1]], attr, "names")
-  } else {
-    npaths = lapply(paths[[1]], as.integer)
-  }
-  # Return as column in a tibble.
-  as_tibble(do.call(cbind, list(node_paths = npaths)))
-}
-
-#' @importFrom igraph all_simple_paths vertex_attr_names
-#' @importFrom tibble as_tibble
-get_all_simple_paths = function(x, from, to, use_names = TRUE, ...) {
-  # Call igraph function.
-  paths = all_simple_paths(x, from, to, ...)
-  # Extract paths of node indices.
-  if (use_names && "name" %in% vertex_attr_names(x)) {
-    npaths = lapply(paths, attr, "names")
-  } else {
-    npaths = lapply(paths, as.integer)
-  }
-  # Return as column in a tibble.
-  as_tibble(do.call(cbind, list(node_paths = npaths)))
+  # Extract the nodes in the paths, and the edges in the paths (if given).
+  npaths = paths[[1]]
+  epaths = if (length(paths) > 1) paths[[2]] else NULL
+  # Return in a list.
+  list(node_paths = npaths, edge_paths = epaths)
 }
 
 #' Compute a cost matrix of a spatial network
 #'
-#' Wrapper around \code{\link[igraph]{distances}} to calculate costs of
-#' pairwise shortest paths between points in a spatial network. It allows to
-#' provide any set of geospatial point as \code{from} and \code{to} arguments.
-#' If such a geospatial point is not equal to a node in the network, it will
-#' be snapped to its nearest node before calculating costs.
+#' A function to compute total travel costs of shortest paths between nodes
+#' in a spatial network.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @param from The (set of) geospatial point(s) from which the shortest paths
-#' will be calculated. Can be an object of  class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}.
-#' Alternatively it can be a numeric vector containing the indices of the nodes
-#' from which the shortest paths will be calculated, or a character vector
-#' containing the names of the nodes from which the shortest paths will be
-#' calculated. By default, all nodes in the network are included.
+#' @param from The nodes where the paths should start. Can be an integer vector
+#' specifying their indices or a character vector specifying their name. Can
+#' also be an object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+#' containing spatial features. In that case, these feature will be snapped to
+#' their nearest node before finding the paths. By default, all nodes in the
+#' network are included.
 #'
-#' @param to The (set of) geospatial point(s) to which the shortest paths will
-#' be calculated. Can be an object of class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}.
-#' Alternatively it can be a numeric vector containing the indices of the nodes
-#' to which the shortest paths will be calculated, or a character vector
-#' containing the names of the nodes to which the shortest paths will be
-#' calculated. Duplicated values will be removed before calculating the cost
-#' matrix. By default, all nodes in the network are included.
+#' @param to The nodes where the paths should end. Can be an integer vector
+#' specifying their indices or a character vector specifying their name. Can
+#' also be an object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+#' containing spatial features. In that case, these feature will be snapped to
+#' their nearest node before finding the paths. By default, all nodes in the
+#' network are included.
 #'
 #' @param weights The edge weights to be used in the shortest path calculation.
 #' Can be a numeric vector of the same length as the number of edges, a
@@ -292,9 +284,9 @@ get_all_simple_paths = function(x, from, to, use_names = TRUE, ...) {
 #' lengths of the edges.
 #'
 #' @param direction The direction of travel. Defaults to \code{'out'}, meaning
-#' that the direction given by the network is followed and costs are calculated
+#' that the direction given by the network is followed and costs are computed
 #' from the points given as argument \code{from}. May be set to \code{'in'},
-#' meaning that the opposite direction is followed an costs are calculated
+#' meaning that the opposite direction is followed an costs are computed
 #' towards the points given as argument \code{from}. May also be set to
 #' \code{'all'}, meaning that the network is considered to be undirected. This
 #' argument is ignored for undirected networks.
@@ -302,8 +294,8 @@ get_all_simple_paths = function(x, from, to, use_names = TRUE, ...) {
 #' @param Inf_as_NaN Should the cost values of unconnected nodes be stored as
 #' \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.
 #'
-#' @param ... Arguments passed on to \code{\link[igraph]{distances}}. Argument
-#' \code{mode} is ignored. Use \code{direction} instead.
+#' @param ... Additional arguments passed on to \code{\link[igraph]{distances}}.
+#' Instead of the \code{mode} argument, use the \code{direction} argument.
 #'
 #' @details Spatial features provided to the \code{from} and/or
 #' \code{to} argument don't necessarily have to be points. Internally, the
@@ -319,8 +311,8 @@ get_all_simple_paths = function(x, from, to, use_names = TRUE, ...) {
 #' named \code{name}. This column should contain character values without
 #' duplicates.
 #'
-#' For more details on the wrapped function from \code{\link[igraph]{igraph}}
-#' see the \code{\link[igraph]{distances}} documentation page.
+#' For more details on the wrapped igraph function see the
+#' \code{\link[igraph]{distances}} documentation page.
 #'
 #' @seealso \code{\link{st_network_paths}}
 #'
@@ -367,7 +359,6 @@ get_all_simple_paths = function(x, from, to, use_names = TRUE, ...) {
 #' cost_matrix = st_network_cost(net)
 #' dim(cost_matrix)
 #'
-#' @importFrom igraph V
 #' @export
 st_network_cost = function(x, from = node_ids(x), to = node_ids(x),
                            weights = edge_length(), direction = "out",
@@ -375,7 +366,8 @@ st_network_cost = function(x, from = node_ids(x), to = node_ids(x),
   UseMethod("st_network_cost")
 }
 
-#' @importFrom igraph distances V
+#' @importFrom igraph distances
+#' @importFrom methods hasArg
 #' @importFrom rlang enquo eval_tidy expr
 #' @importFrom tidygraph .E .register_graph_context
 #' @importFrom units as_units deparse_unit
@@ -405,29 +397,20 @@ st_network_cost.sfnetwork = function(x, from = node_ids(x), to = node_ids(x),
     weights = NA
   }
   # Parse other arguments.
-  # --> The mode argument in ... is ignored in favor of the direction argument.
-  dots = list(...)
-  if (!is.null(dots$mode)) {
-    dots$mode = NULL
-    warning(
-      "Argument `mode` is ignored, use `direction` instead.",
-      call. = FALSE
-    )
-  }
+  # --> The direction argument is used instead of igraphs mode argument.
+  # --> This means the mode argument should not be set.
+  if (hasArg("mode")) raise_unsupported_arg("mode", replacement = "direction")
   # Call the igraph distances function to compute the cost matrix.
   # Special attention is required if there are duplicated 'to' nodes:
   # --> In igraph this cannot be handled.
   # --> Therefore we call igraph::distances with unique 'to' nodes.
   # --> Afterwards we copy cost values to duplicated 'to' nodes.
   if(any(duplicated(to))) {
-    to_unique = unique(to)
-    match = match(to, to_unique)
-    args = list(x, from, to_unique, weights = weights, mode = direction)
-    matrix = do.call(igraph::distances, c(args, dots))
-    matrix = matrix[, match, drop = FALSE]
+    tou = unique(to)
+    matrix = distances(x, from, tou, weights = weights, mode = direction, ...)
+    matrix = matrix[, match(to, tou), drop = FALSE]
   } else {
-    args = list(x, from, to, weights = weights, mode = direction)
-    matrix = do.call(igraph::distances, c(args, dots))
+    matrix = distances(x, from, to, weights = weights, mode = direction, ...)
   }
   # Post-process and return.
   # --> Convert Inf to NaN if requested.
