@@ -102,7 +102,7 @@ st_network_blend = function(x, y, tolerance = Inf) {
 st_network_blend.sfnetwork = function(x, y, tolerance = Inf) {
   if (! has_explicit_edges(x)) {
     cli_abort(c(
-      "{.arg x} should have spatially explicit edges",
+      "{.arg x} should have spatially explicit edges.",
       "i" = "Call {.fn sfnetworks::to_spatial_explicit} to explicitize edges."
     ))
   }
@@ -124,6 +124,7 @@ st_network_blend.sfnetwork = function(x, y, tolerance = Inf) {
   blend_(x, y, tolerance)
 }
 
+#' @importFrom cli cli_warn
 #' @importFrom dplyr bind_rows full_join
 #' @importFrom igraph is_directed
 #' @importFrom sf st_as_sf st_cast st_crs st_crs<- st_distance st_equals
@@ -227,10 +228,10 @@ blend_ = function(x, y, tolerance) {
   Y = Y[is_on | is_close]
   # Return x when there are no features left to be blended.
   if (length(Y) == 0) {
-    warning(
-      "No points were blended. Increase the tolerance distance?",
-      call. = FALSE
-    )
+    cli_warn(c(
+      "{.fn st_network_blend} did not blend any points into the network.",
+      "i" = "Increase {.arg tolerance} for a higher tolerance distance."
+    ))
     return (x)
   } else {
     if (will_assume_constant(x)) raise_assume_constant("st_network_blend")

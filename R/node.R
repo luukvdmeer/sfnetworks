@@ -75,13 +75,14 @@ node_M = function() {
   get_coords(pull_node_geom(x), "M")
 }
 
+#' @importFrom cli cli_warn
 #' @importFrom sf st_coordinates
 get_coords = function(x, value) {
   all_coords = st_coordinates(x)
   tryCatch(
     all_coords[, value],
     error = function(e) {
-      warning(value, " coordinates are not available", call. = FALSE)
+      cli_warn("{value} coordinates are not available.", call = FALSE)
       rep(NA, length(x))
     }
   )

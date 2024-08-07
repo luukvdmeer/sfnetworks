@@ -315,6 +315,7 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
 # switched).
 
 #' @name sf
+#' @importFrom cli cli_warn
 #' @importFrom igraph is_directed
 #' @importFrom sf st_reverse
 #' @importFrom tidygraph as_tbl_graph reroute
@@ -324,9 +325,11 @@ st_reverse.sfnetwork = function(x, ...) {
   if (active == "edges") {
     require_explicit_edges(x)
     if (is_directed(x)) {
-      warning(
-        "In directed networks st_reverse swaps columns 'to' and 'from'",
-        call. = FALSE
+      cli_warn(
+        paste(
+          "{.fn st_reverse} swaps {.field from} and {.field to} columns",
+          "in directed networks."
+        ), call = FALSE
       )
       node_ids = edge_boundary_node_indices(x, matrix = TRUE)
       from_ids = node_ids[, 1]
@@ -335,10 +338,11 @@ st_reverse.sfnetwork = function(x, ...) {
       x = tbg_to_sfn(x_tbg)
     }
   } else {
-    warning(
-      "st_reverse has no effect on nodes. Activate edges first?",
-      call. = FALSE
-    )
+    cli_warn(c(
+      "{.fn st_reverse} has no effect on nodes.",
+      "i" = "Call {.fn tidygraph::activate} to activate edges instead.",
+      call = FALSE
+    ))
   }
   geom_unary_ops(st_reverse, x, active,...)
 }
@@ -400,6 +404,7 @@ st_join.morphed_sfnetwork = function(x, y, ...) {
   x
 }
 
+#' @importFrom cli cli_warn
 #' @importFrom igraph delete_vertices vertex_attr<-
 #' @importFrom methods hasArg
 #' @importFrom sf st_as_sf st_join
@@ -422,11 +427,13 @@ spatial_join_nodes = function(x, y, ...) {
   duplicated_match = duplicated(n_new$.sfnetwork_index)
   if (any(duplicated_match)) {
     n_new = n_new[!duplicated_match, ]
-    warning(
-      "Multiple matches were detected from some nodes. ",
-      "Only the first match is considered",
-      call. = FALSE
-    )
+    cli_warn(c(
+      "{.fn st_join} for {.cls sfnetwork} objects only joins one feature per node.",
+      "x" = paste(
+        "Multiple matches were detected for some nodes,",
+        "of which all but the first one are ignored."
+      ), call = FALSE
+    ))
   }
   # If an inner join was requested instead of a left join:
   # --> This means only nodes in x that had a match in y are preserved.
@@ -589,6 +596,7 @@ spatial_clip_nodes = function(x, y, ..., .operator = sf::st_intersection) {
   delete_vertices(x, drop) %preserve_all_attrs% x
 }
 
+#' @importFrom cli cli_warn
 #' @importFrom dplyr bind_rows
 #' @importFrom igraph is_directed
 #' @importFrom sf st_cast st_equals st_geometry st_is st_line_merge st_sf
@@ -597,10 +605,9 @@ spatial_clip_edges = function(x, y, ..., .operator = sf::st_intersection) {
   directed = is_directed(x)
   # Clipping does not work good yet for undirected networks.
   if (!directed) {
-    warning(
-      "Clipping does not give correct results for undirected networks ",
-      "when applied to the edges",
-      call. = FALSE
+    cli_warn(
+      "Clipping edges does not give correct results in undirected networks",
+      call = FALSE
     )
   }
   ## ===========================

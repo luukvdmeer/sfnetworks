@@ -299,8 +299,8 @@ require_explicit_edges = function(x) {
   if (! has_explicit_edges(x)) {
     cli_abort(c(
       "This call requires spatially explicit edges.",
-      "i" = "If you meant to call it on the nodes, activate nodes first.",
-      "i" = "Call {.code convert(x, to_spatial_explicit} to explicitize edges."
+      "i" = "Call {.fn tidygraph::activate} to activate nodes instead.",
+      "i" = "Call {.fn sfnetworks::to_spatial_explicit} to explicitize edges."
     ))
   }
 }
