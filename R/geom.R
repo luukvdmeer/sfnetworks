@@ -18,7 +18,7 @@ geom_colname = function(x, active = NULL) {
     active,
     nodes = node_geom_colname(x),
     edges = edge_geom_colname(x),
-    raise_unknown_input(active)
+    raise_invalid_active(active)
   )
 }
 
@@ -58,7 +58,7 @@ edge_geom_colname = function(x) {
     active,
     nodes = `node_geom_colname<-`(x, value),
     edges = `edge_geom_colname<-`(x, value),
-    raise_unknown_input(active)
+    raise_invalid_active(active)
   )
 }
 
@@ -96,7 +96,7 @@ pull_geom = function(x, active = NULL) {
     active,
     nodes = pull_node_geom(x),
     edges = pull_edge_geom(x),
-    raise_unknown_input(active)
+    raise_invalid_active(active)
   )
 }
 
@@ -143,7 +143,7 @@ mutate_geom = function(x, y, active = NULL) {
     active,
     nodes = mutate_node_geom(x, y),
     edges = mutate_edge_geom(x, y),
-    raise_unknown_input(active)
+    raise_invalid_active(active)
   )
 }
 
@@ -188,7 +188,7 @@ drop_geom = function(x, active = NULL) {
     active,
     nodes = drop_node_geom(x),
     edges = drop_edge_geom(x),
-    raise_unknown_input(active)
+    raise_invalid_active(active)
   )
 }
 
@@ -208,9 +208,7 @@ drop_node_geom = function(x) {
 #' @noRd
 drop_edge_geom = function(x) {
   geom_col = edge_geom_colname(x)
-  if (is.null(geom_col)) {
-    stop("Edges are already spatially implicit", call. = FALSE)
-  }
+  if (is.null(geom_col)) return(x)
   x_new = delete_edge_attr(x, edge_geom_colname(x))
   edge_geom_colname(x_new) = NULL
   x_new

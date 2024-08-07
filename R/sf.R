@@ -57,7 +57,7 @@ st_as_sf.sfnetwork = function(x, active = NULL, ...) {
     active,
     nodes = nodes_as_sf(x, ...),
     edges = edges_as_sf(x, ...),
-    raise_unknown_input(active)
+    raise_invalid_active(active)
   )
 }
 
@@ -388,7 +388,7 @@ st_join.sfnetwork = function(x, y, ...) {
     active,
     nodes = spatial_join_nodes(x, y, ...),
     edges = spatial_join_edges(x, y, ...),
-    raise_unknown_input(active)
+    raise_invalid_active(active)
   )
 }
 
@@ -485,7 +485,7 @@ st_filter.sfnetwork = function(x, y, ...) {
     active,
     nodes = spatial_filter_nodes(x, y, ...),
     edges = spatial_filter_edges(x, y, ...),
-    raise_unknown_input(active)
+    raise_invalid_active(active)
   )
 }
 
@@ -526,7 +526,7 @@ st_crop.sfnetwork = function(x, y, ...) {
     active,
     nodes = spatial_clip_nodes(x, y, ..., .operator = st_crop),
     edges = spatial_clip_edges(x, y, ..., .operator = st_crop),
-    raise_unknown_input(active)
+    raise_invalid_active(active)
   )
 }
 
@@ -547,7 +547,7 @@ st_difference.sfnetwork = function(x, y, ...) {
     active,
     nodes = spatial_clip_nodes(x, y, ..., .operator = st_difference),
     edges = spatial_clip_edges(x, y, ..., .operator = st_difference),
-    raise_unknown_input(active)
+    raise_invalid_active(active)
   )
 }
 
@@ -568,7 +568,7 @@ st_intersection.sfnetwork = function(x, y, ...) {
     active,
     nodes = spatial_clip_nodes(x, y, ..., .operator = st_intersection),
     edges = spatial_clip_edges(x, y, ..., .operator = st_intersection),
-    raise_unknown_input(active)
+    raise_invalid_active(active)
   )
 }
 

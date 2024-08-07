@@ -194,7 +194,8 @@ st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
   if (is_sf(from) | is_sfc(from)) from = nearest_node_ids(x, from)
   if (is_sf(to) | is_sfc(to)) to = nearest_node_ids(x, to)
   if (length(from) > 1) raise_multiple_elements("from"); from = from[1]
-  if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
+  if (any(is.na(from))) raise_na_values("from")
+  if (any(is.na(to))) raise_na_value("to")
   # Parse weights argument using tidy evaluation on the network edges.
   .register_graph_context(x, free = TRUE)
   weights = enquo(weights)
@@ -279,7 +280,7 @@ igraph_paths = function(x, from, to, weights, type = "shortest",
       mode = direction,
       ...
     )),
-    raise_unknown_input(type)
+    raise_unknown_input("type", type, c("shortest", "all_shortest", "all_simple"))
   )
   # Extract the nodes in the paths, and the edges in the paths (if given).
   npaths = paths[[1]]

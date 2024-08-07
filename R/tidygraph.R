@@ -17,9 +17,11 @@ as_tbl_graph.sfnetwork = function(x, ...) {
   x
 }
 
+#' @importFrom cli cli_abort
+#' @importFrom rlang enquo quo_text
 #' @importFrom tidygraph as_tbl_graph morph
 #' @export
-morph.sfnetwork = function(.data, ...) {
+morph.sfnetwork = function(.data, .f, ...) {
   # Morph using tidygraphs morphing functionality:
   # --> First try to morph the sfnetwork object directly.
   # --> If this gives errors, convert to tbl_graph and then morph.
@@ -28,8 +30,14 @@ morph.sfnetwork = function(.data, ...) {
     NextMethod(),
     error = function(e1) {
       tryCatch(
-        morph(as_tbl_graph(.data), ...),
-        error = function(e2) stop(e1)
+        morph(as_tbl_graph(.data), .f, ...),
+        error = function(e) {
+          morpher = quo_text(enquo(.f))
+          cli_abort(c(
+            "Failed to morph the {.cls sfnetwork} object using {.fn {morpher}}.",
+            "x" = "The following error occured: {e1}"
+          ), call = call("morph.sfnetwork"))
+        }
       )
     }
   )

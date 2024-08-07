@@ -26,7 +26,7 @@ sf_attr = function(x, name, active = NULL) {
     name,
     agr = agr(x, active),
     sf_column = geom_colname(x, active),
-    raise_unknown_input(name)
+    raise_unknown_input("name", name, c("agr", "sf_column"))
   )
 }
 
@@ -131,7 +131,7 @@ attribute_names = function(x, active = NULL, idxs = FALSE, geom = TRUE) {
     active,
     nodes = node_attribute_names(x, geom = geom),
     edges = edge_attribute_names(x, idxs = idxs, geom = geom),
-    raise_unknown_input(active)
+    raise_invalid_active(active)
   )
 }
 
@@ -191,7 +191,7 @@ edge_attribute_names = function(x, idxs = FALSE, geom = TRUE) {
     active,
     nodes = `node_attribute_values<-`(x, value),
     edges = `edge_attribute_values<-`(x, value),
-    raise_unknown_input(active)
+    raise_invalid_active(active)
   )
 }
 
@@ -264,6 +264,6 @@ summariser = function(name) {
     mean = function(x) mean(x),
     median = function(x) median(x),
     concat = function(x) c(x),
-    raise_unknown_input(name)
+    raise_unknown_summariser(name)
   )
 }

@@ -244,16 +244,16 @@ will_assume_constant = function(x) {
   any(is.na(real_agr)) || any(real_agr != "constant")
 }
 
-#' Check if a planar coordinates will be assumed for a network
+#' Check if projected coordinates will be assumed for a network
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @return \code{TRUE} when the coordinates of x are longitude-latitude, but sf
-#' will for some operations assume they are planar, \code{FALSE} otherwise.
+#' will for some operations assume they are projected, \code{FALSE} otherwise.
 #'
 #' @importFrom sf sf_use_s2 st_crs st_is_longlat
 #' @noRd
-will_assume_planar = function(x) {
+will_assume_projected = function(x) {
   (!is.na(st_crs(x)) && st_is_longlat(x)) && !sf_use_s2()
 }
 
@@ -267,26 +267,22 @@ will_assume_planar = function(x) {
 #' message otherwise.
 #'
 #' @name require_active
+#' @importFrom cli cli_abort
 #' @importFrom tidygraph .graph_context
 #' @noRd
 require_active_nodes <- function() {
   if (!.graph_context$free() && .graph_context$active() != "nodes") {
-    stop(
-      "This call requires nodes to be active",
-      call. = FALSE
-    )
+    cli_abort("This call requires nodes to be active.")
   }
 }
 
 #' @name require_active
+#' @importFrom cli cli_abort
 #' @importFrom tidygraph .graph_context
 #' @noRd
 require_active_edges <- function() {
   if (!.graph_context$free() && .graph_context$active() != "edges") {
-    stop(
-      "This call requires edges to be active",
-      call. = FALSE
-    )
+    cli_abort("This call requires edges to be active.")
   }
 }
 
@@ -294,46 +290,21 @@ require_active_edges <- function() {
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @param hard Is it a hard requirement, meaning that edges need to be
-#' spatially explicit no matter which network element is active? Defaults to
-#' \code{FALSE}, meaning that the error message will suggest to activate nodes
-#' instead.
-#'
 #' @return Nothing when the edges of x are spatially explicit, an error message
 #' otherwise.
 #'
+#' @importFrom cli cli_abort
 #' @noRd
-require_explicit_edges = function(x, hard = FALSE) {
+require_explicit_edges = function(x) {
   if (! has_explicit_edges(x)) {
-    if (hard) {
-      stop(
-        "This call requires spatially explicit edges",
-        call. = FALSE
-      )
-    } else{
-      stop(
-        "This call requires spatially explicit edges when applied to the ",
-        "edges table. Activate nodes first?",
-        call. = FALSE
-      )
-    }
+    cli_abort(c(
+      "This call requires spatially explicit edges.",
+      "i" = "If you meant to call it on the nodes, activate nodes first.",
+      "i" = "Call {.code convert(x, to_spatial_explicit} to explicitize edges."
+    ))
   }
 }
 
-#' Proceed only when the network has a valid sfnetwork structure
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @param message Should messages be printed during validation? Defaults to
-#' \code{TRUE}.
-#'
-#' @return Nothing when the network has a valid sfnetwork structure, an error
-#' message otherwise.
-#'
-#' @noRd
-require_valid_network_structure = function(x, message = FALSE) {
-  validate_network(x, message)
-}
 
 #' Proceed only if the given object is a valid adjacency matrix
 #'
@@ -350,15 +321,20 @@ require_valid_network_structure = function(x, message = FALSE) {
 #' @return Nothing if the given object is a valid adjacency matrix
 #' referencing the given nodes, an error message otherwise.
 #'
+#' @importFrom cli cli_abort
 #' @importFrom sf st_geometry
 #' @noRd
 require_valid_adjacency_matrix = function(x, nodes) {
   n_nodes = length(st_geometry(nodes))
   if (! (nrow(x) == n_nodes && ncol(x) == n_nodes)) {
-    stop(
-      "The dimensions of the adjacency matrix should match the ",
-      " number of nodes (", n_nodes, ").",
-      call. = FALSE
+    cli_abort(
+      c(
+        "The dimensions of the matrix should match the number of nodes.",
+        "x" = paste(
+          "The provided matrix has dimensions {nrow(x)} x {ncol(x)},",
+          "while there are {n_nodes} nodes."
+        )
+      )
     )
   }
 }
@@ -377,21 +353,23 @@ require_valid_adjacency_matrix = function(x, nodes) {
 #' @return Nothing if the given object is a valid neighbor list referencing
 #' the given nodes, and error message afterwards.
 #'
+#' @importFrom cli cli_abort
 #' @importFrom sf st_geometry
 #' @noRd
 require_valid_neighbor_list = function(x, nodes) {
   n_nodes = length(st_geometry(nodes))
   if (! length(x) == n_nodes) {
-    stop(
-      "The length of the sparse adjacency matrix should match the ",
-      " number of nodes (", n_nodes, ").",
-      call. = FALSE
+    cli_abort(
+      c(
+        "The length of the sparse matrix should match the number of nodes.",
+        "x" = paste(
+          "The provided matrix has length {length(x)},",
+          "while there are {n_nodes} nodes."
+        )
+      )
     )
   }
   if (! all(vapply(x, is.integer, FUN.VALUE = logical(1)))) {
-    stop(
-      "The sparse adjacency matrix should contain integer node indices.",
-      call. = FALSE
-    )
+    cli_abort("The sparse matrix should contain integer node indices.")
   }
 }

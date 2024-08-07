@@ -55,14 +55,14 @@ as_tibble.sfnetwork = function(x, active = NULL, spatial = TRUE, ...) {
       active,
       nodes = nodes_as_sf(x),
       edges = edges_as_table(x),
-      raise_unknown_input(active)
+      raise_invalid_active(active)
     )
   } else {
     switch(
       active,
       nodes = as_tibble(as_tbl_graph(x), "nodes"),
       edges = as_tibble(as_tbl_graph(x), "edges"),
-      raise_unknown_input(active)
+      raise_invalid_active(active)
     )
   }
 }
@@ -104,11 +104,14 @@ as_s2_geography.sfnetwork = function(x, ...) {
 #' \code{\link[spatstat.linnet]{linnet}} into objects of class
 #' \code{\link{sfnetwork}}.
 #'
+#' @importFrom rlang check_installed is_installed
 #' @name as.linnet
 as.linnet.sfnetwork = function(X, ...) {
   # Check the presence and the version of spatstat.geom and spatstat.linnet
-  check_spatstat("spatstat.geom")
-  check_spatstat("spatstat.linnet")
+  check_installed("spatstat.geom")
+  check_installed("spatstat.linnet")
+  check_installed("sf (>= 1.0)")
+  if (is_installed("spatstat")) check_installed("spatstat (>= 2.0)")
   # Extract the vertices of the sfnetwork.
   X_vertices_ppp = spatstat.geom::as.ppp(pull_node_geom(X))
   # Extract the edge list.
@@ -121,42 +124,4 @@ as.linnet.sfnetwork = function(X, ...) {
     edges = X_edge_list,
     ...
   )
-}
-
-#' @importFrom utils packageVersion
-check_spatstat = function(pkg) {
-  # Auxiliary function which is used to test that:
-  # --> The relevant spatstat packages are installed.
-  # --> The spatstat version is 2.0.0 or greater.
-  if (!requireNamespace(pkg, quietly = TRUE)) {
-    stop(
-      "Package ",
-      pkg,
-      "required; please install it (or the full spatstat package) first",
-      call. = FALSE
-    )
-  } else {
-    spst_ver = try(packageVersion("spatstat"), silent = TRUE)
-    if (!inherits(spst_ver, "try-error") && spst_ver < "2.0-0") {
-      stop(
-        "You have an old version of spatstat which is incompatible with ",
-        pkg,
-        "; please update spatstat (or uninstall it)",
-        call. = FALSE
-      )
-    }
-  }
-  check_spatstat_sf()
-}
-
-#' @importFrom utils packageVersion
-check_spatstat_sf = function() {
-  # Auxiliary function which is used to test that:
-  # --> The sf version is compatible with the new spatstat structure
-  if (packageVersion("sf") < "0.9.8") {
-    stop(
-      "spatstat code requires sf >= 0.9.8; please update sf",
-      call. = FALSE
-    )
-  }
 }

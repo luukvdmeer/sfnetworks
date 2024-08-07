@@ -100,6 +100,7 @@
 #' # Store edge lenghts in a column named 'length'.
 #' sfnetwork(nodes, edges, compute_length = TRUE)
 #'
+#' @importFrom cli cli_abort
 #' @importFrom igraph edge_attr<-
 #' @importFrom lifecycle deprecated
 #' @importFrom sf st_as_sf
@@ -118,11 +119,11 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
     nodes = tryCatch(
       st_as_sf(nodes, ...),
       error = function(e) {
-        stop(
-          "Failed to convert nodes to sf object because: ",
-          e,
-          call. = FALSE
-        )
+        sferror = sub(".*:", "", e)
+        cli_abort(c(
+          "Failed to convert nodes to a {.cls sf} object.",
+          "x" = "The following error occured in {.fn sf::st_as_sf}:{sferror}"
+        ), call = call("sfnetwork"))
       }
     )
   }
@@ -255,6 +256,7 @@ as_sfnetwork.default = function(x, ...) {
 #'
 #' par(oldpar)
 #'
+#' @importFrom cli cli_abort
 #' @importFrom methods hasArg
 #' @export
 as_sfnetwork.sf = function(x, ...) {
@@ -269,10 +271,11 @@ as_sfnetwork.sf = function(x, ...) {
   } else if (has_single_geom_type(x, "POINT")) {
     create_from_spatial_points(x, ...)
   } else {
-    stop(
-      "Geometries are not all of type LINESTRING, or all of type POINT",
-      call. = FALSE
-    )
+    cli_abort(c(
+      "Unsupported geometry types.",
+      "i" = "If geometries are edges, they should all be {.cls LINESTRING}.",
+      "i" = "If geometries are nodes, they should all be {.cls POINT}."
+    ))
   }
 }
 
@@ -304,9 +307,12 @@ as_sfnetwork.sfc = function(x, ...) {
 #'   as_sfnetwork(simplenet)
 #' }
 #'
+#' @importFrom rlang check_installed is_installed
 #' @export
 as_sfnetwork.linnet = function(x, ...) {
-  check_spatstat("spatstat.geom")
+  check_installed("spatstat.geom")
+  check_installed("sf (>= 1.0)")
+  if (is_installed("spatstat")) check_installed("spatstat (>= 2.0)")
   # The easiest approach is the same as for psp objects, i.e. converting the
   # linnet object into a psp format and then applying the corresponding method.
   x_psp = spatstat.geom::as.psp(x)
@@ -326,10 +332,11 @@ as_sfnetwork.linnet = function(x, ...) {
 #'   as_sfnetwork(test_psp)
 #' }
 #'
+#' @importFrom rlang check_installed
 #' @importFrom sf st_as_sf st_collection_extract
 #' @export
 as_sfnetwork.psp = function(x, ...) {
-  check_spatstat_sf()
+  check_installed("sf (>= 1.0)")
   # The easiest method for transforming a Line Segment Pattern (psp) object
   # into sfnetwork format is to transform it into sf format and then apply
   # the usual methods.
@@ -619,7 +626,7 @@ create_from_spatial_points = function(x, connections = "complete",
       relative_neighbourhood = relative_neighbors(x),
       nearest_neighbors = nearest_neighbors(x, k),
       nearest_neighbours = nearest_neighbors(x, k),
-      raise_unknown_input(connections)
+      raise_unknown_input("connections", connections)
     )
   } else {
     nblist = custom_neighbors(x, connections)
@@ -627,6 +634,7 @@ create_from_spatial_points = function(x, connections = "complete",
   nb2net(nblist, x, directed, edges_as_lines, compute_length)
 }
 
+#' @importFrom cli cli_abort
 custom_neighbors = function(x, connections) {
   if (is.matrix(connections)) {
     require_valid_adjacency_matrix(connections, x)
@@ -635,11 +643,13 @@ custom_neighbors = function(x, connections) {
     require_valid_neighbor_list(connections, x)
     connections
   } else {
-    stop(
-      "Connections should be specified as a matrix, a list-formatted sparse",
-      " matrix, or a single character.",
-      call. = FALSE
-    )
+    cli_abort(c(
+      "Invalid value for {.arg connections}.",
+      "i" = paste(
+        "Connections should be specified as a matrix, a list-formatted",
+        "sparse matrix, or a single character."
+      )
+    ))
   }
 }
 
@@ -683,27 +693,31 @@ mst_neighbors = function(x, directed = TRUE, edges_as_lines = TRUE) {
   as_adj_list(mst)
 }
 
+#' @importFrom rlang check_installed
 #' @importFrom sf st_geometry
 delaunay_neighbors = function(x) {
-  requireNamespace("spdep") # Package spdep is required for this function.
+  check_installed("spdep") # Package spdep is required for this function.
   tri2nb(st_geometry(x))
 }
 
+#' @importFrom rlang check_installed
 #' @importFrom sf st_geometry
 gabriel_neighbors = function(x) {
-  requireNamespace("spdep") # Package spdep is required for this function.
+  check_installed("spdep") # Package spdep is required for this function.
   spdep::graph2nb(spdep::gabrielneigh(st_geometry(x)), sym = TRUE)
 }
 
+#' @importFrom rlang check_installed
 #' @importFrom sf st_geometry
 relative_neighbors = function(x) {
-  requireNamespace("spdep") # Package spdep is required for this function.
+  check_installed("spdep") # Package spdep is required for this function.
   spdep::graph2nb(spdep::relativeneigh(st_geometry(x)), sym = TRUE)
 }
 
+#' @importFrom rlang check_installed
 #' @importFrom sf st_geometry
 nearest_neighbors = function(x, k = 1) {
-  requireNamespace("spdep") # Package spdep is required for this function.
+  check_installed("spdep") # Package spdep is required for this function.
   spdep::knn2nb(spdep::knearneigh(st_geometry(x), k = k), sym = FALSE)
 }
 

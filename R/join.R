@@ -47,11 +47,28 @@ st_network_join = function(x, y, ...) {
   UseMethod("st_network_join")
 }
 
+#' @importFrom cli cli_abort
 #' @export
 st_network_join.sfnetwork = function(x, y, ...) {
-  if (! is_sfnetwork(y)) y = as_sfnetwork(y)
-  stopifnot(have_equal_crs(x, y))
-  stopifnot(have_equal_edge_type(x, y))
+  if (! is_sfnetwork(y)) {
+    y = as_sfnetwork(y)
+  }
+  if (! have_equal_edge_type(x, y)) {
+    cli_abort(c(
+      paste(
+        "{.arg x} and {.arg y} should have the same type of edges",
+        "(spatially explicit or spatially implicit)"
+      ),
+      "i" = "Call {.fn sfnetworks::to_spatial_explicit} to explicitize edges.",
+      "i" = "Call {.fn sf::st_drop_geometry} to drop edge geometries."
+    ))
+  }
+  if (! have_equal_crs(x, y)) {
+    cli_abort(c(
+      "{.arg x} and {.arg y} should have the same CRS.",
+      "i" = "Call {.fn sf::st_transform} to transform to a different CRS."
+    ))
+  }
   spatial_join_network(x, y, ...)
 }
 

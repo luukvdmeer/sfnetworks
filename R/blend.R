@@ -97,13 +97,30 @@ st_network_blend = function(x, y, tolerance = Inf) {
   UseMethod("st_network_blend")
 }
 
+#' @importFrom cli cli_abort
 #' @export
 st_network_blend.sfnetwork = function(x, y, tolerance = Inf) {
-  require_explicit_edges(x, hard = TRUE)
-  stopifnot(has_single_geom_type(y, "POINT"))
-  stopifnot(have_equal_crs(x, y))
-  stopifnot(as.numeric(tolerance) >= 0)
-  if (will_assume_planar(x)) raise_assume_planar("st_network_blend")
+  if (! has_explicit_edges(x)) {
+    cli_abort(c(
+      "{.arg x} should have spatially explicit edges",
+      "i" = "Call {.fn sfnetworks::to_spatial_explicit} to explicitize edges."
+    ))
+  }
+  if (! has_single_geom_type(y, "POINT")) {
+    cli_abort("All features in {.arg y} should have {.cls POINT} geometries.")
+  }
+  if (! have_equal_crs(x, y)) {
+    cli_abort(c(
+      "{.arg x} and {.arg y} should have the same CRS.",
+      "i" = "Call {.fn sf::st_transform} to transform to a different CRS."
+    ))
+  }
+  if (! as.numeric(tolerance) >= 0) {
+    cli_abort("{.arg tolerance} should be positive.")
+  }
+  if (will_assume_projected(x)) {
+    raise_assume_projected("st_network_blend")
+  }
   blend_(x, y, tolerance)
 }
 

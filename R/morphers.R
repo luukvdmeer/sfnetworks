@@ -91,7 +91,7 @@ NULL
 to_spatial_contracted = function(x, ..., simplify = FALSE,
                                  summarise_attributes = "ignore",
                                  store_original_data = FALSE) {
-  if (will_assume_planar(x)) raise_assume_planar("to_spatial_contracted")
+  if (will_assume_projected(x)) raise_assume_projected("to_spatial_contracted")
   # Retrieve nodes from the network.
   nodes = nodes_as_sf(x)
   geom_colname = attr(nodes, "sf_column")
@@ -571,6 +571,7 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' those attributes are checked for equality. Equality tests are evaluated
 #' using the \code{==} operator.
 #'
+#' @importFrom cli cli_abort
 #' @importFrom igraph adjacent_vertices decompose degree delete_vertices
 #' edge_attr edge.attributes get.edge.ids igraph_opt igraph_options
 #' incident_edges induced_subgraph is_directed vertex_attr
@@ -632,22 +633,19 @@ to_spatial_smooth = function(x,
       # They should be stored in a node attribute column named "name".
       node_names = vertex_attr(x, "name")
       if (is.null(node_names)) {
-        stop(
-          "Node names should be stored in an attribute column called ",
-          sQuote("name"),
-          call. = FALSE
-        )
+        cli_abort(c(
+          "Failed to identify protected nodes by their name.",
+          "x" = "There is not node attribute {.field name}"
+        ))
       }
       # Match node names to node indices.
       matched_names = match(protect, node_names)
       if (any(is.na(matched_names))) {
-        stop(
-          "Unknown node names: ",
-          paste(sQuote(protect[is.na(matched_names)]), collapse = " and "),
-          ". Make sure node names are stored in an attribute column called ",
-          sQuote("name"),
-          call. = FALSE
-        )
+        unknown_names = paste(protect[is.na(matched_names)], collapse = ", ")
+        cli_abort(c(
+          "Failed to identify protected nodes by their name.",
+          "x" = "The following node names were not found: {unknown_names}"
+        ))
       }
       protect = matched_names
     } else if (is_sf(protect) | is_sfc(protect)) {
@@ -668,11 +666,11 @@ to_spatial_smooth = function(x,
       # Check if all given attributes exist in the edges table of x.
       attr_exists = require_equal %in% edge_attribute_names(x)
       if (! all(attr_exists)) {
-        stop(
-          "Unknown edge attributes: ",
-          paste(sQuote(require_equal[!attr_exists]), collapse = " and "),
-          call. = FALSE
-        )
+        unknown_attrs = paste(require_equal[!attr_exists], collapse = ", ")
+        cli_abort(c(
+          "Failed to check for edge attribute equality.",
+          "x" = "The following edge attributes were not found: {unknown_attrs}"
+        ))
       }
     }
     # Get the node indices of the detected pseudo nodes.
@@ -1165,7 +1163,7 @@ to_spatial_subset = function(x, ..., subset_by = NULL) {
     subset_by,
     nodes = spatial_filter_nodes(x, ...),
     edges = spatial_filter_edges(x, ...),
-    raise_unknown_input(subset_by)
+    raise_unknown_input("subset_by", subset_by, c("nodes", "edges"))
   )
   list(
     subset = x_new
