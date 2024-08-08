@@ -385,13 +385,17 @@ as_sfnetwork.sfNetwork = function(x, ...) {
 #'
 #' @importFrom igraph is_directed
 #' @importFrom methods hasArg
+#' @importFrom tibble as_tibble
 #' @export
 as_sfnetwork.tbl_graph = function(x, ...) {
+  nodes = as_tibble(x, "nodes")
+  edges = as_tibble(x, "edges")
   if (hasArg("directed")) {
-    sfnetwork(as.list(x), ...)
+    x_sfn = sfnetwork(nodes, edges, ...)
   } else {
-    sfnetwork(as.list(x), directed = is_directed(x), ...)
+    x_sfn = sfnetwork(nodes, edges, directed = is_directed(x), ...)
   }
+  x_sfn
 }
 
 #' Create a spatial network from linestring geometries
