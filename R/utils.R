@@ -643,10 +643,10 @@ merge_mranges = function(a, b) {
 #'
 #' @return A logical vector of the same length as \code{x}.
 #'
-#' @importFrom sf st_equals
+#' @importFrom sf st_equals st_geometry
 #' @noRd
 st_duplicated = function(x) {
-  dup = rep(FALSE, length(x))
+  dup = rep(FALSE, length(st_geometry(x)))
   dup[unique(do.call("c", lapply(st_equals(x), `[`, - 1)))] = TRUE
   dup
 }
