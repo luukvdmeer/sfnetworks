@@ -154,7 +154,9 @@ has_explicit_edges = function(x) {
 #' @importFrom sf st_crs
 #' @noRd
 have_equal_crs = function(x, y) {
-  st_crs(x) == st_crs(y)
+  x_crs = if (is_sfnetwork(x)) st_crs(pull_node_geom(x)) else st_crs(x)
+  y_crs = if (is_sfnetwork(y)) st_crs(pull_node_geom(y)) else st_crs(y)
+  x_crs == y_crs
 }
 
 #' Check if the precision of two objects is the same
@@ -171,7 +173,9 @@ have_equal_crs = function(x, y) {
 #' @importFrom sf st_precision
 #' @noRd
 have_equal_precision = function(x, y) {
-  st_precision(x) == st_precision(y)
+  xp = if (is_sfnetwork(x)) st_precision(pull_node_geom(x)) else st_precision(x)
+  yp = if (is_sfnetwork(y)) st_precision(pull_node_geom(y)) else st_precision(y)
+  xp == yp
 }
 
 #' Check if two sfnetworks have the same type of edges
