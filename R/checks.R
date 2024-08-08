@@ -47,6 +47,32 @@ is_sfc = function(x) {
   inherits(x, "sfc")
 }
 
+#' Check if an object is an sfc object with linestring geometries
+#'
+#' @param x Object to be checked.
+#'
+#' @return \code{TRUE} if the given object is an object of class
+#' \code{\link[sf]{sfc}} with geometries of type \code{LINESTRING},
+#' \code{FALSE} otherwise.
+#'
+#' @noRd
+is_sfc_linestring = function(x) {
+  inherits(x, "sfc_LINESTRING")
+}
+
+#' Check if an object is an sfc object with point geometries
+#'
+#' @param x Object to be checked.
+#'
+#' @return \code{TRUE} if the given object is an object of class
+#' \code{\link[sf]{sfc}} with geometries of type \code{POINT},
+#' \code{FALSE} otherwise.
+#'
+#' @noRd
+is_sfc_point = function(x) {
+  inherits(x, "sfc_POINT")
+}
+
 #' Check if an object is an sfg object
 #'
 #' @param x Object to be checked.
@@ -93,9 +119,11 @@ has_single_geom_type = function(x, type) {
 #' @return \code{TRUE} if the nodes table of the tbl_graph has a geometry list
 #' column, \code{FALSE} otherwise.
 #'
+#' @importFrom igraph vertex_attr
 #' @noRd
 has_spatial_nodes = function(x) {
-  any(vapply(vertex_attr(x), is_sfc, FUN.VALUE = logical(1)), na.rm = TRUE)
+  cols = vertex_attr(x)
+  any(vapply(cols, is_sfc_point, FUN.VALUE = logical(1)), na.rm = TRUE)
 }
 
 #' Check if a sfnetwork has spatially explicit edges
@@ -108,7 +136,8 @@ has_spatial_nodes = function(x) {
 #' @importFrom igraph edge_attr
 #' @noRd
 has_explicit_edges = function(x) {
-  any(vapply(edge_attr(x), is_sfc, FUN.VALUE = logical(1)), na.rm = TRUE)
+  cols = edge_attr(x)
+  any(vapply(cols, is_sfc_linestring, FUN.VALUE = logical(1)), na.rm = TRUE)
 }
 
 #' Check if the CRS of two objects are the same

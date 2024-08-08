@@ -28,9 +28,10 @@ geom_colname = function(x, active = NULL) {
 node_geom_colname = function(x) {
   col = attr(vertex_attr(x), "sf_column")
   if (is.null(col)) {
-    # Take the name of the first sfc column.
-    sfc_idx = which(vapply(vertex_attr(x), is_sfc, FUN.VALUE = logical(1)))[1]
-    col = vertex_attr_names(x)[sfc_idx]
+    # Take the name of the first sfc column with point geometries.
+    is_sfc = vapply(vertex_attr(x), is_sfc_point, FUN.VALUE = logical(1))
+    sfc_idx = which(is_sfc)[1]
+    if (! is.na(sfc_idx)) col = vertex_attr_names(x)[sfc_idx]
   }
   col
 }
@@ -40,10 +41,12 @@ node_geom_colname = function(x) {
 #' @noRd
 edge_geom_colname = function(x) {
   col = attr(edge_attr(x), "sf_column")
-  if (is.null(col) && has_explicit_edges(x)) {
-    # Take the name of the first sfc column.
-    sfc_idx = which(vapply(edge_attr(x), is_sfc, FUN.VALUE = logical(1)))[1]
-    col = edge_attr_names(x)[sfc_idx]
+  if (is.null(col)) {
+    # Take the name of the first sfc column with linestring geometries.
+    # If this does not exist (implicit edges) col stays NULL.
+    is_sfc = vapply(edge_attr(x), is_sfc_linestring, FUN.VALUE = logical(1))
+    sfc_idx = which(is_sfc)[1]
+    if (! is.na(sfc_idx)) col = edge_attr_names(x)[sfc_idx]
   }
   col
 }
@@ -148,7 +151,6 @@ mutate_geom = function(x, y, active = NULL) {
 }
 
 #' @name mutate_geom
-#' @importFrom igraph vertex_attr<-
 #' @importFrom sf st_geometry
 #' @noRd
 mutate_node_geom = function(x, y) {
@@ -159,7 +161,6 @@ mutate_node_geom = function(x, y) {
 }
 
 #' @name mutate_geom
-#' @importFrom igraph edge_attr<-
 #' @importFrom sf st_geometry
 #' @noRd
 mutate_edge_geom = function(x, y) {

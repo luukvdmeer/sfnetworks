@@ -53,13 +53,7 @@ sf_attr = function(x, name, active = NULL) {
 #' @importFrom igraph graph_attr graph_attr<-
 #' @noRd
 `%preserve_all_attrs%` = function(new, orig) {
-  graph_attr(new) = graph_attr(orig)
-  attributes(new) = attributes(orig)
-  node_geom_colname(new) = node_geom_colname(orig)
-  node_agr(new) = node_agr(orig)
-  edge_geom_colname(new) = edge_geom_colname(orig)
-  edge_agr(new) = edge_agr(orig)
-  new
+  `%preserve_sf_attrs%`(`%preserve_network_attrs%`(new, orig), orig)
 }
 
 #' Preserve the attributes of the original network
@@ -98,10 +92,16 @@ sf_attr = function(x, name, active = NULL) {
 #'
 #' @noRd
 `%preserve_sf_attrs%` = function(new, orig) {
-  node_geom_colname(new) = node_geom_colname(orig)
-  node_agr(new) = node_agr(orig)
-  edge_geom_colname(new) = edge_geom_colname(orig)
-  edge_agr(new) = edge_agr(orig)
+  node_geom_colname = node_geom_colname(orig)
+  if (! is.null(node_geom_colname)) {
+    node_geom_colname(new) = node_geom_colname
+    node_agr(new) = node_agr(orig)
+  }
+  edge_geom_colname = edge_geom_colname(orig)
+  if (! is.null(edge_geom_colname)) {
+    edge_geom_colname(new) = edge_geom_colname
+    edge_agr(new) = edge_agr(orig)
+  }
   new
 }
 
