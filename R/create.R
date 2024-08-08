@@ -395,7 +395,7 @@ as_sfnetwork.tbl_graph = function(x, ...) {
   } else {
     x_sfn = sfnetwork(nodes, edges, directed = is_directed(x), ...)
   }
-  x_sfn
+  tbg_to_sfn(x_sfn %preserve_all_attrs% x)
 }
 
 #' Create a spatial network from linestring geometries
