@@ -417,10 +417,14 @@ to_spatial_neighborhood = function(x, node, threshold, ...) {
   if (length(node) > 1) raise_multiple_elements("node")
   # Compute the cost matrix from the source node.
   # By calling st_network_cost with the given arguments.
-  if (hasArg("from") && isFALSE(from)) {
+  if (hasArg("from")) {
     # Deprecate the former "from" argument specifying routing direction.
     deprecate_from()
-    costs = st_network_cost(x, from = node, direction = "in", ...)
+    if (isFALSE(dots_list(...)$from)) {
+      costs = st_network_cost(x, from = node, direction = "in", ...)
+    } else {
+      costs = st_network_cost(x, from = node, ...)
+    }
   } else {
     costs = st_network_cost(x, from = node, ...)
   }

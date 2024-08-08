@@ -260,13 +260,9 @@ as_sfnetwork.default = function(x, ...) {
 #' @importFrom methods hasArg
 #' @export
 as_sfnetwork.sf = function(x, ...) {
-  if (hasArg("length_as_weight") && length_as_weight) {
-    deprecate_length_as_weight("as_sfnetwork.sf")
-  }
+  if (hasArg("length_as_weight")) deprecate_length_as_weight("as_sfnetwork.sf")
   if (has_single_geom_type(x, "LINESTRING")) {
-    if (hasArg("edges_as_lines") && ! is.null(dots$edges_as_lines)) {
-      deprecate_edges_as_lines()
-    }
+    if (hasArg("edges_as_lines")) deprecate_edges_as_lines()
     create_from_spatial_lines(x, ...)
   } else if (has_single_geom_type(x, "POINT")) {
     create_from_spatial_points(x, ...)
