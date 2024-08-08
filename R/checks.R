@@ -189,13 +189,9 @@ have_equal_precision = function(x, y) {
 #'
 #' @noRd
 have_equal_edge_type = function(x, y) {
-  both_explicit = function(x, y) {
-    has_explicit_edges(x) && has_explicit_edges(y)
-  }
-  both_implicit = function(x, y) {
-    !has_explicit_edges(x) && !has_explicit_edges(y)
-  }
-  both_explicit(x, y) || both_implicit(x, y)
+  x_is_explicit = has_explicit_edges(x)
+  y_is_explicit = has_explicit_edges(y)
+  (x_is_explicit && y_is_explicit) || (!x_is_explicit && !y_is_explicit)
 }
 
 #' Check if two sf objects have the same geometries
