@@ -31,10 +31,8 @@ morph.sfnetwork = function(.data, .f, ...) {
       class = c("morphed_sfnetwork", class(morphed))
     )
   } else if (has_spatial_nodes(morphed[[1]])) {
-    morphed_sfn = lapply(morphed, tbg_to_sfn)
-    attributes(morphed_sfn) = attributes(morphed)
     structure(
-      morphed,
+      lapply(morphed, tbg_to_sfn) %preserve_morphed_attrs% morphed,
       class = c("morphed_sfnetwork", class(morphed))
     )
   } else {
@@ -42,41 +40,29 @@ morph.sfnetwork = function(.data, .f, ...) {
   }
 }
 
-#' @importFrom igraph delete_edge_attr delete_vertex_attr edge_attr vertex_attr
-#' edge_attr_names vertex_attr_names
+#' @importFrom igraph edge_attr vertex_attr
+#' @importFrom tibble as_tibble
 #' @importFrom tidygraph unmorph
 #' @export
 unmorph.morphed_sfnetwork = function(.data, ...) {
-  # Unmorphing needs special treatment for morphed sfnetworks when:
+  # Unmorphing needs additional preparation for morphed sfnetworks when:
   # --> Features were merged and original data stored in a .orig_data column.
-  # --> A new geometry column exists next to this .orig_data column.
-  # This new geometry is a geometry describing the merged features.
-  # When unmorphing the merged features get unmerged again.
-  # Hence, the geometry column for the merged features should not be preserved.
-  x_first = .data[[1]] # Extract the first element to run checks on.
-  # If nodes were merged:
-  # --> Remove the geometry column of the merged features before proceeding.
-  n_idxs = vertex_attr(x_first, ".tidygraph_node_index")
-  e_idxs = vertex_attr(x_first, ".tidygraph_edge_index")
-  if (is.list(n_idxs) || is.list(e_idxs)) {
-    geom_colname = node_geom_colname(attr(.data, ".orig_graph"))
-    if (geom_colname %in% vertex_attr_names(x_first)) {
-      attrs = attributes(.data)
-      .data = lapply(.data, delete_vertex_attr, geom_colname)
-      attributes(.data) = attrs
+  # --> In this case tidygraph attempts to bind columns of two tibbles.
+  # --> The sticky geometry of sf creates problems in that process.
+  # --> We can work around this by making sure .orig_data has no sf objects.
+  if (! is.null(vertex_attr(.data[[1]], ".orig_data"))) {
+    orig_data_to_tibble = function(x) {
+      vertex_attr(x, ".orig_data") = as_tibble(vertex_attr(x, ".orig_data"))
+      x
     }
+    .data = lapply(.data, orig_data_to_tibble) %preserve_morphed_attrs% .data
   }
-  # If edges were merged:
-  # --> Remove the geometry column of the merged features before proceeding.
-  n_idxs = edge_attr(x_first, ".tidygraph_node_index")
-  e_idxs = edge_attr(x_first, ".tidygraph_edge_index")
-  if (is.list(e_idxs) || is.list(n_idxs)) {
-    geom_colname = edge_geom_colname(attr(.data, ".orig_graph"))
-    if (!is.null(geom_colname) && geom_colname %in% edge_attr_names(x_first)) {
-      attrs = attributes(.data)
-      .data = lapply(.data, delete_edge_attr, geom_colname)
-      attributes(.data) = attrs
+  if (! is.null(edge_attr(.data[[1]], ".orig_data"))) {
+    orig_data_to_tibble = function(x) {
+      edge_attr(x, ".orig_data") = as_tibble(edge_attr(x, ".orig_data"))
+      x
     }
+    .data = lapply(.data, orig_data_to_tibble) %preserve_morphed_attrs% .data
   }
   # Call tidygraphs unmorph.
   NextMethod(.data, ...)

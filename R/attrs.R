@@ -105,6 +105,18 @@ sf_attr = function(x, name, active = NULL) {
   new
 }
 
+#' Preserve the attributes of a morphed network
+#'
+#' @param new An object of class \code{\link{morphed_sfnetwork}}.
+#'
+#' @param orig An object of class \code{\link{morphed_sfnetwork}}.
+#'
+#' @noRd
+`%preserve_morphed_attrs%` = function(new, orig) {
+  attributes(new) = attributes(orig)
+  new
+}
+
 #' Get attribute column names from the active element of a sfnetwork
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
