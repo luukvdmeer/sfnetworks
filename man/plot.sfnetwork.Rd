@@ -4,7 +4,7 @@
 \alias{plot.sfnetwork}
 \title{Plot sfnetwork geometries}
 \usage{
-\method{plot}{sfnetwork}(x, draw_lines = TRUE, ...)
+\method{plot}{sfnetwork}(x, draw_lines = TRUE, node_args = list(), edge_args = list(), ...)
 }
 \arguments{
 \item{x}{Object of class \code{\link{sfnetwork}}.}
@@ -13,40 +13,59 @@
 straight lines be drawn between connected nodes? Defaults to \code{TRUE}.
 Ignored when the edges of the network are spatially explicit.}
 
-\item{...}{Arguments passed on to \code{\link[sf:plot]{plot.sf}}}
+\item{node_args}{A named list of arguments that will be passed on to
+\code{\link[sf:plot]{plot.sf}} only for plotting the nodes.}
+
+\item{edge_args}{A named list of arguments that will be passed on to
+\code{\link[sf:plot]{plot.sf}} only for plotting the edges.}
+
+\item{...}{Arguments passed on to \code{\link[sf:plot]{plot.sf}} that will
+apply to the plot as a whole.}
 }
 \value{
-This is a plot method and therefore has no visible return value.
+Invisible.
 }
 \description{
 Plot the geometries of an object of class \code{\link{sfnetwork}}.
 }
 \details{
-This is a basic plotting functionality. For more advanced plotting,
-it is recommended to extract the nodes and edges from the network, and plot
-them separately with one of the many available spatial plotting functions
-as can be found in \code{sf}, \code{tmap}, \code{ggplot2}, \code{ggspatial},
-and others.
+Arguments passed to \code{...} will be used both for plotting the
+nodes and for plotting the edges. Edges are always plotted first. Arguments
+specified in \code{node_args} and \code{edge_args} should not be specified
+in \code{...} as well, this will result in an error.
 }
 \examples{
+library(sf, quietly = TRUE)
+
 oldpar = par(no.readonly = TRUE)
 par(mar = c(1,1,1,1), mfrow = c(1,1))
 net = as_sfnetwork(roxel)
 plot(net)
 
-# When lines are spatially implicit.
+# When edges are spatially implicit.
+# By default straight lines will be drawn between connected nodes.
 par(mar = c(1,1,1,1), mfrow = c(1,2))
-net = as_sfnetwork(roxel, edges_as_lines = FALSE)
-plot(net)
-plot(net, draw_lines = FALSE)
+inet = st_drop_geometry(activate(net, "edges"))
+plot(inet)
+plot(inet, draw_lines = FALSE)
 
-# Changing default settings.
+# Changing plot settings.
 par(mar = c(1,1,1,1), mfrow = c(1,1))
-plot(net, col = 'blue', pch = 18, lwd = 1, cex = 2)
+plot(net, main = "My network", col = "blue", pch = 18, lwd = 1, cex = 2)
+
+# Changing plot settings for nodes and edges separately.
+plot(net, node_args = list(col = "red"), edge_args = list(col = "blue"))
 
 # Add grid and axis
 par(mar = c(2.5,2.5,1,1))
 plot(net, graticule = TRUE, axes = TRUE)
+
+# Plot two networks on top of each other.
+par(mar = c(1,1,1,1), mfrow = c(1,1))
+neta = as_sfnetwork(roxel[1:10, ])
+netb = as_sfnetwork(roxel[50:60, ])
+plot(neta)
+plot(netb, node_args = list(col = "orange"), add = TRUE)
 
 par(oldpar)
 

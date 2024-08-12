@@ -8,70 +8,81 @@
 #' straight lines be drawn between connected nodes? Defaults to \code{TRUE}.
 #' Ignored when the edges of the network are spatially explicit.
 #'
-#' @param ... Arguments passed on to \code{\link[sf:plot]{plot.sf}}
+#' @param node_args A named list of arguments that will be passed on to
+#' \code{\link[sf:plot]{plot.sf}} only for plotting the nodes.
 #'
-#' @details This is a basic plotting functionality. For more advanced plotting,
-#' it is recommended to extract the nodes and edges from the network, and plot
-#' them separately with one of the many available spatial plotting functions
-#' as can be found in \code{sf}, \code{tmap}, \code{ggplot2}, \code{ggspatial},
-#' and others.
+#' @param edge_args A named list of arguments that will be passed on to
+#' \code{\link[sf:plot]{plot.sf}} only for plotting the edges.
 #'
-#' @return This is a plot method and therefore has no visible return value.
+#' @param ... Arguments passed on to \code{\link[sf:plot]{plot.sf}} that will
+#' apply to the plot as a whole.
+#'
+#' @details Arguments passed to \code{...} will be used both for plotting the
+#' nodes and for plotting the edges. Edges are always plotted first. Arguments
+#' specified in \code{node_args} and \code{edge_args} should not be specified
+#' in \code{...} as well, this will result in an error.
+#'
+#' @return Invisible.
 #'
 #' @examples
+#' library(sf, quietly = TRUE)
+#'
 #' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1), mfrow = c(1,1))
 #' net = as_sfnetwork(roxel)
 #' plot(net)
 #'
-#' # When lines are spatially implicit.
+#' # When edges are spatially implicit.
+#' # By default straight lines will be drawn between connected nodes.
 #' par(mar = c(1,1,1,1), mfrow = c(1,2))
-#' net = as_sfnetwork(roxel, edges_as_lines = FALSE)
-#' plot(net)
-#' plot(net, draw_lines = FALSE)
+#' inet = st_drop_geometry(activate(net, "edges"))
+#' plot(inet)
+#' plot(inet, draw_lines = FALSE)
 #'
-#' # Changing default settings.
+#' # Changing plot settings.
 #' par(mar = c(1,1,1,1), mfrow = c(1,1))
-#' plot(net, col = 'blue', pch = 18, lwd = 1, cex = 2)
+#' plot(net, main = "My network", col = "blue", pch = 18, lwd = 1, cex = 2)
+#'
+#' # Changing plot settings for nodes and edges separately.
+#' plot(net, node_args = list(col = "red"), edge_args = list(col = "blue"))
 #'
 #' # Add grid and axis
 #' par(mar = c(2.5,2.5,1,1))
 #' plot(net, graticule = TRUE, axes = TRUE)
 #'
+#' # Plot two networks on top of each other.
+#' par(mar = c(1,1,1,1), mfrow = c(1,1))
+#' neta = as_sfnetwork(roxel[1:10, ])
+#' netb = as_sfnetwork(roxel[50:60, ])
+#' plot(neta)
+#' plot(netb, node_args = list(col = "orange"), add = TRUE)
+#'
 #' par(oldpar)
 #'
 #' @importFrom graphics plot
-#' @importFrom methods hasArg
 #' @export
-plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
+plot.sfnetwork = function(x, draw_lines = TRUE,
+                          node_args = list(), edge_args = list(), ...) {
+  # Extract geometries of nodes and edges.
   node_geoms = pull_node_geom(x)
-  # Plot the nodes.
-  # Default pch should be 20.
-  node_geoms = pull_node_geom(x)
-  if (hasArg("pch")) {
-    plot(node_geoms, ...)
-  } else {
-    plot(node_geoms, pch = 20, ...)
-  }
+  edge_geoms = if (has_explicit_edges(x)) pull_edge_geom(x) else NULL
+  # Extract additional plot arguments.
+  dots = list(...)
   # Plot the edges.
-  # Add them to the nodes plot.
-  if (has_explicit_edges(x)) {
-    if (hasArg("add")) {
-      plot(pull_edge_geom(x), ...)
-    } else {
-      plot(pull_edge_geom(x), ..., add = TRUE)
-    }
-  } else {
-    if (draw_lines) {
-      bids = edge_boundary_node_indices(x, matrix = TRUE)
-      lines = draw_lines(node_geoms[bids[, 1]], node_geoms[bids[, 2]])
-      if (hasArg("add")) {
-        plot(lines, ...)
-      } else {
-        plot(lines, ..., add = TRUE)
-      }
-    }
+  if (draw_lines && is.null(edge_geoms)) {
+    bids = edge_boundary_node_indices(x, matrix = TRUE)
+    edge_geoms = draw_lines(node_geoms[bids[, 1]], node_geoms[bids[, 2]])
   }
+  if (! is.null(edge_geoms)) {
+    edge_args = c(edge_args, dots)
+    do.call(plot, c(list(edge_geoms), edge_args))
+  }
+  # Plot the nodes.
+  node_args = c(node_args, dots)
+  if (is.null(node_args$pch)) node_args$pch = 20
+  if (! is.null(edge_geoms) && ! isTRUE(node_args$add)) node_args$add = TRUE
+  do.call(plot, c(list(node_geoms), node_args))
+  # Return invisibly.
   invisible()
 }
 
@@ -91,12 +102,8 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
 #'
 #' @name autoplot
 autoplot.sfnetwork = function(object, ...) {
-  g = ggplot2::ggplot() + ggplot2::geom_sf(data = nodes_as_sf(object))
-  if (has_explicit_edges(object)) {
-    g + ggplot2::geom_sf(data = edges_as_sf(object))
-  } else {
-    message("Spatially implicit edges are drawn as lines", call. = FALSE)
-    object = explicitize_edges(object)
-    g + ggplot2::geom_sf(data = edges_as_sf(object))
-  }
+  object = explicitize_edges(object)
+  ggplot2::ggplot() +
+    ggplot2::geom_sf(data = nodes_as_sf(object)) +
+    ggplot2::geom_sf(data = edges_as_sf(object))
 }
