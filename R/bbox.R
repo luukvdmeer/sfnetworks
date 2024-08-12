@@ -52,14 +52,21 @@ st_network_bbox = function(x, ...) {
   UseMethod("st_network_bbox")
 }
 
-#' @importFrom sf st_bbox st_geometry
+#' @importFrom sf st_bbox
 #' @export
 st_network_bbox.sfnetwork = function(x, ...) {
-  # Extract bbox from nodes and edges.
+  # If the network is spatially implicit:
+  # --> The network bbox is equal to the node bbox.
+  # If the network is spatially explicit:
+  # --> Get most extreme coordinates among node and edge bboxes.
   nodes_bbox = st_bbox(pull_node_geom(x), ...)
-  edges_bbox = st_bbox(pull_edge_geom(x), ...)
-  # Take most extreme coordinates to form the network bbox.
-  merge_bboxes(nodes_bbox, edges_bbox)
+  if (has_explicit_edges(x)) {
+    edges_bbox = st_bbox(pull_edge_geom(x), ...)
+    net_bbox = merge_bboxes(nodes_bbox, edges_bbox)
+  } else {
+    net_bbox = nodes_bbox
+  }
+  net_bbox
 }
 
 
