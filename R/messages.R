@@ -88,6 +88,15 @@ raise_unsupported_arg = function(arg, replacement = NULL) {
 }
 
 #' @importFrom cli cli_abort
+raise_require_explicit = function() {
+  cli_abort(c(
+    "This call requires spatially explicit edges.",
+    "i" = "Call {.fn tidygraph::activate} to activate nodes instead.",
+    "i" = "Call {.fn sfnetworks::to_spatial_explicit} to explicitize edges."
+  ))
+}
+
+#' @importFrom cli cli_abort
 raise_invalid_sf_column = function() {
   cli_abort(c(
     "Attribute {.field sf_column} does not point to a geometry column.",

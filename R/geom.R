@@ -116,8 +116,9 @@ pull_node_geom = function(x) {
 #' @importFrom igraph edge_attr
 #' @noRd
 pull_edge_geom = function(x) {
-  require_explicit_edges(x)
-  geom = edge_attr(x, edge_geom_colname(x))
+  geom_colname = edge_geom_colname(x)
+  if (is.null(geom_colname)) raise_require_explicit()
+  geom = edge_attr(x, geom_colname)
   if (! is_sfc(geom)) raise_invalid_sf_column()
   geom
 }
@@ -164,7 +165,7 @@ mutate_node_geom = function(x, y) {
 #' @importFrom sf st_geometry
 #' @noRd
 mutate_edge_geom = function(x, y) {
-  edges = edges_as_table(x)
+  edges = edge_data(x)
   st_geometry(edges) = y
   edge_attribute_values(x) = edges
   x

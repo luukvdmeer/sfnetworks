@@ -4,21 +4,20 @@
 \alias{ids}
 \alias{node_ids}
 \alias{edge_ids}
-\title{Extract the indices of nodes or edges from a network}
+\title{Extract the node or edge indices from a spatial network}
 \usage{
 node_ids(x)
 
 edge_ids(x)
 }
 \arguments{
-\item{x}{An object of class \code{\link{sfnetwork}}, or any other network
-object inheriting from \code{\link[igraph]{igraph}}.}
+\item{x}{An object of class \code{\link{sfnetwork}}.}
 }
 \value{
 An vector of integers.
 }
 \description{
-Extract the indices of nodes or edges from a network
+Extract the node or edge indices from a spatial network
 }
 \details{
 The indices in these objects are always integers that correspond to

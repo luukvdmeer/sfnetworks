@@ -53,18 +53,52 @@ as_tibble.sfnetwork = function(x, active = NULL, spatial = TRUE, ...) {
   if (spatial) {
     switch(
       active,
-      nodes = nodes_as_sf(x),
-      edges = edges_as_table(x),
+      nodes = nodes_as_spatial_tibble(x, ...),
+      edges = nodes_as_spatial_tibble(x, ...),
       raise_invalid_active(active)
     )
   } else {
     switch(
       active,
-      nodes = as_tibble(as_tbl_graph(x), "nodes"),
-      edges = as_tibble(as_tbl_graph(x), "edges"),
+      nodes = nodes_as_regular_tibble(x, ...),
+      edges = edges_as_regular_tibble(x, ...),
       raise_invalid_active(active)
     )
   }
+}
+
+#' @importFrom sf st_as_sf
+nodes_as_spatial_tibble = function(x, ...) {
+  st_as_sf(
+    nodes_as_regular_tibble(x, ...),
+    agr = node_agr(x),
+    sf_column_name = node_geom_colname(x)
+  )
+}
+
+#' @importFrom sf st_as_sf
+edges_as_spatial_tibble = function(x, ...) {
+  if (has_explicit_edges(x)) {
+    st_as_sf(
+      edges_as_regular_tibble(x, ...),
+      agr = edge_agr(x),
+      sf_column_name = edge_geom_colname(x)
+    )
+  } else {
+    edges_as_regular_tibble(x, ...)
+  }
+}
+
+#' @importFrom tibble as_tibble
+#' @importFrom tidygraph as_tbl_graph
+nodes_as_regular_tibble = function(x, ...) {
+  as_tibble(as_tbl_graph(x), "nodes", ...)
+}
+
+#' @importFrom tibble as_tibble
+#' @importFrom tidygraph as_tbl_graph
+edges_as_regular_tibble = function(x, ...) {
+  as_tibble(as_tbl_graph(x), "edges", ...)
 }
 
 #' Convert a sfnetwork into a S2 geography vector

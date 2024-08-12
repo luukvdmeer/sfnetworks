@@ -94,7 +94,7 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
   if (will_assume_projected(x)) raise_assume_projected("to_spatial_contracted")
   # Retrieve nodes from the network.
   nodes = nodes_as_sf(x)
-  geom_colname = attr(nodes, "sf_column")
+  node_geomcol = attr(nodes, "sf_column")
   ## =======================
   # STEP I: GROUP THE NODES
   # Group the nodes table by forwarding ... to dplyr::group_by.
@@ -123,7 +123,7 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
   # --> We should temporarily remove the geometry column before contracting.
   ## ===========================
   # Remove the geometry list column for the time being.
-  x_tmp = delete_vertex_attr(x, geom_colname)
+  x_tmp = delete_vertex_attr(x, node_geomcol)
   # Update the attribute summary instructions.
   # During morphing tidygraph add the tidygraph node index column.
   # Since it is added internally it is not referenced in summarise_attributes.
@@ -155,14 +155,14 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
   }
   cnt_node_geoms = do.call("c", lapply(cnt_groups, get_centroid))
   new_node_geoms[cnt_group_idxs] = cnt_node_geoms
-  new_nodes[geom_colname] = list(new_node_geoms)
+  new_nodes[node_geomcol] = list(new_node_geoms)
   # If requested, store original node data in a .orig_data column.
   if (store_original_data) {
     drop_index = function(i) { i$.tidygraph_node_index = NULL; i }
     new_nodes$.orig_data = lapply(cnt_groups, drop_index)
   }
   # Update the nodes table of the contracted network.
-  new_nodes = st_as_sf(new_nodes, sf_column_name = geom_colname)
+  new_nodes = st_as_sf(new_nodes, sf_column_name = node_geomcol)
   node_attribute_values(x_new) = new_nodes
   # Convert in a sfnetwork.
   x_new = tbg_to_sfn(x_new)
@@ -335,7 +335,6 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
 #' @importFrom igraph is_directed
 #' @export
 to_spatial_directed = function(x) {
-  require_explicit_edges(x)
   if (is_directed(x)) return (x)
   # Retrieve the nodes and edges from the network.
   nodes = nodes_as_sf(x)
@@ -373,7 +372,7 @@ to_spatial_explicit = function(x, ...) {
   # --> If ... is given, convert edges to sf by forwarding ... to st_as_sf.
   # --> If ... is not given, draw straight lines from source to target nodes.
   if (dots_n > 0) {
-    edges = edges_as_table(x)
+    edges = edge_data(x)
     new_edges = st_as_sf(edges, ...)
     x_new = x
     edge_attribute_values(x_new) = new_edges
@@ -498,9 +497,6 @@ to_spatial_shortest_paths = function(x, ...) {
 to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
                              summarise_attributes = "first",
                              store_original_data = FALSE) {
-  # Define if the network has spatially explicit edges.
-  # This influences some of the processes to come.
-  spatial = if (has_explicit_edges(x)) TRUE else FALSE
   # Update the attribute summary instructions.
   # In the summarise attributes only real attribute columns were referenced.
   # On top of those, we need to include:
@@ -509,12 +505,8 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
   if (! inherits(summarise_attributes, "list")) {
     summarise_attributes = list(summarise_attributes)
   }
-  if (spatial) {
-    # We always take the first geometry.
-    geom_colname = edge_geom_colname(x)
-    summarise_attributes[geom_colname] = "first"
-  }
-  # The edge indices should be concatenated into a vector.
+  edge_geomcol = edge_geom_colname(x)
+  if (! is.null(edge_geomcol)) summarise_attributes[edge_geomcol] = "first"
   summarise_attributes[".tidygraph_edge_index"] = "concat"
   # Simplify the network.
   x_new = simplify(
@@ -526,19 +518,19 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
   # Igraph does not know about geometry list columns.
   # Summarizing them results in a list of sfg objects.
   # We should reconstruct the sfc geometry list column out of that.
-  if (spatial) {
-    new_edges = as_tibble(as_tbl_graph(x_new), "edges")
-    new_edges[geom_colname] = list(st_sfc(new_edges[[geom_colname]]))
-    new_edges = st_as_sf(new_edges, sf_column_name = geom_colname)
+  if (! is.null(edge_geomcol)) {
+    new_edges = edges_as_regular_tibble(x_new)
+    new_edges[edge_geomcol] = list(st_sfc(new_edges[[edge_geomcol]]))
+    new_edges = st_as_sf(new_edges, sf_column_name = edge_geomcol)
     st_crs(new_edges) = st_crs(x)
     st_precision(new_edges) = st_precision(x)
     edge_attribute_values(x_new) = new_edges
   }
   # If requested, original edge data should be stored in a .orig_data column.
   if (store_original_data) {
-    edges = edges_as_table(x)
+    edges = edge_data(x)
     edges$.tidygraph_edge_index = NULL
-    new_edges = edges_as_table(x_new)
+    new_edges = edge_data(x_new)
     copy_data = function(i) edges[i, , drop = FALSE]
     new_edges$.orig_data = lapply(new_edges$.tidygraph_edge_index, copy_data)
     edge_attribute_values(x_new) = new_edges
@@ -596,14 +588,14 @@ to_spatial_smooth = function(x,
   on.exit(igraph_options(return.vs.es = default_igraph_opt))
   # Retrieve nodes and edges from the network.
   nodes = nodes_as_sf(x)
-  edges = edges_as_table(x)
+  edges = edge_data(x)
   # For later use:
   # --> Check if x is directed.
   # --> Check if x has spatially explicit edges.
   # --> Retrieve the name of the geometry column of the edges in x.
   directed = is_directed(x)
-  spatial = is_sf(edges)
-  geom_colname = attr(edges, "sf_column")
+  explicit_edges = is_sf(edges)
+  edge_geomcol = attr(edges, "sf_column")
   ## ==========================
   # STEP I: DETECT PSEUDO NODES
   # The first step is to detect which nodes in x are pseudo nodes.
@@ -856,7 +848,7 @@ to_spatial_smooth = function(x,
   ## ===================================
   # Obtain the attribute values of all original edges in the network.
   # These should not include the geometries and original edge indices.
-  exclude = c(".tidygraph_edge_index", geom_colname)
+  exclude = c(".tidygraph_edge_index", edge_geomcol)
   edge_attrs = edge.attributes(x)
   edge_attrs = edge_attrs[!(names(edge_attrs) %in% exclude)]
   # For each replacement edge:
@@ -880,7 +872,7 @@ to_spatial_smooth = function(x,
   # --> These geometries have to be concatenated into a single new geometry.
   # --> The new geometry should go from the defined source to sink node.
   ## ===================================
-  if (spatial) {
+  if (explicit_edges) {
     # Obtain geometries of all original edges and nodes in the network.
     edge_geoms = st_geometry(edges)
     node_geoms = st_geometry(nodes)
@@ -928,12 +920,16 @@ to_spatial_smooth = function(x,
     data.frame(do.call("rbind", new_idxs)),
     data.frame(do.call("rbind", new_attrs))
   )
-  new_edges[geom_colname] = list(new_geoms)
   # Bind together with the original edges.
   # Merged edges may have list-columns for some attributes.
   # This requires a bit more complicated rowbinding.
-  all_edges = bind_rows_list(edges, new_edges)
-  if (spatial) all_edges = st_as_sf(all_edges, sf_column_name = geom_colname)
+  if (explicit_edges) {
+    new_edges[edge_geomcol] = list(new_geoms)
+    all_edges = bind_rows_list(edges, new_edges)
+    all_edges = st_as_sf(all_edges, sf_column_name = edge_geomcol)
+  } else {
+    all_edges = bind_rows_list(edges, new_edges)
+  }
   # Recreate an sfnetwork.
   x_new = sfnetwork_(nodes, all_edges, directed = directed)
   ## ============================================
@@ -953,7 +949,7 @@ to_spatial_smooth = function(x,
   ## ==============================================
   if (store_original_data) {
     # Store the original edge data in a .orig_data column.
-    new_edges = edges_as_sf(x_new)
+    new_edges = edge_data(x_new)
     edges$.tidygraph_edge_index = NULL
     copy_data = function(i) edges[i, , drop = FALSE]
     new_edges$.orig_data = lapply(new_edges$.tidygraph_edge_index, copy_data)
@@ -982,7 +978,6 @@ to_spatial_smooth = function(x,
 #' @importFrom sfheaders sf_to_df sfc_linestring sfc_point
 #' @export
 to_spatial_subdivision = function(x) {
-  require_explicit_edges(x)
   if (will_assume_constant(x)) raise_assume_constant("to_spatial_subdivision")
   # Retrieve nodes and edges from the network.
   nodes = nodes_as_sf(x)

@@ -62,25 +62,24 @@ st_as_sf.sfnetwork = function(x, active = NULL, ...) {
 }
 
 #' @importFrom sf st_as_sf
-#' @importFrom tibble as_tibble
-#' @importFrom tidygraph as_tbl_graph
 nodes_as_sf = function(x, ...) {
   st_as_sf(
-    as_tibble(as_tbl_graph(x), "nodes"),
+    nodes_as_regular_tibble(x),
     agr = node_agr(x),
-    sf_column_name = node_geom_colname(x)
+    sf_column_name = node_geom_colname(x),
+    ...
   )
 }
 
 #' @importFrom sf st_as_sf
-#' @importFrom tibble as_tibble
-#' @importFrom tidygraph as_tbl_graph
 edges_as_sf = function(x, ...) {
-  require_explicit_edges(x)
+  geom_colname = edge_geom_colname(x)
+  if (is.null(geom_colname)) raise_require_explicit()
   st_as_sf(
-    as_tibble(as_tbl_graph(x), "edges"),
+    edges_as_regular_tibble(x),
     agr = edge_agr(x),
-    sf_column_name = edge_geom_colname(x)
+    sf_column_name = geom_colname,
+    ...
   )
 }
 
@@ -117,7 +116,7 @@ st_geometry.sfnetwork = function(obj, active = NULL, ...) {
     x_new = drop_geom(x)
   } else  {
     x_new = mutate_geom(x, value)
-    validate_network(x_new, message = FALSE)
+    validate_network(x_new)
   }
   x_new
 }
@@ -452,7 +451,6 @@ spatial_join_nodes = function(x, y, ...) {
 #' @importFrom igraph is_directed
 #' @importFrom sf st_as_sf st_join
 spatial_join_edges = function(x, y, ...) {
-  require_explicit_edges(x)
   # Convert x and y to sf.
   x_sf = edges_as_sf(x)
   y_sf = st_as_sf(y)
@@ -516,7 +514,6 @@ spatial_filter_nodes = function(x, y, ...) {
 #' @importFrom igraph delete_edges
 #' @importFrom sf st_geometry st_filter
 spatial_filter_edges = function(x, y, ...) {
-  require_explicit_edges(x)
   x_sf = edges_as_sf(x)
   y_sf = st_geometry(y)
   drop = find_indices_to_drop(x_sf, y_sf, ..., .operator = st_filter)
@@ -601,7 +598,6 @@ spatial_clip_nodes = function(x, y, ..., .operator = sf::st_intersection) {
 #' @importFrom igraph is_directed
 #' @importFrom sf st_cast st_equals st_geometry st_is st_line_merge st_sf
 spatial_clip_edges = function(x, y, ..., .operator = sf::st_intersection) {
-  require_explicit_edges(x)
   directed = is_directed(x)
   # Clipping does not work good yet for undirected networks.
   if (!directed) {
@@ -610,12 +606,14 @@ spatial_clip_edges = function(x, y, ..., .operator = sf::st_intersection) {
       call = FALSE
     )
   }
+  x_sf = edges_as_sf(x)
+  y_sf = st_geometry(y)
   ## ===========================
   # STEP I: CLIP THE EDGES
   ## ===========================
   # Clip the edges using the given operator.
   # Possible operators are st_intersection, st_difference and st_crop.
-  e_new = .operator(edges_as_sf(x), st_geometry(y), ...)
+  e_new = .operator(x_sf, y_sf, ...)
   # A few issues need to be resolved before moving on.
   # 1) An edge shares a single point with the clipper:
   # --> The operator includes it as a point in the output.

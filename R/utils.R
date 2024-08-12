@@ -24,10 +24,37 @@ n_edges = function(x) {
   ecount(x)
 }
 
-#' Extract the indices of nodes or edges from a network
+#' Extract the node or edge data from a spatial network
 #'
-#' @param x An object of class \code{\link{sfnetwork}}, or any other network
-#' object inheriting from \code{\link[igraph]{igraph}}.
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @return For the nodes, always an object of class \code{\link[sf]{sf}}. For
+#' the edges, an object of class \code{\link[sf]{sf}} if the edges are
+#' spatially explicit, and an object of class \code{\link[tibble]{tibble}}
+#' if the edges are spatially implicity and \code{require_sf = FALSE}.
+#'
+#' @name data
+#' @export
+node_data = function(x) {
+  nodes_as_sf(x)
+}
+
+#' @name data
+#'
+#' @param require_sf Is an \code{\link[sf]{sf}} object required? This will make
+#' extraction of edge data fail if the edges are spatially implicit. Defaults
+#' to \code{FALSE}.
+#'
+#' @importFrom tibble as_tibble
+#' @importFrom tidygraph as_tbl_graph
+#' @export
+edge_data = function(x, require_sf = FALSE) {
+  if (require_sf) edges_as_sf(x) else edges_as_spatial_tibble(x)
+}
+
+#' Extract the node or edge indices from a spatial network
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @details The indices in these objects are always integers that correspond to
 #' rownumbers in respectively the nodes or edges table.
@@ -407,24 +434,6 @@ edge_boundary_point_indices = function(x, matrix = FALSE) {
       idxs_vct = do.call("c", idxs_lst)
     }
     if (matrix) t(matrix(idxs_vct, nrow = 2)) else idxs_vct
-}
-
-#' Extract the edges as a table
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @return An object of class \code{\link[sf]{sf}} if the edges are spatially
-#' explicit, and object of class \code{\link[tibble]{tibble}}.
-#'
-#' @importFrom tibble as_tibble
-#' @importFrom tidygraph as_tbl_graph
-#' @noRd
-edges_as_table = function(x) {
-  if (has_explicit_edges(x)) {
-    edges_as_sf(x)
-  } else {
-    as_tibble(as_tbl_graph(x), "edges")
-  }
 }
 
 #' Make edges spatially explicit
