@@ -2,29 +2,23 @@
 
 #' @importFrom cli cli_warn
 raise_assume_constant = function(caller) {
-  cli_warn(
-    c(
-      "{.fn {caller}} assumes all attributes are constant over geometries.",
-      "x" = "Not all attributes are labelled as being constant.",
-      "i" = "You can label attribute-geometry relations using {.fn sf::st_set_agr}."
-    ),
-    call = NULL
-  )
+  cli_warn(c(
+    "{.fn {caller}} assumes all attributes are constant over geometries.",
+    "x" = "Not all attributes are labelled as being constant.",
+    "i" = "You can label attribute-geometry relations using {.fn sf::st_set_agr}."
+  ))
 }
 
 #' @importFrom cli cli_warn
 raise_assume_projected = function(caller) {
-  cli_warn(
-    c(
-      "{.fn {caller}} assumes coordinates are projected.",
-      "x" = paste(
-        "The provided coordinates are geographic,",
-        "which may lead to inaccurate results."
-      ),
-      "i" = "You can transform to a projected CRS using {.fn sf::st_transform}."
+  cli_warn(c(
+    "{.fn {caller}} assumes coordinates are projected.",
+    "x" = paste(
+      "The provided coordinates are geographic,",
+      "which may lead to inaccurate results."
     ),
-    call = NULL
-  )
+    "i" = "You can transform to a projected CRS using {.fn sf::st_transform}."
+  ))
 }
 
 #' @importFrom cli cli_abort
@@ -48,7 +42,7 @@ raise_invalid_sf_column = function() {
 
 #' @importFrom cli cli_warn
 raise_multiple_elements = function(arg) {
-  cli_warn("Only the first element of {.arg {arg}} is used.", call = NULL)
+  cli_warn("Only the first element of {.arg {arg}} is used.")
 }
 
 #' @importFrom cli cli_abort
@@ -58,7 +52,7 @@ raise_na_values = function(arg) {
 
 #' @importFrom cli cli_warn
 raise_overwrite = function(value) {
-  cli_warn("Overwriting column {.field value}.", call = NULL)
+  cli_warn("Overwriting column {.field value}.")
 }
 
 #' @importFrom cli cli_abort

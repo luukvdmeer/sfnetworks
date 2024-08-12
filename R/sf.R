@@ -327,19 +327,16 @@ st_reverse.sfnetwork = function(x, ...) {
   if (active == "edges") {
     require_explicit_edges(x)
     if (is_directed(x)) {
-      cli_warn(c(
-        paste(
-          "{.fn st_reverse} swaps {.field from} and {.field to} columns",
-          "in directed networks."
-        ), call = FALSE
+      cli_warn(paste(
+        "{.fn st_reverse} swaps {.field from} and {.field to} columns",
+        "in directed networks."
       ))
       x = reverse_edges(x, eids = edge_ids(x)) %preserve_all_attrs% x
     }
   } else {
     cli_warn(c(
       "{.fn st_reverse} has no effect on nodes.",
-      "i" = "Call {.fn tidygraph::activate} to activate edges instead.",
-      call = FALSE
+      "i" = "Call {.fn tidygraph::activate} to activate edges instead."
     ))
   }
   geom_unary_ops(st_reverse, x, active,...)
@@ -432,7 +429,7 @@ spatial_join_nodes = function(x, y, ...) {
       "x" = paste(
         "Multiple matches were detected for some nodes,",
         "of which all but the first one are ignored."
-      ), call = FALSE
+      )
     ))
   }
   # If an inner join was requested instead of a left join:
@@ -612,8 +609,7 @@ spatial_clip_edges = function(x, y, ..., .operator = sf::st_intersection) {
   # Clipping does not work good yet for undirected networks.
   if (!directed) {
     cli_warn(
-      "Clipping edges does not give correct results in undirected networks",
-      call = FALSE
+      "Clipping edges does not give correct results in undirected networks"
     )
   }
   x_sf = edges_as_sf(x)

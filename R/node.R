@@ -82,7 +82,7 @@ get_coords = function(x, value) {
   tryCatch(
     all_coords[, value],
     error = function(e) {
-      cli_warn("{value} coordinates are not available.", call = FALSE)
+      cli_warn("{value} coordinates are not available.")
       rep(NA, length(x))
     }
   )
