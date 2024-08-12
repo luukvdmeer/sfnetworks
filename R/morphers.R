@@ -904,7 +904,7 @@ to_spatial_smooth = function(x,
       # --> In this case st_line_merge creates a multilinestring geometry.
       # --> We just want a regular linestring (even if this is invalid).
       if (any(st_is(new_geom, "MULTILINESTRING"))) {
-        new_geom = multilinestrings_to_linestrings(new_geom)
+        new_geom = force_multilinestrings_to_linestrings(new_geom)
       }
       new_geom
     }

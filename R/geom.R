@@ -152,7 +152,7 @@ mutate_geom = function(x, y, active = NULL) {
 }
 
 #' @name mutate_geom
-#' @importFrom sf st_geometry
+#' @importFrom sf st_geometry<-
 #' @noRd
 mutate_node_geom = function(x, y) {
   nodes = nodes_as_sf(x)
@@ -162,7 +162,7 @@ mutate_node_geom = function(x, y) {
 }
 
 #' @name mutate_geom
-#' @importFrom sf st_geometry
+#' @importFrom sf st_geometry<-
 #' @noRd
 mutate_edge_geom = function(x, y) {
   edges = edge_data(x)

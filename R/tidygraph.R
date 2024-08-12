@@ -31,8 +31,9 @@ morph.sfnetwork = function(.data, .f, ...) {
       class = c("morphed_sfnetwork", class(morphed))
     )
   } else if (has_spatial_nodes(morphed[[1]])) {
+    morphed[] = lapply(morphed, tbg_to_sfn)
     structure(
-      lapply(morphed, tbg_to_sfn) %preserve_morphed_attrs% morphed,
+      morphed,
       class = c("morphed_sfnetwork", class(morphed))
     )
   } else {
@@ -55,14 +56,14 @@ unmorph.morphed_sfnetwork = function(.data, ...) {
       vertex_attr(x, ".orig_data") = as_tibble(vertex_attr(x, ".orig_data"))
       x
     }
-    .data = lapply(.data, orig_data_to_tibble) %preserve_morphed_attrs% .data
+    .data[] = lapply(.data, orig_data_to_tibble)
   }
   if (! is.null(edge_attr(.data[[1]], ".orig_data"))) {
     orig_data_to_tibble = function(x) {
       edge_attr(x, ".orig_data") = as_tibble(edge_attr(x, ".orig_data"))
       x
     }
-    .data = lapply(.data, orig_data_to_tibble) %preserve_morphed_attrs% .data
+    .data[] = lapply(.data, orig_data_to_tibble)
   }
   # Call tidygraphs unmorph.
   NextMethod(.data, ...)

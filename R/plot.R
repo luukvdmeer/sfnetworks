@@ -42,7 +42,6 @@
 #'
 #' @importFrom graphics plot
 #' @importFrom methods hasArg
-#' @importFrom sf st_geometry
 #' @export
 plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
   # Plot the nodes.

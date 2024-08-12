@@ -27,6 +27,25 @@ raise_assume_projected = function(caller) {
   )
 }
 
+#' @importFrom cli cli_abort
+raise_invalid_active = function(value) {
+  cli_abort(c(
+    "Unknown value for argument {.arg active}: {value}.",
+    "i" = "Supported values are: nodes, edges."
+  ))
+}
+
+#' @importFrom cli cli_abort
+raise_invalid_sf_column = function() {
+  cli_abort(c(
+    "Attribute {.field sf_column} does not point to a geometry column.",
+    "i" = paste(
+      "Did you rename the geometry column without setting",
+      "{.code st_geometry(x) = 'newname'}?"
+    )
+  ))
+}
+
 #' @importFrom cli cli_warn
 raise_multiple_elements = function(arg) {
   cli_warn("Only the first element of {.arg {arg}} is used.", call = NULL)
@@ -43,16 +62,17 @@ raise_overwrite = function(value) {
 }
 
 #' @importFrom cli cli_abort
-raise_reserved_attr = function(value) {
-  cli_abort("The attribute name {.field value} is reserved.")
+raise_require_explicit = function() {
+  cli_abort(c(
+    "This call requires spatially explicit edges.",
+    "i" = "Call {.fn tidygraph::activate} to activate nodes instead.",
+    "i" = "Call {.fn sfnetworks::to_spatial_explicit} to explicitize edges."
+  ))
 }
 
 #' @importFrom cli cli_abort
-raise_invalid_active = function(value) {
-  cli_abort(c(
-    "Unknown value for argument {.arg active}: {value}.",
-    "i" = "Supported values are: nodes, edges."
-  ))
+raise_reserved_attr = function(value) {
+  cli_abort("The attribute name {.field value} is reserved.")
 }
 
 #' @importFrom cli cli_abort
@@ -85,26 +105,6 @@ raise_unsupported_arg = function(arg, replacement = NULL) {
       "i" = "Use {.arg {replacement}} instead."
     ))
   }
-}
-
-#' @importFrom cli cli_abort
-raise_require_explicit = function() {
-  cli_abort(c(
-    "This call requires spatially explicit edges.",
-    "i" = "Call {.fn tidygraph::activate} to activate nodes instead.",
-    "i" = "Call {.fn sfnetworks::to_spatial_explicit} to explicitize edges."
-  ))
-}
-
-#' @importFrom cli cli_abort
-raise_invalid_sf_column = function() {
-  cli_abort(c(
-    "Attribute {.field sf_column} does not point to a geometry column.",
-    "i" = paste(
-      "Did you rename the geometry column without setting",
-      "{.code st_geometry(x) = 'newname'}?"
-    )
-  ))
 }
 
 #' @importFrom lifecycle deprecate_stop

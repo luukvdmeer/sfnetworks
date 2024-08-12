@@ -553,7 +553,7 @@ linestring_segments = function(x) {
   segments
 }
 
-#' Cast multilinestrings to single linestrings.
+#' Forcefully cast multilinestrings to single linestrings.
 #'
 #' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 #' with \code{MULTILINESTRING} geometries or a combination of
@@ -568,7 +568,7 @@ linestring_segments = function(x) {
 #' @importFrom sf st_crs st_crs<- st_geometry st_precision st_precision<-
 #' @importFrom sfheaders sfc_linestring sfc_to_df
 #' @noRd
-multilinestrings_to_linestrings = function(x) {
+force_multilinestrings_to_linestrings = function(x) {
   # Decompose lines into the points that shape them.
   pts = sfc_to_df(st_geometry(x))
   # Add a linestring ID to each of these points.
