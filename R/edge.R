@@ -47,7 +47,7 @@ NULL
 edge_azimuth = function(degrees = FALSE) {
   require_active_edges()
   x = .G()
-  bounds = edge_boundary_nodes(x)
+  bounds = edge_boundary_nodes(x, focused = TRUE)
   values = st_geod_azimuth(bounds)[seq(1, length(bounds), 2)]
   if (degrees) values = set_units(values, "degrees")
   values
@@ -74,7 +74,9 @@ edge_circuity = function(Inf_as_NaN = FALSE) {
   require_active_edges()
   x = .G()
   # Calculate circuity.
-  values = st_length(pull_edge_geom(x)) / straight_line_distance(x)
+  length = st_length(pull_edge_geom(x, focused = TRUE))
+  sldist = straight_line_distance(x)
+  values = length / sldist
   # Drop units since circuity is unitless (it is a ratio of m/m).
   if (inherits(values, "units")) values = drop_units(values)
   # Replace Inf values by NaN if requested.
@@ -96,7 +98,7 @@ edge_length = function() {
   require_active_edges()
   x = .G()
   if (has_explicit_edges(x)) {
-    st_length(pull_edge_geom(x))
+    st_length(pull_edge_geom(x, focused = TRUE))
   } else {
     straight_line_distance(x)
   }
@@ -123,7 +125,7 @@ straight_line_distance = function(x) {
   nodes = pull_node_geom(x)
   # Get the indices of the boundary nodes of each edge.
   # Returns a matrix with source ids in column 1 and target ids in column 2.
-  idxs = edge_boundary_node_indices(x, matrix = TRUE)
+  idxs = edge_boundary_node_indices(x, focused = TRUE, matrix = TRUE)
   # Calculate distances pairwise.
   st_distance(nodes[idxs[, 1]], nodes[idxs[, 2]], by_element = TRUE)
 }
@@ -317,10 +319,11 @@ edge_is_nearest = function(y) {
   require_active_edges()
   x = .G()
   vec = rep(FALSE, n_edges(x))
-  vec[nearest_edge_ids(x, y)] = TRUE
-  vec
+  vec[nearest_edge_ids(x, y, focused = FALSE)] = TRUE
+  vec[edge_ids(x, focused = TRUE)]
 }
 
 evaluate_edge_predicate = function(predicate, x, y, ...) {
-  lengths(predicate(pull_edge_geom(x), y, sparse = TRUE, ...)) > 0
+  E = pull_edge_geom(x, focused = TRUE)
+  lengths(predicate(E, y, sparse = TRUE, ...)) > 0
 }

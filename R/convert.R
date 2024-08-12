@@ -16,6 +16,10 @@
 #' extracting. If \code{NULL}, it will be set to the current active element of
 #' the given network. Defaults to \code{NULL}.
 #'
+#' @param focused Should only features that are in focus be extracted? Defaults
+#' to \code{TRUE}. See \code{\link[tidygraph]{focus}} for more information on
+#' focused networks.
+#'
 #' @param spatial Should the extracted tibble be a 'spatial tibble', i.e. an
 #' object of class \code{c('sf', 'tbl_df')}, if it contains a geometry list
 #' column. Defaults to \code{TRUE}.
@@ -46,41 +50,42 @@
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph
 #' @export
-as_tibble.sfnetwork = function(x, active = NULL, spatial = TRUE, ...) {
+as_tibble.sfnetwork = function(x, active = NULL, focused = TRUE,
+                               spatial = TRUE, ...) {
   if (is.null(active)) {
     active = attr(x, "active")
   }
   if (spatial) {
     switch(
       active,
-      nodes = nodes_as_spatial_tibble(x, ...),
-      edges = nodes_as_spatial_tibble(x, ...),
+      nodes = nodes_as_spatial_tibble(x, focused = focused, ...),
+      edges = edges_as_spatial_tibble(x, focused = focused, ...),
       raise_invalid_active(active)
     )
   } else {
     switch(
       active,
-      nodes = nodes_as_regular_tibble(x, ...),
-      edges = edges_as_regular_tibble(x, ...),
+      nodes = nodes_as_regular_tibble(x, focused = focused, ...),
+      edges = edges_as_regular_tibble(x, focused = focused, ...),
       raise_invalid_active(active)
     )
   }
 }
 
 #' @importFrom sf st_as_sf
-nodes_as_spatial_tibble = function(x, ...) {
+nodes_as_spatial_tibble = function(x, focused = FALSE, ...) {
   st_as_sf(
-    nodes_as_regular_tibble(x, ...),
+    nodes_as_regular_tibble(x, focused = focused, ...),
     agr = node_agr(x),
     sf_column_name = node_geom_colname(x)
   )
 }
 
 #' @importFrom sf st_as_sf
-edges_as_spatial_tibble = function(x, ...) {
+edges_as_spatial_tibble = function(x, focused = FALSE, ...) {
   if (has_explicit_edges(x)) {
     st_as_sf(
-      edges_as_regular_tibble(x, ...),
+      edges_as_regular_tibble(x, focused = focused, ...),
       agr = edge_agr(x),
       sf_column_name = edge_geom_colname(x)
     )
@@ -91,17 +96,17 @@ edges_as_spatial_tibble = function(x, ...) {
 
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph
-nodes_as_regular_tibble = function(x, ...) {
-  as_tibble(as_tbl_graph(x), "nodes", ...)
+nodes_as_regular_tibble = function(x, focused = FALSE, ...) {
+  as_tibble(as_tbl_graph(x), active = "nodes", focused = focused, ...)
 }
 
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph
-edges_as_regular_tibble = function(x, ...) {
-  as_tibble(as_tbl_graph(x), "edges", ...)
+edges_as_regular_tibble = function(x, focused = FALSE, ...) {
+  as_tibble(as_tbl_graph(x), active = "edges", focused = focused, ...)
 }
 
-#' Convert a sfnetwork into a S2 geography vector
+#' Extract the geometries of a sfnetwork as a S2 geography vector
 #'
 #' A method to convert an object of class \code{\link{sfnetwork}} into
 #' \code{\link[s2]{s2_geography}} format. Use this method without the
@@ -114,10 +119,8 @@ edges_as_regular_tibble = function(x, ...) {
 #' @return An object of class \code{\link[s2]{s2_geography}}.
 #'
 #' @name as_s2_geography
-#'
-#' @importFrom sf st_geometry
-as_s2_geography.sfnetwork = function(x, ...) {
-  s2::as_s2_geography(st_geometry(x))
+as_s2_geography.sfnetwork = function(x, focused = TRUE, ...) {
+  s2::as_s2_geography(pull_geom(x, focused = focused), ...)
 }
 
 #' Convert a sfnetwork into a linnet
@@ -146,16 +149,10 @@ as.linnet.sfnetwork = function(X, ...) {
   check_installed("spatstat.linnet")
   check_installed("sf (>= 1.0)")
   if (is_installed("spatstat")) check_installed("spatstat (>= 2.0)")
-  # Extract the vertices of the sfnetwork.
-  X_vertices_ppp = spatstat.geom::as.ppp(pull_node_geom(X))
+  # Convert nodes to ppp.
+  V = spatstat.geom::as.ppp(pull_node_geom(x))
   # Extract the edge list.
-  X_edge_list = as.matrix(
-    (as.data.frame(activate(X, "edges")))[, c("from", "to")]
-  )
+  E = as.matrix(edges_as_regular_tibble(x)[, c("from", "to")])
   # Build linnet.
-  spatstat.linnet::linnet(
-    vertices = X_vertices_ppp,
-    edges = X_edge_list,
-    ...
-  )
+  spatstat.linnet::linnet(vertices = V, edges = E, ...)
 }

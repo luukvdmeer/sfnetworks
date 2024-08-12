@@ -48,7 +48,7 @@ NULL
 node_X = function() {
   require_active_nodes()
   x = .G()
-  get_coords(pull_node_geom(x), "X")
+  get_coords(pull_node_geom(x, focused = TRUE), "X")
 }
 
 #' @name node_coordinates
@@ -56,7 +56,7 @@ node_X = function() {
 node_Y = function() {
   require_active_nodes()
   x = .G()
-  get_coords(pull_node_geom(x), "Y")
+  get_coords(pull_node_geom(x, focused = TRUE), "Y")
 }
 
 #' @name node_coordinates
@@ -64,7 +64,7 @@ node_Y = function() {
 node_Z = function() {
   require_active_nodes()
   x = .G()
-  get_coords(pull_node_geom(x), "Z")
+  get_coords(pull_node_geom(x, focused = TRUE), "Z")
 }
 
 #' @name node_coordinates
@@ -72,7 +72,7 @@ node_Z = function() {
 node_M = function() {
   require_active_nodes()
   x = .G()
-  get_coords(pull_node_geom(x), "M")
+  get_coords(pull_node_geom(x, focused = TRUE), "M")
 }
 
 #' @importFrom cli cli_warn
@@ -238,10 +238,11 @@ node_is_nearest = function(y) {
   require_active_nodes()
   x = .G()
   vec = rep(FALSE, n_nodes(x))
-  vec[nearest_node_ids(x, y)] = TRUE
-  vec
+  vec[nearest_node_ids(x, y, focused = FALSE)] = TRUE
+  vec[node_ids(x, focused = TRUE)]
 }
 
 evaluate_node_predicate = function(predicate, x, y, ...) {
-  lengths(predicate(pull_node_geom(x), y, sparse = TRUE, ...)) > 0
+  N = pull_node_geom(x, focused = TRUE)
+  lengths(predicate(N, y, sparse = TRUE, ...)) > 0
 }

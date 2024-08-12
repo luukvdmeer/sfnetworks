@@ -98,8 +98,10 @@ st_network_blend = function(x, y, tolerance = Inf) {
 }
 
 #' @importFrom cli cli_abort
+#' @importFrom tidygraph unfocus
 #' @export
 st_network_blend.sfnetwork = function(x, y, tolerance = Inf) {
+  x = unfocus(x)
   if (! has_explicit_edges(x)) {
     cli_abort(c(
       "{.arg x} should have spatially explicit edges.",

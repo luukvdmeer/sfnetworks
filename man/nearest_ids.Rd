@@ -6,15 +6,19 @@
 \alias{nearest_edge_ids}
 \title{Extract the indices of nearest nodes or edges to given spatial features}
 \usage{
-nearest_node_ids(x, y)
+nearest_node_ids(x, y, focused = TRUE)
 
-nearest_edge_ids(x, y)
+nearest_edge_ids(x, y, focused = TRUE)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
 
 \item{y}{Spatial features as object of class \code{\link[sf]{sf}} or
 \code{\link[sf]{sfc}}.}
+
+\item{focused}{Should only the indices of features that are in focus be
+extracted? Defaults to \code{TRUE}. See \code{\link[tidygraph]{focus}} for
+more information on focused networks.}
 }
 \value{
 An integer vector with each element containing the index of the

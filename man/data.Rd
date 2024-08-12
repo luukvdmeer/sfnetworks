@@ -6,12 +6,16 @@
 \alias{edge_data}
 \title{Extract the node or edge data from a spatial network}
 \usage{
-node_data(x)
+node_data(x, focused = TRUE)
 
-edge_data(x, require_sf = FALSE)
+edge_data(x, focused = TRUE, require_sf = FALSE)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
+
+\item{focused}{Should only features that are in focus be extracted? Defaults
+to \code{TRUE}. See \code{\link[tidygraph]{focus}} for more information on
+focused networks.}
 
 \item{require_sf}{Is an \code{\link[sf]{sf}} object required? This will make
 extraction of edge data fail if the edges are spatially implicit. Defaults

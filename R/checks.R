@@ -23,6 +23,22 @@ is.sfnetwork = function(x) {
   is_sfnetwork(x)
 }
 
+#' Check if a network is focused
+#'
+#' @param x An object of class \code{\link{sfnetwork}} or
+#' \code{\link[tidygraph]{tbl_graph}}.
+#'
+#' @return \code{TRUE} if the given network is focused on nodes or edges,
+#' \code{FALSE} otherwise.
+#'
+#' @details See \code{\link[tidygraph]{focus}} for more information on focused
+#' networks.
+#'
+#' @noRd
+is_focused = function(x) {
+  inherits(x, "focused_tbl_graph")
+}
+
 #' Check if an object is an sf object
 #'
 #' @param x Object to be checked.

@@ -142,7 +142,7 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
   # --> If requested the original node data in tibble format.
   ## ======================================================
   # Extract the nodes from the contracted network.
-  new_nodes = as_tibble(x_new, "nodes")
+  new_nodes = as_tibble(x_new, "nodes", focused = FALSE)
   # Add geometries to the new nodes.
   # For each node that was not contracted:
   # --> Use its original geometry.
@@ -372,7 +372,7 @@ to_spatial_explicit = function(x, ...) {
   # --> If ... is given, convert edges to sf by forwarding ... to st_as_sf.
   # --> If ... is not given, draw straight lines from source to target nodes.
   if (dots_n > 0) {
-    edges = edge_data(x)
+    edges = edge_data(x, focused = FALSE)
     new_edges = st_as_sf(edges, ...)
     x_new = x
     edge_attribute_values(x_new) = new_edges
@@ -491,8 +491,6 @@ to_spatial_shortest_paths = function(x, ...) {
 #'
 #' @importFrom igraph simplify
 #' @importFrom sf st_as_sf st_crs st_crs<- st_precision st_precision<- st_sfc
-#' @importFrom tibble as_tibble
-#' @importFrom tidygraph as_tbl_graph
 #' @export
 to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
                              summarise_attributes = "first",
@@ -528,9 +526,9 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
   }
   # If requested, original edge data should be stored in a .orig_data column.
   if (store_original_data) {
-    edges = edge_data(x)
+    edges = edge_data(x, focused = FALSE)
     edges$.tidygraph_edge_index = NULL
-    new_edges = edge_data(x_new)
+    new_edges = edge_data(x, focused = FALSE_new)
     copy_data = function(i) edges[i, , drop = FALSE]
     new_edges$.orig_data = lapply(new_edges$.tidygraph_edge_index, copy_data)
     edge_attribute_values(x_new) = new_edges
@@ -588,7 +586,7 @@ to_spatial_smooth = function(x,
   on.exit(igraph_options(return.vs.es = default_igraph_opt))
   # Retrieve nodes and edges from the network.
   nodes = nodes_as_sf(x)
-  edges = edge_data(x)
+  edges = edge_data(x, focused = FALSE)
   # For later use:
   # --> Check if x is directed.
   # --> Check if x has spatially explicit edges.
@@ -949,7 +947,7 @@ to_spatial_smooth = function(x,
   ## ==============================================
   if (store_original_data) {
     # Store the original edge data in a .orig_data column.
-    new_edges = edge_data(x_new)
+    new_edges = edge_data(x, focused = FALSE_new)
     edges$.tidygraph_edge_index = NULL
     copy_data = function(i) edges[i, , drop = FALSE]
     new_edges$.orig_data = lapply(new_edges$.tidygraph_edge_index, copy_data)

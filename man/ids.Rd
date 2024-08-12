@@ -6,12 +6,16 @@
 \alias{edge_ids}
 \title{Extract the node or edge indices from a spatial network}
 \usage{
-node_ids(x)
+node_ids(x, focused = TRUE)
 
-edge_ids(x)
+edge_ids(x, focused = TRUE)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
+
+\item{focused}{Should only the indices of features that are in focus be
+extracted? Defaults to \code{TRUE}. See \code{\link[tidygraph]{focus}} for
+more information on focused networks.}
 }
 \value{
 An vector of integers.

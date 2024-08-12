@@ -88,17 +88,21 @@ edge_geom_colname = function(x) {
 #' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently
 #' active element of x will be used.
 #'
+#' @param focused Should only features that are in focus be pulled? Defaults
+#' to \code{FALSE}. See \code{\link[tidygraph]{focus}} for more information on
+#' focused networks.
+#'
 #' @return An object of class \code{\link[sf]{sfc}}.
 #'
 #' @noRd
-pull_geom = function(x, active = NULL) {
+pull_geom = function(x, active = NULL, focused = FALSE) {
   if (is.null(active)) {
     active = attr(x, "active")
   }
   switch(
     active,
-    nodes = pull_node_geom(x),
-    edges = pull_edge_geom(x),
+    nodes = pull_node_geom(x, focused = focused),
+    edges = pull_edge_geom(x, focused = focused),
     raise_invalid_active(active)
   )
 }
@@ -106,20 +110,22 @@ pull_geom = function(x, active = NULL) {
 #' @name pull_geom
 #' @importFrom igraph vertex_attr
 #' @noRd
-pull_node_geom = function(x) {
+pull_node_geom = function(x, focused = FALSE) {
   geom = vertex_attr(x, node_geom_colname(x))
   if (! is_sfc(geom)) raise_invalid_sf_column()
+  if (focused && is_focused(x)) geom = geom[node_ids(x, focused = TRUE)]
   geom
 }
 
 #' @name pull_geom
 #' @importFrom igraph edge_attr
 #' @noRd
-pull_edge_geom = function(x) {
+pull_edge_geom = function(x, focused = FALSE) {
   geom_colname = edge_geom_colname(x)
   if (is.null(geom_colname)) raise_require_explicit()
   geom = edge_attr(x, geom_colname)
   if (! is_sfc(geom)) raise_invalid_sf_column()
+  if (focused && is_focused(x)) geom = geom[edge_ids(x, focused = TRUE)]
   geom
 }
 
@@ -132,6 +138,10 @@ pull_edge_geom = function(x) {
 #' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently
 #' active element of x will be used.
 #'
+#' @param focused Should only features that are in focus be mutated? Defaults
+#' to \code{FALSE}. See \code{\link[tidygraph]{focus}} for more information on
+#' focused networks.
+#'
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
 #' @details Note that the returned network will not be checked for a valid
@@ -139,14 +149,14 @@ pull_edge_geom = function(x) {
 #' method for sfnetwork object.
 #'
 #' @noRd
-mutate_geom = function(x, y, active = NULL) {
+mutate_geom = function(x, y, active = NULL, focused = FALSE) {
   if (is.null(active)) {
     active = attr(x, "active")
   }
   switch(
     active,
-    nodes = mutate_node_geom(x, y),
-    edges = mutate_edge_geom(x, y),
+    nodes = mutate_node_geom(x, y, focused = focused),
+    edges = mutate_edge_geom(x, y, focused = focused),
     raise_invalid_active(active)
   )
 }
@@ -154,9 +164,13 @@ mutate_geom = function(x, y, active = NULL) {
 #' @name mutate_geom
 #' @importFrom sf st_geometry<-
 #' @noRd
-mutate_node_geom = function(x, y) {
+mutate_node_geom = function(x, y, focused = FALSE) {
   nodes = nodes_as_sf(x)
-  st_geometry(nodes) = y
+  if (focused && is_focused(x)) {
+    st_geometry(nodes[node_ids(x, focused = TRUE), ]) = y
+  } else {
+    st_geometry(nodes) = y
+  }
   node_attribute_values(x) = nodes
   x
 }
@@ -164,9 +178,13 @@ mutate_node_geom = function(x, y) {
 #' @name mutate_geom
 #' @importFrom sf st_geometry<-
 #' @noRd
-mutate_edge_geom = function(x, y) {
-  edges = edge_data(x)
-  st_geometry(edges) = y
+mutate_edge_geom = function(x, y, focused = FALSE) {
+  edges = edge_data(x, focused = FALSE)
+  if (focused && is_focused(x)) {
+    st_geometry(edges[edge_ids(x, focused = TRUE), ]) = y
+  } else {
+    st_geometry(edges) = y
+  }
   edge_attribute_values(x) = edges
   x
 }

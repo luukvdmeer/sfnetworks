@@ -68,3 +68,9 @@ unmorph.morphed_sfnetwork = function(.data, ...) {
   # Call tidygraphs unmorph.
   NextMethod(.data, ...)
 }
+
+#' @importFrom tidygraph unfocus
+#' @export
+unfocus.sfnetwork = function(.data, ...) {
+  .data
+}

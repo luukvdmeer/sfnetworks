@@ -6,15 +6,19 @@
 \alias{nearest_edges}
 \title{Extract the nearest nodes or edges to given spatial features}
 \usage{
-nearest_nodes(x, y)
+nearest_nodes(x, y, focused = TRUE)
 
-nearest_edges(x, y)
+nearest_edges(x, y, focused = TRUE)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
 
 \item{y}{Spatial features as object of class \code{\link[sf]{sf}} or
 \code{\link[sf]{sfc}}.}
+
+\item{focused}{Should only features that are in focus be extracted? Defaults
+to \code{TRUE}. See \code{\link[tidygraph]{focus}} for more information on
+focused networks.}
 }
 \value{
 An object of class \code{\link[sf]{sf}} with each row containing

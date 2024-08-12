@@ -384,14 +384,22 @@ as_sfnetwork.sfNetwork = function(x, ...) {
 #' @importFrom tibble as_tibble
 #' @export
 as_sfnetwork.tbl_graph = function(x, ...) {
-  nodes = as_tibble(x, "nodes")
-  edges = as_tibble(x, "edges")
+  nodes = as_tibble(x, "nodes", focused = FALSE)
+  edges = as_tibble(x, "edges", focused = FALSE)
   if (hasArg("directed")) {
-    x_sfn = sfnetwork(nodes, edges, ...)
+    x_new = sfnetwork(nodes, edges, ...)
   } else {
-    x_sfn = sfnetwork(nodes, edges, directed = is_directed(x), ...)
+    x_new = sfnetwork(nodes, edges, directed = is_directed(x), ...)
   }
-  tbg_to_sfn(x_sfn %preserve_all_attrs% x)
+  tbg_to_sfn(x_new %preserve_all_attrs% x)
+}
+
+#' @export
+as_sfnetwork.focused_tbl_graph = function(x, ...) {
+  x_new = NextMethod()
+  base_class = setdiff(class(x_new), "focused_tbl_graph")
+  class(x_new) = c("focused_tbl_graph", "sfnetwork", base_class)
+  x_new
 }
 
 #' Create a spatial network from linestring geometries

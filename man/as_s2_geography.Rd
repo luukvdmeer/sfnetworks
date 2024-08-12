@@ -3,9 +3,9 @@
 \name{as_s2_geography}
 \alias{as_s2_geography}
 \alias{as_s2_geography.sfnetwork}
-\title{Convert a sfnetwork into a S2 geography vector}
+\title{Extract the geometries of a sfnetwork as a S2 geography vector}
 \usage{
-as_s2_geography.sfnetwork(x, ...)
+as_s2_geography.sfnetwork(x, focused = TRUE, ...)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}

@@ -48,11 +48,12 @@ st_network_join = function(x, y, ...) {
 }
 
 #' @importFrom cli cli_abort
+#' @importFrom tidygraph unfocus
 #' @export
 st_network_join.sfnetwork = function(x, y, ...) {
-  if (! is_sfnetwork(y)) {
-    y = as_sfnetwork(y)
-  }
+  if (! is_sfnetwork(y)) y = as_sfnetwork(y)
+  x = unfocus(x)
+  y = unfocus(y)
   if (! have_equal_edge_type(x, y)) {
     cli_abort(c(
       paste(

@@ -17,6 +17,10 @@
 #' extracting. If \code{NULL}, it will be set to the current active element of
 #' the given network. Defaults to \code{NULL}.
 #'
+#' @param focused Should only features that are in focus be extracted? Defaults
+#' to \code{TRUE}. See \code{\link[tidygraph]{focus}} for more information on
+#' focused networks.
+#'
 #' @param value The value to be assigned. See the documentation of the
 #' corresponding sf function for details.
 #'
@@ -51,20 +55,20 @@
 #'
 #' @importFrom sf st_as_sf
 #' @export
-st_as_sf.sfnetwork = function(x, active = NULL, ...) {
+st_as_sf.sfnetwork = function(x, active = NULL, focused = TRUE, ...) {
   if (is.null(active)) active = attr(x, "active")
   switch(
     active,
-    nodes = nodes_as_sf(x, ...),
-    edges = edges_as_sf(x, ...),
+    nodes = nodes_as_sf(x, focused = focused, ...),
+    edges = edges_as_sf(x, focused = focused, ...),
     raise_invalid_active(active)
   )
 }
 
 #' @importFrom sf st_as_sf
-nodes_as_sf = function(x, ...) {
+nodes_as_sf = function(x, focused = FALSE, ...) {
   st_as_sf(
-    nodes_as_regular_tibble(x),
+    nodes_as_regular_tibble(x, focused = focused),
     agr = node_agr(x),
     sf_column_name = node_geom_colname(x),
     ...
@@ -72,11 +76,11 @@ nodes_as_sf = function(x, ...) {
 }
 
 #' @importFrom sf st_as_sf
-edges_as_sf = function(x, ...) {
+edges_as_sf = function(x, focused = FALSE, ...) {
   geom_colname = edge_geom_colname(x)
   if (is.null(geom_colname)) raise_require_explicit()
   st_as_sf(
-    edges_as_regular_tibble(x),
+    edges_as_regular_tibble(x, focused = focused),
     agr = edge_agr(x),
     sf_column_name = geom_colname,
     ...
@@ -86,8 +90,8 @@ edges_as_sf = function(x, ...) {
 #' @name sf
 #' @importFrom sf st_as_s2
 #' @export
-st_as_s2.sfnetwork = function(x, active = NULL, ...) {
-  st_as_s2(pull_geom(x, active), ...)
+st_as_s2.sfnetwork = function(x, active = NULL, focused = TRUE, ...) {
+  st_as_s2(pull_geom(x, active, focused = focused), ...)
 }
 
 # =============================================================================
@@ -104,8 +108,8 @@ st_as_s2.sfnetwork = function(x, active = NULL, ...) {
 #'
 #' @importFrom sf st_geometry
 #' @export
-st_geometry.sfnetwork = function(obj, active = NULL, ...) {
-  pull_geom(obj, active)
+st_geometry.sfnetwork = function(obj, active = NULL, focused = TRUE, ...) {
+  pull_geom(obj, active, focused = focused)
 }
 
 #' @name sf
@@ -115,7 +119,7 @@ st_geometry.sfnetwork = function(obj, active = NULL, ...) {
   if (is.null(value)) {
     x_new = drop_geom(x)
   } else  {
-    x_new = mutate_geom(x, value)
+    x_new = mutate_geom(x, value, focused = TRUE)
     validate_network(x_new)
   }
   x_new
@@ -136,28 +140,28 @@ st_drop_geometry.sfnetwork = function(x, ...) {
 #' @importFrom sf st_bbox
 #' @export
 st_bbox.sfnetwork = function(obj, active = NULL, ...) {
-  st_bbox(pull_geom(obj, active), ...)
+  st_bbox(pull_geom(obj, active, focused = TRUE), ...)
 }
 
 #' @name sf
 #' @importFrom sf st_coordinates
 #' @export
 st_coordinates.sfnetwork = function(x, active = NULL, ...) {
-  st_coordinates(pull_geom(x, active), ...)
+  st_coordinates(pull_geom(x, active, focused = TRUE), ...)
 }
 
 #' @name sf
 #' @importFrom sf st_is
 #' @export
 st_is.sfnetwork = function(x, ...) {
-  st_is(pull_geom(x), ...)
+  st_is(pull_geom(x, focused = TRUE), ...)
 }
 
 #' @name sf
 #' @importFrom sf st_is_valid
 #' @export
 st_is_valid.sfnetwork = function(x, ...) {
-  st_is_valid(pull_geom(x), ...)
+  st_is_valid(pull_geom(x, focused = TRUE), ...)
 }
 
 # =============================================================================
@@ -249,14 +253,14 @@ st_zm.sfnetwork = function(x, ...) {
 #' @importFrom sf st_m_range
 #' @export
 st_m_range.sfnetwork = function(obj, active = NULL, ...) {
-  st_m_range(pull_geom(obj, active), ...)
+  st_m_range(pull_geom(obj, active, focused = TRUE), ...)
 }
 
 #' @name sf
 #' @importFrom sf st_z_range
 #' @export
 st_z_range.sfnetwork = function(obj, active = NULL, ...) {
-  st_z_range(pull_geom(obj, active), ...)
+  st_z_range(pull_geom(obj, active, focused = TRUE), ...)
 }
 
 change_coords = function(x, op, ...) {
@@ -293,7 +297,7 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
 #' @export
 `st_agr<-.sfnetwork` = function(x, value) {
   active = attr(x, "active")
-  x_sf = st_as_sf(x, active)
+  x_sf = st_as_sf(x, active, focused = FALSE)
   st_agr(x_sf) = value
   agr(x, active) = st_agr(x_sf)
   x
@@ -315,26 +319,21 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
 
 #' @name sf
 #' @importFrom cli cli_warn
-#' @importFrom igraph is_directed
+#' @importFrom igraph is_directed reverse_edges
 #' @importFrom sf st_reverse
-#' @importFrom tidygraph as_tbl_graph reroute
 #' @export
 st_reverse.sfnetwork = function(x, ...) {
   active = attr(x, "active")
   if (active == "edges") {
     require_explicit_edges(x)
     if (is_directed(x)) {
-      cli_warn(
+      cli_warn(c(
         paste(
           "{.fn st_reverse} swaps {.field from} and {.field to} columns",
           "in directed networks."
         ), call = FALSE
-      )
-      node_ids = edge_boundary_node_indices(x, matrix = TRUE)
-      from_ids = node_ids[, 1]
-      to_ids = node_ids[, 2]
-      x_tbg = reroute(as_tbl_graph(x), from = to_ids, to = from_ids)
-      x = tbg_to_sfn(x_tbg)
+      ))
+      x = reverse_edges(x, eids = edge_ids(x)) %preserve_all_attrs% x
     }
   } else {
     cli_warn(c(
@@ -358,7 +357,7 @@ st_simplify.sfnetwork = function(x, ...) {
 geom_unary_ops = function(op, x, active, ...) {
   x_sf = st_as_sf(x, active = active)
   d_tmp = op(x_sf, ...)
-  mutate_geom(x, st_geometry(d_tmp), active = active)
+  mutate_geom(x, st_geometry(d_tmp), active = active, focused = TRUE)
 }
 
 # =============================================================================
@@ -383,9 +382,12 @@ geom_unary_ops = function(op, x, active, ...) {
 #' plot(st_geometry(joined, "edges"))
 #' plot(st_as_sf(joined, "nodes"), pch = 20, add = TRUE)
 #' par(oldpar)
+#'
 #' @importFrom sf st_join
+#' @importFrom tidygraph unfocus
 #' @export
 st_join.sfnetwork = function(x, y, ...) {
+  x = unfocus(x)
   active = attr(x, "active")
   switch(
     active,
@@ -481,9 +483,12 @@ spatial_join_edges = function(x, y, ...) {
 #' plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 #' plot(filtered)
 #' par(oldpar)
+#'
 #' @importFrom sf st_filter
+#' @importFrom tidygraph unfocus
 #' @export
 st_filter.sfnetwork = function(x, y, ...) {
+  x = unfocus(x)
   active = attr(x, "active")
   switch(
     active,
@@ -521,8 +526,10 @@ spatial_filter_edges = function(x, y, ...) {
 
 #' @name sf
 #' @importFrom sf st_crop st_as_sfc
+#' @importFrom tidygraph unfocus
 #' @export
 st_crop.sfnetwork = function(x, y, ...) {
+  x = unfocus(x)
   if (inherits(y, "bbox")) y = st_as_sfc(y)
   active = attr(x, "active")
   switch(
@@ -543,8 +550,10 @@ st_crop.morphed_sfnetwork = function(x, y, ...) {
 
 #' @name sf
 #' @importFrom sf st_difference st_as_sfc
+#' @importFrom tidygraph unfocus
 #' @export
 st_difference.sfnetwork = function(x, y, ...) {
+  x = unfocus(x)
   active = attr(x, "active")
   switch(
     active,
@@ -564,8 +573,10 @@ st_difference.morphed_sfnetwork = function(x, y, ...) {
 
 #' @name sf
 #' @importFrom sf st_intersection st_as_sfc
+#' @importFrom tidygraph unfocus
 #' @export
 st_intersection.sfnetwork = function(x, y, ...) {
+  x = unfocus(x)
   active = attr(x, "active")
   switch(
     active,

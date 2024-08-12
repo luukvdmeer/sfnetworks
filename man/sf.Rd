@@ -42,11 +42,11 @@
 \alias{st_area.sfnetwork}
 \title{sf methods for sfnetworks}
 \usage{
-\method{st_as_sf}{sfnetwork}(x, active = NULL, ...)
+\method{st_as_sf}{sfnetwork}(x, active = NULL, focused = TRUE, ...)
 
-\method{st_as_s2}{sfnetwork}(x, active = NULL, ...)
+\method{st_as_s2}{sfnetwork}(x, active = NULL, focused = TRUE, ...)
 
-\method{st_geometry}{sfnetwork}(obj, active = NULL, ...)
+\method{st_geometry}{sfnetwork}(obj, active = NULL, focused = TRUE, ...)
 
 \method{st_geometry}{sfnetwork}(x) <- value
 
@@ -124,6 +124,10 @@
 \item{active}{Which network element (i.e. nodes or edges) to activate before
 extracting. If \code{NULL}, it will be set to the current active element of
 the given network. Defaults to \code{NULL}.}
+
+\item{focused}{Should only features that are in focus be extracted? Defaults
+to \code{TRUE}. See \code{\link[tidygraph]{focus}} for more information on
+focused networks.}
 
 \item{...}{Arguments passed on the corresponding \code{sf} function.}
 
@@ -203,6 +207,7 @@ text(st_coordinates(st_centroid(st_geometry(codes))), codes$post_code)
 plot(st_geometry(joined, "edges"))
 plot(st_as_sf(joined, "nodes"), pch = 20, add = TRUE)
 par(oldpar)
+
 # Spatial filter applied to the active network element.
 p1 = st_point(c(4151358, 3208045))
 p2 = st_point(c(4151340, 3207520))
@@ -222,4 +227,5 @@ plot(net, col = "grey")
 plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 plot(filtered)
 par(oldpar)
+
 }

@@ -3,6 +3,10 @@
 #' @param x An object of class \code{\link{sfnetwork}}, or any other network
 #' object inheriting from \code{\link[igraph]{igraph}}.
 #'
+#' @param focused Should only features that are in focus be counted? Defaults
+#' to \code{FALSE}. See \code{\link[tidygraph]{focus}} for more information on
+#' focused networks.
+#'
 #' @return An integer.
 #'
 #' @examples
@@ -13,20 +17,32 @@
 #' @name n
 #' @importFrom igraph vcount
 #' @export
-n_nodes = function(x) {
-  vcount(x)
+n_nodes = function(x, focused = FALSE) {
+  if (focused) {
+    length(attr(x, "nodes_focus_index")) %||% vcount(x)
+  } else {
+    vcount(x)
+  }
 }
 
 #' @name n
 #' @importFrom igraph ecount
 #' @export
-n_edges = function(x) {
-  ecount(x)
+n_edges = function(x, focused = FALSE) {
+  if (focused) {
+    length(attr(x, "edges_focus_index")) %||% ecount(x)
+  } else {
+    ecount(x)
+  }
 }
 
 #' Extract the node or edge data from a spatial network
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param focused Should only features that are in focus be extracted? Defaults
+#' to \code{TRUE}. See \code{\link[tidygraph]{focus}} for more information on
+#' focused networks.
 #'
 #' @return For the nodes, always an object of class \code{\link[sf]{sf}}. For
 #' the edges, an object of class \code{\link[sf]{sf}} if the edges are
@@ -35,8 +51,8 @@ n_edges = function(x) {
 #'
 #' @name data
 #' @export
-node_data = function(x) {
-  nodes_as_sf(x)
+node_data = function(x, focused = TRUE) {
+  nodes_as_sf(x, focused = focused)
 }
 
 #' @name data
@@ -45,16 +61,22 @@ node_data = function(x) {
 #' extraction of edge data fail if the edges are spatially implicit. Defaults
 #' to \code{FALSE}.
 #'
-#' @importFrom tibble as_tibble
-#' @importFrom tidygraph as_tbl_graph
 #' @export
-edge_data = function(x, require_sf = FALSE) {
-  if (require_sf) edges_as_sf(x) else edges_as_spatial_tibble(x)
+edge_data = function(x, focused = TRUE, require_sf = FALSE) {
+  if (require_sf) {
+    edges_as_sf(x, focused = focused)
+  } else {
+    edges_as_spatial_tibble(x, focused = focused)
+  }
 }
 
 #' Extract the node or edge indices from a spatial network
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param focused Should only the indices of features that are in focus be
+#' extracted? Defaults to \code{TRUE}. See \code{\link[tidygraph]{focus}} for
+#' more information on focused networks.
 #'
 #' @details The indices in these objects are always integers that correspond to
 #' rownumbers in respectively the nodes or edges table.
@@ -67,15 +89,25 @@ edge_data = function(x, require_sf = FALSE) {
 #' edge_ids(net)
 #'
 #' @name ids
+#' @importFrom rlang %||%
 #' @export
-node_ids = function(x) {
-  seq_len(n_nodes(x))
+node_ids = function(x, focused = TRUE) {
+  if (focused) {
+    attr(x, "nodes_focus_index") %||% seq_len(n_nodes(x))
+  } else {
+    seq_len(n_nodes(x))
+  }
 }
 
 #' @name ids
+#' @importFrom rlang %||%
 #' @export
-edge_ids = function(x) {
-  seq_len(n_edges(x))
+edge_ids = function(x, focused = TRUE) {
+  if (focused) {
+    attr(x, "edges_focus_index") %||% seq_len(n_edges(x))
+  } else {
+    seq_len(n_edges(x))
+  }
 }
 
 #' Extract the nearest nodes or edges to given spatial features
@@ -84,6 +116,10 @@ edge_ids = function(x) {
 #'
 #' @param y Spatial features as object of class \code{\link[sf]{sf}} or
 #' \code{\link[sf]{sfc}}.
+#'
+#' @param focused Should only features that are in focus be extracted? Defaults
+#' to \code{TRUE}. See \code{\link[tidygraph]{focus}} for more information on
+#' focused networks.
 #'
 #' @details To determine the nearest node or edge to each feature in \code{y}
 #' the function \code{\link[sf]{st_nearest_feature}} is used. When extracting
@@ -118,16 +154,16 @@ edge_ids = function(x) {
 #' @name nearest
 #' @importFrom sf st_geometry st_nearest_feature
 #' @export
-nearest_nodes = function(x, y) {
-  nodes = nodes_as_sf(x)
+nearest_nodes = function(x, y, focused = TRUE) {
+  nodes = nodes_as_sf(x, focused = focused)
   nodes[st_nearest_feature(st_geometry(y), nodes), ]
 }
 
 #' @name nearest
 #' @importFrom sf st_geometry st_nearest_feature
 #' @export
-nearest_edges = function(x, y) {
-  edges = edges_as_sf(x)
+nearest_edges = function(x, y, focused = TRUE) {
+  edges = edges_as_sf(x, focused = focused)
   edges[st_nearest_feature(st_geometry(y), edges), ]
 }
 
@@ -137,6 +173,10 @@ nearest_edges = function(x, y) {
 #'
 #' @param y Spatial features as object of class \code{\link[sf]{sf}} or
 #' \code{\link[sf]{sfc}}.
+#'
+#' @param focused Should only the indices of features that are in focus be
+#' extracted? Defaults to \code{TRUE}. See \code{\link[tidygraph]{focus}} for
+#' more information on focused networks.
 #'
 #' @details To determine the nearest node or edge to each feature in \code{y}
 #' the function \code{\link[sf]{st_nearest_feature}} is used. When extracting
@@ -158,15 +198,15 @@ nearest_edges = function(x, y) {
 #' @name nearest_ids
 #' @importFrom sf st_geometry st_nearest_feature
 #' @export
-nearest_node_ids = function(x, y) {
-  st_nearest_feature(st_geometry(y), nodes_as_sf(x))
+nearest_node_ids = function(x, y, focused = TRUE) {
+  st_nearest_feature(st_geometry(y), pull_node_geom(x, focused = focused))
 }
 
 #' @name nearest_ids
 #' @importFrom sf st_geometry st_nearest_feature
 #' @export
-nearest_edge_ids = function(x, y) {
-  st_nearest_feature(st_geometry(y), edges_as_sf(x))
+nearest_edge_ids = function(x, y, focused = TRUE) {
+  st_nearest_feature(st_geometry(y), pull_edge_geom(x, focused = focused))
 }
 
 #' Convert an adjacency matrix into a neighbor list
@@ -329,6 +369,10 @@ merge_lines = function(x) {
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
+#' @param focused Should only the boundary nodes of edges that are in focus be
+#' extracted? Defaults to \code{FALSE}. See \code{\link[tidygraph]{focus}} for
+#' more information on focused networks.
+#'
 #' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
 #' geometries, of length equal to twice the number of edges in x, and ordered
 #' as [start of edge 1, end of edge 1, start of edge 2, end of edge 2, ...].
@@ -340,12 +384,11 @@ merge_lines = function(x) {
 #' in the edges table. In a valid network structure, boundary nodes should be
 #' equal to boundary points.
 #'
-#' @importFrom igraph E ends
-#' @importFrom sf st_as_sf st_geometry
+#' @importFrom igraph ends
 #' @noRd
-edge_boundary_nodes = function(x) {
+edge_boundary_nodes = function(x, focused = FALSE) {
   nodes = pull_node_geom(x)
-  id_mat = ends(x, E(x), names = FALSE)
+  id_mat = ends(x, edge_ids(x, focused = focused), names = FALSE)
   id_vct = as.vector(t(id_mat))
   nodes[id_vct]
 }
@@ -353,6 +396,10 @@ edge_boundary_nodes = function(x) {
 #' Get the indices of the boundary nodes of edges in an sfnetwork
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param focused Should only the indices of boundary nodes of edges that are
+#' in focus be extracted? Defaults to \code{FALSE}. See
+#' \code{\link[tidygraph]{focus}} for more information on focused networks.
 #'
 #' @param matrix Should te result be returned as a two-column matrix? Defaults
 #' to \code{FALSE}.
@@ -365,16 +412,20 @@ edge_boundary_nodes = function(x) {
 #' the start nodes of the edges, the seconds column contains the indices of the
 #' end nodes of the edges.
 #'
-#' @importFrom igraph E ends
+#' @importFrom igraph ends
 #' @noRd
-edge_boundary_node_indices = function(x, matrix = FALSE) {
-  ends = ends(x, E(x), names = FALSE)
+edge_boundary_node_indices = function(x, focused = FALSE, matrix = FALSE) {
+  ends = ends(x, edge_ids(x, focused = focused), names = FALSE)
   if (matrix) ends else as.vector(t(ends))
 }
 
 #' Get the geometries of the boundary points of edges in an sfnetwork
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param focused Should only the boundary points of edges that are in focus be
+#' extracted? Defaults to \code{FALSE}. See \code{\link[tidygraph]{focus}} for
+#' more information on focused networks.
 #'
 #' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
 #' geometries, of length equal to twice the number of edges in x, and ordered
@@ -387,16 +438,19 @@ edge_boundary_node_indices = function(x, matrix = FALSE) {
 #' in the edges table. In a valid network structure, boundary nodes should be
 #' equal to boundary points.
 #'
-#' @importFrom sf st_as_sf
 #' @noRd
-edge_boundary_points = function(x) {
-  edges = pull_edge_geom(x)
+edge_boundary_points = function(x, focused = FALSE) {
+  edges = pull_edge_geom(x, focused = focused)
   linestring_boundary_points(edges)
 }
 
 #' Get the node indices of the boundary points of edges in an sfnetwork
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param focused Should only the indices of boundary points of edges that are
+#' in focus be extracted? Defaults to \code{FALSE}. See
+#' \code{\link[tidygraph]{focus}} for more informatio
 #'
 #' @param matrix Should te result be returned as a two-column matrix? Defaults
 #' to \code{FALSE}.
@@ -411,16 +465,16 @@ edge_boundary_points = function(x) {
 #'
 #' @importFrom sf st_equals
 #' @noRd
-edge_boundary_point_indices = function(x, matrix = FALSE) {
+edge_boundary_point_indices = function(x, focused = FALSE, matrix = FALSE) {
     nodes = pull_node_geom(x)
-    edges = edges_as_sf(x)
+    edges = edges_as_sf(x, focused = focused)
     idxs_lst = st_equals(linestring_boundary_points(edges), nodes)
     idxs_vct = do.call("c", idxs_lst)
     # In most networks the location of a node will be unique.
     # However, this is not a requirement.
     # There may be cases where multiple nodes share the same geometry.
     # Then some more processing is needed to find the correct indices.
-    if (length(idxs_vct) != n_edges(x) * 2) {
+    if (length(idxs_vct) != n_edges(x, focused = focused) * 2) {
       n = length(idxs_lst)
       from = idxs_lst[seq(1, n - 1, 2)]
       to = idxs_lst[seq(2, n, 2)]
@@ -443,8 +497,7 @@ edge_boundary_point_indices = function(x, matrix = FALSE) {
 #' @return An object of class \code{\link{sfnetwork}} with spatially explicit
 #' edges.
 #'
-#' @importFrom sf st_crs st_geometry st_sfc
-#' @importFrom tidygraph mutate
+#' @importFrom sf st_crs st_sfc
 #' @noRd
 explicitize_edges = function(x) {
   if (has_explicit_edges(x)) {

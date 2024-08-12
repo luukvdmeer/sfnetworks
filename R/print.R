@@ -3,9 +3,10 @@
 print.sfnetwork = function(x, ...,
                            n = getOption("sfn_max_print_active", default = 6),
                            n_non_active = getOption("sfn_max_print_inactive", default = 3)) {
-  N = as_tibble(x, "nodes")
-  E = as_tibble(x, "edges")
+  N = node_data(x, focused = FALSE)
+  E = edge_data(x, focused = FALSE)
   is_explicit = is_sf(E)
+  nodes_are_active = attr(x, "active") == "nodes"
   # Print header.
   cat_subtle(c("# A sfnetwork:", nrow(N), "nodes and", nrow(E), "edges\n"))
   cat_subtle("#\n")
@@ -13,8 +14,17 @@ print.sfnetwork = function(x, ...,
   cat_subtle("#\n")
   cat_subtle(describe_space(x, is_explicit), "\n")
   cat_subtle("#\n")
+  if (is_focused(x)) {
+    if (nodes_are_active) {
+      n_focus = length(node_ids(x, focused = TRUE))
+      cat_subtle("# Focused on ", n_focus, " nodes\n")
+    } else {
+      n_focus = length(edge_ids(x, focused = TRUE))
+      cat_subtle("# Focused on ", n_focus, " edges\n")
+    }
+  }
   # Print tables.
-  if (attr(x, "active") == "nodes") {
+  if (nodes_are_active) {
     active_data = N
     active_name = "Node data"
     inactive_data = E
