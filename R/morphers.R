@@ -406,6 +406,7 @@ to_spatial_explicit = function(x, ...) {
 #'
 #' @importFrom igraph induced_subgraph
 #' @importFrom methods hasArg
+#' @importFrom rlang dots_list
 #' @importFrom units as_units deparse_unit
 #' @export
 to_spatial_neighborhood = function(x, node, threshold, ...) {
