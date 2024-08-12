@@ -44,6 +44,7 @@
 #' @importFrom methods hasArg
 #' @export
 plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
+  node_geoms = pull_node_geom(x)
   # Plot the nodes.
   # Default pch should be 20.
   node_geoms = pull_node_geom(x)
@@ -53,13 +54,22 @@ plot.sfnetwork = function(x, draw_lines = TRUE, ...) {
     plot(node_geoms, pch = 20, ...)
   }
   # Plot the edges.
+  # Add them to the nodes plot.
   if (has_explicit_edges(x)) {
-    plot(pull_edge_geom(x), ..., add = TRUE)
+    if (hasArg("add")) {
+      plot(pull_edge_geom(x), ...)
+    } else {
+      plot(pull_edge_geom(x), ..., add = TRUE)
+    }
   } else {
     if (draw_lines) {
       bids = edge_boundary_node_indices(x, matrix = TRUE)
       lines = draw_lines(node_geoms[bids[, 1]], node_geoms[bids[, 2]])
-      plot(lines, ..., add = TRUE)
+      if (hasArg("add")) {
+        plot(lines, ...)
+      } else {
+        plot(lines, ..., add = TRUE)
+      }
     }
   }
   invisible()
