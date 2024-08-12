@@ -17,48 +17,28 @@ as_tbl_graph.sfnetwork = function(x, ...) {
   x
 }
 
-#' @importFrom cli cli_abort
-#' @importFrom rlang enquo quo_text
-#' @importFrom tidygraph as_tbl_graph morph
+#' @importFrom tidygraph morph
 #' @export
 morph.sfnetwork = function(.data, .f, ...) {
-  # Morph using tidygraphs morphing functionality:
-  # --> First try to morph the sfnetwork object directly.
-  # --> If this gives errors, convert to tbl_graph and then morph.
-  # --> If that also gives errors, return the first error found.
-  morphed_data = tryCatch(
-    NextMethod(),
-    error = function(e1) {
-      tryCatch(
-        morph(as_tbl_graph(.data), .f, ...),
-        error = function(e) {
-          morpher = quo_text(enquo(.f))
-          cli_abort(c(
-            "Failed to morph the {.cls sfnetwork} object using {.fn {morpher}}.",
-            "x" = "The following error occured: {e1}"
-          ), call = call("morph.sfnetwork"))
-        }
-      )
-    }
-  )
+  # Morph using tidygraphs morphing functionality.
+  morphed = NextMethod()
   # If morphed data still consist of valid sfnetworks:
   # --> Convert the morphed_tbl_graph into a morphed_sfnetwork.
   # --> Otherwise, just return the morphed_tbl_graph.
-  if (is_sfnetwork(morphed_data[[1]])) {
+  if (is_sfnetwork(morphed[[1]])) {
     structure(
-      morphed_data,
-      class = c("morphed_sfnetwork", class(morphed_data))
+      morphed,
+      class = c("morphed_sfnetwork", class(morphed))
     )
-  } else if (has_spatial_nodes(morphed_data[[1]])) {
-    attrs = attributes(morphed_data)
-    morphed_data = lapply(morphed_data, tbg_to_sfn)
-    attributes(morphed_data) = attrs
+  } else if (has_spatial_nodes(morphed[[1]])) {
+    morphed_sfn = lapply(morphed, tbg_to_sfn)
+    attributes(morphed_sfn) = attributes(morphed)
     structure(
-      morphed_data,
-      class = c("morphed_sfnetwork", class(morphed_data))
+      morphed,
+      class = c("morphed_sfnetwork", class(morphed))
     )
   } else {
-    morphed_data
+    morphed
   }
 }
 
