@@ -406,7 +406,6 @@ to_spatial_explicit = function(x, ...) {
 #'
 #' @importFrom igraph induced_subgraph
 #' @importFrom methods hasArg
-#' @importFrom rlang dots_list
 #' @importFrom units as_units deparse_unit
 #' @export
 to_spatial_neighborhood = function(x, node, threshold, ...) {
@@ -420,7 +419,7 @@ to_spatial_neighborhood = function(x, node, threshold, ...) {
   if (hasArg("from")) {
     # Deprecate the former "from" argument specifying routing direction.
     deprecate_from()
-    if (isFALSE(dots_list(...)$from)) {
+    if (isFALSE(list(...)$from)) {
       costs = st_network_cost(x, from = node, direction = "in", ...)
     } else {
       costs = st_network_cost(x, from = node, ...)

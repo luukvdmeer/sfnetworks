@@ -405,8 +405,6 @@ st_join.morphed_sfnetwork = function(x, y, ...) {
 
 #' @importFrom cli cli_warn
 #' @importFrom igraph delete_vertices vertex_attr<-
-#' @importFrom methods hasArg
-#' @importFrom rlang dots_list
 #' @importFrom sf st_as_sf st_join
 spatial_join_nodes = function(x, y, ...) {
   # Convert x and y to sf.
@@ -438,7 +436,7 @@ spatial_join_nodes = function(x, y, ...) {
   # If an inner join was requested instead of a left join:
   # --> This means only nodes in x that had a match in y are preserved.
   # --> The other nodes need to be removed.
-  if (hasArg("left") && ! dots_list(...)$left) {
+  if (isTRUE(list(...)$left)) {
     keep = n_new$.sfnetwork_index
     drop = if (length(keep) == 0) orig_idxs else orig_idxs[-keep]
     x = delete_vertices(x, drop) %preserve_all_attrs% x
