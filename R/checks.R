@@ -263,8 +263,11 @@ will_assume_constant = function(x) {
   ignore = c(
     "from",
     "to",
+    ".tidygraph_node_index",
     ".tidygraph_edge_index",
     ".tidygraph_index",
+    ".tbl_graph_index",
+    ".sfnetwork_node_index",
     ".sfnetwork_edge_index",
     ".sfnetwork_index"
   )
