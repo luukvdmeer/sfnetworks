@@ -46,14 +46,14 @@ validate_network = function(x, message = TRUE) {
     # Check 5: Do the edge boundary points match their corresponding nodes?
     if (message) cli_alert("Checking if geometries match ...")
     if (is_directed(x)) {
-      # Start point should match start node.
-      # End point should match end node.
-      if (! all(nodes_match_edge_boundaries(x))) {
+      # Start point should equal start node.
+      # End point should equal end node.
+      if (! all(nodes_equal_edge_boundaries(x))) {
         cli_abort("Node locations do not match edge boundaries")
       }
     } else {
-      # Start point should match either start or end node.
-      # End point should match either start or end node.
+      # Start point should equal either start or end node.
+      # End point should equal either start or end node.
       if (! all(nodes_in_edge_boundaries(x))) {
         cli_abort("Node locations do not match edge boundaries")
       }

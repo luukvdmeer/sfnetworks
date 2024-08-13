@@ -258,7 +258,7 @@ is_single_string = function(x) {
 #'
 #' @return A logical vector of the same length as the number of edges in the
 #' network, holding a \code{TRUE} value if the boundary of the edge geometry
-#' contain the geometries of both its boundary nodes.
+#' contains the geometries of both its boundary nodes.
 #'
 #' @importFrom sf st_equals
 #' @noRd
@@ -279,13 +279,13 @@ nodes_in_edge_boundaries = function(x) {
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @return A logical vector of the same length as the number of edges in the
-#' network, holding a \code{TRUE} value if the start point of the edge geometry
-#' is equal to the geometry of its start node, and the end point of the edge
-#' geometry is equal to the geometry of its end node.
+#' @return A logical vector of twice the length as the number of edges in the
+#' network, with per edge one element for its startpoint and one for its
+#' endpoint, holding a \code{TRUE} value if the point is equal to the geometry
+#' of the corresponding node.
 #'
 #' @noRd
-nodes_match_edge_boundaries = function(x) {
+nodes_equal_edge_boundaries = function(x) {
   boundary_points = edge_boundary_points(x)
   boundary_nodes = edge_boundary_nodes(x)
   # Test if the boundary geometries are equal to their corresponding nodes.
