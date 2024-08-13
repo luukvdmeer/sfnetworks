@@ -237,7 +237,8 @@ have_equal_edge_type = function(x, y) {
 #' @importFrom sf st_equals
 #' @noRd
 have_equal_geometries = function(x, y) {
-  diag(st_equals(x, y, sparse = FALSE))
+  equals = st_equals(x, y)
+  do.call("c", lapply(seq_along(equals), \(i) i %in% equals[[i]]))
 }
 
 #' Check if an object is a single string
@@ -264,11 +265,14 @@ is_single_string = function(x) {
 nodes_in_edge_boundaries = function(x) {
   boundary_points = edge_boundary_points(x)
   boundary_nodes = edge_boundary_nodes(x)
-  # Test for each edge :
+  # Test for each edge:
   # Does one of the boundary points equals at least one of the boundary nodes.
-  M = st_equals(boundary_points, boundary_nodes, sparse = FALSE)
-  f = function(x) sum(M[x:(x + 1), x:(x + 1)]) > 1
-  vapply(seq(1, nrow(M), by = 2), f, FUN.VALUE = logical(1))
+  equals = st_equals(boundary_points, boundary_nodes)
+  is_in = function(i) {
+    pool = c(equals[[i]], equals[[i + 1]])
+    i %in% pool && i + 1 %in% pool
+  }
+  do.call("c", lapply(seq(1, length(equals), by = 2), is_in))
 }
 
 #' Check if edge boundary points are equal to their corresponding nodes
