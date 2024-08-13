@@ -19,7 +19,8 @@
 #' @export
 n_nodes = function(x, focused = FALSE) {
   if (focused) {
-    length(attr(x, "nodes_focus_index")) %||% vcount(x)
+    fids = attr(x, "nodes_focus_index")
+    if (is.null(fids)) vcount(x) else length(fids)
   } else {
     vcount(x)
   }
@@ -30,7 +31,8 @@ n_nodes = function(x, focused = FALSE) {
 #' @export
 n_edges = function(x, focused = FALSE) {
   if (focused) {
-    length(attr(x, "edges_focus_index")) %||% ecount(x)
+    fids = attr(x, "edges_focus_index")
+    if (is.null(fids)) ecount(x) else length(fids)
   } else {
     ecount(x)
   }
