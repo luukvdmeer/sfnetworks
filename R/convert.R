@@ -150,9 +150,9 @@ as.linnet.sfnetwork = function(X, ...) {
   check_installed("sf (>= 1.0)")
   if (is_installed("spatstat")) check_installed("spatstat (>= 2.0)")
   # Convert nodes to ppp.
-  V = spatstat.geom::as.ppp(pull_node_geom(x))
+  V = spatstat.geom::as.ppp(pull_node_geom(X))
   # Extract the edge list.
-  E = as.matrix(edges_as_regular_tibble(x)[, c("from", "to")])
+  E = as.matrix(edges_as_regular_tibble(X)[, c("from", "to")])
   # Build linnet.
   spatstat.linnet::linnet(vertices = V, edges = E, ...)
 }
