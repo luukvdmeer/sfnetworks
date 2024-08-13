@@ -567,7 +567,7 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #'
 #' @importFrom cli cli_abort
 #' @importFrom igraph adjacent_vertices decompose degree delete_vertices
-#' edge_attr edge.attributes get.edge.ids igraph_opt igraph_options
+#' edge_attr get.edge.ids igraph_opt igraph_options
 #' incident_edges induced_subgraph is_directed vertex_attr
 #' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_is
 #' st_line_merge
@@ -679,7 +679,7 @@ to_spatial_smooth = function(x,
     is_in = seq(1, 2 * length(pseudo_idxs), by = 2)
     is_out = seq(2, 2 * length(pseudo_idxs), by = 2)
     # Obtain the attributes to be checked for each of the incident edges.
-    incident_attrs = edge.attributes(x, incident_idxs)[require_equal]
+    incident_attrs = edge_attr(x, incident_idxs)[require_equal]
     # For each of these attributes:
     # --> Check if its value is equal for both incident edges of a pseudo node.
     check_equality = function(A) {
@@ -847,7 +847,7 @@ to_spatial_smooth = function(x,
   # Obtain the attribute values of all original edges in the network.
   # These should not include the geometries and original edge indices.
   exclude = c(".tidygraph_edge_index", edge_geomcol)
-  edge_attrs = edge.attributes(x)
+  edge_attrs = edge_attr(x)
   edge_attrs = edge_attrs[!(names(edge_attrs) %in% exclude)]
   # For each replacement edge:
   # --> Summarise the attributes of the edges it replaces into single values.
