@@ -492,6 +492,61 @@ edge_boundary_point_indices = function(x, focused = FALSE, matrix = FALSE) {
     if (matrix) t(matrix(idxs_vct, nrow = 2)) else idxs_vct
 }
 
+#' Correct edge geometries to match their boundary nodes
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @return An object of class \code{\link{sfnetwork}} with corrected edge
+#' geometries.
+#'
+#' @importFrom sf st_crs st_crs<- st_precision st_precision<-
+#' @importFrom sfheaders sfc_linestring sfc_to_df
+#' @noRd
+correct_edge_geometries = function(x) {
+  # Extract geometries of edges.
+  edges = pull_edge_geom(x)
+  # Extract the geometries of the nodes that should be at their ends.
+  nodes = edge_boundary_nodes(x)
+  # Decompose the edges into the points that shape them.
+  # Convert the corret boundary nodes into the same structure.
+  E = sfc_to_df(edges)
+  N = sfc_to_df(nodes)
+  # Define for each edge point if it is a boundary point.
+  is_startpoint = ! duplicated(E$linestring_id)
+  is_endpoint = ! duplicated(E$linestring_id, fromLast = TRUE)
+  is_boundary = is_startpoint | is_endpoint
+  # Update the coordinates of the edge boundary points.
+  # They should match the coordinates of their boundary nodes.
+  E_new = list()
+  if (! is.null(E$x)) {
+    x_new = E$x
+    x_new[is_boundary] = N$x
+    E_new$x = x_new
+  }
+  if (! is.null(E$y)) {
+    y_new = E$y
+    y_new[is_boundary] = N$y
+    E_new$y = y_new
+  }
+  if (! is.null(E$z)) {
+    z_new = E$z
+    z_new[is_boundary] = N$z
+    E_new$z = z_new
+  }
+  if (! is.null(E$m)) {
+    m_new = E$m
+    m_new[is_boundary] = N$m
+    E_new$m = m_new
+  }
+  E_new$id = E$linestring_id
+  # Create the new edge geometries.
+  new_geoms = sfc_linestring(as.data.frame(E_new), linestring_id = "id")
+  st_crs(new_geoms) = st_crs(edges)
+  st_precision(new_geoms) = st_precision(edges)
+  # Update the geometries of the edges table.
+  mutate_edge_geom(x, new_geoms)
+}
+
 #' Make edges spatially explicit
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
