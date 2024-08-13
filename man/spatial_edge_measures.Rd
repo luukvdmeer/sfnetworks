@@ -54,7 +54,9 @@ nodes, as described in Giacomin &
 Levinson, 2015. DOI: 10.1068/b130131p.
 
 \item \code{edge_length()}: The length of an edge linestring geometry
-as calculated by \code{\link[sf]{st_length}}.
+as calculated by \code{\link[sf]{st_length}}. If edges are spatially
+implicit, the straight-line distance between its boundary nodes is computed
+instead, using \code{\link[sf]{st_distance}}.
 
 \item \code{edge_displacement()}: The straight-line distance between the two
 boundary nodes of an edge, as calculated by \code{\link[sf]{st_distance}}.
@@ -66,24 +68,24 @@ library(tidygraph, quietly = TRUE)
 
 net = as_sfnetwork(roxel)
 
-net \%>\%
-  activate("edges") \%>\%
+net |>
+  activate(edges) |>
   mutate(azimuth = edge_azimuth())
 
-net \%>\%
-  activate("edges") \%>\%
+net |>
+  activate(edges) |>
   mutate(azimuth = edge_azimuth(degrees = TRUE))
 
-net \%>\%
-  activate("edges") \%>\%
+net |>
+  activate(edges) |>
   mutate(circuity = edge_circuity())
 
-net \%>\%
-  activate("edges") \%>\%
+net |>
+  activate(edges) |>
   mutate(length = edge_length())
 
-net \%>\%
-  activate("edges") \%>\%
+net |>
+  activate(edges) |>
   mutate(displacement = edge_displacement())
 
 }

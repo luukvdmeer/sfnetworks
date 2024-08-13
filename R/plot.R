@@ -1,4 +1,4 @@
-#' Plot sfnetwork geometries
+#' Plot the geometries of a sfnetwork
 #'
 #' Plot the geometries of an object of class \code{\link{sfnetwork}}.
 #'

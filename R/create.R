@@ -261,10 +261,10 @@ as_sfnetwork.default = function(x, ...) {
 #' @export
 as_sfnetwork.sf = function(x, ...) {
   if (hasArg("length_as_weight")) deprecate_length_as_weight("as_sfnetwork.sf")
-  if (has_single_geom_type(x, "LINESTRING")) {
+  if (are_lines(x)) {
     if (hasArg("edges_as_lines")) deprecate_edges_as_lines()
     create_from_spatial_lines(x, ...)
-  } else if (has_single_geom_type(x, "POINT")) {
+  } else if (are_points(x)) {
     create_from_spatial_points(x, ...)
   } else {
     cli_abort(c(

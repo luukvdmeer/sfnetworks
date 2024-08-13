@@ -32,12 +32,12 @@ NULL
 #'
 #' net = as_sfnetwork(roxel)
 #'
-#' net %>%
-#'   activate("edges") %>%
+#' net |>
+#'   activate(edges) |>
 #'   mutate(azimuth = edge_azimuth())
 #'
-#' net %>%
-#'   activate("edges") %>%
+#' net |>
+#'   activate(edges) |>
 #'   mutate(azimuth = edge_azimuth(degrees = TRUE))
 #'
 #' @importFrom lwgeom st_geod_azimuth
@@ -62,8 +62,8 @@ edge_azimuth = function(degrees = FALSE) {
 #' \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.
 #'
 #' @examples
-#' net %>%
-#'   activate("edges") %>%
+#' net |>
+#'   activate(edges) |>
 #'   mutate(circuity = edge_circuity())
 #'
 #' @importFrom sf st_length
@@ -85,10 +85,13 @@ edge_circuity = function(Inf_as_NaN = FALSE) {
 }
 
 #' @describeIn spatial_edge_measures The length of an edge linestring geometry
-#' as calculated by \code{\link[sf]{st_length}}.
+#' as calculated by \code{\link[sf]{st_length}}. If edges are spatially
+#' implicit, the straight-line distance between its boundary nodes is computed
+#' instead, using \code{\link[sf]{st_distance}}.
+#'
 #' @examples
-#' net %>%
-#'   activate("edges") %>%
+#' net |>
+#'   activate(edges) |>
 #'   mutate(length = edge_length())
 #'
 #' @importFrom sf st_length
@@ -106,17 +109,17 @@ edge_length = function() {
 
 #' @describeIn spatial_edge_measures The straight-line distance between the two
 #' boundary nodes of an edge, as calculated by \code{\link[sf]{st_distance}}.
+#'
 #' @examples
-#' net %>%
-#'   activate("edges") %>%
+#' net |>
+#'   activate(edges) |>
 #'   mutate(displacement = edge_displacement())
 #'
 #' @importFrom tidygraph .G
 #' @export
 edge_displacement = function() {
   require_active_edges()
-  x = .G()
-  straight_line_distance(x)
+  straight_line_distance(.G())
 }
 
 #' @importFrom sf st_distance
@@ -172,7 +175,7 @@ straight_line_distance = function(x) {
 #' library(tidygraph, quietly = TRUE)
 #'
 #' # Create a network.
-#' net = as_sfnetwork(roxel) %>%
+#' net = as_sfnetwork(roxel) |>
 #'   st_transform(3035)
 #'
 #' # Create a geometry to test against.
@@ -181,13 +184,13 @@ straight_line_distance = function(x) {
 #' p3 = st_point(c(4151756, 3207506))
 #' p4 = st_point(c(4151774, 3208031))
 #'
-#' poly = st_multipoint(c(p1, p2, p3, p4)) %>%
-#'   st_cast('POLYGON') %>%
+#' poly = st_multipoint(c(p1, p2, p3, p4)) |>
+#'   st_cast('POLYGON') |>
 #'   st_sfc(crs = 3035)
 #'
 #' # Use predicate query function in a filter call.
-#' intersects = net %>%
-#'   activate(edges) %>%
+#' intersects = net |>
+#'   activate(edges) |>
 #'   filter(edge_intersects(poly))
 #'
 #' oldpar = par(no.readonly = TRUE)
@@ -197,123 +200,128 @@ straight_line_distance = function(x) {
 #' par(oldpar)
 #'
 #' # Use predicate query function in a mutate call.
-#' net %>%
-#'   activate(edges) %>%
-#'   mutate(disjoint = edge_is_disjoint(poly)) %>%
+#' net |>
+#'   activate(edges) |>
+#'   mutate(disjoint = edge_is_disjoint(poly)) |>
 #'   select(disjoint)
+#'
+#' # Use predicate query function directly.
+#' intersects = with_graph(net, edge_intersects(poly))
+#' head(intersects)
 #'
 #' @name spatial_edge_predicates
 NULL
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_intersects
+#' @importFrom tidygraph .G
 #' @export
 edge_intersects = function(y, ...) {
   require_active_edges()
-  x = .G()
-  evaluate_edge_predicate(st_intersects, x, y, ...)
+  evaluate_edge_predicate(st_intersects, .G(), y, ...)
 }
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_disjoint
+#' @importFrom tidygraph .G
 #' @export
 edge_is_disjoint = function(y, ...) {
   require_active_edges()
-  x = .G()
-  evaluate_edge_predicate(st_disjoint, x, y, ...)
+  evaluate_edge_predicate(st_disjoint, .G(), y, ...)
 }
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_touches
+#' @importFrom tidygraph .G
 #' @export
 edge_touches = function(y, ...) {
   require_active_edges()
-  x = .G()
-  evaluate_edge_predicate(st_touches, x, y, ...)
+  evaluate_edge_predicate(st_touches, .G(), y, ...)
 }
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_crosses
+#' @importFrom tidygraph .G
 #' @export
 edge_crosses = function(y, ...) {
   require_active_edges()
-  x = .G()
-  evaluate_edge_predicate(st_crosses, x, y, ...)
+  evaluate_edge_predicate(st_crosses, .G(), y, ...)
 }
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_within
+#' @importFrom tidygraph .G
 #' @export
 edge_is_within = function(y, ...) {
   require_active_edges()
-  x = .G()
-  evaluate_edge_predicate(st_within, x, y, ...)
+  evaluate_edge_predicate(st_within, .G(), y, ...)
 }
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_contains
+#' @importFrom tidygraph .G
 #' @export
 edge_contains = function(y, ...) {
   require_active_edges()
-  x = .G()
-  evaluate_edge_predicate(st_contains, x, y, ...)
+  evaluate_edge_predicate(st_contains, .G(), y, ...)
 }
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_contains_properly
+#' @importFrom tidygraph .G
 #' @export
 edge_contains_properly = function(y, ...) {
   require_active_edges()
-  x = .G()
-  evaluate_edge_predicate(st_contains_properly, x, y, ...)
+  evaluate_edge_predicate(st_contains_properly, .G(), y, ...)
 }
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_overlaps
+#' @importFrom tidygraph .G
 #' @export
 edge_overlaps = function(y, ...) {
   require_active_edges()
-  x = .G()
-  evaluate_edge_predicate(st_overlaps, x, y, ...)
+  evaluate_edge_predicate(st_overlaps, .G(), y, ...)
 }
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_equals
+#' @importFrom tidygraph .G
 #' @export
 edge_equals = function(y, ...) {
   require_active_edges()
-  x = .G()
-  evaluate_edge_predicate(st_equals, x, y, ...)
+  evaluate_edge_predicate(st_equals, .G(), y, ...)
 }
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_covers
+#' @importFrom tidygraph .G
 #' @export
 edge_covers = function(y, ...) {
   require_active_edges()
-  x = .G()
-  evaluate_edge_predicate(st_covers, x, y, ...)
+  evaluate_edge_predicate(st_covers, .G(), y, ...)
 }
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_covered_by
+#' @importFrom tidygraph .G
 #' @export
 edge_is_covered_by = function(y, ...) {
   require_active_edges()
-  x = .G()
-  evaluate_edge_predicate(st_covered_by, x, y, ...)
+  evaluate_edge_predicate(st_covered_by, .G(), y, ...)
 }
 
 #' @name spatial_edge_predicates
 #' @importFrom sf st_is_within_distance
+#' @importFrom tidygraph .G
 #' @export
 edge_is_within_distance = function(y, ...) {
   require_active_edges()
-  x = .G()
-  evaluate_edge_predicate(st_is_within_distance, x, y, ...)
+  evaluate_edge_predicate(st_is_within_distance, .G(), y, ...)
 }
 
 #' @name spatial_edge_predicates
+#' @importFrom tidygraph .G
 #' @export
 edge_is_nearest = function(y) {
   require_active_edges()

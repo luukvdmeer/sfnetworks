@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{plot.sfnetwork}
 \alias{plot.sfnetwork}
-\title{Plot sfnetwork geometries}
+\title{Plot the geometries of a sfnetwork}
 \usage{
 \method{plot}{sfnetwork}(x, draw_lines = TRUE, node_args = list(), edge_args = list(), ...)
 }

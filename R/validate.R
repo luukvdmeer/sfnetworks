@@ -1,4 +1,4 @@
-#' Validate the structure of a sfnetwork object
+#' Validate the structure of a sfnetwork
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -19,7 +19,7 @@ validate_network = function(x, message = TRUE) {
   nodes = pull_node_geom(x)
   # Check 1: Are all node geometries points?
   if (message) cli_alert("Checking node geometry types ...")
-  if (! has_single_geom_type(nodes, "POINT")) {
+  if (! are_points(nodes)) {
     cli_abort("Not all nodes have geometry type POINT")
   }
   if (message) cli_alert_success("All nodes have geometry type POINT")
@@ -27,7 +27,7 @@ validate_network = function(x, message = TRUE) {
     edges = pull_edge_geom(x)
     # Check 2: Are all edge geometries linestrings?
     if (message) cli_alert("Checking edge geometry types ...")
-    if (! has_single_geom_type(edges, "LINESTRING")) {
+    if (! are_linestrings(edges)) {
       cli_abort("Not all edges have geometry type LINESTRING")
     }
     if (message) cli_alert_success("All edges have geometry type LINESTRING")

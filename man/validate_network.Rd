@@ -2,7 +2,7 @@
 % Please edit documentation in R/validate.R
 \name{validate_network}
 \alias{validate_network}
-\title{Validate the structure of a sfnetwork object}
+\title{Validate the structure of a sfnetwork}
 \usage{
 validate_network(x, message = TRUE)
 }
@@ -16,7 +16,7 @@ validate_network(x, message = TRUE)
 Nothing when the network is valid. Otherwise, an error is thrown.
 }
 \description{
-Validate the structure of a sfnetwork object
+Validate the structure of a sfnetwork
 }
 \details{
 A valid sfnetwork structure means that all nodes have \code{POINT}

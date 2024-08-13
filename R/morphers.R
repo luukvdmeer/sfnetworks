@@ -1,4 +1,4 @@
-#' Spatial morphers for sfnetworks
+#' Morph spatial networks into a different structure
 #'
 #' Spatial morphers form spatial add-ons to the set of
 #' \code{\link[tidygraph]{morphers}} provided by \code{tidygraph}. These

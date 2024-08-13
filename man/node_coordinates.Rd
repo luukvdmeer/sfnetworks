@@ -45,8 +45,8 @@ library(tidygraph, quietly = TRUE)
 net = as_sfnetwork(roxel)
 
 # Use query function in a filter call.
-filtered = net \%>\%
-  activate("nodes") \%>\%
+filtered = net |>
+  activate(nodes) |>
   filter(node_X() > 7.54)
 
 oldpar = par(no.readonly = TRUE)
@@ -56,8 +56,12 @@ plot(filtered, col = "red", add = TRUE)
 par(oldpar)
 
 # Use query function in a mutate call.
-net \%>\%
-  activate("nodes") \%>\%
+net |>
+  activate(nodes) |>
   mutate(X = node_X(), Y = node_Y())
+
+# Use query function directly.
+X = with_graph(net, node_X())
+head(X)
 
 }

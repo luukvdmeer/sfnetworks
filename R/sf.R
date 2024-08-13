@@ -676,7 +676,7 @@ spatial_clip_edges = function(x, y, ..., .operator = sf::st_intersection) {
   # According to the from and to indices.
   bound_nds = edge_boundary_nodes(x_tmp)
   # Check if linestring boundaries match their corresponding nodes.
-  matches = diag(st_equals(bound_pts, bound_nds, sparse = FALSE))
+  matches = have_equal_geometries(bound_pts, bound_nds)
   # For boundary points that do not match their corresponding node:
   # --> These points will be added as new nodes to the network.
   n_add = list()

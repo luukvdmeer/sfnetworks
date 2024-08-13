@@ -1,4 +1,3 @@
-#' @importFrom tibble as_tibble
 #' @export
 print.sfnetwork = function(x, ...,
                            n = getOption("sfn_max_print_active", default = 6),
@@ -157,7 +156,6 @@ is_tree = function(x) {
 }
 
 #' @importFrom igraph is_connected is_simple gorder gsize count_components
-#' is_directed
 is_forest = function(x) {
   !is_connected(x) &&
     is_simple(x) &&

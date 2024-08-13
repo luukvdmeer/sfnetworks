@@ -101,6 +101,32 @@ is_sfg = function(x) {
   inherits(x, "sfg")
 }
 
+#' Check if an object has only linestring geometries
+#'
+#' @param x An object of class \code{\link{sfnetwork}}, \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}.
+#'
+#' @return \code{TRUE} if the geometries of the given object are all of type
+#' \code{LINESTRING}, \code{FALSE} otherwise.
+#'
+#' @noRd
+are_linestrings = function(x) {
+  is_sfc_linestring(st_geometry(x))
+}
+
+#' Check if an object has only point geometries
+#'
+#' @param x An object of class \code{\link{sfnetwork}}, \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}}.
+#'
+#' @return \code{TRUE} if the geometries of the given object are all of type
+#' \code{POINT}, \code{FALSE} otherwise.
+#'
+#' @noRd
+are_points = function(x) {
+  is_sfc_point(st_geometry(x))
+}
+
 #' Check if a table has spatial information stored in a geometry list column
 #'
 #' @param x A flat table, such as an sf object, data.frame or tibble.
@@ -111,21 +137,6 @@ is_sfg = function(x) {
 #' @noRd
 has_sfc = function(x) {
   any(vapply(x, is_sfc, FUN.VALUE = logical(1)), na.rm = TRUE)
-}
-
-#' Check if geometries are all of a specific type
-#'
-#' @param x An object of class \code{\link{sfnetwork}} or \code{\link[sf]{sf}}.
-#'
-#' @param type The geometry type to check for, as a string.
-#'
-#' @return \code{TRUE} when all geometries are of the given type, \code{FALSE}
-#' otherwise.
-#'
-#' @importFrom sf st_is
-#' @noRd
-has_single_geom_type = function(x, type) {
-  all(st_is(x, type))
 }
 
 #' Check if a tbl_graph has nodes with a geometry list column
@@ -216,7 +227,9 @@ have_equal_edge_type = function(x, y) {
 #'
 #' @param y An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
 #'
-#' @return A vector of booleans, one element for each (x[i], y[i]) pair.
+#' @return A logical vector with one element for each (x[i], y[i]) pair. An
+#' element is \code{TRUE} if the geometry of x[i] is equal to the geometry of
+#' y[i], and \code{FALSE} otherwise.
 #'
 #' @details This is a pairwise check. Each row in x is compared to its
 #' corresponding row in y. Hence, x and y should be of the same length.
@@ -242,6 +255,10 @@ is_single_string = function(x) {
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
+#' @return A logical vector of the same length as the number of edges in the
+#' network, holding a \code{TRUE} value if the boundary of the edge geometry
+#' contain the geometries of both its boundary nodes.
+#'
 #' @importFrom sf st_equals
 #' @noRd
 nodes_in_edge_boundaries = function(x) {
@@ -257,6 +274,11 @@ nodes_in_edge_boundaries = function(x) {
 #' Check if edge boundary points are equal to their corresponding nodes
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @return A logical vector of the same length as the number of edges in the
+#' network, holding a \code{TRUE} value if the start point of the edge geometry
+#' is equal to the geometry of its start node, and the end point of the edge
+#' geometry is equal to the geometry of its end node.
 #'
 #' @noRd
 nodes_match_edge_boundaries = function(x) {

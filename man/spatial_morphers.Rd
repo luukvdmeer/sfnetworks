@@ -12,7 +12,7 @@
 \alias{to_spatial_subdivision}
 \alias{to_spatial_subset}
 \alias{to_spatial_transformed}
-\title{Spatial morphers for sfnetworks}
+\title{Morph spatial networks into a different structure}
 \usage{
 to_spatial_contracted(
   x,

@@ -25,8 +25,8 @@
 #' net = as_sfnetwork(roxel)
 #'
 #' # Use query function in a filter call.
-#' filtered = net %>%
-#'   activate("nodes") %>%
+#' filtered = net |>
+#'   activate(nodes) |>
 #'   filter(node_X() > 7.54)
 #'
 #' oldpar = par(no.readonly = TRUE)
@@ -36,49 +36,53 @@
 #' par(oldpar)
 #'
 #' # Use query function in a mutate call.
-#' net %>%
-#'   activate("nodes") %>%
+#' net |>
+#'   activate(nodes) |>
 #'   mutate(X = node_X(), Y = node_Y())
+#'
+#' # Use query function directly.
+#' X = with_graph(net, node_X())
+#' head(X)
 #'
 #' @name node_coordinates
 NULL
 
 #' @name node_coordinates
+#' @importFrom tidygraph .G
 #' @export
 node_X = function() {
   require_active_nodes()
-  x = .G()
-  get_coords(pull_node_geom(x, focused = TRUE), "X")
+  extract_node_coords(.G(), "X")
 }
 
 #' @name node_coordinates
+#' @importFrom tidygraph .G
 #' @export
 node_Y = function() {
   require_active_nodes()
-  x = .G()
-  get_coords(pull_node_geom(x, focused = TRUE), "Y")
+  extract_node_coords(.G(), "Y")
 }
 
 #' @name node_coordinates
+#' @importFrom tidygraph .G
 #' @export
 node_Z = function() {
   require_active_nodes()
-  x = .G()
-  get_coords(pull_node_geom(x, focused = TRUE), "Z")
+  extract_node_coords(.G(), "Z")
 }
 
 #' @name node_coordinates
+#' @importFrom tidygraph .G
 #' @export
 node_M = function() {
   require_active_nodes()
-  x = .G()
-  get_coords(pull_node_geom(x, focused = TRUE), "M")
+  extract_node_coords(.G(), "M")
 }
 
 #' @importFrom cli cli_warn
 #' @importFrom sf st_coordinates
-get_coords = function(x, value) {
-  all_coords = st_coordinates(x)
+extract_node_coords = function(x, value) {
+  all_coords = st_coordinates(pull_node_geom(x, focused = TRUE))
   tryCatch(
     all_coords[, value],
     error = function(e) {
@@ -132,7 +136,7 @@ get_coords = function(x, value) {
 #' library(tidygraph, quietly = TRUE)
 #'
 #' # Create a network.
-#' net = as_sfnetwork(roxel) %>%
+#' net = as_sfnetwork(roxel) |>
 #'   st_transform(3035)
 #'
 #' # Create a geometry to test against.
@@ -141,18 +145,19 @@ get_coords = function(x, value) {
 #' p3 = st_point(c(4151756, 3207506))
 #' p4 = st_point(c(4151774, 3208031))
 #'
-#' poly = st_multipoint(c(p1, p2, p3, p4)) %>%
-#'   st_cast('POLYGON') %>%
+#' poly = st_multipoint(c(p1, p2, p3, p4)) |>
+#'   st_cast('POLYGON') |>
 #'   st_sfc(crs = 3035)
 #'
 #' # Use predicate query function in a filter call.
-#' within = net %>%
-#'   activate("nodes") %>%
+#' within = net |>
+#'   activate(nodes) |>
 #'   filter(node_is_within(poly))
 #'
-#' disjoint = net %>%
-#'   activate("nodes") %>%
+#' disjoint = net |>
+#'   activate(nodes) |>
 #'   filter(node_is_disjoint(poly))
+#'
 #' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1))
 #' plot(net)
@@ -161,75 +166,79 @@ get_coords = function(x, value) {
 #' par(oldpar)
 #'
 #' # Use predicate query function in a mutate call.
-#' net %>%
-#'   activate("nodes") %>%
-#'   mutate(within = node_is_within(poly)) %>%
+#' net |>
+#'   activate(nodes) |>
+#'   mutate(within = node_is_within(poly)) |>
 #'   select(within)
+#'
+#' # Use predicate query function directly.
+#' within = with_graph(net, node_within(poly))
+#' head(within)
 #'
 #' @name spatial_node_predicates
 NULL
 
 #' @name spatial_node_predicates
 #' @importFrom sf st_intersects
+#' @importFrom tidygraph .G
 #' @export
 node_intersects = function(y, ...) {
   require_active_nodes()
-  x = .G()
-  evaluate_node_predicate(st_intersects, x, y, ...)
+  evaluate_node_predicate(st_intersects, .G(), y, ...)
 }
 
 #' @name spatial_node_predicates
 #' @importFrom sf st_disjoint
+#' @importFrom tidygraph .G
 #' @export
 node_is_disjoint = function(y, ...) {
   require_active_nodes()
-  x = .G()
-  evaluate_node_predicate(st_disjoint, x, y, ...)
+  evaluate_node_predicate(st_disjoint, .G(), y, ...)
 }
 
 #' @name spatial_node_predicates
 #' @importFrom sf st_touches
+#' @importFrom tidygraph .G
 #' @export
 node_touches = function(y, ...) {
   require_active_nodes()
-  x = .G()
-  evaluate_node_predicate(st_touches, x, y, ...)
+  evaluate_node_predicate(st_touches, .G(), y, ...)
 }
 
 #' @name spatial_node_predicates
 #' @importFrom sf st_within
+#' @importFrom tidygraph .G
 #' @export
 node_is_within = function(y, ...) {
   require_active_nodes()
-  x = .G()
-  evaluate_node_predicate(st_within, x, y, ...)
+  evaluate_node_predicate(st_within, .G(), y, ...)
 }
 
 #' @name spatial_node_predicates
 #' @importFrom sf st_equals
+#' @importFrom tidygraph .G
 #' @export
 node_equals = function(y, ...) {
   require_active_nodes()
-  x = .G()
-  evaluate_node_predicate(st_equals, x, y, ...)
+  evaluate_node_predicate(st_equals, .G(), y, ...)
 }
 
 #' @name spatial_node_predicates
 #' @importFrom sf st_covered_by
+#' @importFrom tidygraph .G
 #' @export
 node_is_covered_by = function(y, ...) {
   require_active_nodes()
-  x = .G()
-  evaluate_node_predicate(st_covered_by, x, y, ...)
+  evaluate_node_predicate(st_covered_by, .G(), y, ...)
 }
 
 #' @name spatial_node_predicates
 #' @importFrom sf st_is_within_distance
+#' @importFrom tidygraph .G
 #' @export
 node_is_within_distance = function(y, ...) {
   require_active_nodes()
-  x = .G()
-  evaluate_node_predicate(st_is_within_distance, x, y, ...)
+  evaluate_node_predicate(st_is_within_distance, .G(), y, ...)
 }
 
 #' @name spatial_node_predicates

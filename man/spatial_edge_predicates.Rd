@@ -88,7 +88,7 @@ library(sf, quietly = TRUE)
 library(tidygraph, quietly = TRUE)
 
 # Create a network.
-net = as_sfnetwork(roxel) \%>\%
+net = as_sfnetwork(roxel) |>
   st_transform(3035)
 
 # Create a geometry to test against.
@@ -97,13 +97,13 @@ p2 = st_point(c(4151340, 3207520))
 p3 = st_point(c(4151756, 3207506))
 p4 = st_point(c(4151774, 3208031))
 
-poly = st_multipoint(c(p1, p2, p3, p4)) \%>\%
-  st_cast('POLYGON') \%>\%
+poly = st_multipoint(c(p1, p2, p3, p4)) |>
+  st_cast('POLYGON') |>
   st_sfc(crs = 3035)
 
 # Use predicate query function in a filter call.
-intersects = net \%>\%
-  activate(edges) \%>\%
+intersects = net |>
+  activate(edges) |>
   filter(edge_intersects(poly))
 
 oldpar = par(no.readonly = TRUE)
@@ -113,9 +113,13 @@ plot(st_geometry(intersects, "edges"), col = "red", lwd = 2, add = TRUE)
 par(oldpar)
 
 # Use predicate query function in a mutate call.
-net \%>\%
-  activate(edges) \%>\%
-  mutate(disjoint = edge_is_disjoint(poly)) \%>\%
+net |>
+  activate(edges) |>
+  mutate(disjoint = edge_is_disjoint(poly)) |>
   select(disjoint)
+
+# Use predicate query function directly.
+intersects = with_graph(net, edge_intersects(poly))
+head(intersects)
 
 }

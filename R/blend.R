@@ -108,7 +108,7 @@ st_network_blend.sfnetwork = function(x, y, tolerance = Inf) {
       "i" = "Call {.fn sfnetworks::to_spatial_explicit} to explicitize edges."
     ))
   }
-  if (! has_single_geom_type(y, "POINT")) {
+  if (! are_points(y)) {
     cli_abort("All features in {.arg y} should have {.cls POINT} geometries.")
   }
   if (! have_equal_crs(x, y)) {
