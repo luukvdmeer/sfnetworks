@@ -73,14 +73,19 @@ edge_azimuth = function(degrees = FALSE) {
 edge_circuity = function(Inf_as_NaN = FALSE) {
   require_active_edges()
   x = .G()
-  # Calculate circuity.
-  length = st_length(pull_edge_geom(x, focused = TRUE))
-  sldist = straight_line_distance(x)
-  values = length / sldist
-  # Drop units since circuity is unitless (it is a ratio of m/m).
-  if (inherits(values, "units")) values = drop_units(values)
-  # Replace Inf values by NaN if requested.
-  if (Inf_as_NaN) values[is.infinite(values)] = NaN
+  if (has_explicit_edges(x)) {
+    # Compute circuity as the ratio between length and displacement.
+    length = st_length(pull_edge_geom(x, focused = TRUE))
+    sldist = straight_line_distance(x)
+    values = length / sldist
+    # Drop units since circuity is unitless (it is a ratio of m/m).
+    if (inherits(values, "units")) values = drop_units(values)
+    # Replace Inf values by NaN if requested.
+    if (Inf_as_NaN) values[is.infinite(values)] = NaN
+  } else {
+    # Implicit edges are always straight lines, i.e. circuity = 0.
+    values = rep(0, n_edges(x, focused = TRUE))
+  }
   values
 }
 
