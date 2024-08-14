@@ -1,3 +1,50 @@
+#' Determine duplicated geometries
+#'
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
+#'
+#' @return A logical vector specifying for each feature in \code{x} if its
+#' geometry is equal to a previous feature in \code{x}.
+#'
+#' @examples
+#' library(sf, quietly = TRUE)
+#'
+#' p1 = st_sfc(st_point(c(1, 1)))
+#' p2 = st_sfc(st_point(c(0, 0)))
+#' p3 = st_sfc(st_point(c(1, 0)))
+#'
+#' st_duplicated(c(p1, p2, p2, p3, p1))
+#'
+#' @importFrom sf st_equals st_geometry
+#' @export
+st_duplicated = function(x) {
+  dup = rep(FALSE, length(st_geometry(x)))
+  dup[unique(do.call("c", lapply(st_equals(x), `[`, - 1)))] = TRUE
+  dup
+}
+
+#' Geometry matching
+#'
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
+#'
+#' @return A numeric vector giving for each feature in \code{x} the position of
+#' the first feature in \code{x} that has an equal geometry.
+#'
+#' @examples
+#' library(sf, quietly = TRUE)
+#'
+#' p1 = st_sfc(st_point(c(1, 1)))
+#' p2 = st_sfc(st_point(c(0, 0)))
+#' p3 = st_sfc(st_point(c(1, 0)))
+#'
+#' st_match(c(p1, p2, p2, p3, p1))
+#'
+#' @importFrom sf st_equals
+#' @export
+st_match = function(x) {
+  idxs = do.call("c", lapply(st_equals(x), `[`, 1))
+  match(idxs, unique(idxs))
+}
+
 #' Convert a sfheaders data frame into sfc point geometries
 #'
 #' @param x_df An object of class \code{\link{data.frame}} as constructed by
@@ -271,34 +318,6 @@ merge_mranges = function(a, b) {
   ab["mmin"] = min(a["mmin"], b["mmin"])
   ab["mmax"] = max(a["mmax"], b["mmax"])
   ab
-}
-
-#' Determine duplicated geometries
-#'
-#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
-#'
-#' @return A logical vector of the same length as \code{x}.
-#'
-#' @importFrom sf st_equals st_geometry
-#' @noRd
-st_duplicated = function(x) {
-  dup = rep(FALSE, length(st_geometry(x)))
-  dup[unique(do.call("c", lapply(st_equals(x), `[`, - 1)))] = TRUE
-  dup
-}
-
-#' Geometry matching
-#'
-#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
-#'
-#' @return A numeric vector giving for each feature in x the row number of the
-#' first feature in x that has equal coordinates.
-#'
-#' @importFrom sf st_equals
-#' @noRd
-st_match = function(x) {
-  idxs = do.call("c", lapply(st_equals(x), `[`, 1))
-  match(idxs, unique(idxs))
 }
 
 #' List-column friendly version of bind_rows
