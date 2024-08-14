@@ -128,7 +128,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
     )
   }
   # Create network.
-  x_tbg = tbl_graph(nodes, edges, directed, node_key)
+  x_tbg = tbl_graph(nodes, edges, directed = directed, node_key = node_key)
   x_sfn = structure(x_tbg, class = c("sfnetwork", class(x_tbg)))
   # Post-process network. This includes:
   # --> Checking if the network has a valid spatial network structure.
@@ -168,7 +168,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
 
 #' @importFrom tidygraph tbl_graph
 sfnetwork_ = function(nodes, edges = NULL, directed = TRUE) {
-  x_tbg = tbl_graph(nodes, edges, directed)
+  x_tbg = tbl_graph(nodes, edges, directed = directed)
   if (! is.null(edges)) {
     edge_geom_colname(x_tbg) = attr(edges, "sf_column")
     edge_agr(x_tbg) = attr(edges, "agr")
