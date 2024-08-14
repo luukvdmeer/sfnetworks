@@ -163,7 +163,7 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
   }
   # Update the nodes table of the contracted network.
   new_nodes = st_as_sf(new_nodes, sf_column_name = node_geomcol)
-  node_attribute_values(x_new) = new_nodes
+  node_data(x_new) = new_nodes
   # Convert in a sfnetwork.
   x_new = tbg_to_sfn(x_new)
   ## ===============================================================
@@ -209,7 +209,7 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
       st_cast(st_combine(c(p, l_pts, p)), "LINESTRING")
     }
     # Find the indices of the nodes at the boundaries of each edge.
-    bounds = edge_boundary_node_indices(x_new, matrix = TRUE)
+    bounds = edge_boundary_node_ids(x_new, matrix = TRUE)
     # Mask out those indices of nodes that were not contracted.
     # Only edge boundaries at contracted nodes have to be updated.
     bounds[!(bounds %in% cnt_group_idxs)] = NA
@@ -316,7 +316,7 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
     }
     # Update the edges table of the contracted network.
     st_geometry(new_edges) = new_edge_geoms
-    edge_attribute_values(x_new) = new_edges
+    edge_data(x_new) = new_edges
   }
   # Return in a list.
   list(
@@ -340,7 +340,7 @@ to_spatial_directed = function(x) {
   nodes = nodes_as_sf(x)
   edges = edges_as_sf(x)
   # Get the node indices that correspond to the geometries of the edge bounds.
-  idxs = edge_boundary_point_indices(x, matrix = TRUE)
+  idxs = edge_boundary_point_ids(x, matrix = TRUE)
   from = idxs[, 1]
   to = idxs[, 2]
   # Update the from and to columns of the edges such that:
@@ -375,9 +375,9 @@ to_spatial_explicit = function(x, ...) {
     edges = edge_data(x, focused = FALSE)
     new_edges = st_as_sf(edges, ...)
     x_new = x
-    edge_attribute_values(x_new) = new_edges
+    edge_data(x_new) = new_edges
   } else {
-    x_new = explicitize_edges(x)
+    x_new = construct_edge_geometries(x)
   }
   # Return in a list.
   list(
@@ -522,7 +522,7 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
     new_edges = st_as_sf(new_edges, sf_column_name = edge_geomcol)
     st_crs(new_edges) = st_crs(x)
     st_precision(new_edges) = st_precision(x)
-    edge_attribute_values(x_new) = new_edges
+    edge_data(x_new) = new_edges
   }
   # If requested, original edge data should be stored in a .orig_data column.
   if (store_original_data) {
@@ -531,7 +531,7 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
     new_edges = edge_data(x, focused = FALSE_new)
     copy_data = function(i) edges[i, , drop = FALSE]
     new_edges$.orig_data = lapply(new_edges$.tidygraph_edge_index, copy_data)
-    edge_attribute_values(x_new) = new_edges
+    edge_data(x_new) = new_edges
   }
   # Return in a list.
   list(
@@ -655,10 +655,10 @@ to_spatial_smooth = function(x,
     # If require_equal is TRUE all attributes will be checked for equality.
     # In other cases only a subset of attributes will be checked.
     if (isTRUE(require_equal)) {
-      require_equal = edge_attribute_names(x)
+      require_equal = edge_colnames(x, geom = FALSE)
     } else {
       # Check if all given attributes exist in the edges table of x.
-      attr_exists = require_equal %in% edge_attribute_names(x)
+      attr_exists = require_equal %in% edge_colnames(x, geom = FALSE)
       if (! all(attr_exists)) {
         unknown_attrs = paste(require_equal[!attr_exists], collapse = ", ")
         cli_abort(c(
@@ -951,7 +951,7 @@ to_spatial_smooth = function(x,
     edges$.tidygraph_edge_index = NULL
     copy_data = function(i) edges[i, , drop = FALSE]
     new_edges$.orig_data = lapply(new_edges$.tidygraph_edge_index, copy_data)
-    edge_attribute_values(x_new) = new_edges
+    edge_data(x_new) = new_edges
   }
   # Return in a list.
   list(
@@ -1099,9 +1099,9 @@ to_spatial_subdivision = function(x) {
   # If an edge point did not equal a node, store NA instead.
   node_idxs = rep(NA, nrow(edge_pts))
   if (directed) {
-    node_idxs[is_boundary] = edge_boundary_node_indices(x)
+    node_idxs[is_boundary] = edge_boundary_node_ids(x)
   } else {
-    node_idxs[is_boundary] = edge_boundary_point_indices(x)
+    node_idxs[is_boundary] = edge_boundary_point_ids(x)
   }
   # Find which of the *original* nodes belong to which *new* edge boundary.
   # If a new edge boundary does not equal an original node, store NA instead.

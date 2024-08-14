@@ -3,7 +3,6 @@
 \name{sf}
 \alias{sf}
 \alias{st_as_sf.sfnetwork}
-\alias{st_as_s2.sfnetwork}
 \alias{st_geometry.sfnetwork}
 \alias{st_geometry<-.sfnetwork}
 \alias{st_drop_geometry.sfnetwork}
@@ -11,6 +10,7 @@
 \alias{st_coordinates.sfnetwork}
 \alias{st_is.sfnetwork}
 \alias{st_is_valid.sfnetwork}
+\alias{st_as_s2.sfnetwork}
 \alias{st_crs.sfnetwork}
 \alias{st_crs<-.sfnetwork}
 \alias{st_precision.sfnetwork}
@@ -44,8 +44,6 @@
 \usage{
 \method{st_as_sf}{sfnetwork}(x, active = NULL, focused = TRUE, ...)
 
-\method{st_as_s2}{sfnetwork}(x, active = NULL, focused = TRUE, ...)
-
 \method{st_geometry}{sfnetwork}(obj, active = NULL, focused = TRUE, ...)
 
 \method{st_geometry}{sfnetwork}(x) <- value
@@ -59,6 +57,8 @@
 \method{st_is}{sfnetwork}(x, ...)
 
 \method{st_is_valid}{sfnetwork}(x, ...)
+
+\method{st_as_s2}{sfnetwork}(x, active = NULL, focused = TRUE, ...)
 
 \method{st_crs}{sfnetwork}(x, ...)
 

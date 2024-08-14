@@ -1,4 +1,4 @@
-#' Get or set the sf_column attribute of the active element of a sfnetwork
+#' Get or set the geometry column name of the active element of a sfnetwork
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -171,7 +171,7 @@ mutate_node_geom = function(x, y, focused = FALSE) {
   } else {
     st_geometry(nodes) = y
   }
-  node_attribute_values(x) = nodes
+  node_data(x) = nodes
   x
 }
 
@@ -185,7 +185,7 @@ mutate_edge_geom = function(x, y, focused = FALSE) {
   } else {
     st_geometry(edges) = y
   }
-  edge_attribute_values(x) = edges
+  edge_data(x) = edges
   x
 }
 

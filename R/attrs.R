@@ -30,6 +30,120 @@ sf_attr = function(x, name, active = NULL) {
   )
 }
 
+#' Get or set the agr attribute of the active element of a sfnetwork
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param value A named factor with appropriate levels. Names should
+#' correspond to the attribute columns of the targeted element of x. Attribute
+#' columns do not involve the geometry list column, but do involve the from and
+#' to columns.
+#'
+#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently
+#' active element of x will be used.
+#'
+#' @return For the getter, a named agr factor. The setter only modifies x.
+#'
+#' @noRd
+agr = function(x, active = NULL) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  switch(
+    active,
+    nodes = node_agr(x),
+    edges = edge_agr(x),
+    raise_invalid_active(active)
+  )
+}
+
+#' @name agr
+#' @importFrom igraph vertex_attr
+#' @noRd
+node_agr = function(x) {
+  agr = attr(vertex_attr(x), "agr")
+  colnames = node_colnames(x, geom = FALSE)
+  make_agr_valid(agr, names = colnames)
+}
+
+#' @name agr
+#' @importFrom igraph edge_attr
+#' @noRd
+edge_agr = function(x) {
+  agr = attr(edge_attr(x), "agr")
+  colnames = edge_colnames(x, idxs = TRUE, geom = FALSE)
+  make_agr_valid(agr, names = colnames)
+}
+
+#' @name agr
+#' @noRd
+`agr<-` = function(x, active = NULL, value) {
+  if (is.null(active)) {
+    active = attr(x, "active")
+  }
+  switch(
+    active,
+    nodes = `node_agr<-`(x, value),
+    edges = `edge_agr<-`(x, value),
+    raise_invalid_active(active)
+  )
+}
+
+#' @name agr
+#' @importFrom igraph vertex_attr<-
+#' @noRd
+`node_agr<-` = function(x, value) {
+  attr(vertex_attr(x), "agr") = value
+  x
+}
+
+#' @name agr
+#' @importFrom igraph edge_attr<-
+#' @noRd
+`edge_agr<-` = function(x, value) {
+  attr(edge_attr(x), "agr") = value
+  x
+}
+
+#' Create an empty agr factor
+#'
+#' @param names A character vector containing the names that should be present
+#' in the agr factor.
+#'
+#' @return A named factor with appropriate levels. Values are all equal to
+#' \code{\link[sf]{NA_agr_}}. Names correspond to the  attribute columns of the
+#' targeted element of x. Attribute columns do not  involve the geometry list
+#' column, but do involve the from and to columns.
+#'
+#' @noRd
+empty_agr = function(names) {
+  structure(rep(sf::NA_agr_, length(names)), names = names)
+}
+
+#' Make an agr factor valid
+#'
+#' @param agr The agr factor to be made valid.
+#'
+#' @param names A character vector containing the names that should be present
+#' in the agr factor.
+#'
+#' @return A named factor with appropriate levels. Names are guaranteed to
+#' correspond to the attribute columns of the targeted element of x and are
+#' guaranteed to be sorted in the same order as those attribute columns.
+#' Attribute columns do not involve the geometry list column, but do involve
+#' the from and to columns.
+#'
+#' @noRd
+make_agr_valid = function(agr, names) {
+  levels = c("constant", "aggregate", "identity")
+  if (is.null(agr)) {
+    valid_agr = empty_agr(names)
+  } else {
+    valid_agr = structure(agr[names], names = names, levels = levels)
+  }
+  valid_agr
+}
+
 #' Preserve the attributes of the original network and its elements
 #'
 #' @param new An object of class \code{\link{sfnetwork}}.
@@ -103,167 +217,4 @@ sf_attr = function(x, name, active = NULL) {
     edge_agr(new) = edge_agr(orig)
   }
   new
-}
-
-#' Get attribute column names from the active element of a sfnetwork
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently
-#' active element of x will be used.
-#'
-#' @param idxs Should the columns storing indices of start and end nodes in the
-#' edges table (i.e. the from and to columns) be considered attribute columns?
-#' Defaults to \code{FALSE}.
-#'
-#' @param geom Should the geometry column be considered an attribute column?
-#' Defaults to \code{TRUE}.
-#'
-#' @return A character vector.
-#'
-#' @name attr_names
-#' @noRd
-attribute_names = function(x, active = NULL, idxs = FALSE, geom = TRUE) {
-  if (is.null(active)) {
-    active = attr(x, "active")
-  }
-  switch(
-    active,
-    nodes = node_attribute_names(x, geom = geom),
-    edges = edge_attribute_names(x, idxs = idxs, geom = geom),
-    raise_invalid_active(active)
-  )
-}
-
-#' @name attr_names
-#' @noRd
-#' @importFrom igraph vertex_attr_names
-node_attribute_names = function(x, geom = TRUE) {
-  attrs = vertex_attr_names(x)
-  if (! geom) {
-    attrs = attrs[attrs != node_geom_colname(x)]
-  }
-  attrs
-}
-
-#' @name attr_names
-#' @noRd
-#' @importFrom igraph edge_attr_names
-edge_attribute_names = function(x, idxs = FALSE, geom = TRUE) {
-  attrs = edge_attr_names(x)
-  if (idxs) {
-    attrs = c("from", "to", attrs)
-  }
-  if (! geom) {
-    geom_colname = edge_geom_colname(x)
-    if (! is.null(geom_colname)) {
-      attrs = attrs[attrs != geom_colname]
-    }
-  }
-  attrs
-}
-
-#' Set or replace attribute column values of the active element of a sfnetwork
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @param active Either 'nodes' or 'edges'. If \code{NULL}, the currently
-#' active element of x will be used.
-#'
-#' @param value A table in which each column is an attribute to be set. If the
-#' nodes are active, this table has to be of class \code{\link[sf]{sf}}. For
-#' the edges, it can also be a \code{data.frame} or
-#' \code{\link[tibble]{tibble}}.
-#'
-#' @return An object of class \code{\link{sfnetwork}} with updated attributes.
-#'
-#' @details For these functions, the geometry is considered an attribute of a
-#' node or edge, and the indices of the start and end nodes of an edge are not
-#' considered attributes of that edge.
-#'
-#' @name attr_values
-#' @noRd
-`attribute_values<-` = function(x, active = NULL, value) {
-  if (is.null(active)) {
-    active = attr(x, "active")
-  }
-  switch(
-    active,
-    nodes = `node_attribute_values<-`(x, value),
-    edges = `edge_attribute_values<-`(x, value),
-    raise_invalid_active(active)
-  )
-}
-
-#' @name attr_values
-#' @noRd
-#' @importFrom igraph vertex_attr<-
-`node_attribute_values<-` = function(x, value) {
-  vertex_attr(x) = as.list(value)
-  x
-}
-
-#' @name attr_values
-#' @noRd
-#' @importFrom igraph edge_attr<-
-`edge_attribute_values<-` = function(x, value) {
-  edge_attr(x) = as.list(value[, !names(value) %in% c("from", "to")])
-  x
-}
-
-#' Get the specified summary function for an attribute column.
-#'
-#' @param attr Name of the attribute.
-#'
-#' @param spec Specification of the summary function belonging to each
-#' attribute.
-#'
-#' @return A function that takes a vector of attribute values as input and
-#' returns a single value.
-#'
-#' @noRd
-get_summary_function = function(attr, spec) {
-  if (!is.list(spec)) {
-    func = spec
-  } else {
-    names = names(spec)
-    if (is.null(names)) {
-      func = spec[[1]]
-    } else {
-      func = spec[[attr]]
-      if (is.null(func)) {
-        default = which(names == "")
-        if (length(default) > 0) {
-          func = spec[[default[1]]]
-        } else {
-          func = "ignore"
-        }
-      }
-    }
-  }
-  if (is.function(func)) {
-    func
-  } else {
-    summariser(func)
-  }
-}
-
-#' @importFrom stats median
-#' @importFrom utils head tail
-summariser = function(name) {
-  switch(
-    name,
-    ignore = function(x) NA,
-    sum = function(x) sum(x),
-    prod = function(x) prod(x),
-    min = function(x) min(x),
-    max = function(x) max(x),
-    random = function(x) sample(x, 1),
-    first = function(x) head(x, 1),
-    last = function(x) tail(x, 1),
-    mean = function(x) mean(x),
-    median = function(x) median(x),
-    concat = function(x) c(x),
-    raise_unknown_summariser(name)
-  )
 }

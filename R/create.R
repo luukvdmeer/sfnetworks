@@ -141,7 +141,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
     edge_agr(x_sfn) = attr(edges, "agr")
     # Remove edge geometries if requested.
     if (isFALSE(edges_as_lines)) {
-      x_sfn = implicitize_edges(x_sfn)
+      x_sfn = drop_edge_geom(x_sfn)
     }
     # Run validity check after implicitizing edges.
     if (! force) validate_network(x_sfn, message = message)
@@ -150,7 +150,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
     if (! force) validate_network(x_sfn, message = message)
     # Add edge geometries if requested.
     if (isTRUE(edges_as_lines)) {
-      x_sfn = explicitize_edges(x_sfn)
+      x_sfn = construct_edge_geometries(x_sfn)
     }
   }
   if (compute_length) {
@@ -639,14 +639,14 @@ create_from_spatial_points = function(x, connections = "complete",
   } else {
     nblist = custom_neighbors(x, connections)
   }
-  nb2net(nblist, x, directed, edges_as_lines, compute_length)
+  nb_to_sfnetwork(nblist, x, directed, edges_as_lines, compute_length)
 }
 
 #' @importFrom cli cli_abort
 custom_neighbors = function(x, connections) {
   if (is.matrix(connections)) {
     require_valid_adjacency_matrix(connections, x)
-    adj2nb(connections)
+    adj_to_nb(connections)
   } else if (inherits(connections, c("sgbp", "nb", "list"))) {
     require_valid_neighbor_list(connections, x)
     connections
@@ -668,7 +668,7 @@ complete_neighbors = function(x) {
   connections = matrix(TRUE, ncol = n_nodes, nrow = n_nodes)
   diag(connections) = FALSE # No loop edges.
   # Return as neighbor list.
-  adj2nb(connections)
+  adj_to_nb(connections)
 }
 
 #' @importFrom sf st_geometry

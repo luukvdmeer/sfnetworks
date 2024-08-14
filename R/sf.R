@@ -87,13 +87,6 @@ edges_as_sf = function(x, focused = FALSE, ...) {
   )
 }
 
-#' @name sf
-#' @importFrom sf st_as_s2
-#' @export
-st_as_s2.sfnetwork = function(x, active = NULL, focused = TRUE, ...) {
-  st_as_s2(pull_geom(x, active, focused = focused), ...)
-}
-
 # =============================================================================
 # Geometries
 # =============================================================================
@@ -162,6 +155,30 @@ st_is.sfnetwork = function(x, ...) {
 #' @export
 st_is_valid.sfnetwork = function(x, ...) {
   st_is_valid(pull_geom(x, focused = TRUE), ...)
+}
+
+#' Extract the geometries of a sfnetwork as a S2 geography vector
+#'
+#' A method to convert an object of class \code{\link{sfnetwork}} into
+#' \code{\link[s2]{s2_geography}} format. Use this method without the
+#' .sfnetwork suffix and after loading the \pkg{s2} package.
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param ... Arguments passed on the corresponding \code{s2} function.
+#'
+#' @return An object of class \code{\link[s2]{s2_geography}}.
+#'
+#' @name as_s2_geography
+as_s2_geography.sfnetwork = function(x, focused = TRUE, ...) {
+  s2::as_s2_geography(pull_geom(x, focused = focused), ...)
+}
+
+#' @name sf
+#' @importFrom sf st_as_s2
+#' @export
+st_as_s2.sfnetwork = function(x, active = NULL, focused = TRUE, ...) {
+  st_as_s2(pull_geom(x, active, focused = focused), ...)
 }
 
 # =============================================================================
@@ -442,7 +459,7 @@ spatial_join_nodes = function(x, y, ...) {
   }
   # Update node attributes of the original network.
   n_new$.sfnetwork_index = NULL
-  node_attribute_values(x) = n_new
+  node_data(x) = n_new
   x
 }
 
@@ -671,7 +688,7 @@ spatial_clip_edges = function(x, y, ..., .operator = sf::st_intersection) {
   # --> Otherwise the valid spatial network structure is broken.
   # We proceed as follows:
   # Retrieve the boundaries of the clipped edge geometries.
-  bound_pts = edge_boundary_points(x_tmp)
+  bound_pts = linestring_boundary_points(e_new)
   # Retrieve the nodes at the ends of each edge.
   # According to the from and to indices.
   bound_nds = edge_boundary_nodes(x_tmp)
@@ -684,7 +701,7 @@ spatial_clip_edges = function(x, y, ..., .operator = sf::st_intersection) {
   n_add = st_sf(n_add)
   n_new = bind_rows(n_orig, n_add)
   # Update the node indices of the from and two columns accordingly.
-  idxs = edge_boundary_node_indices(x_tmp)
+  idxs = edge_boundary_node_ids(x_tmp)
   idxs[!matches] = c((nrow(n_orig) + 1):(nrow(n_orig) + nrow(n_add)))
   e_new$from = idxs[seq(1, length(idxs) - 1, 2)]
   e_new$to = idxs[seq(2, length(idxs), 2)]

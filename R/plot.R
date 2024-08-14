@@ -70,7 +70,7 @@ plot.sfnetwork = function(x, draw_lines = TRUE,
   dots = list(...)
   # Plot the edges.
   if (draw_lines && is.null(edge_geoms)) {
-    bids = edge_boundary_node_indices(x, matrix = TRUE)
+    bids = edge_boundary_node_ids(x, matrix = TRUE)
     edge_geoms = draw_lines(node_geoms[bids[, 1]], node_geoms[bids[, 2]])
   }
   if (! is.null(edge_geoms)) {
@@ -102,7 +102,7 @@ plot.sfnetwork = function(x, draw_lines = TRUE,
 #'
 #' @name autoplot
 autoplot.sfnetwork = function(object, ...) {
-  object = explicitize_edges(object)
+  object = construct_edge_geometries(object) # Make sure edges are explicit.
   ggplot2::ggplot() +
     ggplot2::geom_sf(data = nodes_as_sf(object)) +
     ggplot2::geom_sf(data = edges_as_sf(object))

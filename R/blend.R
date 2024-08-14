@@ -423,9 +423,9 @@ blend_ = function(x, y, tolerance) {
   # Edge points that do no equal an original node get assigned NA.
   edge_pts$node_id = rep(NA, nrow(edge_pts))
   if (directed) {
-    edge_pts[is_boundary, ]$node_id = edge_boundary_node_indices(x)
+    edge_pts[is_boundary, ]$node_id = edge_boundary_node_ids(x)
   } else {
-    edge_pts[is_boundary, ]$node_id = edge_boundary_point_indices(x)
+    edge_pts[is_boundary, ]$node_id = edge_boundary_point_ids(x)
   }
   # Update this vector of original node indices by:
   # --> Adding a new, unique node index to each of the split points.

@@ -133,7 +133,7 @@ straight_line_distance = function(x) {
   nodes = pull_node_geom(x)
   # Get the indices of the boundary nodes of each edge.
   # Returns a matrix with source ids in column 1 and target ids in column 2.
-  idxs = edge_boundary_node_indices(x, focused = TRUE, matrix = TRUE)
+  idxs = edge_boundary_node_ids(x, focused = TRUE, matrix = TRUE)
   # Calculate distances pairwise.
   st_distance(nodes[idxs[, 1]], nodes[idxs[, 2]], by_element = TRUE)
 }
@@ -339,4 +339,308 @@ edge_is_nearest = function(y) {
 evaluate_edge_predicate = function(predicate, x, y, ...) {
   E = pull_edge_geom(x, focused = TRUE)
   lengths(predicate(E, y, sparse = TRUE, ...)) > 0
+}
+
+#' Get the geometries of the boundary nodes of edges in an sfnetwork
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param focused Should only the boundary nodes of edges that are in focus be
+#' extracted? Defaults to \code{FALSE}. See \code{\link[tidygraph]{focus}} for
+#' more information on focused networks.
+#'
+#' @param list Should te result be returned as a two-element list? Defaults
+#' to \code{FALSE}.
+#'
+#' @return If list is \code{FALSE}, An object of class \code{\link[sf]{sfc}}
+#' with \code{POINT} geometries of length equal to twice the number of edges in
+#' x, and ordered as [start of edge 1, end of edge 1, start of edge 2, end of
+#' edge 2, ...]. If list is \code{TRUE}, a list with the first element being
+#' the start nodes of the edges as object of class \code{\link[sf]{sfc}} with
+#' \code{POINT} geometries, and the second element being the end nodes of the
+#' edges as object of class \code{\link[sf]{sfc}} with \code{POINT} geometries.
+#'
+#' @details Boundary nodes differ from boundary points in the sense that
+#' boundary points are retrieved by taking the boundary points of the
+#' \code{LINESTRING} geometries of edges, while boundary nodes are retrieved
+#' by querying the nodes table of a network with the 'to' and 'from' columns
+#' in the edges table. In a valid directed network structure boundary points
+#' should be equal to boundary nodes. In a valid undirected network structure
+#' boundary points should contain the boundary nodes.
+#'
+#' @importFrom igraph ends
+#' @noRd
+edge_boundary_nodes = function(x, focused = FALSE, list = FALSE) {
+  nodes = pull_node_geom(x)
+  ids = ends(x, edge_ids(x, focused = focused), names = FALSE)
+  if (list) {
+    list(nodes[ids[, 1]], nodes[ids[, 2]])
+  } else {
+    nodes[as.vector(t(ids))]
+  }
+}
+
+#' Get the geometries of the start nodes of edges in an sfnetwork
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param focused Should only the start nodes of edges that are in focus be
+#' extracted? Defaults to \code{FALSE}. See \code{\link[tidygraph]{focus}} for
+#' more information on focused networks.
+#'
+#' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
+#' geometries, of length equal to the number of edges in x.
+#'
+#' @importFrom igraph ends
+#' @noRd
+edge_start_nodes = function(x, focused = FALSE) {
+  nodes = pull_node_geom(x)
+  id_mat = ends(x, edge_ids(x, focused = focused), names = FALSE)
+  nodes[id_mat[, 1]]
+}
+
+#' Get the geometries of the end nodes of edges in an sfnetwork
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param focused Should only the end nodes of edges that are in focus be
+#' extracted? Defaults to \code{FALSE}. See \code{\link[tidygraph]{focus}} for
+#' more information on focused networks.
+#'
+#' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
+#' geometries, of length equal to the number of edges in x.
+#'
+#' @importFrom igraph ends
+#' @noRd
+edge_end_nodes = function(x, focused = FALSE) {
+  nodes = pull_node_geom(x)
+  id_mat = ends(x, edge_ids(x, focused = focused), names = FALSE)
+  nodes[id_mat[, 2]]
+}
+
+#' Get the indices of the boundary nodes of edges in an sfnetwork
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param focused Should only the indices of boundary nodes of edges that are
+#' in focus be extracted? Defaults to \code{FALSE}. See
+#' \code{\link[tidygraph]{focus}} for more information on focused networks.
+#'
+#' @param matrix Should te result be returned as a two-column matrix? Defaults
+#' to \code{FALSE}.
+#'
+#' @return If matrix is \code{FALSE}, a numeric vector of length equal to twice
+#' the number of edges in x, and ordered as [start of edge 1, end of edge 1,
+#' start of edge 2, end of edge 2, ...]. If matrix is \code{TRUE}, a two-column
+#' matrix, with the number of rows equal to the number of edges in the network.
+#' The first column contains the indices of the start nodes of the edges, the
+#' second column contains the indices of the end nodes of the edges.
+#'
+#' @importFrom igraph ends
+#' @noRd
+edge_boundary_node_ids = function(x, focused = FALSE, matrix = FALSE) {
+  ends = ends(x, edge_ids(x, focused = focused), names = FALSE)
+  if (matrix) ends else as.vector(t(ends))
+}
+
+#' Get the indices of the start nodes of edges in an sfnetwork
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param focused Should only the indices of start nodes of edges that are
+#' in focus be extracted? Defaults to \code{FALSE}. See
+#' \code{\link[tidygraph]{focus}} for more information on focused networks.
+#'
+#' @return A numeric vector of length equal to the number of edges in x.
+#'
+#' @importFrom igraph ends
+#' @noRd
+edge_start_node_ids = function(x, focused = FALSE, matrix = FALSE) {
+  ends(x, edge_ids(x, focused = focused), names = FALSE)[, 1]
+}
+
+#' Get the indices of the end nodes of edges in an sfnetwork
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param focused Should only the indices of end nodes of edges that are
+#' in focus be extracted? Defaults to \code{FALSE}. See
+#' \code{\link[tidygraph]{focus}} for more information on focused networks.
+#'
+#' @return A numeric vector of length equal to the number of edges in x.
+#'
+#' @importFrom igraph ends
+#' @noRd
+edge_end_node_ids = function(x, focused = FALSE, matrix = FALSE) {
+  ends(x, edge_ids(x, focused = focused), names = FALSE)[, 2]
+}
+
+#' Get the geometries of the boundary points of edges in an sfnetwork
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param focused Should only the boundary points of edges that are in focus be
+#' extracted? Defaults to \code{FALSE}. See \code{\link[tidygraph]{focus}} for
+#' more information on focused networks.
+#'
+#' @param list Should te result be returned as a two-element list? Defaults
+#' to \code{FALSE}.
+#'
+#' @return If list is \code{FALSE}, An object of class \code{\link[sf]{sfc}}
+#' with \code{POINT} geometries of length equal to twice the number of edges in
+#' x, and ordered as [start of edge 1, end of edge 1, start of edge 2, end of
+#' edge 2, ...]. If list is \code{TRUE}, a list with the first element being
+#' the start points of the edges as object of class \code{\link[sf]{sfc}} with
+#' \code{POINT} geometries, and the second element being the end points of the
+#' edges as object of class \code{\link[sf]{sfc}} with \code{POINT} geometries.
+#'
+#' @details Boundary nodes differ from boundary points in the sense that
+#' boundary points are retrieved by taking the boundary points of the
+#' \code{LINESTRING} geometries of edges, while boundary nodes are retrieved
+#' by querying the nodes table of a network with the 'to' and 'from' columns
+#' in the edges table. In a valid directed network structure boundary points
+#' should be equal to boundary nodes. In a valid undirected network structure
+#' boundary points should contain the boundary nodes.
+#'
+#' @noRd
+edge_boundary_points = function(x, focused = FALSE, list = FALSE) {
+  edges = pull_edge_geom(x, focused = focused)
+  points = linestring_boundary_points(edges)
+  if (list) {
+    starts = points[seq(1, length(points), 2)]
+    ends = points[seq(2, length(points), 2)]
+    list(starts, ends)
+  } else {
+    points
+  }
+}
+
+#' Get the node indices of the boundary points of edges in an sfnetwork
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param focused Should only the indices of boundary points of edges that are
+#' in focus be extracted? Defaults to \code{FALSE}. See
+#' \code{\link[tidygraph]{focus}} for more informatio
+#'
+#' @param matrix Should te result be returned as a two-column matrix? Defaults
+#' to \code{FALSE}.
+#'
+#' @return If matrix is \code{FALSE}, a numeric vector of length equal to twice
+#' the number of edges in x, and ordered as
+#' [start of edge 1, end of edge 1, start of edge 2, end of edge 2, ...]. If
+#' matrix is \code{TRUE}, a two-column matrix, with the number of rows equal to
+#' the number of edges in the network. The first column contains the node
+#' indices of the start points of the edges, the seconds column contains the
+#' node indices of the end points of the edges.
+#'
+#' @importFrom sf st_equals
+#' @noRd
+edge_boundary_point_ids = function(x, focused = FALSE, matrix = FALSE) {
+    nodes = pull_node_geom(x)
+    edges = edges_as_sf(x, focused = focused)
+    idxs_lst = st_equals(linestring_boundary_points(edges), nodes)
+    idxs_vct = do.call("c", idxs_lst)
+    # In most networks the location of a node will be unique.
+    # However, this is not a requirement.
+    # There may be cases where multiple nodes share the same geometry.
+    # Then some more processing is needed to find the correct indices.
+    if (length(idxs_vct) != n_edges(x, focused = focused) * 2) {
+      n = length(idxs_lst)
+      from = idxs_lst[seq(1, n - 1, 2)]
+      to = idxs_lst[seq(2, n, 2)]
+      p_idxs = mapply(c, from, to, SIMPLIFY = FALSE)
+      n_idxs = mapply(c, edges$from, edges$to, SIMPLIFY = FALSE)
+      find_indices = function(a, b) {
+        idxs = a[a %in% b]
+        if (length(idxs) > 2) b else idxs
+      }
+      idxs_lst = mapply(find_indices, p_idxs, n_idxs, SIMPLIFY = FALSE)
+      idxs_vct = do.call("c", idxs_lst)
+    }
+    if (matrix) t(matrix(idxs_vct, nrow = 2)) else idxs_vct
+}
+
+#' Correct edge geometries to match their boundary nodes
+#'
+#' This function makes invalid edge geometries valid by replacing their
+#' boundary points with the geometries of the nodes that should be at their
+#' boundary according to the specified from and to indices.
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @return An object of class \code{\link{sfnetwork}} with corrected edge
+#' geometries.
+#'
+#' @note This function works only if the edge geometries are meant to start at
+#' their specified *from* node and end at their specified *to* node. In
+#' undirected networks this is not necessarily the case, since edge geometries
+#' are allowed to start at their specified *to* node and end at their specified
+#' *from* node. Therefore, in undirected networks those edges first have to be
+#' reversed before running this function.
+#'
+#' @importFrom sfheaders sfc_to_df
+#' @noRd
+correct_edge_geometries = function(x) {
+  # Extract geometries of edges.
+  edges = pull_edge_geom(x)
+  # Extract the geometries of the nodes that should be at their ends.
+  nodes = edge_boundary_nodes(x)
+  # Decompose the edges into the points that shape them.
+  # Convert the correct boundary nodes into the same structure.
+  E = sfc_to_df(edges)
+  N = sfc_to_df(nodes)
+  # Define for each edge point if it is a boundary point.
+  is_start = ! duplicated(E$linestring_id)
+  is_end = ! duplicated(E$linestring_id, fromLast = TRUE)
+  is_bound = is_start | is_end
+  # Update the coordinates of the edge boundary points.
+  # They should match the coordinates of their boundary nodes.
+  E_new = data.frame()
+  if (! is.null(E$x)) {
+    x_new = E$x
+    x_new[is_bound] = N$x
+    E_new$x = x_new
+  }
+  if (! is.null(E$y)) {
+    y_new = E$y
+    y_new[is_bound] = N$y
+    E_new$y = y_new
+  }
+  if (! is.null(E$z)) {
+    z_new = E$z
+    z_new[is_bound] = N$z
+    E_new$z = z_new
+  }
+  if (! is.null(E$m)) {
+    m_new = E$m
+    m_new[is_bound] = N$m
+    E_new$m = m_new
+  }
+  E_new$id = E$linestring_id
+  # Update the geometries of the edges table.
+  mutate_edge_geom(x, df_to_lines(E_new, edges, id_col = "id"))
+}
+
+#' Construct edge geometries for spatially implicit networks
+#'
+#' This function turns spatially implicit networks into spatially explicit
+#' networks by adding a geometry column to the edges data containing straight
+#' lines between the start and end nodes.
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @return An object of class \code{\link{sfnetwork}} with spatially explicit
+#' edges. If \code{x} was already spatially explicit it is returned unmodified.
+#'
+#' @importFrom sf st_crs st_sfc
+#' @noRd
+construct_edge_geometries = function(x) {
+  # Return x unmodified if edges are already spatially explicit.
+  if (has_explicit_edges(x)) return(x)
+  # Add an empty geometry column if there are no edges.
+  if (n_edges(x) == 0) return(mutate_edge_geom(x, st_sfc(crs = st_crs(x))))
+  # In any other case draw straight lines between the boundary nodes of edges.
+  bounds = edge_boundary_nodes(x, list = TRUE)
+  mutate_edge_geom(x, draw_lines(bounds[[1]], bounds[[2]]))
 }
