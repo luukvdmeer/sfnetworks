@@ -705,7 +705,7 @@ mst_neighbors = function(x, directed = TRUE, edges_as_lines = TRUE) {
 #' @importFrom sf st_geometry
 delaunay_neighbors = function(x) {
   check_installed("spdep") # Package spdep is required for this function.
-  tri2nb(st_geometry(x))
+  spdep::tri2nb(st_geometry(x))
 }
 
 #' @importFrom rlang check_installed
