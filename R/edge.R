@@ -596,7 +596,7 @@ correct_edge_geometries = function(x) {
   is_bound = is_start | is_end
   # Update the coordinates of the edge boundary points.
   # They should match the coordinates of their boundary nodes.
-  E_new = data.frame()
+  E_new = list()
   if (! is.null(E$x)) {
     x_new = E$x
     x_new[is_bound] = N$x
@@ -619,7 +619,7 @@ correct_edge_geometries = function(x) {
   }
   E_new$id = E$linestring_id
   # Update the geometries of the edges table.
-  mutate_edge_geom(x, df_to_lines(E_new, edges, id_col = "id"))
+  mutate_edge_geom(x, df_to_lines(as.data.frame(E_new), edges, id_col = "id"))
 }
 
 #' Match the direction of edge geometries to their specified boundary nodes
