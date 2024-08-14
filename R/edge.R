@@ -561,11 +561,11 @@ edge_boundary_point_ids = function(x, focused = FALSE, matrix = FALSE) {
     if (matrix) t(matrix(idxs_vct, nrow = 2)) else idxs_vct
 }
 
-#' Correct edge geometries to match their boundary nodes
+#' Correct edge geometries to match their boundary node locations
 #'
 #' This function makes invalid edge geometries valid by replacing their
 #' boundary points with the geometries of the nodes that should be at their
-#' boundary according to the specified from and to indices.
+#' boundary according to the specified *from* and *to* indices.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -620,6 +620,43 @@ correct_edge_geometries = function(x) {
   E_new$id = E$linestring_id
   # Update the geometries of the edges table.
   mutate_edge_geom(x, df_to_lines(E_new, edges, id_col = "id"))
+}
+
+#' Match the direction of edge geometries to their specified boundary nodes
+#'
+#' This function updates edge geometries in undirected networks such that they
+#' are guaranteed to start at their specified *from* node and end at their
+#' specified *to* node.
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @return An object of class \code{\link{sfnetwork}} with updated edge
+#' geometries.
+#'
+#' @details In undirected spatial networks it is required that the boundary of
+#' edge geometries contain their boundary node geometries. However, it is not
+#' required that their start point equals their specified *from* node and their
+#' end point their specified *to* node. Instead, it may be vice versa. This is
+#' because for undirected networks *from* and *to* indices are always swopped
+#' if the *to* index is lower than the *from* index.
+#'
+#' This function reverses edge geometries if they start at the *to* node and
+#' end at the *from* node, such that in the resulting network it is guaranteed
+#' that edge boundary points exactly match their boundary node geometries. In
+#' directed networks, there will be no change.
+#'
+#' @importFrom sf st_reverse
+#' @noRd
+direct_edge_geometries = function(x) {
+  # Extract geometries of edges and subsequently their start points.
+  edges = pull_edge_geom(x)
+  start_points = linestring_start_points(edges)
+  # Extract the geometries of the nodes that should be at their start.
+  start_nodes = edge_start_nodes(x)
+  # Reverse edge geometries for which start point does not equal start node.
+  to_be_reversed = ! have_equal_geometries(start_points, start_nodes)
+  edges[to_be_reversed] = st_reverse(edges[to_be_reversed])
+  mutate_edge_geom(x, edges)
 }
 
 #' Construct edge geometries for spatially implicit networks
