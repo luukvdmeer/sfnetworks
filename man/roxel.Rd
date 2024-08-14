@@ -22,7 +22,7 @@ roxel
 \description{
 A dataset containing the road network (roads, bikelanes, footpaths, etc.) of
 Roxel, a neighborhood in the city of Münster, Germany. The data are taken
-from OpenStreetMap, querying by key = 'highway'. The topology is cleaned with
-the v.clean tool in GRASS GIS.
+from OpenStreetMap, querying by key = 'highway'.
+See `data-raw/roxel.R` for code on its creation.
 }
 \keyword{datasets}
