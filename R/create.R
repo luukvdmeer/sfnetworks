@@ -150,7 +150,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
     if (! force) validate_network(x_sfn, message = message)
     # Add edge geometries if requested.
     if (isTRUE(edges_as_lines)) {
-      x_sfn = construct_edge_geometries(x_sfn)
+      x_sfn = make_edges_explicit(x_sfn)
     }
   }
   if (compute_length) {

@@ -561,27 +561,75 @@ edge_boundary_point_ids = function(x, focused = FALSE, matrix = FALSE) {
     if (matrix) t(matrix(idxs_vct, nrow = 2)) else idxs_vct
 }
 
-#' Correct edge geometries to match their boundary node locations
+#' Match edge geometries to their boundary node locations
 #'
-#' This function makes invalid edge geometries valid by replacing their
-#' boundary points with the geometries of the nodes that should be at their
-#' boundary according to the specified *from* and *to* indices.
+#' This function makes invalid edges valid by making sure that the boundary
+#' points of their linestring geometry match the geometries of the nodes that
+#' are specified through the *from* and *to* indices.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
+#' @param preserve_geometries Should the edge geometries remain unmodified?
+#' Defaults to \code{FALSE}. See Details.
+#'
 #' @return An object of class \code{\link{sfnetwork}} with corrected edge
 #' geometries.
+#'
+#' @details If geometries should be preserved, edges are made valid by adding
+#' edge boundary points that do not equal their corresponding node geometry as
+#' new nodes to the network, and updating the *from* and *to* indices to match
+#' this newly added nodes. If \code{FALSE}, edges are made valid by modifying
+#' their geometries, i.e. edge boundary points that do not equal their
+#' corresponding node geometry are replaced by that node geometry.
 #'
 #' @note This function works only if the edge geometries are meant to start at
 #' their specified *from* node and end at their specified *to* node. In
 #' undirected networks this is not necessarily the case, since edge geometries
 #' are allowed to start at their specified *to* node and end at their specified
 #' *from* node. Therefore, in undirected networks those edges first have to be
-#' reversed before running this function.
+#' reversed before running this function. Use
+#' \code{\link{make_edges_follow_indices}} for this.
 #'
-#' @importFrom sfheaders sfc_to_df
 #' @noRd
-correct_edge_geometries = function(x) {
+make_edges_valid = function(x, preserve_geometries = FALSE) {
+  if (preserve_geometries) {
+    add_invalid_edge_boundaries(x)
+  } else {
+    replace_invalid_edge_boundaries(x)
+  }
+}
+
+#' @importFrom dplyr bind_rows
+#' @importFrom igraph is_directed
+#' @importFrom sf st_geometry st_sf
+add_invalid_edge_boundaries = function(x) {
+  # Extract node and edge data.
+  nodes = nodes_as_sf(x)
+  edges = edges_as_sf(x)
+  # Check which edge boundary points do not match their specified nodes.
+  boundary_points = linestring_boundary_points(edges)
+  boundary_node_ids = edge_boundary_node_ids(x)
+  boundary_nodes = st_geometry(nodes)[boundary_node_ids]
+  no_match = !have_equal_geometries(boundary_points, boundary_nodes)
+  # For boundary points that do not match their node:
+  # Boundary points that don't match their node become new nodes themselves.
+  new_nodes = list()
+  new_nodes[node_geom_colname(x)] = list(boundary_points[which(no_match)])
+  new_nodes = st_sf(new_nodes)
+  all_nodes = bind_rows(nodes, new_nodes)
+  # Update the from and to columns of the edges accordingly.
+  n_nodes = nrow(nodes)
+  n_new_nodes = nrow(new_nodes)
+  boundary_node_ids[no_match] = c((n_nodes + 1):(n_nodes + n_new_nodes))
+  n_boundaries = length(boundary_node_ids)
+  edges$from = boundary_node_ids[seq(1, n_boundaries - 1, 2)]
+  edges$to = boundary_node_ids[seq(2, n_boundaries, 2)]
+  # Return a new network with the added nodes and updated edges.
+  sfnetwork_(all_nodes, edges, is_directed(x)) %preserve_network_attrs% x
+}
+
+#' @importFrom sfheaders sfc_to_df
+replace_invalid_edge_boundaries = function(x) {
   # Extract geometries of edges.
   edges = pull_edge_geom(x)
   # Extract the geometries of the nodes that should be at their ends.
@@ -622,6 +670,29 @@ correct_edge_geometries = function(x) {
   mutate_edge_geom(x, df_to_lines(as.data.frame(E_new), edges, id_col = "id"))
 }
 
+#' Construct edge geometries for spatially implicit networks
+#'
+#' This function turns spatially implicit networks into spatially explicit
+#' networks by adding a geometry column to the edges data containing straight
+#' lines between the start and end nodes.
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @return An object of class \code{\link{sfnetwork}} with spatially explicit
+#' edges. If \code{x} was already spatially explicit it is returned unmodified.
+#'
+#' @importFrom sf st_crs st_sfc
+#' @noRd
+make_edges_explicit = function(x) {
+  # Return x unmodified if edges are already spatially explicit.
+  if (has_explicit_edges(x)) return(x)
+  # Add an empty geometry column if there are no edges.
+  if (n_edges(x) == 0) return(mutate_edge_geom(x, st_sfc(crs = st_crs(x))))
+  # In any other case draw straight lines between the boundary nodes of edges.
+  bounds = edge_boundary_nodes(x, list = TRUE)
+  mutate_edge_geom(x, draw_lines(bounds[[1]], bounds[[2]]))
+}
+
 #' Match the direction of edge geometries to their specified boundary nodes
 #'
 #' This function updates edge geometries in undirected networks such that they
@@ -647,7 +718,7 @@ correct_edge_geometries = function(x) {
 #'
 #' @importFrom sf st_reverse
 #' @noRd
-direct_edge_geometries = function(x) {
+make_edges_follow_indices = function(x) {
   # Extract geometries of edges and subsequently their start points.
   edges = pull_edge_geom(x)
   start_points = linestring_start_points(edges)
@@ -657,27 +728,4 @@ direct_edge_geometries = function(x) {
   to_be_reversed = ! have_equal_geometries(start_points, start_nodes)
   edges[to_be_reversed] = st_reverse(edges[to_be_reversed])
   mutate_edge_geom(x, edges)
-}
-
-#' Construct edge geometries for spatially implicit networks
-#'
-#' This function turns spatially implicit networks into spatially explicit
-#' networks by adding a geometry column to the edges data containing straight
-#' lines between the start and end nodes.
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @return An object of class \code{\link{sfnetwork}} with spatially explicit
-#' edges. If \code{x} was already spatially explicit it is returned unmodified.
-#'
-#' @importFrom sf st_crs st_sfc
-#' @noRd
-construct_edge_geometries = function(x) {
-  # Return x unmodified if edges are already spatially explicit.
-  if (has_explicit_edges(x)) return(x)
-  # Add an empty geometry column if there are no edges.
-  if (n_edges(x) == 0) return(mutate_edge_geom(x, st_sfc(crs = st_crs(x))))
-  # In any other case draw straight lines between the boundary nodes of edges.
-  bounds = edge_boundary_nodes(x, list = TRUE)
-  mutate_edge_geom(x, draw_lines(bounds[[1]], bounds[[2]]))
 }

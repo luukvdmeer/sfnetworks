@@ -102,7 +102,7 @@ plot.sfnetwork = function(x, draw_lines = TRUE,
 #'
 #' @name autoplot
 autoplot.sfnetwork = function(object, ...) {
-  object = construct_edge_geometries(object) # Make sure edges are explicit.
+  object = make_edges_explicit(object) # Make sure edges are explicit.
   ggplot2::ggplot() +
     ggplot2::geom_sf(data = nodes_as_sf(object)) +
     ggplot2::geom_sf(data = edges_as_sf(object))

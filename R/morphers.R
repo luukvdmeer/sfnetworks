@@ -377,7 +377,7 @@ to_spatial_explicit = function(x, ...) {
     x_new = x
     edge_data(x_new) = new_edges
   } else {
-    x_new = construct_edge_geometries(x)
+    x_new = make_edges_explicit(x)
   }
   # Return in a list.
   list(
