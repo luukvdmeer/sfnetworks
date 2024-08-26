@@ -73,17 +73,36 @@ st_network_join.sfnetwork = function(x, y, ...) {
   spatial_join_network(x, y, ...)
 }
 
+#' @importFrom dplyr join_by
+#' @importFrom igraph delete_vertex_attr vertex_attr vertex_attr<-
+#' vertex_attr_names
 #' @importFrom tidygraph as_tbl_graph graph_join
 spatial_join_network = function(x, y, ...) {
-  # Retrieve names of node geometry columns of x and y.
-  x_geom_colname = node_geom_colname(x)
-  y_geom_colname = node_geom_colname(y)
-  # Regular graph join based on geometry columns.
-  x_new = graph_join(
-    x = as_tbl_graph(x),
-    y = as_tbl_graph(y),
-    by = structure(names = x_geom_colname, .Data = y_geom_colname),
-    ...
-  )
-  x_new %preserve_network_attrs% x
+  # Extract node geometry column names from x and y.
+  x_geomcol = node_geom_colname(x)
+  y_geomcol = node_geom_colname(y)
+  # Assess which node geometries in the union of x and y are equal.
+  # This will create a vertex of unique node indices in the union of x and y.
+  N_x = vertex_attr(x, x_geomcol)
+  N_y = vertex_attr(y, y_geomcol)
+  N = c(N_x, N_y)
+  uid = st_match(N)
+  # Store the unique node indices as node attributes in both x and y.
+  if (".sfnetwork_index" %in% c(vertex_attr_names(x), vertex_attr_names(y))) {
+    raise_reserved_attr(".sfnetwork_index")
+  }
+  vertex_attr(x, ".sfnetwork_index") = uid[1:length(N_x)]
+  vertex_attr(y, ".sfnetwork_index") = uid[(length(N_x) + 1):length(uid)]
+  # Join x and y based on the unique node indices using tidygraphs graph_join.
+  # Perform this join without the geometry column.
+  # Otherwise the geometry columns of x and y are seen as regular attributes.
+  # Meaning that they get stored separately in the joined network.
+  x_tbg = as_tbl_graph(delete_vertex_attr(x, x_geomcol))
+  y_tbg = as_tbl_graph(delete_vertex_attr(y, y_geomcol))
+  x_new = graph_join(x_tbg, y_tbg, by = join_by(.sfnetwork_index), ...)
+  # Add the corresponding node geometries to the joined network.
+  N_new = N[!duplicated(uid)][vertex_attr(x_new, ".sfnetwork_index")]
+  vertex_attr(x_new, x_geomcol) = N_new
+  # Return after removing the unique node index attribute.
+  delete_vertex_attr(x_new, ".sfnetwork_index") %preserve_network_attrs% x
 }
