@@ -513,11 +513,13 @@ create_from_spatial_lines = function(x, directed = TRUE,
 #' are first converted into logical matrices using \code{\link{as.logical}},
 #' whenever possible.
 #'
-#' The provided adjacency matrix may also be a list-formatted sparse matrix.
-#' This is a list with one element per node, holding the integer indices of the
-#' nodes it is adjacent to. An example are \code{\link[sf]{sgbp}} objects. If
-#' the values are not integers, they are first converted into integers using
-#' \code{\link{as.integer}}, whenever possible.
+#' The provided adjacency matrix may also be sparse. This can be an object of
+#' one of the sparse matrix classes from the \code{\pkg{Matrix}} package, or a
+#' list-formatted sparse matrix. This is a list with one element per node,
+#' holding the integer indices of the nodes it is adjacent to. An example are
+#' \code{\link[sf]{sgbp}} objects. If the values are not integers, they are
+#' first converted into integers using \code{\link{as.integer}}, whenever
+#' possible.
 #'
 #' Alternatively, the connections can be specified by providing the name of a
 #' specific method that will create the adjacency matrix internally. Valid
@@ -657,14 +659,16 @@ create_from_spatial_points = function(x, connections = "complete",
 custom_neighbors = function(x, connections) {
   if (is.matrix(connections)) {
     adj_to_nb(connections)
+  } else if (inherits(connections, c("dgCMatrix", "dsCMatrix", "dtCMatrix"))) {
+    adj_to_nb(connections)
   } else if (inherits(connections, c("sgbp", "nb", "list"))) {
     connections
   } else {
     cli_abort(c(
       "Invalid value for {.arg connections}.",
       "i" = paste(
-        "Connections should be specified as a matrix, a list-formatted",
-        "sparse matrix, or a single character."
+        "Connections should be specified as a matrix, a sparse matrix,",
+        "or a single character."
       )
     ))
   }
