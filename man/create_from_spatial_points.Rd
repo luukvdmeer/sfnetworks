@@ -124,6 +124,12 @@ net = as_sfnetwork(pts, connections = adj)
 
 plot(net)
 
+# Using a custom adjacency matrix
+adj = matrix(c(rep(1, 21), rep(rep(0, 21), 20)), nrow = 21)
+net = as_sfnetwork(pts, connections = adj)
+
+plot(net)
+
 # Using a sparse adjacency matrix from a spatial predicate
 dst = units::set_units(300, "m")
 adj = st_is_within_distance(pts, dist = dst, remove_self = TRUE)
