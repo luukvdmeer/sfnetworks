@@ -113,10 +113,7 @@ library(sf, quietly = TRUE)
 oldpar = par(no.readonly = TRUE)
 par(mar = c(1,1,1,1))
 
-pts = roxel[seq(1, 100, by = 10),] |>
-  st_geometry() |>
-  st_centroid() |>
-  st_transform(3035)
+pts = st_transform(mozart, 3035)
 
 # Using an adjacency matrix
 adj = matrix(c(rep(TRUE, 10), rep(FALSE, 90)), nrow = 10)
@@ -125,9 +122,9 @@ net = as_sfnetwork(pts, connections = adj)
 plot(net)
 
 # Using a sparse adjacency matrix from a spatial predicate
-dst = units::set_units(500, "m")
-adj = st_is_within_distance(pts, dist = dst)
-net = as_sfnetwork(pts, connections = adj)
+dst = units::set_units(300, "m")
+adj = st_is_within_distance(pts, dist = dst, remove_self = TRUE)
+net = as_sfnetwork(pts, connections = adj, directed = FALSE)
 
 plot(net)
 

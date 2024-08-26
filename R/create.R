@@ -230,29 +230,20 @@ as_sfnetwork.default = function(x, ...) {
 #' # From an sf object with LINESTRING geometries.
 #' library(sf, quietly = TRUE)
 #'
-#' as_sfnetwork(roxel)
-#'
 #' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1), mfrow = c(1,2))
+#'
+#' as_sfnetwork(roxel)
 #'
 #' plot(st_geometry(roxel))
 #' plot(as_sfnetwork(roxel))
 #'
-#' par(oldpar)
-#'
 #' # From an sf object with POINT geometries.
-#' # For more examples see create_from_spatial_points.
-#' library(sf, quietly = TRUE)
+#' # For more examples see ?create_from_spatial_points.
+#' as_sfnetwork(mozart)
 #'
-#' pts = st_centroid(roxel[10:15, ])
-#'
-#' as_sfnetwork(pts)
-#'
-#' oldpar = par(no.readonly = TRUE)
-#' par(mar = c(1,1,1,1), mfrow = c(1,2))
-#'
-#' plot(st_geometry(pts))
-#' plot(as_sfnetwork(pts))
+#' plot(st_geometry(mozart))
+#' plot(as_sfnetwork(mozart))
 #'
 #' par(oldpar)
 #'
@@ -574,10 +565,7 @@ create_from_spatial_lines = function(x, directed = TRUE,
 #' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1))
 #'
-#' pts = roxel[seq(1, 100, by = 10),] |>
-#'   st_geometry() |>
-#'   st_centroid() |>
-#'   st_transform(3035)
+#' pts = st_transform(mozart, 3035)
 #'
 #' # Using an adjacency matrix
 #' adj = matrix(c(rep(TRUE, 10), rep(FALSE, 90)), nrow = 10)
@@ -586,9 +574,9 @@ create_from_spatial_lines = function(x, directed = TRUE,
 #' plot(net)
 #'
 #' # Using a sparse adjacency matrix from a spatial predicate
-#' dst = units::set_units(500, "m")
-#' adj = st_is_within_distance(pts, dist = dst)
-#' net = as_sfnetwork(pts, connections = adj)
+#' dst = units::set_units(300, "m")
+#' adj = st_is_within_distance(pts, dist = dst, remove_self = TRUE)
+#' net = as_sfnetwork(pts, connections = adj, directed = FALSE)
 #'
 #' plot(net)
 #'

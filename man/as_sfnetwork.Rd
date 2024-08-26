@@ -100,29 +100,20 @@ through the \code{directed} argument.
 # From an sf object with LINESTRING geometries.
 library(sf, quietly = TRUE)
 
-as_sfnetwork(roxel)
-
 oldpar = par(no.readonly = TRUE)
 par(mar = c(1,1,1,1), mfrow = c(1,2))
+
+as_sfnetwork(roxel)
 
 plot(st_geometry(roxel))
 plot(as_sfnetwork(roxel))
 
-par(oldpar)
-
 # From an sf object with POINT geometries.
-# For more examples see create_from_spatial_points.
-library(sf, quietly = TRUE)
+# For more examples see ?create_from_spatial_points.
+as_sfnetwork(mozart)
 
-pts = st_centroid(roxel[10:15, ])
-
-as_sfnetwork(pts)
-
-oldpar = par(no.readonly = TRUE)
-par(mar = c(1,1,1,1), mfrow = c(1,2))
-
-plot(st_geometry(pts))
-plot(as_sfnetwork(pts))
+plot(st_geometry(mozart))
+plot(as_sfnetwork(mozart))
 
 par(oldpar)
 
