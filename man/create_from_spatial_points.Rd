@@ -19,7 +19,7 @@ with \code{POINT} geometries.}
 
 \item{connections}{How to connect the given point geometries to each other?
 Can be specified either as an adjacency matrix, or as a character
-describing a specific method to define the connections.}
+describing a specific method to define the connections. See Details.}
 
 \item{directed}{Should the constructed network be directed? Defaults to
 \code{TRUE}.}

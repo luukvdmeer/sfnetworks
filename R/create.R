@@ -485,7 +485,7 @@ create_from_spatial_lines = function(x, directed = TRUE,
 #'
 #' @param connections How to connect the given point geometries to each other?
 #' Can be specified either as an adjacency matrix, or as a character
-#' describing a specific method to define the connections.
+#' describing a specific method to define the connections. See Details.
 #'
 #' @param directed Should the constructed network be directed? Defaults to
 #' \code{TRUE}.
@@ -678,17 +678,9 @@ sequential_neighbors = function(x) {
   lapply(c(1:(n_nodes - 1)), \(x) x + 1)
 }
 
-#' @importFrom igraph as_edgelist graph_from_adjacency_matrix igraph_opt
-#' igraph_options mst as_adj_list
+#' @importFrom igraph as_edgelist graph_from_adjacency_matrix mst
 #' @importFrom sf st_distance st_geometry
 mst_neighbors = function(x, directed = TRUE, edges_as_lines = TRUE) {
-  # Change default igraph options.
-  # This prevents igraph returns node or edge indices as formatted sequences.
-  # We only need the "raw" integer indices.
-  # Changing this option improves performance especially on large networks.
-  default_igraph_opt = igraph_opt("return.vs.es")
-  igraph_options(return.vs.es = FALSE)
-  on.exit(igraph_options(return.vs.es = default_igraph_opt))
   # Create a complete graph.
   n_nodes = length(st_geometry(x))
   connections = upper.tri(matrix(FALSE, ncol = n_nodes, nrow = n_nodes))
@@ -698,7 +690,7 @@ mst_neighbors = function(x, directed = TRUE, edges_as_lines = TRUE) {
   # Compute minimum spanning tree of the weighted complete graph.
   mst = mst(net, weights = dists)
   # Return as a neighbor list.
-  as_adj_list(mst)
+  sfnetwork_to_nb(mst)
 }
 
 #' @importFrom rlang check_installed
