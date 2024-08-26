@@ -11,7 +11,8 @@ nb_to_sfnetwork(
   nodes,
   directed = TRUE,
   edges_as_lines = TRUE,
-  compute_length = FALSE
+  compute_length = FALSE,
+  force = FALSE
 )
 
 sfnetwork_to_nb(x, direction = "out")
@@ -33,6 +34,12 @@ to \code{TRUE}.}
 
 \item{compute_length}{Should the geographic length of the edges be stored in
 a column named \code{length}? Defaults to \code{FALSE}.}
+
+\item{force}{Should validity checks be skipped? Defaults to \code{FALSE},
+meaning that network validity checks are executed when constructing the
+network. These checks make sure that the provided neighbor list has a valid
+structure, i.e. that its length is equal to the number of provided nodes and
+that its values are all integers referring to one of the nodes.}
 
 \item{direction}{The direction that defines if two nodes are neighbors.
 Defaults to \code{'out'}, meaning that the direction given by the network is

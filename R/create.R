@@ -103,6 +103,7 @@
 #' @importFrom cli cli_abort
 #' @importFrom igraph edge_attr<-
 #' @importFrom lifecycle deprecated
+#' @importFrom rlang try_fetch
 #' @importFrom sf st_as_sf
 #' @importFrom tidygraph tbl_graph with_graph
 #' @export
@@ -116,7 +117,7 @@ sfnetwork = function(nodes, edges = NULL, directed = TRUE, node_key = "name",
   # --> Try to convert it to an sf object.
   # --> Arguments passed in ... will be passed on to st_as_sf.
   if (! is_sf(nodes)) {
-    nodes = tryCatch(
+    nodes = try_fetch(
       st_as_sf(nodes, ...),
       error = function(e) {
         sferror = sub(".*:", "", e)
@@ -509,11 +510,14 @@ create_from_spatial_lines = function(x, directed = TRUE,
 #' \code{FALSE} value otherwise. In the case of undirected networks, the matrix
 #' is not tested for symmetry, and an edge will exist between node i and node j
 #' if either element Aij or element Aji is \code{TRUE}. Non-logical matrices
-#' are first converted into logical matrices using \code{\link{as.logical}}.
+#' are first converted into logical matrices using \code{\link{as.logical}},
+#' whenever possible.
 #'
 #' The provided adjacency matrix may also be a list-formatted sparse matrix.
 #' This is a list with one element per node, holding the integer indices of the
-#' nodes it is adjacent to. An example are \code{\link[sf]{sgbp}} objects.
+#' nodes it is adjacent to. An example are \code{\link[sf]{sgbp}} objects. If
+#' the values are not integers, they are first converted into integers using
+#' \code{\link{as.integer}}, whenever possible.
 #'
 #' Alternatively, the connections can be specified by providing the name of a
 #' specific method that will create the adjacency matrix internally. Valid
@@ -608,35 +612,46 @@ create_from_spatial_points = function(x, connections = "complete",
                                       directed = TRUE, edges_as_lines = TRUE,
                                       compute_length = FALSE, k = 1) {
   if (is_single_string(connections)) {
-    nblist = switch(
-      connections,
-      complete = complete_neighbors(x),
-      sequence = sequential_neighbors(x),
-      mst = mst_neighbors(x),
-      delaunay = delaunay_neighbors(x),
-      gabriel = gabriel_neighbors(x),
-      rn = relative_neighbors(x),
-      knn = nearest_neighbors(x, k),
-      minimum_spanning_tree = mst_neighbors(x),
-      relative_neighborhood = relative_neighbors(x),
-      relative_neighbourhood = relative_neighbors(x),
-      nearest_neighbors = nearest_neighbors(x, k),
-      nearest_neighbours = nearest_neighbors(x, k),
-      raise_unknown_input("connections", connections)
+    nb_to_sfnetwork(
+      switch(
+        connections,
+        complete = complete_neighbors(x),
+        sequence = sequential_neighbors(x),
+        mst = mst_neighbors(x),
+        delaunay = delaunay_neighbors(x),
+        gabriel = gabriel_neighbors(x),
+        rn = relative_neighbors(x),
+        knn = nearest_neighbors(x, k),
+        minimum_spanning_tree = mst_neighbors(x),
+        relative_neighborhood = relative_neighbors(x),
+        relative_neighbourhood = relative_neighbors(x),
+        nearest_neighbors = nearest_neighbors(x, k),
+        nearest_neighbours = nearest_neighbors(x, k),
+        raise_unknown_input("connections", connections)
+      ),
+      nodes = x,
+      directed = directed,
+      edges_as_lines = edges_as_lines,
+      compute_length = compute_length,
+      force = TRUE
     )
   } else {
-    nblist = custom_neighbors(x, connections)
+    nb_to_sfnetwork(
+      custom_neighbors(x, connections),
+      nodes = x,
+      directed = directed,
+      edges_as_lines = edges_as_lines,
+      compute_length = compute_length,
+      force = FALSE
+    )
   }
-  nb_to_sfnetwork(nblist, x, directed, edges_as_lines, compute_length)
 }
 
 #' @importFrom cli cli_abort
 custom_neighbors = function(x, connections) {
   if (is.matrix(connections)) {
-    require_valid_adjacency_matrix(connections, x)
     adj_to_nb(connections)
   } else if (inherits(connections, c("sgbp", "nb", "list"))) {
-    require_valid_neighbor_list(connections, x)
     connections
   } else {
     cli_abort(c(

@@ -23,6 +23,12 @@
 #' @param compute_length Should the geographic length of the edges be stored in
 #' a column named \code{length}? Defaults to \code{FALSE}.
 #'
+#' @param force Should validity checks be skipped? Defaults to \code{FALSE},
+#' meaning that network validity checks are executed when constructing the
+#' network. These checks make sure that the provided neighbor list has a valid
+#' structure, i.e. that its length is equal to the number of provided nodes and
+#' that its values are all integers referring to one of the nodes.
+#'
 #' @param direction The direction that defines if two nodes are neighbors.
 #' Defaults to \code{'out'}, meaning that the direction given by the network is
 #' followed and node j is only a neighbor of node i if there exists an edge
@@ -44,7 +50,8 @@ NULL
 #' @importFrom tibble tibble
 #' @export
 nb_to_sfnetwork = function(x, nodes, directed = TRUE, edges_as_lines = TRUE,
-                           compute_length = FALSE) {
+                           compute_length = FALSE, force = FALSE) {
+  if (! force) validate_nb(x, nodes)
   # Define the edges by their from and to nodes.
   # An edge will be created between each neighboring node pair.
   edges = rbind(
@@ -100,10 +107,59 @@ sfnetwork_to_nb = function(x, direction = "out") {
 #' @return The sparse adjacency matrix as object of class \code{\link{list}}.
 #'
 #' @noRd
-adj_to_nb = function(x) {
+adj_to_nb = function(x, force = FALSE) {
   if (! is.logical(x)) {
     apply(x, 1, \(x) which(as.logical(x)), simplify = FALSE)
   } else {
     apply(x, 1, which, simplify = FALSE)
+  }
+}
+
+#' Validate the structure of a neighbor list
+#'
+#' Neighbor lists are sparse adjacency matrices in list format that specify for
+#' each node to which other nodes it is adjacent.
+#'
+#' @param x Object to be validated.
+#'
+#' @param nodes The nodes that are referenced in the neighbor list as an object
+#' of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}} with \code{POINT}
+#' geometries.
+#'
+#' @return Nothing if the given object is a valid neighbor list referencing
+#' the given nodes. Otherwise, an error is thrown.
+#'
+#' @importFrom cli cli_abort
+#' @importFrom rlang try_fetch
+#' @importFrom sf st_geometry
+#' @noRd
+validate_nb = function(x, nodes) {
+  n_nodes = length(st_geometry(nodes))
+  # Check 1: Is the length of x equal to the number of provided nodes?
+  if (! length(x) == n_nodes) {
+    cli_abort(c(
+      "The length of the sparse matrix should match the number of nodes.",
+      "x" = paste(
+        "The provided matrix has length {length(x)},",
+        "while there are {n_nodes} nodes."
+      )
+    ))
+  }
+  # Check 2: Are all referenced node indices integers?
+  if (! all(vapply(x, is.integer, FUN.VALUE = logical(1)))) {
+    x = try_fetch(
+      lapply(x, as.integer),
+      error = function(e) {
+        cli_abort("The sparse matrix should contain integer node indices.")
+      }
+    )
+  }
+  # Check 3: Are all referenced node indices referring to a provided node?
+  ids_in_bounds = function(x) all(x > 0 & x <= n_nodes)
+  if (! all(vapply(x, ids_in_bounds, FUN.VALUE = logical(1)))) {
+    cli_abort(c(
+      "The sparse matrix should contain valid node indices",
+      "x" = "Some of the given indices are out of bounds"
+    ))
   }
 }

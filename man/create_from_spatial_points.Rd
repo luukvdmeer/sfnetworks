@@ -59,11 +59,14 @@ n x n matrix with n being the number of nodes, and element Aij holding a
 \code{FALSE} value otherwise. In the case of undirected networks, the matrix
 is not tested for symmetry, and an edge will exist between node i and node j
 if either element Aij or element Aji is \code{TRUE}. Non-logical matrices
-are first converted into logical matrices using \code{\link{as.logical}}.
+are first converted into logical matrices using \code{\link{as.logical}},
+whenever possible.
 
 The provided adjacency matrix may also be a list-formatted sparse matrix.
 This is a list with one element per node, holding the integer indices of the
-nodes it is adjacent to. An example are \code{\link[sf]{sgbp}} objects.
+nodes it is adjacent to. An example are \code{\link[sf]{sgbp}} objects. If
+the values are not integers, they are first converted into integers using
+\code{\link{as.integer}}, whenever possible.
 
 Alternatively, the connections can be specified by providing the name of a
 specific method that will create the adjacency matrix internally. Valid
