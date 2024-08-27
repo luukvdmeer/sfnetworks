@@ -341,11 +341,12 @@ evaluate_edge_predicate = function(predicate, x, y, ...) {
   lengths(predicate(E, y, sparse = TRUE, ...)) > 0
 }
 
-#' Match edge geometries to their boundary node locations
+#' Match edge geometries to their incident node locations
 #'
-#' This function makes invalid edges valid by making sure that the boundary
-#' points of their linestring geometry match the geometries of the nodes that
-#' are specified through the *from* and *to* indices.
+#' This function makes invalid edges valid by modifying either edge or node
+#' geometries such that the boundary points of edge linestring geometries
+#' always match the point geometries of the nodes that are specified as their
+#' incident nodes by the *from* and *to* columns.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -370,7 +371,7 @@ evaluate_edge_predicate = function(predicate, x, y, ...) {
 #' reversed before running this function. Use
 #' \code{\link{make_edges_follow_indices}} for this.
 #'
-#' @noRd
+#' @export
 make_edges_valid = function(x, preserve_geometries = FALSE) {
   if (preserve_geometries) {
     add_invalid_edge_boundaries(x)
@@ -454,7 +455,7 @@ replace_invalid_edge_boundaries = function(x) {
 #'
 #' This function turns spatially implicit networks into spatially explicit
 #' networks by adding a geometry column to the edges data containing straight
-#' lines between the start and end nodes.
+#' lines between the source and target nodes.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -462,7 +463,7 @@ replace_invalid_edge_boundaries = function(x) {
 #' edges. If \code{x} was already spatially explicit it is returned unmodified.
 #'
 #' @importFrom sf st_crs st_sfc
-#' @noRd
+#' @export
 make_edges_explicit = function(x) {
   # Return x unmodified if edges are already spatially explicit.
   if (has_explicit_edges(x)) return(x)
@@ -473,7 +474,7 @@ make_edges_explicit = function(x) {
   mutate_edge_geom(x, draw_lines(bounds[[1]], bounds[[2]]))
 }
 
-#' Match the direction of edge geometries to their specified boundary nodes
+#' Match the direction of edge geometries to their specified incident nodes
 #'
 #' This function updates edge geometries in undirected networks such that they
 #' are guaranteed to start at their specified *from* node and end at their
@@ -485,7 +486,7 @@ make_edges_explicit = function(x) {
 #' geometries.
 #'
 #' @details In undirected spatial networks it is required that the boundary of
-#' edge geometries contain their boundary node geometries. However, it is not
+#' edge geometries contain their incident node geometries. However, it is not
 #' required that their start point equals their specified *from* node and their
 #' end point their specified *to* node. Instead, it may be vice versa. This is
 #' because for undirected networks *from* and *to* indices are always swopped
@@ -493,11 +494,11 @@ make_edges_explicit = function(x) {
 #'
 #' This function reverses edge geometries if they start at the *to* node and
 #' end at the *from* node, such that in the resulting network it is guaranteed
-#' that edge boundary points exactly match their boundary node geometries. In
+#' that edge boundary points exactly match their incident node geometries. In
 #' directed networks, there will be no change.
 #'
 #' @importFrom sf st_reverse
-#' @noRd
+#' @export
 make_edges_follow_indices = function(x) {
   # Extract geometries of edges and subsequently their start points.
   edges = pull_edge_geom(x)
