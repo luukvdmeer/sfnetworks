@@ -209,7 +209,7 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
       st_cast(st_combine(c(p, l_pts, p)), "LINESTRING")
     }
     # Find the indices of the nodes at the boundaries of each edge.
-    bounds = edge_boundary_node_ids(x_new, matrix = TRUE)
+    bounds = edge_incident_ids(x_new, matrix = TRUE)
     # Mask out those indices of nodes that were not contracted.
     # Only edge boundaries at contracted nodes have to be updated.
     bounds[!(bounds %in% cnt_group_idxs)] = NA
@@ -340,7 +340,7 @@ to_spatial_directed = function(x) {
   nodes = nodes_as_sf(x)
   edges = edges_as_sf(x)
   # Get the node indices that correspond to the geometries of the edge bounds.
-  idxs = edge_boundary_point_ids(x, matrix = TRUE)
+  idxs = edge_boundary_ids(x, matrix = TRUE)
   from = idxs[, 1]
   to = idxs[, 2]
   # Update the from and to columns of the edges such that:
@@ -1099,9 +1099,9 @@ to_spatial_subdivision = function(x) {
   # If an edge point did not equal a node, store NA instead.
   node_idxs = rep(NA, nrow(edge_pts))
   if (directed) {
-    node_idxs[is_boundary] = edge_boundary_node_ids(x)
+    node_idxs[is_boundary] = edge_incident_ids(x)
   } else {
-    node_idxs[is_boundary] = edge_boundary_point_ids(x)
+    node_idxs[is_boundary] = edge_boundary_ids(x)
   }
   # Find which of the *original* nodes belong to which *new* edge boundary.
   # If a new edge boundary does not equal an original node, store NA instead.

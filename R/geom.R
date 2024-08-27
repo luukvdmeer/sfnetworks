@@ -233,3 +233,78 @@ drop_edge_geom = function(x) {
   edge_geom_colname(x_new) = NULL
   x_new
 }
+
+#' Extract for each edge in a spatial network the geometries of incident nodes
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param focused Should only edges that are in focus be considered? Defaults
+#' to \code{FALSE}. See \code{\link[tidygraph]{focus}} for more information on
+#' focused networks.
+#'
+#' @param list Should te result be returned as a two-element list? Defaults
+#' to \code{FALSE}.
+#'
+#' @return When extracting both source and target node geometries, an object of
+#' class \code{\link[sf]{sfc}} with \code{POINT} geometries of length equal to
+#' twice the number of edges in x, and ordered as [source of edge 1, target of
+#' edge 1, source of edge 2, target of edge 2, ...]. If \code{list = TRUE}, a
+#' list of length two is returned instead. The first element contains the
+#' source node geometries and the second element the target node geometries.
+#'
+#' When only extracting source or target node geometries, an object of class
+#' \code{\link[sf]{sfc}} with \code{POINT} geometries, of length equal to the
+#' number of edges in x.
+#'
+#' @details \code{edge_incident_geoms} obtains the geometries of incident nodes
+#' using the *from* and *to* columns in the edges table.
+#' \code{edge_boundary_geoms} instead obtains the boundary points of the edge
+#' linestring geometries, and check which node geometries are equal to those
+#' points. In a valid spatial network structure, the incident geometries should
+#' be equal to the boundary geometries (in directed networks) or the incident
+#' geometries of each edge should contain the boundary geometries of that edge
+#' (in undirected networks).
+#'
+#' @importFrom igraph ends
+#' @noRd
+edge_incident_geoms = function(x, focused = FALSE, list = FALSE) {
+  nodes = pull_node_geom(x)
+  ids = ends(x, edge_ids(x, focused = focused), names = FALSE)
+  if (list) {
+    list(nodes[ids[, 1]], nodes[ids[, 2]])
+  } else {
+    nodes[as.vector(t(ids))]
+  }
+}
+
+#' @name edge_incident_geoms
+#' @importFrom igraph ends
+#' @noRd
+edge_source_geoms = function(x, focused = FALSE) {
+  nodes = pull_node_geom(x)
+  id_mat = ends(x, edge_ids(x, focused = focused), names = FALSE)
+  nodes[id_mat[, 1]]
+}
+
+#' @name edge_incident_geoms
+#' @importFrom igraph ends
+#' @noRd
+edge_target_geoms = function(x, focused = FALSE) {
+  nodes = pull_node_geom(x)
+  id_mat = ends(x, edge_ids(x, focused = focused), names = FALSE)
+  nodes[id_mat[, 2]]
+}
+
+#' @name edge_incident_geoms
+#' @noRd
+edge_boundary_geoms = function(x, focused = FALSE, list = FALSE) {
+  edges = pull_edge_geom(x, focused = focused)
+  points = linestring_boundary_points(edges)
+  if (list) {
+    starts = points[seq(1, length(points), 2)]
+    ends = points[seq(2, length(points), 2)]
+    list(starts, ends)
+  } else {
+    points
+  }
+}

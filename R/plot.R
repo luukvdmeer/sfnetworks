@@ -70,7 +70,7 @@ plot.sfnetwork = function(x, draw_lines = TRUE,
   dots = list(...)
   # Plot the edges.
   if (draw_lines && is.null(edge_geoms)) {
-    bids = edge_boundary_node_ids(x, matrix = TRUE)
+    bids = edge_incident_ids(x, matrix = TRUE)
     edge_geoms = draw_lines(node_geoms[bids[, 1]], node_geoms[bids[, 2]])
   }
   if (! is.null(edge_geoms)) {

@@ -691,7 +691,7 @@ spatial_clip_edges = function(x, y, ..., .operator = sf::st_intersection) {
   bound_pts = linestring_boundary_points(e_new)
   # Retrieve the nodes at the ends of each edge.
   # According to the from and to indices.
-  bound_nds = edge_boundary_nodes(x_tmp)
+  bound_nds = edge_incident_geoms(x_tmp)
   # Check if linestring boundaries match their corresponding nodes.
   matches = have_equal_geometries(bound_pts, bound_nds)
   # For boundary points that do not match their corresponding node:
@@ -701,7 +701,7 @@ spatial_clip_edges = function(x, y, ..., .operator = sf::st_intersection) {
   n_add = st_sf(n_add)
   n_new = bind_rows(n_orig, n_add)
   # Update the node indices of the from and two columns accordingly.
-  idxs = edge_boundary_node_ids(x_tmp)
+  idxs = edge_incident_ids(x_tmp)
   idxs[!matches] = c((nrow(n_orig) + 1):(nrow(n_orig) + nrow(n_add)))
   e_new$from = idxs[seq(1, length(idxs) - 1, 2)]
   e_new$to = idxs[seq(2, length(idxs), 2)]

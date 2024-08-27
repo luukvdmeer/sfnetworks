@@ -32,46 +32,6 @@ edge_data = function(x, focused = TRUE, require_sf = FALSE) {
   }
 }
 
-#' Extract the node or edge indices from a spatial network
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @param focused Should only the indices of features that are in focus be
-#' extracted? Defaults to \code{TRUE}. See \code{\link[tidygraph]{focus}} for
-#' more information on focused networks.
-#'
-#' @details The indices in these objects are always integers that correspond to
-#' rownumbers in respectively the nodes or edges table.
-#'
-#' @return An vector of integers.
-#'
-#' @examples
-#' net = as_sfnetwork(roxel[1:10, ])
-#' node_ids(net)
-#' edge_ids(net)
-#'
-#' @name ids
-#' @importFrom rlang %||%
-#' @export
-node_ids = function(x, focused = TRUE) {
-  if (focused) {
-    attr(x, "nodes_focus_index") %||% seq_len(n_nodes(x))
-  } else {
-    seq_len(n_nodes(x))
-  }
-}
-
-#' @name ids
-#' @importFrom rlang %||%
-#' @export
-edge_ids = function(x, focused = TRUE) {
-  if (focused) {
-    attr(x, "edges_focus_index") %||% seq_len(n_edges(x))
-  } else {
-    seq_len(n_edges(x))
-  }
-}
-
 #' Count the number of nodes or edges in a network
 #'
 #' @param x An object of class \code{\link{sfnetwork}}, or any other network
@@ -116,8 +76,8 @@ n_edges = function(x, focused = FALSE) {
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @param idxs Should the names of the columns storing indices of start and end
-#' nodes in the edges table (i.e. the from and to columns) be included?
+#' @param idxs Should the names of the columns storing indices of source and
+#' target nodes in the edges table (i.e. the from and to columns) be included?
 #' Defaults to \code{FALSE}.
 #'
 #' @param geom Should the geometry column be included? Defaults to \code{TRUE}.

@@ -252,22 +252,22 @@ is_single_string = function(x) {
   is.character(x) && length(x) == 1
 }
 
-#' Check if any boundary point of an edge is equal to any of its boundary nodes
+#' Check if any boundary point of an edge is equal to any of its incident nodes
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @return A logical vector of the same length as the number of edges in the
 #' network, holding a \code{TRUE} value if the boundary of the edge geometry
-#' contains the geometries of both its boundary nodes.
+#' contains the geometries of both its incident nodes.
 #'
 #' @importFrom sf st_equals
 #' @noRd
 nodes_in_edge_boundaries = function(x) {
-  boundary_points = edge_boundary_points(x)
-  boundary_nodes = edge_boundary_nodes(x)
+  boundary_geoms = edge_boundary_geoms(x)
+  incident_geoms = edge_incident_geoms(x)
   # Test for each edge:
-  # Does one of the boundary points equals at least one of the boundary nodes.
-  equals = st_equals(boundary_points, boundary_nodes)
+  # Does one of the boundary points equals at least one of the incident nodes.
+  equals = st_equals(boundary_geoms, incident_geoms)
   is_in = function(i) {
     pool = c(equals[[i]], equals[[i + 1]])
     i %in% pool && i + 1 %in% pool
@@ -286,10 +286,10 @@ nodes_in_edge_boundaries = function(x) {
 #'
 #' @noRd
 nodes_equal_edge_boundaries = function(x) {
-  boundary_points = edge_boundary_points(x)
-  boundary_nodes = edge_boundary_nodes(x)
+  boundary_geoms = edge_boundary_geoms(x)
+  incident_geoms = edge_incident_geoms(x)
   # Test if the boundary geometries are equal to their corresponding nodes.
-  have_equal_geometries(boundary_points, boundary_nodes)
+  have_equal_geometries(boundary_geoms, incident_geoms)
 }
 
 #' Check if constant edge attributes will be assumed for a network
