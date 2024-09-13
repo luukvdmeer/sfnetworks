@@ -18,6 +18,7 @@ to_spatial_contracted(
   x,
   ...,
   simplify = FALSE,
+  compute_centroids = TRUE,
   summarise_attributes = "ignore",
   store_original_data = FALSE
 )
@@ -65,6 +66,11 @@ the same groups of nodes. Loop edges are introduced by contraction when
 there are connections within a group. Note however that setting this to
 \code{TRUE} also removes multiple edges and loop edges that already
 existed before contraction. Defaults to \code{FALSE}.}
+
+\item{compute_centroids}{Should the new geometry of each contracted group of
+nodes be the centroid of all group members? Defaults to \code{TRUE}. If set
+to \code{FALSE}, the geometry of the first node in each group will be used
+instead, which requires considerably less computing time.}
 
 \item{summarise_attributes}{Whenever multiple features (i.e. nodes and/or
 edges) are merged into a single feature during morphing, how should their
@@ -140,9 +146,9 @@ of \code{\link[tidygraph]{morph}} for the requirements for custom morphers.
 \itemize{
 \item \code{to_spatial_contracted()}: Combine groups of nodes into a single node per
 group. \code{...} is forwarded to \code{\link[dplyr]{group_by}} to
-create the groups. The centroid of the group of nodes will be used as
-geometry of the contracted node. If edge are spatially explicit, edge
-geometries are updated accordingly such that the valid spatial network
+create the groups. The centroid of the group of nodes will be used by
+default as geometry of the contracted node. If edges are spatially explicit,
+edge geometries are updated accordingly such that the valid spatial network
 structure is preserved. Returns a \code{morphed_sfnetwork} containing a
 single element of class \code{\link{sfnetwork}}.
 
