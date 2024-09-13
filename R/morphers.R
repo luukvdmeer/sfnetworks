@@ -72,13 +72,13 @@ NULL
 #' structure is preserved. Returns a \code{morphed_sfnetwork} containing a
 #' single element of class \code{\link{sfnetwork}}.
 #'
-#' @param simplify Should the network be simplified after contraction? This
-#' means that multiple edges and loop edges will be removed. Multiple edges
-#' are introduced by contraction when there are several connections between
-#' the same groups of nodes. Loop edges are introduced by contraction when
-#' there are connections within a group. Note however that setting this to
-#' \code{TRUE} also removes multiple edges and loop edges that already
-#' existed before contraction. Defaults to \code{FALSE}.
+#' @param simplify Should the network be simplified after contraction? Defaults
+#' to \code{TRUE}. This means that multiple edges and loop edges will be
+#' removed. Multiple edges are introduced by contraction when there are several
+#' connections between the same groups of nodes. Loop edges are introduced by
+#' contraction when there are connections within a group. Note however that
+#' setting this to \code{TRUE} also removes multiple edges and loop edges that
+#' already existed before contraction.
 #'
 #' @param compute_centroids Should the new geometry of each contracted group of
 #' nodes be the centroid of all group members? Defaults to \code{TRUE}. If set
@@ -92,7 +92,7 @@ NULL
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph
 #' @export
-to_spatial_contracted = function(x, ..., simplify = FALSE,
+to_spatial_contracted = function(x, ..., simplify = TRUE,
                                  compute_centroids = TRUE,
                                  summarise_attributes = "ignore",
                                  store_original_data = FALSE) {
