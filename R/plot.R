@@ -75,7 +75,7 @@ plot.sfnetwork = function(x, draw_lines = TRUE,
   }
   if (! is.null(edge_geoms)) {
     edge_args = c(edge_args, dots)
-    if (is.null(edge_args$extent)) edge_args$extent = node_geoms
+    if (is.null(edge_args$extent)) edge_args$extent = st_network_bbox(x)
     do.call(plot, c(list(edge_geoms), edge_args))
   }
   # Plot the nodes.
