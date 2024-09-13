@@ -143,7 +143,7 @@ to_spatial_contracted = function(x, ..., simplify = TRUE,
   # Geometries of contracted nodes are a summary of the original group members.
   # Either the centroid or the geometry of the first member.
   if (compute_centroids) {
-    centroid = function(i) ifelse(length(i) > 1, st_centroid(st_combine(i)), i)
+    centroid = function(i) if (length(i) > 1) st_centroid(st_combine(i)) else i
     grouped_geoms = split(node_geom, group_ids)
     new_node_geom = do.call("c", lapply(grouped_geoms, centroid))
   } else {
