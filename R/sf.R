@@ -342,12 +342,7 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
 st_reverse.sfnetwork = function(x, ...) {
   active = attr(x, "active")
   if (active == "edges") {
-    require_explicit_edges(x)
     if (is_directed(x)) {
-      cli_warn(paste(
-        "{.fn st_reverse} swaps {.field from} and {.field to} columns",
-        "in directed networks."
-      ))
       x = reverse_edges(x, eids = edge_ids(x)) %preserve_all_attrs% x
     }
   } else {
@@ -357,6 +352,31 @@ st_reverse.sfnetwork = function(x, ...) {
     ))
   }
   geom_unary_ops(st_reverse, x, active,...)
+}
+
+#' @name sf
+#' @importFrom cli cli_warn
+#' @importFrom igraph is_directed
+#' @importFrom sf st_segmentize
+#' @export
+st_segmentize.sfnetwork = function(x, ...) {
+  active = attr(x, "active")
+  if (active == "edges") {
+    x_new = geom_unary_ops(st_segmentize, x, active,...)
+    # st_segmentize can sometimes slightly move linestring boundaries.
+    # We need them to remain constant to preserve the valid network structure.
+    # Therefore we have to update edge boundaries after calling st_segmentize.
+    # Note that this may mean results are slightly inaccurate.
+    # TODO: Do we need to warn users for this?
+    if (is_directed(x)) x_new = make_edges_follow_indices(x_new)
+    make_edges_valid(x_new)
+  } else {
+    cli_warn(c(
+      "{.fn st_segmentize} has no effect on nodes.",
+      "i" = "Call {.fn tidygraph::activate} to activate edges instead."
+    ))
+    geom_unary_ops(st_segmentize, x, active,...)
+  }
 }
 
 #' @name sf
@@ -617,26 +637,16 @@ spatial_clip_nodes = function(x, y, ..., .operator = sf::st_intersection) {
   delete_vertices(x, drop) %preserve_all_attrs% x
 }
 
-#' @importFrom cli cli_warn
-#' @importFrom dplyr bind_rows
 #' @importFrom igraph is_directed
-#' @importFrom sf st_cast st_equals st_geometry st_is st_line_merge st_sf
+#' @importFrom sf st_cast st_geometry st_is st_line_merge
 spatial_clip_edges = function(x, y, ..., .operator = sf::st_intersection) {
+  # For this function edge geometries should follow the from/to column indices.
+  # This is not by default the case in undirected networks.
   directed = is_directed(x)
-  # Clipping does not work good yet for undirected networks.
-  if (!directed) {
-    cli_warn(
-      "Clipping edges does not give correct results in undirected networks"
-    )
-  }
-  x_sf = edges_as_sf(x)
-  y_sf = st_geometry(y)
-  ## ===========================
-  # STEP I: CLIP THE EDGES
-  ## ===========================
+  if (! directed) x = make_edges_follow_indices(x)
   # Clip the edges using the given operator.
   # Possible operators are st_intersection, st_difference and st_crop.
-  e_new = .operator(x_sf, y_sf, ...)
+  e_new = .operator(edges_as_sf(x), st_geometry(y), ...)
   # A few issues need to be resolved before moving on.
   # 1) An edge shares a single point with the clipper:
   # --> The operator includes it as a point in the output.
@@ -673,40 +683,12 @@ spatial_clip_edges = function(x, y, ..., .operator = sf::st_intersection) {
   # We bind together all retrieved linestrings.
   # This automatically exludes the point objects.
   e_new = rbind(e_new_l, e_new_ml)
-  ## ===========================
-  # STEP I: UPDATE THE NODES
-  ## ===========================
-  # Just as with any filtering operation on the edges:
-  # --> All nodes of the original network will remain in the new network.
-  n_orig = nodes_as_sf(x)
   # Create a new network with the original nodes and the clipped edges.
-  x_tmp = sfnetwork_(n_orig, e_new, directed = directed)
-  # Additional processing is required because of the following:
-  # --> Edge geometries that cross the border of the clipper are cut.
-  # --> Boundaries don't match their corresponding nodes anymore.
-  # --> We need to add new nodes at the affected boundaries.
-  # --> Otherwise the valid spatial network structure is broken.
-  # We proceed as follows:
-  # Retrieve the boundaries of the clipped edge geometries.
-  bound_pts = linestring_boundary_points(e_new)
-  # Retrieve the nodes at the ends of each edge.
-  # According to the from and to indices.
-  bound_nds = edge_incident_geoms(x_tmp)
-  # Check if linestring boundaries match their corresponding nodes.
-  matches = have_equal_geometries(bound_pts, bound_nds)
-  # For boundary points that do not match their corresponding node:
-  # --> These points will be added as new nodes to the network.
-  n_add = list()
-  n_add[attr(n_orig, "sf_column")] = list(bound_pts[which(!matches)])
-  n_add = st_sf(n_add)
-  n_new = bind_rows(n_orig, n_add)
-  # Update the node indices of the from and two columns accordingly.
-  idxs = edge_incident_ids(x_tmp)
-  idxs[!matches] = c((nrow(n_orig) + 1):(nrow(n_orig) + nrow(n_add)))
-  e_new$from = idxs[seq(1, length(idxs) - 1, 2)]
-  e_new$to = idxs[seq(2, length(idxs), 2)]
-  # Create a new network with the updated nodes and edges.
-  sfnetwork_(n_new, e_new) %preserve_network_attrs% x
+  x_new = sfnetwork_(nodes_as_sf(x), e_new, directed = directed)
+  # Boundaries of clipped edges may not match their original incident node.
+  # In these cases we will add the affected edge boundary as a new node.
+  # This makes sure the new network has a valid spatial network structure.
+  make_edges_valid(x, preserve_geometries = TRUE)
 }
 
 find_indices_to_drop = function(x, y, ..., .operator = sf::st_filter) {

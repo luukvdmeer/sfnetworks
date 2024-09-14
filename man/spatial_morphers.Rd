@@ -12,6 +12,7 @@
 \alias{to_spatial_subdivision}
 \alias{to_spatial_subset}
 \alias{to_spatial_transformed}
+\alias{to_spatial_unique}
 \title{Morph spatial networks into a different structure}
 \usage{
 to_spatial_contracted(
@@ -52,6 +53,12 @@ to_spatial_subdivision(x)
 to_spatial_subset(x, ..., subset_by = NULL)
 
 to_spatial_transformed(x, ...)
+
+to_spatial_unique(
+  x,
+  summarise_attributes = "ignore",
+  store_original_data = FALSE
+)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
@@ -229,6 +236,10 @@ network into a different coordinate reference system. \code{...} is
 evaluated in the same manner as \code{\link[sf]{st_transform}}.
 Returns a \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}.
+
+\item \code{to_spatial_unique()}: Merge nodes with equal geometries into a single
+node. Returns a \code{morphed_sfnetwork} containing a single element of
+class \code{\link{sfnetwork}}.
 
 }}
 \examples{
