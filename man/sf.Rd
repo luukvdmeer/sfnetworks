@@ -25,6 +25,7 @@
 \alias{st_agr.sfnetwork}
 \alias{st_agr<-.sfnetwork}
 \alias{st_reverse.sfnetwork}
+\alias{st_segmentize.sfnetwork}
 \alias{st_simplify.sfnetwork}
 \alias{st_join.sfnetwork}
 \alias{st_join.morphed_sfnetwork}
@@ -87,6 +88,8 @@
 \method{st_agr}{sfnetwork}(x) <- value
 
 \method{st_reverse}{sfnetwork}(x, ...)
+
+\method{st_segmentize}{sfnetwork}(x, ...)
 
 \method{st_simplify}{sfnetwork}(x, ...)
 

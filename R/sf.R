@@ -355,6 +355,31 @@ st_reverse.sfnetwork = function(x, ...) {
 }
 
 #' @name sf
+#' @importFrom cli cli_warn
+#' @importFrom igraph is_directed
+#' @importFrom sf st_segmentize
+#' @export
+st_segmentize.sfnetwork = function(x, ...) {
+  active = attr(x, "active")
+  if (active == "edges") {
+    x_new = geom_unary_ops(st_segmentize, x, active,...)
+    # st_segmentize can sometimes slightly move linestring boundaries.
+    # We need them to remain constant to preserve the valid network structure.
+    # Therefore we have to update edge boundaries after calling st_segmentize.
+    # Note that this may mean results are slightly inaccurate.
+    # TODO: Do we need to warn users for this?
+    if (is_directed(x)) x_new = make_edges_follow_indices(x_new)
+    make_edges_valid(x_new)
+  } else {
+    cli_warn(c(
+      "{.fn st_segmentize} has no effect on nodes.",
+      "i" = "Call {.fn tidygraph::activate} to activate edges instead."
+    ))
+    geom_unary_ops(st_segmentize, x, active,...)
+  }
+}
+
+#' @name sf
 #' @importFrom sf st_simplify
 #' @export
 st_simplify.sfnetwork = function(x, ...) {
