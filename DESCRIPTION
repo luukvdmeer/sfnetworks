@@ -54,6 +54,7 @@ Suggests:
     ggplot2 (>= 3.0.0),
     knitr,
     purrr,
+    quarto,
     rmarkdown,
     s2 (>= 1.0.1),
     spatstat.geom,
@@ -61,7 +62,8 @@ Suggests:
     testthat,
     TSP
 VignetteBuilder:
-    knitr
+    knitr,
+    quarto
 ByteCompile: true
 Encoding: UTF-8
 LazyData: true
