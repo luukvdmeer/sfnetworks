@@ -4,7 +4,7 @@
 raise_assume_constant = function(caller) {
   cli_warn(c(
     "{.fn {caller}} assumes all attributes are constant over geometries.",
-    "x" = "Not all attributes are labelled as being constant.",
+    "!" = "Not all attributes are labelled as being constant.",
     "i" = "You can label attribute-geometry relations using {.fn sf::st_set_agr}."
   ))
 }
@@ -13,7 +13,7 @@ raise_assume_constant = function(caller) {
 raise_assume_projected = function(caller) {
   cli_warn(c(
     "{.fn {caller}} assumes coordinates are projected.",
-    "x" = paste(
+    "!" = paste(
       "The provided coordinates are geographic,",
       "which may lead to inaccurate results."
     ),

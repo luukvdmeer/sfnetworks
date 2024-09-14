@@ -556,7 +556,7 @@ spatial_join_nodes = function(x, y, ...) {
     n_new = n_new[!duplicated_match, ]
     cli_warn(c(
       "{.fn st_join} for {.cls sfnetwork} objects only joins one feature per node.",
-      "x" = paste(
+      "!" = paste(
         "Multiple matches were detected for some nodes,",
         "of which all but the first one are ignored."
       )
