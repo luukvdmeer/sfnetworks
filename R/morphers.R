@@ -545,7 +545,7 @@ to_spatial_smooth = function(x,
     is_in = seq(1, 2 * length(pseudo_idxs), by = 2)
     is_out = seq(2, 2 * length(pseudo_idxs), by = 2)
     # Obtain the attributes to be checked for each of the incident edges.
-    incident_attrs = edge_attr(x, incident_idxs)[require_equal]
+    incident_attrs = edge_attr(x, require_equal, incident_idxs)
     # For each of these attributes:
     # --> Check if its value is equal for both incident edges of a pseudo node.
     check_equality = function(A) {
