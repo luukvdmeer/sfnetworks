@@ -5,6 +5,7 @@
 ^pkgdown$
 ^revdep$
 ^bench$
+^data-raw$
 ^CODE_OF_CONDUCT\.md$
 ^CONTRIBUTING\.md$
 ^LICENSE\.md$
