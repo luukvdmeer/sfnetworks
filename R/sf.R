@@ -76,10 +76,10 @@
 #' structure. When applying the unsupported operations, first extract the
 #' element of interest (nodes or edges) using \code{\link[sf]{st_as_sf}}.
 #'
-#' @name sf
+#' @name sf_methods
 NULL
 
-#' @name sf
+#' @name sf_methods
 #'
 #' @examples
 #' library(sf, quietly = TRUE)
@@ -133,7 +133,7 @@ edges_as_sf = function(x, focused = FALSE, ...) {
 # Geometries
 # =============================================================================
 
-#' @name sf
+#' @name sf_methods
 #' @examples
 #' # Get the geometry of the active network element.
 #' st_geometry(net)
@@ -147,7 +147,7 @@ st_geometry.sfnetwork = function(obj, active = NULL, focused = TRUE, ...) {
   pull_geom(obj, active, focused = focused)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @examples
 #' # Replace the geometry of the nodes.
 #' # This will automatically update edge geometries to match the new nodes.
@@ -203,7 +203,7 @@ st_geometry.sfnetwork = function(obj, active = NULL, focused = TRUE, ...) {
   }
 }
 
-#' @name sf
+#' @name sf_methods
 #' @examples
 #' # Drop the geometries of the edges.
 #' # This returns an sfnetwork with spatially implicit edges.
@@ -219,7 +219,7 @@ st_drop_geometry.sfnetwork = function(x, ...) {
   drop_geom(x)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @examples
 #' # Get the bounding box of the active network element.
 #' st_bbox(net)
@@ -230,21 +230,21 @@ st_bbox.sfnetwork = function(obj, active = NULL, ...) {
   st_bbox(pull_geom(obj, active, focused = TRUE), ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_coordinates
 #' @export
 st_coordinates.sfnetwork = function(x, active = NULL, ...) {
   st_coordinates(pull_geom(x, active, focused = TRUE), ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_is
 #' @export
 st_is.sfnetwork = function(x, ...) {
   st_is(pull_geom(x, focused = TRUE), ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_is_valid
 #' @export
 st_is_valid.sfnetwork = function(x, ...) {
@@ -268,7 +268,7 @@ as_s2_geography.sfnetwork = function(x, focused = TRUE, ...) {
   s2::as_s2_geography(pull_geom(x, focused = focused), ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_as_s2
 #' @export
 st_as_s2.sfnetwork = function(x, active = NULL, focused = TRUE, ...) {
@@ -279,7 +279,7 @@ st_as_s2.sfnetwork = function(x, active = NULL, focused = TRUE, ...) {
 # Coordinates
 # =============================================================================
 
-#' @name sf
+#' @name sf_methods
 #' @examples
 #' # Get CRS of the network.
 #' st_crs(net)
@@ -290,7 +290,7 @@ st_crs.sfnetwork = function(x, ...) {
   st_crs(pull_geom(x), ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_crs<- st_crs
 #' @export
 `st_crs<-.sfnetwork` = function(x, value) {
@@ -304,14 +304,14 @@ st_crs.sfnetwork = function(x, ...) {
   mutate_node_geom(x, geom)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_precision
 #' @export
 st_precision.sfnetwork = function(x) {
   st_precision(pull_geom(x))
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_set_precision st_precision<-
 #' @export
 st_set_precision.sfnetwork = function(x, precision) {
@@ -325,49 +325,49 @@ st_set_precision.sfnetwork = function(x, precision) {
   mutate_node_geom(x, geom)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_shift_longitude
 #' @export
 st_shift_longitude.sfnetwork = function(x, ...) {
   change_coords(x, op = st_shift_longitude, ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_transform
 #' @export
 st_transform.sfnetwork = function(x, ...) {
   change_coords(x, op = st_transform, ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_wrap_dateline
 #' @export
 st_wrap_dateline.sfnetwork = function(x, ...) {
   change_coords(x, op = st_wrap_dateline, ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_normalize
 #' @export
 st_normalize.sfnetwork = function(x, ...) {
   change_coords(x, op = st_normalize, ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_zm
 #' @export
 st_zm.sfnetwork = function(x, ...) {
   change_coords(x, op = st_zm, ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_m_range
 #' @export
 st_m_range.sfnetwork = function(obj, active = NULL, ...) {
   st_m_range(pull_geom(obj, active, focused = TRUE), ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_z_range
 #' @export
 st_z_range.sfnetwork = function(obj, active = NULL, ...) {
@@ -389,7 +389,7 @@ change_coords = function(x, op, ...) {
 # Attribute Geometry Relationships
 # =============================================================================
 
-#' @name sf
+#' @name sf_methods
 #' @examples
 #' # Get agr factor of the active network element.
 #' st_agr(net)
@@ -403,7 +403,7 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
   agr(x, active)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_agr<- st_agr st_as_sf
 #' @export
 `st_agr<-.sfnetwork` = function(x, value) {
@@ -428,7 +428,7 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
 # as their corresponding LINESTRING geometries in x (source and target may be
 # switched).
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom cli cli_warn
 #' @importFrom igraph is_directed reverse_edges
 #' @importFrom sf st_reverse
@@ -448,7 +448,7 @@ st_reverse.sfnetwork = function(x, ...) {
   geom_unary_ops(st_reverse, x, active,...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom cli cli_warn
 #' @importFrom igraph is_directed
 #' @importFrom sf st_segmentize
@@ -473,7 +473,7 @@ st_segmentize.sfnetwork = function(x, ...) {
   }
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_simplify
 #' @export
 st_simplify.sfnetwork = function(x, ...) {
@@ -492,7 +492,7 @@ geom_unary_ops = function(op, x, active, ...) {
 # Join and filter
 # =============================================================================
 
-#' @name sf
+#' @name sf_methods
 #' @examples
 #' # Spatial join applied to the active network element.
 #' net = st_transform(net, 3035)
@@ -524,7 +524,7 @@ st_join.sfnetwork = function(x, y, ...) {
   )
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_join
 #' @export
 st_join.morphed_sfnetwork = function(x, y, ...) {
@@ -589,7 +589,7 @@ spatial_join_edges = function(x, y, ...) {
   x_new %preserve_network_attrs% x
 }
 
-#' @name sf
+#' @name sf_methods
 #' @examples
 #' # Spatial filter applied to the active network element.
 #' p1 = st_point(c(4151358, 3208045))
@@ -624,7 +624,7 @@ st_filter.sfnetwork = function(x, y, ...) {
   )
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_filter
 #' @export
 st_filter.morphed_sfnetwork = function(x, y, ...) {
@@ -650,7 +650,7 @@ spatial_filter_edges = function(x, y, ...) {
   delete_edges(x, drop) %preserve_all_attrs% x
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_crop st_as_sfc
 #' @importFrom tidygraph unfocus
 #' @export
@@ -666,7 +666,7 @@ st_crop.sfnetwork = function(x, y, ...) {
   )
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_crop
 #' @export
 st_crop.morphed_sfnetwork = function(x, y, ...) {
@@ -674,7 +674,7 @@ st_crop.morphed_sfnetwork = function(x, y, ...) {
   x
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_difference st_as_sfc
 #' @importFrom tidygraph unfocus
 #' @export
@@ -689,7 +689,7 @@ st_difference.sfnetwork = function(x, y, ...) {
   )
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_difference
 #' @export
 st_difference.morphed_sfnetwork = function(x, y, ...) {
@@ -697,7 +697,7 @@ st_difference.morphed_sfnetwork = function(x, y, ...) {
   x
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_intersection st_as_sfc
 #' @importFrom tidygraph unfocus
 #' @export
@@ -712,7 +712,7 @@ st_intersection.sfnetwork = function(x, y, ...) {
   )
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_intersection
 #' @export
 st_intersection.morphed_sfnetwork = function(x, y, ...) {
@@ -819,7 +819,7 @@ find_indices_to_drop = function(x, y, ..., .operator = sf::st_filter) {
 # create specific sfnetwork methods for these functions in order to make them
 # work as expected.
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_geometry st_intersects
 #' @export
 st_intersects.sfnetwork = function(x, y, ...) {
@@ -830,21 +830,21 @@ st_intersects.sfnetwork = function(x, y, ...) {
   }
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_as_sf st_sample
 #' @export
 st_sample.sfnetwork = function(x, ...) {
   st_sample(st_as_sf(x), ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_geometry st_nearest_points
 #' @export
 st_nearest_points.sfnetwork = function(x, y, ...) {
   st_nearest_points(pull_geom(x), st_geometry(y), ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_area
 #' @export
 st_area.sfnetwork = function(x, ...) {
