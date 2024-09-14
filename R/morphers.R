@@ -237,7 +237,7 @@ to_spatial_explicit = function(x, ...) {
   # Workflow:
   # --> If ... is given, convert edges to sf by forwarding ... to st_as_sf.
   # --> If ... is not given, draw straight lines from source to target nodes.
-  if (dots_n > 0) {
+  if (dots_n() > 0) {
     edges = edge_data(x, focused = FALSE)
     new_edges = st_as_sf(edges, ...)
     x_new = x
@@ -545,7 +545,7 @@ to_spatial_smooth = function(x,
     is_in = seq(1, 2 * length(pseudo_idxs), by = 2)
     is_out = seq(2, 2 * length(pseudo_idxs), by = 2)
     # Obtain the attributes to be checked for each of the incident edges.
-    incident_attrs = edge_attr(x, incident_idxs)[require_equal]
+    incident_attrs = edge_attr(x, require_equal, incident_idxs)
     # For each of these attributes:
     # --> Check if its value is equal for both incident edges of a pseudo node.
     check_equality = function(A) {

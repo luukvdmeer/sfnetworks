@@ -5,6 +5,7 @@
 ^pkgdown$
 ^revdep$
 ^bench$
+^data-raw$
 ^CODE_OF_CONDUCT\.md$
 ^CONTRIBUTING\.md$
 ^LICENSE\.md$
@@ -17,3 +18,4 @@
 ^hexlogo\.R$
 ^\.todo$
 ^vignettes/.*\.html$
+^vignettes/*_files$
