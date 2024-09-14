@@ -49,7 +49,7 @@ st_match = function(x) {
   match(idxs, unique(idxs))
 }
 
-#' Rounding of geometry coordinates
+#' Rounding of coordinates of point and linestring geometries
 #'
 #' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
 #'
@@ -59,6 +59,9 @@ st_match = function(x) {
 #'
 #' @return An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 #' with rounded coordinates.
+#'
+#' @note Currently this function only works for \code{POINT} and
+#' \code{LINESTRING} geometries.
 #'
 #' @seealso \code{\link{round}}
 #'

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{st_round}
 \alias{st_round}
-\title{Rounding of geometry coordinates}
+\title{Rounding of coordinates of point and linestring geometries}
 \usage{
 st_round(x, digits = 0, ...)
 }
@@ -18,7 +18,11 @@ An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 with rounded coordinates.
 }
 \description{
-Rounding of geometry coordinates
+Rounding of coordinates of point and linestring geometries
+}
+\note{
+Currently this function only works for \code{POINT} and
+\code{LINESTRING} geometries.
 }
 \examples{
 library(sf, quietly = TRUE)
