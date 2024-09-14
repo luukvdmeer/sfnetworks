@@ -41,6 +41,7 @@ Imports:
     lifecycle,
     lwgeom,
     methods,
+    pillar,
     rlang,
     sf,
     sfheaders,
