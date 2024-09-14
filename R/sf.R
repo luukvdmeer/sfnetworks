@@ -342,12 +342,7 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
 st_reverse.sfnetwork = function(x, ...) {
   active = attr(x, "active")
   if (active == "edges") {
-    require_explicit_edges(x)
     if (is_directed(x)) {
-      cli_warn(paste(
-        "{.fn st_reverse} swaps {.field from} and {.field to} columns",
-        "in directed networks."
-      ))
       x = reverse_edges(x, eids = edge_ids(x)) %preserve_all_attrs% x
     }
   } else {
