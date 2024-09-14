@@ -27,8 +27,9 @@ The type should be one of the defined types listed below. If you feel artistic, 
 - **feat**: Implementation of a new feature. `:gift:` :gift:
 - **fix**: A bug fix. `:wrench:` :wrench:
 - **style**: Changes to code formatting. No change to program logic. `:art:` :art:
-- **refactor**: Changes to code which do not change behaviour, e.g. renaming variables or splitting functions. `:construction:` :construction:
-- **docs**: Adding, removing or updating user documentation or to code comments. `:books:` :books:
+- **refactor**: Changes to existing functionality that do not change behaviour. `:construction:` :construction:
+- **breaking**: Changes to existing functionality that are not backwards compatible. `:warning:` :warning:
+- **docs**: Adding, removing or updating user documentation. `:books:` :books:
 - **logs**: Adding, removing or updating log messages. `:sound:` :sound:
 - **test**: Adding, removing or updating tests. No changes to user code. `:test_tube:` :test_tube:
 - **cicd**: Adding, removing or updating CI/CD workflows. No changes to user code. `:robot:` :robot:
