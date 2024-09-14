@@ -1,25 +1,35 @@
 ---
 title: "2. Network pre-processing and cleaning"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{2. Network pre-processing and cleaning}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{quarto:html}
+format:
+  html:
+    toc: true
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: '#>'
+  opts_knit:
+    global.par: true
+editor_options: 
+  chunk_output_type: console
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-knitr::opts_knit$set(global.par = TRUE)
+```{r}
+#| label: setup
+#| include: false
 current_geos = numeric_version(sf::sf_extSoftVersion()["GEOS"])
 required_geos = numeric_version("3.7.0")
 geos37 = current_geos >= required_geos
 ```
 
-```{r plot, echo=FALSE, results='asis'}
+```{r}
+#| label: plot
+#| echo: false
+#| results: asis
 # plot margins
 oldpar = par(no.readonly = TRUE)
 par(mar = c(1, 1, 1, 1))
@@ -36,7 +46,8 @@ old_hooks = fansi::set_knit_hooks(
 
 Unfortunately real-world datasets are not always as friendly as those used in tutorials. Pre-processing of the data will often be needed, as well as cleaning the network after construction. This vignette presents some examples that may be of use when going through this phase.
 
-```{r, message=FALSE}
+```{r}
+#| message: false
 library(sfnetworks)
 library(sf)
 library(tidygraph)
@@ -68,8 +79,8 @@ as_sfnetwork(edges)
 
 ```{r}
 # Round coordinates to 0 digits.
-st_geometry(edges) = st_geometry(edges) %>%
-  lapply(function(x) round(x, 0)) %>%
+st_geometry(edges) = st_geometry(edges) |>
+  lapply(function(x) round(x, 0)) |>
   st_sfc(crs = st_crs(edges))
 
 # The edges are connected.
@@ -85,7 +96,8 @@ Unfortunately, neither `igraph` nor `tidygraph` provides an interface for such n
 
 See the small example below, where we have three lines with one-way information stored in a *oneway* column. One of the lines is a one-way street, the other two are not. By duplicating and reversing the two linestrings that are not one-way streets, we create a directed network that correctly models our situation. Note that reversing linestrings using `sf::st_reverse()` only works when sf links to a GEOS version of at least 3.7.0.
 
-```{r, eval = geos37}
+```{r}
+#| eval: !expr geos37
 p1 = st_point(c(7, 51))
 p2 = st_point(c(7, 52))
 p3 = st_point(c(8, 52))
@@ -112,7 +124,9 @@ The `sfnetworks` package contains a set of spatial network specific cleaning fun
 
 Before presenting the cleaning functions that are currently implemented, lets create a network to be cleaned.
 
-```{r, fig.height=5, fig.width=5}
+```{r}
+#| fig-width: 5
+#| fig-height: 5
 p1 = st_point(c(0, 1))
 p2 = st_point(c(1, 1))
 p3 = st_point(c(2, 1))
@@ -164,10 +178,11 @@ A network may contain sets of edges that connect the same pair of nodes. Such ed
 
 In graph theory, a *simple graph* is defined as a graph that does *not* contain multiple edges nor loop edges. To obtain a simple version of our network, we can remove multiple edges and loop edges by calling tidygraphs edge filter functions `tidygraph::edge_is_multiple()` and `tidygraph::edge_is_loop()`.
 
-```{r, fig.show='hold', out.width = '50%'}
-simple = net %>%
-  activate("edges") %>%
-  filter(!edge_is_multiple()) %>%
+```{r}
+#| layout-ncol: 2
+simple = net |>
+  activate("edges") |>
+  filter(!edge_is_multiple()) |>
   filter(!edge_is_loop())
 
 plot(st_geometry(net, "edges"), col = edge_colors(net), lwd = 4)
@@ -178,11 +193,12 @@ plot(st_geometry(simple, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 
 Note that removing multiple edges in that way always *keeps* the *first* edge in each set of multiple edges, and drops all the other members of the set. Hence, the resulting network does not contain multiple edges anymore, but the connections between the nodes are preserved. Which of the multiple edges is the first one in a set depends on the order of the edges in the edges table. That is, by re-arranging the edges table before applying the filter you can influence which edges are kept whenever sets of multiple edges are detected. For example, you might want to always keep the edge with the shortest distance in the set.
 
-```{r, fig.show='hold', out.width = '50%'}
-simple = net %>%
-  activate("edges") %>%
-  arrange(edge_length()) %>%
-  filter(!edge_is_multiple()) %>%
+```{r}
+#| layout-ncol: 2
+simple = net |>
+  activate("edges") |>
+  arrange(edge_length()) |>
+  filter(!edge_is_multiple()) |>
   filter(!edge_is_loop())
 
 plot(st_geometry(net, "edges"), col = edge_colors(net), lwd = 4)
@@ -204,24 +220,24 @@ The analogue of this in tidyverse terms is a `dplyr::group_by()` operation follo
 
 Enough theory! Lets look at a practical example instead. We will first add some attribute columns to the edges, and then specify different combination techniques when simplifying the network.
 
-```{r, fig.show='hold', out.width = '50%'}
+```{r}
 # Add some attribute columns to the edges table.
 flows = sample(1:10, ecount(net), replace = TRUE)
 types = c(rep("path", 8), rep("road", 7))
 foo = sample(c(1:ecount(net)), ecount(net))
 bar = sample(letters, ecount(net))
 
-net = net %>%
-  activate("edges") %>%
-  arrange(edge_length()) %>%
+net = net |>
+  activate("edges") |>
+  arrange(edge_length()) |>
   mutate(flow = flows, type = types, foo = foo, bar = bar)
 
 net
 # We know from before that our example network has one set of multiple edges.
 # Lets look at them.
-net %>%
-  activate("edges") %>%
-  filter(edge_is_between(6, 7)) %>%
+net |>
+  activate("edges") |>
+  filter(edge_is_between(6, 7)) |>
   st_as_sf()
 # Define how we want to combine the attributes.
 # For the flows:
@@ -240,10 +256,14 @@ combinations = list(
 simple = convert(net, to_spatial_simple, summarise_attributes = combinations)
 
 # Inspect our merged set of multiple edges.
-simple %>%
-  activate("edges") %>%
-  filter(edge_is_between(6, 7)) %>%
+simple |>
+  activate("edges") |>
+  filter(edge_is_between(6, 7)) |>
   st_as_sf()
+```
+
+```{r}
+#| layout-ncol: 2
 plot(st_geometry(net, "edges"), col = edge_colors(net), lwd = 4)
 plot(st_geometry(net, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(simple, "edges"), col = edge_colors(simple), lwd = 4)
@@ -273,7 +293,8 @@ Note that an edge is *not* subdivided when it crosses another edge at a location
 
 For our example network, this means:
 
-```{r, fig.show='hold', out.width = '50%'}
+```{r}
+#| layout-ncol: 2
 subdivision = convert(simple, to_spatial_subdivision)
 
 plot(st_geometry(simple, "edges"), col = edge_colors(simple), lwd = 4)
@@ -289,7 +310,8 @@ In graph theory terms this process is the opposite of subdivision and also calle
 
 The function `to_spatial_smooth()` iteratively smooths pseudo nodes, and after each removal concatenates the linestring geometries of the two affected edges together into a new, single linestring geometry.
 
-```{r, message=FALSE, fig.show='hold', out.width = '50%'}
+```{r}
+#| layout-ncol: 2
 smoothed = convert(subdivision, to_spatial_smooth)
 
 plot(st_geometry(subdivision, "edges"), col = edge_colors(subdivision), lwd = 4)
@@ -302,9 +324,9 @@ There are different ways in which the smoothing process can be tuned. Firstly, i
 ```{r}
 # We know from before that our example network has two pseudo nodes.
 # Lets look at the attributes of their incident edges.
-subdivision %>%
-  activate("edges") %>%
-  filter(edge_is_incident(2) | edge_is_incident(9)) %>%
+subdivision |>
+  activate("edges") |>
+  filter(edge_is_incident(2) | edge_is_incident(9)) |>
   st_as_sf()
 
 # Define how we want to combine the attributes.
@@ -322,16 +344,18 @@ combinations = list(
 other_smoothed = convert(subdivision, to_spatial_smooth, summarise_attributes = combinations)
 
 # Inspect our concatenated edges.
-other_smoothed %>%
-  activate("edges") %>%
-  filter(edge_is_between(1, 2) | edge_is_between(7, 3)) %>%
+other_smoothed |>
+  activate("edges") |>
+  filter(edge_is_between(1, 2) | edge_is_between(7, 3)) |>
   st_as_sf()
 ```
 Secondly, it is possible to only remove those pseudo nodes for which attributes among their incident edges are equal. To do this, set `require_equal = TRUE`. Optionally, you can provide a list of attribute names instead, such that only those attributes are checked for equality, instead of all attributes. Again, remember that the geometry-list column, the tidygraph index column, as well as the *from* and *to* columns are not considered attributes in this case.
 
 In our example, our first pseudo node has incident edges of the same type ("road"), while the second pseudo node has incident edges of differing types ("road" and "unknown"). If we require the type attribute to be equal, the second pseudo node will not be removed.
 
-```{r, message=FALSE, fig.show='hold', out.width = '50%'}
+```{r}
+#| layout-ncol: 2
+#| message: false
 other_smoothed = convert(subdivision, to_spatial_smooth, require_equal = "type")
 
 plot(st_geometry(subdivision, "edges"), col = edge_colors(subdivision), lwd = 4)
@@ -341,7 +365,9 @@ plot(st_geometry(other_smoothed, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 Thirdly, it is also possible to directly specify a set of nodes that should never be removed, even if they are a pseudo node. This can be done by either providing a vector of node indices or a set of geospatial points to the `protect` argument. In the latter case, the function will protect the nearest node to each of these points. This can be helpful when you already know you want to use this nodes at a later stage for routing purposes. For example:
 
-```{r, message=FALSE, fig.show='hold', out.width = '50%'}
+```{r}
+#| layout-ncol: 2
+#| message: false
 other_smoothed = convert(subdivision, to_spatial_smooth, protect = 2)
 
 plot(st_geometry(subdivision, "edges"), col = edge_colors(subdivision), lwd = 4)
@@ -362,8 +388,8 @@ Grouping variables are internally forwarded to `dplyr::group_by()`. That means y
 
 ```{r}
 # Retrieve the coordinates of the nodes.
-node_coords = smoothed %>%
-  activate("nodes") %>%
+node_coords = smoothed |>
+  activate("nodes") |>
   st_coordinates()
 
 # Cluster the nodes with the DBSCAN spatial clustering algorithm.
@@ -374,15 +400,15 @@ node_coords = smoothed %>%
 clusters = dbscan(node_coords, eps = 0.5, minPts = 1)$cluster
 
 # Add the cluster information to the nodes of the network.
-clustered = smoothed %>%
-  activate("nodes") %>%
+clustered = smoothed |>
+  activate("nodes") |>
   mutate(cls = clusters)
 ```
 
 Now we have assigned each node to a spatial cluster. However, we forgot one important point. When simplifying intersections, it is not only important that the contracted nodes are close to each other in space. They should also be *connected*. Two nodes that are close to each other but *not* connected, can never be part of the same intersection. Hence, a group of nodes to be contracted should in this case be located in the same *component* of the network. We can use `tidygraph::group_components()` to assign a component index to each node. Note that in our example network this is not so much of use, since the whole network forms a single connected component. But for the sake of completeness, we will still show it:
 
 ```{r}
-clustered = clustered %>%
+clustered = clustered |>
   mutate(cmp = group_components())
 
 select(clustered, cls, cmp)
@@ -392,7 +418,8 @@ The combination of the cluster index and the component index can now be used to 
 
 A point of attention is that contraction introduces new *multiple edges* and/or *loop edges*. Multiple edges are introduced by contraction when there are several connections between the same groups of nodes. Loop edges are introduced by contraction when there are connections within a group. Setting `simplify = TRUE` will remove the multiple and loop edges after contraction. However, note that this also removes multiple and loop edges that already existed before contraction.
 
-```{r, fig.show='hold', out.width = '50%'}
+```{r}
+#| layout-ncol: 2
 contracted = convert(
   clustered,
   to_spatial_contracted,
@@ -412,8 +439,8 @@ An example:
 
 ```{r}
 # Add some additional attribute columns to the nodes table.
-clustered = clustered %>%
-  activate("nodes") %>%
+clustered = clustered |>
+  activate("nodes") |>
   mutate(is_priority = sample(
     c(TRUE, FALSE),
     vcount(clustered),
@@ -422,9 +449,9 @@ clustered = clustered %>%
 
 # We know from before there is one group with several close, connected nodes.
 # Lets look at them.
-clustered %>%
-  activate("nodes") %>%
-  filter(cls == 4 & cmp == 1) %>%
+clustered |>
+  activate("nodes") |>
+  filter(cls == 4 & cmp == 1) |>
   st_as_sf()
 # Define how we want to combine the attributes.
 # For the boolean is_priority variable:
@@ -446,9 +473,9 @@ contracted = convert(
 )
 
 # Inspect our contracted group of nodes.
-contracted %>%
-  activate("nodes") %>%
-  slice(4) %>%
+contracted |>
+  activate("nodes") |>
+  slice(4) |>
   st_as_sf()
 ```
 
@@ -456,14 +483,16 @@ contracted %>%
 
 After applying all the network cleaning functions described in the previous sections, we have cleaned our original network as follows:
 
-```{r, fig.show='hold', out.width = '50%'}
+```{r}
+#| layout-ncol: 2
 plot(st_geometry(net, "edges"), col = edge_colors(net), lwd = 4)
 plot(st_geometry(net, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 plot(st_geometry(contracted, "edges"), col = edge_colors(contracted), lwd = 4)
 plot(st_geometry(contracted, "nodes"), pch = 20, cex = 1.5, add = TRUE)
 ```
 
-```{r, include = FALSE}
+```{r}
+#| include: false
 par(oldpar)
 options(oldoptions)
 ```
