@@ -2,7 +2,9 @@
 
 S3method("st_agr<-",sfnetwork)
 S3method("st_crs<-",sfnetwork)
+S3method("st_geometry<-",igraph)
 S3method("st_geometry<-",sfnetwork)
+S3method("st_geometry<-",tbl_graph)
 S3method(as_sfnetwork,default)
 S3method(as_sfnetwork,focused_tbl_graph)
 S3method(as_sfnetwork,linnet)

@@ -203,6 +203,32 @@ st_geometry.sfnetwork = function(obj, active = NULL, focused = TRUE, ...) {
   }
 }
 
+#' @importFrom cli cli_abort
+#' @importFrom igraph is_directed
+#' @importFrom sf st_geometry<-
+#' @importFrom tibble as_tibble
+#' @export
+`st_geometry<-.tbl_graph` = function(x, value) {
+  if (attr(x, "active") == "edges") {
+    cli_abort(c(
+      "Edge geometries can not be set on {.cls tbl_graph} objects.",
+      "i" = "Call {.fn tidygraph::activate} to activate nodes instead."
+    ))
+  }
+  N = as_tibble(x, "nodes")
+  st_geometry(N) = value
+  x_new = tbg_to_sfn(x)
+  node_data(x_new) = N
+  x_new
+}
+
+#' @importFrom sf st_geometry<-
+#' @importFrom tidygraph as_tbl_graph
+#' @export
+`st_geometry<-.igraph` = function(x, value) {
+  `st_geometry<-`(as_tbl_graph(x), value)
+}
+
 #' @name sf_methods
 #' @examples
 #' # Drop the geometries of the edges.
