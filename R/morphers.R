@@ -84,7 +84,7 @@ NULL
 #' nodes be the centroid of all group members? Defaults to \code{TRUE}. If set
 #' to \code{FALSE}, the geometry of the first node in each group will be used
 #' instead, which requires considerably less computing time.
-
+#'
 #' @importFrom dplyr group_by group_indices group_size
 #' @importFrom igraph contract delete_edges delete_vertex_attr is_directed
 #' which_loop which_multiple
@@ -1043,5 +1043,59 @@ to_spatial_subset = function(x, ..., subset_by = NULL) {
 to_spatial_transformed = function(x, ...) {
   list(
     transformed = st_transform(x, ...)
+  )
+}
+
+#' @describeIn spatial_morphers Merge nodes with equal geometries into a single
+#' node. Returns a \code{morphed_sfnetwork} containing a single element of
+#' class \code{\link{sfnetwork}}.
+#'
+#' @importFrom igraph contract delete_vertex_attr
+#' @importFrom sf st_as_sf st_geometry
+#' @importFrom tibble as_tibble
+#' @importFrom tidygraph as_tbl_graph
+#' @export
+to_spatial_unique = function(x, summarise_attributes = "ignore",
+                             store_original_data = FALSE) {
+  # Retrieve nodes from the network.
+  # Extract specific information from them.
+  nodes = nodes_as_sf(x)
+  node_geoms = st_geometry(nodes)
+  node_geomcol = attr(nodes, "sf_column")
+  # Define which nodes have equal geometries.
+  matches = st_match(node_geoms)
+  # Update the attribute summary instructions.
+  # During morphing tidygraph adds the tidygraph node index column.
+  # Since it is added internally it is not referenced in summarise_attributes.
+  # We need to include it manually.
+  # They should be concatenated into a vector.
+  if (! inherits(summarise_attributes, "list")) {
+    summarise_attributes = list(summarise_attributes)
+  }
+  summarise_attributes[".tidygraph_node_index"] = "concat"
+  # The geometries will be summarized at a later stage.
+  # However igraph does not know the geometries are special.
+  # We therefore temporarily remove the geometries before contracting.
+  x_tmp = delete_vertex_attr(x, node_geomcol)
+  # Contract with igraph::contract.
+  x_new = as_tbl_graph(contract(x_tmp, matches, summarise_attributes))
+  # Extract the nodes from the contracted network.
+  new_nodes = as_tibble(x_new, "nodes", focused = FALSE)
+  # Add geometries to the new nodes.
+  # These are simply the original node geometries with duplicates removed.
+  new_node_geoms = node_geoms[!duplicated(matches)]
+  new_nodes[node_geomcol] = list(new_node_geoms)
+  # If requested, store original node data in a .orig_data column.
+  if (store_original_data) {
+    drop_index = function(i) { i$.tidygraph_node_index = NULL; i }
+    grouped_data = split(nodes, matches)
+    new_nodes$.orig_data = lapply(grouped_data, drop_index)
+  }
+  # Update the nodes table of the contracted network.
+  new_nodes = st_as_sf(new_nodes, sf_column_name = node_geomcol)
+  node_data(x_new) = new_nodes
+  # Return new network as sfnetwork object in a list.
+  list(
+    unique = tbg_to_sfn(x_new %preserve_network_attrs% x)
   )
 }
