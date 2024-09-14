@@ -237,7 +237,7 @@ to_spatial_explicit = function(x, ...) {
   # Workflow:
   # --> If ... is given, convert edges to sf by forwarding ... to st_as_sf.
   # --> If ... is not given, draw straight lines from source to target nodes.
-  if (dots_n > 0) {
+  if (dots_n() > 0) {
     edges = edge_data(x, focused = FALSE)
     new_edges = st_as_sf(edges, ...)
     x_new = x
