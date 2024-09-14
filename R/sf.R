@@ -106,16 +106,49 @@ st_geometry.sfnetwork = function(obj, active = NULL, focused = TRUE, ...) {
 }
 
 #' @name sf
+#' @importFrom cli cli_abort
 #' @importFrom sf st_geometry<-
 #' @export
 `st_geometry<-.sfnetwork` = function(x, value) {
-  if (is.null(value)) {
-    x_new = drop_geom(x)
-  } else  {
-    x_new = mutate_geom(x, value, focused = TRUE)
-    validate_network(x_new)
+  if (is.null(value)) return (drop_geom(x))
+  if (! have_equal_crs(x, value)) {
+    cli_abort(c(
+      "Replacement has a different CRS.",
+      "i" = "The CRS of the replacement should equal the original CRS.",
+      "i" = "You can transform to another CRS using {.fn sf::st_transform}."
+    ))
   }
-  x_new
+  if (attr(x, "active") == "nodes") {
+    if (length(value) != n_nodes(x)) {
+      cli_abort(c(
+        "Replacement has a different number of features.",
+        "i" = "The network has {n_nodes(x)} nodes, not {length(value)}."
+      ))
+    }
+    if (! are_points(value)) {
+      cli_abort(c(
+        "Unsupported geometry types.",
+        "i" = "Node geometries should all be {.cls POINT}."
+      ))
+    }
+    x_new = mutate_node_geom(x, value, focused = TRUE)
+    make_edges_valid(x_new)
+  } else {
+    if (length(value) != n_edges(x)) {
+      cli_abort(c(
+        "Replacement has a different number of features.",
+        "i" = "The network has {n_edges(x)} edges, not {length(value)}."
+      ))
+    }
+    if (! are_linestrings(value)) {
+      cli_abort(c(
+        "Unsupported geometry types.",
+        "i" = "Edge geometries should all be {.cls LINESTRING}."
+      ))
+    }
+    x_new = mutate_edge_geom(x, value, focused = TRUE)
+    make_edges_valid(x_new, preserve_geometries = TRUE)
+  }
 }
 
 #' @name sf
