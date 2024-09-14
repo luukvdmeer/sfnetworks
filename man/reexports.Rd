@@ -5,6 +5,11 @@
 \alias{reexports}
 \alias{activate}
 \alias{active}
+\alias{morph}
+\alias{unmorph}
+\alias{convert}
+\alias{crystallize}
+\alias{crystallise}
 \alias{\%>\%}
 \title{Objects exported from other packages}
 \keyword{internal}
@@ -13,6 +18,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{tidygraph}{\code{\link[tidygraph:reexports]{\%>\%}}, \code{\link[tidygraph]{activate}}, \code{\link[tidygraph:activate]{active}}}
+  \item{tidygraph}{\code{\link[tidygraph:reexports]{\%>\%}}, \code{\link[tidygraph]{activate}}, \code{\link[tidygraph:activate]{active}}, \code{\link[tidygraph:morph]{convert}}, \code{\link[tidygraph:morph]{crystallise}}, \code{\link[tidygraph:morph]{crystallize}}, \code{\link[tidygraph]{morph}}, \code{\link[tidygraph:morph]{unmorph}}}
 }}
 

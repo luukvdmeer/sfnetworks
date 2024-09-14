@@ -6,6 +6,26 @@ tidygraph::activate
 #' @export
 tidygraph::active
 
+#' @importFrom tidygraph morph
+#' @export
+tidygraph::morph
+
+#' @importFrom tidygraph unmorph
+#' @export
+tidygraph::unmorph
+
+#' @importFrom tidygraph convert
+#' @export
+tidygraph::convert
+
+#' @importFrom tidygraph crystallize
+#' @export
+tidygraph::crystallize
+
+#' @importFrom tidygraph crystallise
+#' @export
+tidygraph::crystallise
+
 #' @importFrom tidygraph %>%
 #' @export
 tidygraph::`%>%`
