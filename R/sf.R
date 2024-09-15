@@ -27,30 +27,72 @@
 #' @param precision The precision to be assigned. See
 #' \code{\link[sf]{st_precision}} for details.
 #'
-#' @return The \code{sfnetwork} method for \code{\link[sf]{st_as_sf}} returns
-#' the active element of the network as object of class \code{\link[sf]{sf}}.
-#' The \code{sfnetwork} and \code{morphed_sfnetwork} methods for
-#' \code{\link[sf]{st_join}}, \code{\link[sf]{st_filter}},
-#' \code{\link[sf]{st_intersection}}, \code{\link[sf]{st_difference}},
-#' \code{\link[sf]{st_crop}} and the setter functions
-#'  return an object of class \code{\link{sfnetwork}}
-#' and \code{morphed_sfnetwork} respectively. All other
-#' methods return the same type of objects as their corresponding sf function.
-#' See the \code{\link[sf]{sf}} documentation for details.
+#' @return The methods for \code{\link[sf]{st_join}},
+#' \code{\link[sf]{st_filter}}, \code{\link[sf]{st_intersection}},
+#' \code{\link[sf]{st_difference}} and \code{\link[sf]{st_crop}}, as well as
+#' the methods for all setter functions and the geometric unary operations
+#' preserve the class of the object it is applied to, i.e. either a
+#' \code{\link{sfnetwork}} object or its morphed equivalent. When dropping node
+#' geometries, an object of class \code{\link[tidygraph]{tbl_graph}} is
+#' returned. All other methods return the same type of objects as their
+#' corresponding sf function. See the \code{\link[sf]{sf}} documentation for
+#' details.
 #'
-#' @details See the \code{\link[sf]{sf}} documentation.
+#' @details See the \code{\link[sf]{sf}} documentation. The following methods
+#' have a special behavior:
 #'
-#' @name sf
+#' \itemize{
+#'   \item \code{st_geometry<-}: The geometry setter requires the replacement
+#'   geometries to have the same CRS as the network. Node replacements should
+#'   all be points, while edge replacements should all be linestrings. When
+#'   replacing node geometries, the boundaries of the edge geometries are
+#'   replaced as well to preserve the valid spatial network structure. When
+#'   replacing edge geometries, new edge boundaries that do not match the
+#'   location of their specified incident node are added as new nodes to the
+#'   network.
+#'   \item \code{st_transform}: No matter if applied to the nodes or edge
+#'   table, this method will update the coordinates of both tables. The same
+#'   holds for all other methods that update the way in which the coordinates
+#'   are encoded without changing their actual location, such as
+#'   \code{st_precision}, \code{st_normalize}, \code{st_zm}, and others.
+#'   \item \code{st_join}: When applied to the nodes table and multiple matches
+#'   exist for the same node, only the first match is joined. A warning will be
+#'   given in this case.
+#'   \item \code{st_intersection}, \code{st_difference} and \code{st_crop}:
+#'   These methods clip edge geometries when applied to the edges table. To
+#'   preserve a valid spatial network structure, clipped edge boundaries are
+#'   added as new nodes to the network.
+#'   \item \code{st_reverse}: When reversing edge geometries in a directed
+#'   network, the indices in the from and to columns will be swapped as well.
+#'   \item \code{st_segmentize}: When segmentizing edge geometries, the edge
+#'   boundaries are forced to remain the same such that the valid spatial
+#'   network structure is preserved. This may lead to slightly inaccurate
+#'   results.
+#' }
+#'
+#' Geometric unary operations are only supported on \code{\link{sfnetwork}}
+#' objects if they do not change the geometry type nor the spatial location
+#' of the original features, since that would break the valid spatial network
+#' structure. When applying the unsupported operations, first extract the
+#' element of interest (nodes or edges) using \code{\link[sf]{st_as_sf}}.
+#'
+#' @name sf_methods
+NULL
+
+#' @name sf_methods
 #'
 #' @examples
 #' library(sf, quietly = TRUE)
 #'
+#' oldpar = par(no.readonly = TRUE)
+#' par(mar = c(1,1,1,1), mfrow = c(1,2))
+#'
 #' net = as_sfnetwork(roxel)
 #'
-#' # Extract the active network element.
+#' # Extract the active network element as sf object.
 #' st_as_sf(net)
 #'
-#' # Extract any network element.
+#' # Extract any network element as sf object.
 #' st_as_sf(net, "edges")
 #'
 #' @importFrom sf st_as_sf
@@ -91,12 +133,12 @@ edges_as_sf = function(x, focused = FALSE, ...) {
 # Geometries
 # =============================================================================
 
-#' @name sf
+#' @name sf_methods
 #' @examples
-#' # Get geometry of the active network element.
+#' # Get the geometry of the active network element.
 #' st_geometry(net)
 #'
-#' # Get geometry of any network element.
+#' # Get the geometry of any network element.
 #' st_geometry(net, "edges")
 #'
 #' @importFrom sf st_geometry
@@ -105,29 +147,107 @@ st_geometry.sfnetwork = function(obj, active = NULL, focused = TRUE, ...) {
   pull_geom(obj, active, focused = focused)
 }
 
-#' @name sf
+#' @name sf_methods
+#' @examples
+#' # Replace the geometry of the nodes.
+#' # This will automatically update edge geometries to match the new nodes.
+#' newnet = net
+#' newnds = rep(st_centroid(st_combine(st_geometry(net))), n_nodes(net))
+#' st_geometry(newnet) = newnds
+#'
+#' plot(net)
+#' plot(newnet)
+#'
+#' @importFrom cli cli_abort
 #' @importFrom sf st_geometry<-
 #' @export
 `st_geometry<-.sfnetwork` = function(x, value) {
-  if (is.null(value)) {
-    x_new = drop_geom(x)
-  } else  {
-    x_new = mutate_geom(x, value, focused = TRUE)
-    validate_network(x_new)
+  if (is.null(value)) return (drop_geom(x))
+  if (! have_equal_crs(x, value)) {
+    cli_abort(c(
+      "Replacement has a different CRS.",
+      "i" = "The CRS of the replacement should equal the original CRS.",
+      "i" = "You can transform to another CRS using {.fn sf::st_transform}."
+    ))
   }
+  if (attr(x, "active") == "nodes") {
+    if (length(value) != n_nodes(x)) {
+      cli_abort(c(
+        "Replacement has a different number of features.",
+        "i" = "The network has {n_nodes(x)} nodes, not {length(value)}."
+      ))
+    }
+    if (! are_points(value)) {
+      cli_abort(c(
+        "Unsupported geometry types.",
+        "i" = "Node geometries should all be {.cls POINT}."
+      ))
+    }
+    x_new = mutate_node_geom(x, value, focused = TRUE)
+    make_edges_valid(x_new)
+  } else {
+    if (length(value) != n_edges(x)) {
+      cli_abort(c(
+        "Replacement has a different number of features.",
+        "i" = "The network has {n_edges(x)} edges, not {length(value)}."
+      ))
+    }
+    if (! are_linestrings(value)) {
+      cli_abort(c(
+        "Unsupported geometry types.",
+        "i" = "Edge geometries should all be {.cls LINESTRING}."
+      ))
+    }
+    x_new = mutate_edge_geom(x, value, focused = TRUE)
+    make_edges_valid(x_new, preserve_geometries = TRUE)
+  }
+}
+
+#' @importFrom cli cli_abort
+#' @importFrom igraph is_directed
+#' @importFrom sf st_geometry<-
+#' @importFrom tibble as_tibble
+#' @export
+`st_geometry<-.tbl_graph` = function(x, value) {
+  if (attr(x, "active") == "edges") {
+    cli_abort(c(
+      "Edge geometries can not be set on {.cls tbl_graph} objects.",
+      "i" = "Call {.fn tidygraph::activate} to activate nodes instead."
+    ))
+  }
+  N = as_tibble(x, "nodes")
+  st_geometry(N) = value
+  x_new = tbg_to_sfn(x)
+  node_data(x_new) = N
   x_new
 }
 
-#' @name sf
+#' @importFrom sf st_geometry<-
+#' @importFrom tidygraph as_tbl_graph
+#' @export
+`st_geometry<-.igraph` = function(x, value) {
+  `st_geometry<-`(as_tbl_graph(x), value)
+}
+
+#' @name sf_methods
+#' @examples
+#' # Drop the geometries of the edges.
+#' # This returns an sfnetwork with spatially implicit edges.
+#' st_drop_geometry(activate(net, "edges"))
+#'
+#' # Drop the geometries of the nodes.
+#' # This returns a tbl_graph.
+#' st_drop_geometry(net)
+#'
 #' @importFrom sf st_drop_geometry
 #' @export
 st_drop_geometry.sfnetwork = function(x, ...) {
   drop_geom(x)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @examples
-#' # Get bbox of the active network element.
+#' # Get the bounding box of the active network element.
 #' st_bbox(net)
 #'
 #' @importFrom sf st_bbox
@@ -136,21 +256,21 @@ st_bbox.sfnetwork = function(obj, active = NULL, ...) {
   st_bbox(pull_geom(obj, active, focused = TRUE), ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_coordinates
 #' @export
 st_coordinates.sfnetwork = function(x, active = NULL, ...) {
   st_coordinates(pull_geom(x, active, focused = TRUE), ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_is
 #' @export
 st_is.sfnetwork = function(x, ...) {
   st_is(pull_geom(x, focused = TRUE), ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_is_valid
 #' @export
 st_is_valid.sfnetwork = function(x, ...) {
@@ -174,7 +294,7 @@ as_s2_geography.sfnetwork = function(x, focused = TRUE, ...) {
   s2::as_s2_geography(pull_geom(x, focused = focused), ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_as_s2
 #' @export
 st_as_s2.sfnetwork = function(x, active = NULL, focused = TRUE, ...) {
@@ -185,7 +305,7 @@ st_as_s2.sfnetwork = function(x, active = NULL, focused = TRUE, ...) {
 # Coordinates
 # =============================================================================
 
-#' @name sf
+#' @name sf_methods
 #' @examples
 #' # Get CRS of the network.
 #' st_crs(net)
@@ -196,7 +316,7 @@ st_crs.sfnetwork = function(x, ...) {
   st_crs(pull_geom(x), ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_crs<- st_crs
 #' @export
 `st_crs<-.sfnetwork` = function(x, value) {
@@ -210,14 +330,14 @@ st_crs.sfnetwork = function(x, ...) {
   mutate_node_geom(x, geom)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_precision
 #' @export
 st_precision.sfnetwork = function(x) {
   st_precision(pull_geom(x))
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_set_precision st_precision<-
 #' @export
 st_set_precision.sfnetwork = function(x, precision) {
@@ -231,49 +351,49 @@ st_set_precision.sfnetwork = function(x, precision) {
   mutate_node_geom(x, geom)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_shift_longitude
 #' @export
 st_shift_longitude.sfnetwork = function(x, ...) {
   change_coords(x, op = st_shift_longitude, ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_transform
 #' @export
 st_transform.sfnetwork = function(x, ...) {
   change_coords(x, op = st_transform, ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_wrap_dateline
 #' @export
 st_wrap_dateline.sfnetwork = function(x, ...) {
   change_coords(x, op = st_wrap_dateline, ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_normalize
 #' @export
 st_normalize.sfnetwork = function(x, ...) {
   change_coords(x, op = st_normalize, ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_zm
 #' @export
 st_zm.sfnetwork = function(x, ...) {
   change_coords(x, op = st_zm, ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_m_range
 #' @export
 st_m_range.sfnetwork = function(obj, active = NULL, ...) {
   st_m_range(pull_geom(obj, active, focused = TRUE), ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_z_range
 #' @export
 st_z_range.sfnetwork = function(obj, active = NULL, ...) {
@@ -295,7 +415,7 @@ change_coords = function(x, op, ...) {
 # Attribute Geometry Relationships
 # =============================================================================
 
-#' @name sf
+#' @name sf_methods
 #' @examples
 #' # Get agr factor of the active network element.
 #' st_agr(net)
@@ -309,7 +429,7 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
   agr(x, active)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_agr<- st_agr st_as_sf
 #' @export
 `st_agr<-.sfnetwork` = function(x, value) {
@@ -334,7 +454,7 @@ st_agr.sfnetwork = function(x, active = NULL, ...) {
 # as their corresponding LINESTRING geometries in x (source and target may be
 # switched).
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom cli cli_warn
 #' @importFrom igraph is_directed reverse_edges
 #' @importFrom sf st_reverse
@@ -354,7 +474,7 @@ st_reverse.sfnetwork = function(x, ...) {
   geom_unary_ops(st_reverse, x, active,...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom cli cli_warn
 #' @importFrom igraph is_directed
 #' @importFrom sf st_segmentize
@@ -379,7 +499,7 @@ st_segmentize.sfnetwork = function(x, ...) {
   }
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_simplify
 #' @export
 st_simplify.sfnetwork = function(x, ...) {
@@ -398,7 +518,7 @@ geom_unary_ops = function(op, x, active, ...) {
 # Join and filter
 # =============================================================================
 
-#' @name sf
+#' @name sf_methods
 #' @examples
 #' # Spatial join applied to the active network element.
 #' net = st_transform(net, 3035)
@@ -408,11 +528,10 @@ geom_unary_ops = function(op, x, active, ...) {
 #' joined = st_join(net, codes, join = st_intersects)
 #' joined
 #'
-#' oldpar = par(no.readonly = TRUE)
-#' par(mar = c(1,1,1,1), mfrow = c(1,2))
 #' plot(net, col = "grey")
 #' plot(codes, col = NA, border = "red", lty = 4, lwd = 4, add = TRUE)
 #' text(st_coordinates(st_centroid(st_geometry(codes))), codes$post_code)
+#'
 #' plot(st_geometry(joined, "edges"))
 #' plot(st_as_sf(joined, "nodes"), pch = 20, add = TRUE)
 #' par(oldpar)
@@ -431,7 +550,7 @@ st_join.sfnetwork = function(x, y, ...) {
   )
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_join
 #' @export
 st_join.morphed_sfnetwork = function(x, y, ...) {
@@ -463,7 +582,7 @@ spatial_join_nodes = function(x, y, ...) {
     n_new = n_new[!duplicated_match, ]
     cli_warn(c(
       "{.fn st_join} for {.cls sfnetwork} objects only joins one feature per node.",
-      "x" = paste(
+      "!" = paste(
         "Multiple matches were detected for some nodes,",
         "of which all but the first one are ignored."
       )
@@ -496,7 +615,7 @@ spatial_join_edges = function(x, y, ...) {
   x_new %preserve_network_attrs% x
 }
 
-#' @name sf
+#' @name sf_methods
 #' @examples
 #' # Spatial filter applied to the active network element.
 #' p1 = st_point(c(4151358, 3208045))
@@ -504,18 +623,17 @@ spatial_join_edges = function(x, y, ...) {
 #' p3 = st_point(c(4151756, 3207506))
 #' p4 = st_point(c(4151774, 3208031))
 #'
-#' poly = st_multipoint(c(p1, p2, p3, p4)) %>%
-#'   st_cast('POLYGON') %>%
-#'   st_sfc(crs = 3035) %>%
+#' poly = st_multipoint(c(p1, p2, p3, p4)) |>
+#'   st_cast('POLYGON') |>
+#'   st_sfc(crs = 3035) |>
 #'   st_as_sf()
 #'
 #' filtered = st_filter(net, poly, .pred = st_intersects)
 #'
-#' oldpar = par(no.readonly = TRUE)
-#' par(mar = c(1,1,1,1), mfrow = c(1,2))
 #' plot(net, col = "grey")
 #' plot(poly, border = "red", lty = 4, lwd = 4, add = TRUE)
 #' plot(filtered)
+#'
 #' par(oldpar)
 #'
 #' @importFrom sf st_filter
@@ -532,7 +650,7 @@ st_filter.sfnetwork = function(x, y, ...) {
   )
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_filter
 #' @export
 st_filter.morphed_sfnetwork = function(x, y, ...) {
@@ -558,7 +676,7 @@ spatial_filter_edges = function(x, y, ...) {
   delete_edges(x, drop) %preserve_all_attrs% x
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_crop st_as_sfc
 #' @importFrom tidygraph unfocus
 #' @export
@@ -574,7 +692,7 @@ st_crop.sfnetwork = function(x, y, ...) {
   )
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_crop
 #' @export
 st_crop.morphed_sfnetwork = function(x, y, ...) {
@@ -582,7 +700,7 @@ st_crop.morphed_sfnetwork = function(x, y, ...) {
   x
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_difference st_as_sfc
 #' @importFrom tidygraph unfocus
 #' @export
@@ -597,7 +715,7 @@ st_difference.sfnetwork = function(x, y, ...) {
   )
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_difference
 #' @export
 st_difference.morphed_sfnetwork = function(x, y, ...) {
@@ -605,7 +723,7 @@ st_difference.morphed_sfnetwork = function(x, y, ...) {
   x
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_intersection st_as_sfc
 #' @importFrom tidygraph unfocus
 #' @export
@@ -620,7 +738,7 @@ st_intersection.sfnetwork = function(x, y, ...) {
   )
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_intersection
 #' @export
 st_intersection.morphed_sfnetwork = function(x, y, ...) {
@@ -727,7 +845,7 @@ find_indices_to_drop = function(x, y, ..., .operator = sf::st_filter) {
 # create specific sfnetwork methods for these functions in order to make them
 # work as expected.
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_geometry st_intersects
 #' @export
 st_intersects.sfnetwork = function(x, y, ...) {
@@ -738,21 +856,21 @@ st_intersects.sfnetwork = function(x, y, ...) {
   }
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_as_sf st_sample
 #' @export
 st_sample.sfnetwork = function(x, ...) {
   st_sample(st_as_sf(x), ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_geometry st_nearest_points
 #' @export
 st_nearest_points.sfnetwork = function(x, y, ...) {
   st_nearest_points(pull_geom(x), st_geometry(y), ...)
 }
 
-#' @name sf
+#' @name sf_methods
 #' @importFrom sf st_area
 #' @export
 st_area.sfnetwork = function(x, ...) {

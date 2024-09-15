@@ -1016,11 +1016,12 @@ to_spatial_subdivision = function(x) {
 #'
 #' @param subset_by Whether to create subgraphs based on nodes or edges.
 #'
+#' @importFrom cli cli_alert
 #' @export
 to_spatial_subset = function(x, ..., subset_by = NULL) {
   if (is.null(subset_by)) {
     subset_by = attr(x, "active")
-    message("Subsetting by ", subset_by)
+    cli_alert("Subsetting by {subset_by}")
   }
   x_new = switch(
     subset_by,

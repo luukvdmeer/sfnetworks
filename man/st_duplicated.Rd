@@ -26,3 +26,6 @@ p3 = st_sfc(st_point(c(1, 0)))
 st_duplicated(c(p1, p2, p2, p3, p1))
 
 }
+\seealso{
+\code{\link{duplicated}}
+}

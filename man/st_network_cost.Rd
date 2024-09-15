@@ -2,6 +2,7 @@
 % Please edit documentation in R/paths.R
 \name{st_network_cost}
 \alias{st_network_cost}
+\alias{st_network_distance}
 \title{Compute a cost matrix of a spatial network}
 \usage{
 st_network_cost(
@@ -9,6 +10,15 @@ st_network_cost(
   from = node_ids(x),
   to = node_ids(x),
   weights = edge_length(),
+  direction = "out",
+  Inf_as_NaN = FALSE,
+  ...
+)
+
+st_network_distance(
+  x,
+  from = node_ids(x),
+  to = node_ids(x),
   direction = "out",
   Inf_as_NaN = FALSE,
   ...
@@ -61,16 +71,19 @@ An n times m numeric matrix where n is the length of the \code{from}
 argument, and m is the length of the \code{to} argument.
 }
 \description{
-A function to compute total travel costs of shortest paths between nodes
-in a spatial network.
+Compute total travel costs of shortest paths between nodes in a spatial
+network.
 }
 \details{
-Spatial features provided to the \code{from} and/or
-\code{to} argument don't necessarily have to be points. Internally, the
-nearest node to each feature is found by calling
-\code{\link[sf]{st_nearest_feature}}, so any feature with a geometry type
-that is accepted by that function can be provided as \code{from} and/or
-\code{to} argument.
+\code{st_network_cost} allows to use any set of edge weights, while
+\code{st_network_distance} is a intuitive synonym for cost matrix computation
+in which the edge weights are set to their geographic length.
+
+Spatial features provided to the \code{from} and/or \code{to} argument don't
+necessarily have to be points. Internally, the nearest node to each feature
+is found by calling \code{\link[sf]{st_nearest_feature}}, so any feature
+with a geometry type that is accepted by that function can be provided as
+\code{from} and/or \code{to} argument.
 
 When directly providing integer node indices or character node names to the
 \code{from} and/or \code{to} argument, keep the following in mind. A node
@@ -92,6 +105,9 @@ net = as_sfnetwork(roxel, directed = FALSE) |>
 # Compute the network cost matrix between node pairs.
 # Note that geographic edge length is used as edge weights by default.
 st_network_cost(net, from = c(495, 121), to = c(495, 121))
+
+# st_network_distance is a synonym for st_network_cost with default weights.
+st_network_distance(net, from = c(495, 121), to = c(495, 121))
 
 # Compute the network cost matrix between spatial point features.
 # These are snapped to their nearest node before computing costs.

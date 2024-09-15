@@ -5,6 +5,8 @@
 #' @return A logical vector specifying for each feature in \code{x} if its
 #' geometry is equal to a previous feature in \code{x}.
 #'
+#' @seealso \code{\link{duplicated}}
+#'
 #' @examples
 #' library(sf, quietly = TRUE)
 #'
@@ -29,6 +31,8 @@ st_duplicated = function(x) {
 #' @return A numeric vector giving for each feature in \code{x} the position of
 #' the first feature in \code{x} that has an equal geometry.
 #'
+#' @seealso \code{\link{match}}
+#'
 #' @examples
 #' library(sf, quietly = TRUE)
 #'
@@ -43,6 +47,49 @@ st_duplicated = function(x) {
 st_match = function(x) {
   idxs = do.call("c", lapply(st_equals(x), `[`, 1))
   match(idxs, unique(idxs))
+}
+
+#' Rounding of coordinates of point and linestring geometries
+#'
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
+#'
+#' @param digits Integer indicating the number of decimal places to be used.
+#'
+#' @param ... Additional arguments passed on to \code{\link{round}}.
+#'
+#' @return An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+#' with rounded coordinates.
+#'
+#' @note Currently this function only works for \code{POINT} and
+#' \code{LINESTRING} geometries.
+#'
+#' @seealso \code{\link{round}}
+#'
+#' @examples
+#' library(sf, quietly = TRUE)
+#'
+#' p1 = st_sfc(st_point(c(1.123, 1.123)))
+#' p2 = st_sfc(st_point(c(0.789, 0.789)))
+#' p3 = st_sfc(st_point(c(1.123, 0.789)))
+#'
+#' st_round(c(p1, p2, p2, p3, p1), digits = 1)
+#'
+#' @importFrom rlang try_fetch
+#' @importFrom sf st_crs st_geometry st_sfc
+#' @export
+st_round = function(x, digits = 0, ...) {
+  xg = st_geometry(x)
+  try_fetch(
+    st_sfc(lapply(xg, \(i) round(i, digits = digits, ...)), crs = st_crs(x)),
+    error = function(e) {
+      if (! (are_points(xg) | are_linestrings(xg))) {
+        cli_abort(c(
+          "Unsupported geometry types.",
+          "i" = "st_rounds only supports {.cls POINT} and {.cls LINESTRING}."
+        ))
+      }
+    }
+  )
 }
 
 #' Convert a sfheaders data frame into sfc point geometries
