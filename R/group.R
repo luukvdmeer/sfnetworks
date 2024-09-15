@@ -17,6 +17,7 @@
 #' e.g. `dbscan::dbscan()`
 #'
 #' @importFrom dbscan dbscan
+#' @importFrom stats as.dist
 #' @export
 group_spatial = function(dist, algorithm = "dbscan",
                          network_distance = TRUE,
@@ -43,5 +44,3 @@ group_spatial = function(dist, algorithm = "dbscan",
 desc_enumeration <- function(group) {
   match(group, as.integer(names(sort(table(group), decreasing = TRUE))))
 }
-
-# git commit -m "feat: Add group_spatial() :gift:"
