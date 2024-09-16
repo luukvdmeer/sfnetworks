@@ -59,7 +59,7 @@ subdivide = function(x, merge_equal = TRUE) {
   # Compute for each edge point a unique location index.
   # Edge points that are spatially equal get the same location index.
   edge_coords = edge_pts[names(edge_pts) %in% c("x", "y", "z", "m")]
-  edge_lids = st_match_df(edge_coords)
+  edge_lids = st_match_points_df(edge_coords, st_precision(edges))
   edge_pts$lid = edge_lids
   # Define which edge points are not unique.
   has_duplicate = duplicated(edge_lids) | duplicated(edge_lids, fromLast = TRUE)

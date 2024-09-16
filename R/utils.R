@@ -49,9 +49,25 @@ st_match = function(x) {
   match(idxs, unique(idxs))
 }
 
-st_match_df = function(x) {
-  x_str = do.call(paste, x)
-  match(x_str, unique(x_str))
+#' @importFrom sf st_geometry
+#' @importFrom sfheaders sfc_to_df
+st_match_points = function(x, precision = attr(x, "precision")) {
+  x_df = sfc_to_df(st_geometry(x))
+  coords = x_df[, names(x_df) %in% c("x", "y", "z", "m")]
+  st_match_points_df(coords, precision = precision)
+}
+
+st_match_points_df = function(x, precision = NULL) {
+  x_trim = lapply(x, round, digits = precision_to_digits(precision))
+  x_concat = do.call(paste, x_trim)
+  match(x_concat, unique(x_concat))
+}
+
+#' @importFrom cli cli_abort
+precision_to_digits = function(x) {
+  if (is.null(x) || x == 0) return (12)
+  if (x > 0) return (log(x, 10))
+  cli_abort("Currently sfnetworks does not support negative precision")
 }
 
 #' Rounding of coordinates of point and linestring geometries
@@ -164,9 +180,16 @@ df_to_lines = function(x_df, x_sf, id_col = "linestring_id", select = TRUE) {
 #' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 #' with \code{LINESTRING} geometries.
 #'
+#' @param return_df Should a data frame with one column per coordinate be
+#' returned instead of a \code{\link[sf]{sfc}} object? Defaults to
+#' \code{FALSE}.
+#'
 #' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
 #' geometries, of length equal to twice the number of lines in x, and ordered
 #' as [start of line 1, end of line 1, start of line 2, end of line 2, ...].
+#' If \code{return_df = TRUE}, a data frame with one column per coordinate is
+#' returned instead, with number of rows equal to twice the number of lines in
+#' x.
 #'
 #' @details With boundary points we mean the points at the start and end of
 #' a linestring.
@@ -174,12 +197,14 @@ df_to_lines = function(x_df, x_sf, id_col = "linestring_id", select = TRUE) {
 #' @importFrom sf st_geometry
 #' @importFrom sfheaders sfc_to_df
 #' @noRd
-linestring_boundary_points = function(x) {
+linestring_boundary_points = function(x, return_df = FALSE) {
   coords = sfc_to_df(st_geometry(x))
   is_start = !duplicated(coords[["linestring_id"]])
   is_end = !duplicated(coords[["linestring_id"]], fromLast = TRUE)
   is_bound = is_start | is_end
-  df_to_points(coords[is_bound, ], x)
+  bounds = coords[is_bound, names(coords) %in% c("x", "y", "z", "m")]
+  if (return_df) return (bounds)
+  df_to_points(bounds, x, select = FALSE)
 }
 
 #' Get the start points of linestring geometries
@@ -187,16 +212,24 @@ linestring_boundary_points = function(x) {
 #' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 #' with \code{LINESTRING} geometries.
 #'
+#' @param return_df Should a data frame with one column per coordinate be
+#' returned instead of a \code{\link[sf]{sfc}} object? Defaults to
+#' \code{FALSE}.
+#'
 #' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
-#' geometries, of length equal to the number of lines in x.
+#' geometries, of length equal to the number of lines in x. If
+#' \code{return_df = TRUE}, a data frame with one column per coordinate is
+#' returned instead, with number of rows equal to the number of lines in x.
 #'
 #' @importFrom sf st_geometry
 #' @importFrom sfheaders sfc_to_df
 #' @noRd
-linestring_start_points = function(x) {
+linestring_start_points = function(x, return_df = FALSE) {
   coords = sfc_to_df(st_geometry(x))
   is_start = !duplicated(coords[["linestring_id"]])
-  df_to_points(coords[is_start, ], x)
+  starts = coords[is_start, names(coords) %in% c("x", "y", "z", "m")]
+  if (return_df) return (starts)
+  df_to_points(starts, x, select = FALSE)
 }
 
 #' Get the end points of linestring geometries
@@ -204,16 +237,24 @@ linestring_start_points = function(x) {
 #' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 #' with \code{LINESTRING} geometries.
 #'
+#' @param return_df Should a data frame with one column per coordinate be
+#' returned instead of a \code{\link[sf]{sfc}} object? Defaults to
+#' \code{FALSE}.
+#'
 #' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
-#' geometries, of length equal to the number of lines in x.
+#' geometries, of length equal to the number of lines in x. If
+#' \code{return_df = TRUE}, a data frame with one column per coordinate is
+#' returned instead, with number of rows equal to the number of lines in x.
 #'
 #' @importFrom sf st_geometry
 #' @importFrom sfheaders sfc_to_df
 #' @noRd
-linestring_end_points = function(x) {
+linestring_end_points = function(x ,return_df = FALSE) {
   coords = sfc_to_df(st_geometry(x))
   is_end = !duplicated(coords[["linestring_id"]], fromLast = TRUE)
-  df_to_points(coords[is_end, ], x)
+  ends = coords[is_end, names(coords) %in% c("x", "y", "z", "m")]
+  if (return_df) return (ends)
+  df_to_points(ends, x, select = FALSE)
 }
 
 #' Get the segments of linestring geometries
