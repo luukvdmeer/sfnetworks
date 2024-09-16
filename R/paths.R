@@ -229,7 +229,7 @@ st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
       } else {
         costs = do.call("c", lapply(paths$edges, \(x) sum(weights[x])))
       }
-      if (has_name(paths, "path_found")) costs[paths$path_found] = Inf
+      if (has_name(paths, "path_found")) costs[!paths$path_found] = Inf
       paths$cost = costs
     }
     # Construct path geometries of requested.

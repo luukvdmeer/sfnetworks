@@ -45,6 +45,7 @@ Imports:
     rlang,
     sf,
     sfheaders,
+    stats,
     tibble,
     tidygraph,
     units,
