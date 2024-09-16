@@ -52,7 +52,7 @@ raise_na_values = function(arg) {
 
 #' @importFrom cli cli_warn
 raise_overwrite = function(value) {
-  cli_warn("Overwriting column {.field value}.")
+  cli_warn("Overwriting column {.field {value}}.")
 }
 
 #' @importFrom cli cli_abort
