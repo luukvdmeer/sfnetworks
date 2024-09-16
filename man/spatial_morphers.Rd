@@ -48,7 +48,7 @@ to_spatial_smooth(
   store_original_data = FALSE
 )
 
-to_spatial_subdivision(x)
+to_spatial_subdivision(x, merge_equal = TRUE)
 
 to_spatial_subset(x, ..., subset_by = NULL)
 
@@ -122,6 +122,12 @@ only pseudo nodes that have incident edges with equal attribute values are
 removed. May also be given as a vector of attribute names. In that case only
 those attributes are checked for equality. Equality tests are evaluated
 using the \code{==} operator.}
+
+\item{merge_equal}{Should multiple subdivision points at the same location
+be merged into a single node, and should subdivision points at the same
+as an existing node be merged into that node? Defaults to \code{TRUE}. If
+set to \code{FALSE}, each subdivision point is added separately as a new
+node to the network.}
 
 \item{subset_by}{Whether to create subgraphs based on nodes or edges.}
 }
@@ -213,16 +219,13 @@ pseudo node. Returns a \code{morphed_sfnetwork} containing a single element
 of class \code{\link{sfnetwork}}.
 
 \item \code{to_spatial_subdivision()}: Construct a subdivision of the network by
-subdividing edges at each interior point that is equal to any
-other interior or boundary point in the edges table. Interior points in this
-sense are those points that are included in their linestring geometry
-feature but are not endpoints of it, while boundary points are the endpoints
-of the linestrings. The network is reconstructed after subdivision such that
-edges are connected at the points of subdivision. Returns a
-\code{morphed_sfnetwork} containing a single element of class
-\code{\link{sfnetwork}}. This morpher requires edges to be spatially
-explicit and nodes to be spatially unique (i.e. not more than one node at
-the same spatial location).
+subdividing edges at each interior point that is equal to any other interior
+or boundary point in the edges table. Interior points are those points that
+shape a linestring geometry feature but are not endpoints of it, while
+boundary points are the endpoints of the linestrings, i.e. the existing
+nodes in het network. Returns a \code{morphed_sfnetwork} containing a single
+element of class \code{\link{sfnetwork}}. This morpher requires edges to be
+spatially explicit.
 
 \item \code{to_spatial_subset()}: Subset the network by applying a spatial
 filter, i.e. a filter on the geometry column based on a spatial predicate.

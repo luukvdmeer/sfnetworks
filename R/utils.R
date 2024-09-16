@@ -49,6 +49,11 @@ st_match = function(x) {
   match(idxs, unique(idxs))
 }
 
+st_match_df = function(x) {
+  x_str = do.call(paste, x)
+  match(x_str, unique(x_str))
+}
+
 #' Rounding of coordinates of point and linestring geometries
 #'
 #' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
@@ -101,14 +106,21 @@ st_round = function(x, digits = 0, ...) {
 #' \code{\link[sf]{sfc}} from which \code{x_df} was constructed. This is used
 #' to copy the CRS and the precision to the new geometries.
 #'
+#' @param select Should coordinate columns first be selected from the given
+#' data frame? If \code{TRUE}, columns with names "x", "y", "z" and "m" will
+#' first be selected from the data frame. If \code{FALSE}, it is assumed the
+#' data frame only contains these columns in exactly that order. Defaults to
+#' \code{TRUE}.
+#'
 #' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
 #' geometries.
 #'
 #' @importFrom sf st_crs st_crs<- st_precision st_precision<-
 #' @importFrom sfheaders sfc_point
 #' @noRd
-df_to_points = function(x_df, x_sf) {
-  pts = sfc_point(x_df[, names(x_df) %in% c("x", "y", "z", "m")])
+df_to_points = function(x_df, x_sf, select = TRUE) {
+  if (select) x_df = x_df[, names(x_df) %in% c("x", "y", "z", "m")]
+  pts = sfc_point(x_df)
   st_crs(pts) = st_crs(x_sf)
   st_precision(pts) = st_precision(x_sf)
   pts
@@ -126,17 +138,22 @@ df_to_points = function(x_df, x_sf) {
 #' @param id_col The name of the column in \code{x_df} that identifies which
 #' row belongs to which linestring.
 #'
+#' @param select Should coordinate columns first be selected from the given
+#' data frame? If \code{TRUE}, columns with names "x", "y", "z" and "m" will
+#' first be selected from the data frame, alongside the specified index column.
+#' If \code{FALSE}, it is assumed that the data frame besides the specified
+#' index columns only contains these coordinate columns in exactly that order.
+#' Defaults to \code{TRUE}.
+#'
 #' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
 #' geometries.
 #'
 #' @importFrom sf st_crs st_crs<- st_precision st_precision<-
 #' @importFrom sfheaders sfc_linestring
 #' @noRd
-df_to_lines = function(x_df, x_sf, id_col = "linestring_id") {
-  lns = sfc_linestring(
-    x_df[, names(x_df) %in% c("x", "y", "z", "m", id_col)],
-    linestring_id = id_col
-  )
+df_to_lines = function(x_df, x_sf, id_col = "linestring_id", select = TRUE) {
+  if (select) x_df = x_df[, names(x_df) %in% c("x", "y", "z", "m", id_col)]
+  lns = sfc_linestring(x_df, linestring_id = id_col)
   st_crs(lns) = st_crs(x_sf)
   st_precision(lns) = st_precision(x_sf)
   lns
