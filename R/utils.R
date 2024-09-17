@@ -77,19 +77,14 @@ st_match_points_df = function(x, precision = NULL) {
   match(x_concat, unique(x_concat))
 }
 
-#' Rounding of coordinates of point and linestring geometries
+#' Rounding of geometry coordinates
 #'
 #' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
 #'
 #' @param digits Integer indicating the number of decimal places to be used.
 #'
-#' @param ... Additional arguments passed on to \code{\link{round}}.
-#'
 #' @return An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 #' with rounded coordinates.
-#'
-#' @note Currently this function only works for \code{POINT} and
-#' \code{LINESTRING} geometries.
 #'
 #' @seealso \code{\link{round}}
 #'
@@ -102,22 +97,15 @@ st_match_points_df = function(x, precision = NULL) {
 #'
 #' st_round(c(p1, p2, p2, p3, p1), digits = 1)
 #'
-#' @importFrom rlang try_fetch
-#' @importFrom sf st_crs st_geometry st_sfc
+#' @importFrom sf st_as_binary st_as_sfc st_geometry st_geometry<-
+#' st_precision<-
 #' @export
-st_round = function(x, digits = 0, ...) {
-  xg = st_geometry(x)
-  try_fetch(
-    st_sfc(lapply(xg, \(i) round(i, digits = digits, ...)), crs = st_crs(x)),
-    error = function(e) {
-      if (! (are_points(xg) | are_linestrings(xg))) {
-        cli_abort(c(
-          "Unsupported geometry types.",
-          "i" = "st_rounds only supports {.cls POINT} and {.cls LINESTRING}."
-        ))
-      }
-    }
-  )
+st_round = function(x, digits = 0) {
+  x_geom = st_geometry(x)
+  st_precision(x_geom) = 10^digits
+  x_geom_rounded = st_as_sfc(st_as_binary(x_geom))
+  st_geometry(x) = x_geom_rounded
+  x
 }
 
 #' Convert a sfheaders data frame into sfc point geometries

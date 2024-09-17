@@ -2,27 +2,21 @@
 % Please edit documentation in R/utils.R
 \name{st_round}
 \alias{st_round}
-\title{Rounding of coordinates of point and linestring geometries}
+\title{Rounding of geometry coordinates}
 \usage{
-st_round(x, digits = 0, ...)
+st_round(x, digits = 0)
 }
 \arguments{
 \item{x}{An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.}
 
 \item{digits}{Integer indicating the number of decimal places to be used.}
-
-\item{...}{Additional arguments passed on to \code{\link{round}}.}
 }
 \value{
 An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
 with rounded coordinates.
 }
 \description{
-Rounding of coordinates of point and linestring geometries
-}
-\note{
-Currently this function only works for \code{POINT} and
-\code{LINESTRING} geometries.
+Rounding of geometry coordinates
 }
 \examples{
 library(sf, quietly = TRUE)
