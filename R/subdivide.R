@@ -22,7 +22,7 @@
 #'
 #' @importFrom dplyr arrange bind_rows
 #' @importFrom igraph is_directed
-#' @importFrom sf st_as_sf st_geometry<-
+#' @importFrom sf st_geometry<-
 #' @importFrom sfheaders sf_to_df
 #' @noRd
 subdivide = function(x, merge_equal = TRUE) {
@@ -62,7 +62,7 @@ subdivide = function(x, merge_equal = TRUE) {
   # Compute for each edge point a unique location index.
   # Edge points that are spatially equal get the same location index.
   edge_coords = edge_pts[names(edge_pts) %in% c("x", "y", "z", "m")]
-  edge_lids = st_match_points_df(edge_coords, st_precision(edges))
+  edge_lids = st_match_points_df(edge_coords, attr(edges, "precision"))
   edge_pts$lid = edge_lids
   # Define which edge points are not unique.
   has_duplicate = duplicated(edge_lids) | duplicated(edge_lids, fromLast = TRUE)
@@ -177,8 +177,7 @@ subdivide = function(x, merge_equal = TRUE) {
   add_node_geoms = df_to_points(add_node_pts, nodes)
   # Construct the new node data.
   # This is done by simply binding original node data with added geometries.
-  add_nodes = st_as_sf(add_node_geoms)
-  st_geometry(add_nodes) = attr(nodes, "sf_column") # Use same column name.
+  add_nodes = sfc_to_sf(add_node_geoms, colname = attr(nodes, "sf_column"))
   new_nodes = bind_rows(nodes, add_nodes)
   ## ==================================================
   # STEP VI: UPDATE FROM AND TO INDICES OF NEW EDGES

@@ -444,7 +444,7 @@ create_from_spatial_lines = function(x, directed = TRUE,
   # These will form the nodes of the network.
   node_coords = linestring_boundary_points(edges, return_df = TRUE)
   # Give each unique location a unique ID.
-  indices = st_match_points_df(node_coords, st_precision(x))
+  indices = st_match_points_df(node_coords, attr(x, "precision"))
   # Convert the node coordinates into point geometry objects.
   nodes = df_to_points(node_coords, x, select = FALSE)
   # Define for each endpoint if it is a source or target node.
@@ -457,17 +457,7 @@ create_from_spatial_lines = function(x, directed = TRUE,
   # Remove duplicated nodes from the nodes table.
   nodes = nodes[!duplicated(indices)]
   # Convert to sf object
-  nodes = st_sf(geometry = nodes)
-  # Use the same sf column name in the nodes as in the edges.
-  geom_colname = attr(edges, "sf_column")
-  if (geom_colname != "geometry") {
-    names(nodes)[1] = geom_colname
-    attr(nodes, "sf_column") = geom_colname
-  }
-  # Use the same class for the nodes as for the edges.
-  # This mainly affects the "lower level" classes.
-  # For example an sf tibble instead of a sf data frame.
-  class(nodes) = class(edges)
+  nodes = sfc_to_sf(nodes, colname = attr(edges, "sf_column"))
   # Create a network out of the created nodes and the provided edges.
   # Force to skip network validity tests because we already know they pass.
   sfnetwork(nodes, edges,

@@ -108,6 +108,23 @@ st_round = function(x, digits = 0) {
   x
 }
 
+#' Convert a sfc object into a sf object.
+#'
+#' @param x An object of class \code{\link[sf]{sfc}}.
+#'
+#' @param colname The name that should be given to the geometry column.
+#'
+#' @return An object of class \code{\link[sf]{sf}}.
+#'
+#' @importFrom sf st_as_sf
+#' @noRd
+sfc_to_sf = function(x, colname = "geometry") {
+  x_sf = st_as_sf(x)
+  names(x_sf) = colname
+  attr(x_sf, "sf_column") = colname
+  x_sf
+}
+
 #' Convert a sfheaders data frame into sfc point geometries
 #'
 #' @param x_df An object of class \code{\link{data.frame}} as constructed by

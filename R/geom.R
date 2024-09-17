@@ -142,6 +142,12 @@ pull_edge_geom = function(x, focused = FALSE) {
 #' to \code{FALSE}. See \code{\link[tidygraph]{focus}} for more information on
 #' focused networks.
 #'
+#' @param name The name that should be given to the geometry column. This is
+#' mainly intended for cases in which a new geometry column is added to
+#' spatially implicit edges. Defaults to \code{NULL}, meaning that the current
+#' geometry column name is preserved if present, or the name "geometry" is
+#' given when there was no present geometry column.
+#'
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
 #' @details Note that the returned network will not be checked for a valid
@@ -180,10 +186,15 @@ mutate_node_geom = function(x, y, focused = FALSE) {
 #' @noRd
 mutate_edge_geom = function(x, y, focused = FALSE) {
   edges = edge_data(x, focused = FALSE)
+  is_new = !is_sf(edges)
   if (focused && is_focused(x)) {
     st_geometry(edges[edge_ids(x, focused = TRUE), ]) = y
   } else {
     st_geometry(edges) = y
+  }
+  if (is_new) {
+    # Use the same geometry column name as for the nodes.
+    st_geometry(edges) = node_geom_colname(x)
   }
   edge_data(x) = edges
   x
