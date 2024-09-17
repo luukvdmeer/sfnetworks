@@ -1,8 +1,7 @@
 #' Join two spatial networks based on equality of node geometries
 #'
 #' A spatial network specific join function which makes a spatial full join on
-#' the geometries of the nodes data, based on the \code{\link[sf]{st_equals}}
-#' spatial predicate. Edge data are combined using a
+#' the geometries of the nodes data. Edge data are combined using a
 #' \code{\link[dplyr]{bind_rows}} semantic, meaning that data are matched by
 #' column name and values are filled with \code{NA} if missing in either of
 #' the networks. The \code{from} and \code{to} columns in the edge data are
@@ -14,6 +13,11 @@
 #' to it using \code{\link{as_sfnetwork}}.
 #'
 #' @param ... Arguments passed on to \code{\link[tidygraph]{graph_join}}.
+#'
+#' @note By default sfnetworks rounds coordinates to 12 decimal places to
+#' determine spatial equality. You can influence this behavior by explicitly
+#' setting the precision of the networks using
+#' \code{\link[sf]{st_set_precision}}.
 #'
 #' @return The joined networks as an object of class \code{\link{sfnetwork}}.
 #'
@@ -86,7 +90,7 @@ spatial_join_network = function(x, y, ...) {
   N_x = vertex_attr(x, x_geomcol)
   N_y = vertex_attr(y, y_geomcol)
   N = c(N_x, N_y)
-  uid = st_match(N)
+  uid = st_match_points(N)
   # Store the unique node indices as node attributes in both x and y.
   if (".sfnetwork_index" %in% c(vertex_attr_names(x), vertex_attr_names(y))) {
     raise_reserved_attr(".sfnetwork_index")

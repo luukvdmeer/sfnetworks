@@ -838,7 +838,10 @@ to_spatial_smooth = function(x,
 #' be merged into a single node, and should subdivision points at the same
 #' as an existing node be merged into that node? Defaults to \code{TRUE}. If
 #' set to \code{FALSE}, each subdivision point is added separately as a new
-#' node to the network.
+#' node to the network. By default sfnetworks rounds coordinates to 12 decimal
+#' places to determine spatial equality. You can influence this behavior by
+#' explicitly setting the precision of the network using
+#' \code{\link[sf]{st_set_precision}}.
 #'
 #' @export
 to_spatial_subdivision = function(x, merge_equal = TRUE) {
@@ -890,7 +893,10 @@ to_spatial_transformed = function(x, ...) {
 
 #' @describeIn spatial_morphers Merge nodes with equal geometries into a single
 #' node. Returns a \code{morphed_sfnetwork} containing a single element of
-#' class \code{\link{sfnetwork}}.
+#' class \code{\link{sfnetwork}}. By default sfnetworks rounds coordinates to
+#' 12 decimal places to determine spatial equality. You can influence this
+#' behavior by explicitly setting the precision of the network using
+#' \code{\link[sf]{st_set_precision}}.
 #'
 #' @importFrom igraph contract delete_vertex_attr
 #' @importFrom sf st_as_sf st_geometry
@@ -939,172 +945,5 @@ to_spatial_unique = function(x, summarise_attributes = "ignore",
   # Return new network as sfnetwork object in a list.
   list(
     unique = tbg_to_sfn(x_new %preserve_network_attrs% x)
-  )
-}
-
-
-to_spatial_subdivision_orig = function(x) {
-  if (will_assume_constant(x)) raise_assume_constant("to_spatial_subdivision")
-  # Retrieve nodes and edges from the network.
-  nodes = nodes_as_sf(x)
-  edges = edges_as_sf(x)
-  # For later use:
-  # --> Check wheter x is directed.
-  directed = is_directed(x)
-  ## ===========================
-  # STEP I: DECOMPOSE THE EDGES
-  # Decompose the edges linestring geometries into the points that shape them.
-  ## ===========================
-  # Extract all points from the linestring geometries of the edges.
-  edge_pts = sf_to_df(edges)
-  # Extract two subsets of information:
-  # --> One with only the coordinates of the points
-  # --> Another with indices describing to which edge a point belonged.
-  edge_coords = edge_pts[names(edge_pts) %in% c("x", "y", "z", "m")]
-  edge_idxs = edge_pts$linestring_id
-  ## =======================================
-  # STEP II: DEFINE WHERE TO SUBDIVIDE EDGES
-  # Edges should be split at locations where:
-  # --> An edge interior point is equal to a boundary point in another edge.
-  # --> An edge interior point is equal to an interior point in another edge.
-  # Hence, we need to split edges at point that:
-  # --> Are interior points.
-  # --> Have at least one duplicate among the other edge points.
-  ## =======================================
-  # Find which of the edge points is a boundary point.
-  is_startpoint = !duplicated(edge_idxs)
-  is_endpoint = !duplicated(edge_idxs, fromLast = TRUE)
-  is_boundary = is_startpoint | is_endpoint
-  # Find which of the edge points occur more than once.
-  is_duplicate_desc = duplicated(edge_coords)
-  is_duplicate_asc = duplicated(edge_coords, fromLast = TRUE)
-  has_duplicate = is_duplicate_desc | is_duplicate_asc
-  # Split points are those edge points satisfying both of the following rules:
-  # --> 1) They have at least one duplicate among the other edge points.
-  # --> 2) They are not edge boundary points themselves.
-  is_split = has_duplicate & !is_boundary
-  if (! any(is_split)) return (x)
-  ## ================================
-  # STEP III: DUPLICATE SPLIT POINTS
-  # The split points are currently a single interior point in an edge.
-  # They will become the endpoint of one edge *and* the startpoint of another.
-  # Hence, each split point needs to be duplicated.
-  ## ================================
-  # Create the repetition vector:
-  # --> This defines for each edge point if it should be duplicated.
-  # --> A value of '1' means 'store once', i.e. don't duplicate.
-  # --> A value of '2' means 'store twice', i.e. duplicate.
-  # --> Split points will be part of two new edges and should be duplicated.
-  reps = rep(1L, nrow(edge_coords))
-  reps[is_split] = 2L
-  # Create the new coordinate data frame by duplicating split points.
-  new_edge_coords = data.frame(lapply(edge_coords, function(i) rep(i, reps)))
-  ## ==========================================
-  # STEP IV: CONSTRUCT THE NEW EDGES GEOMETRIES
-  # With the new coords of the edge points we need to recreate linestrings.
-  # First we need to know which edge points belong to which *new* edge.
-  # Then we need to build a linestring geometry for each new edge.
-  ## ==========================================
-  # First assign each new edge point coordinate its *original* edge index.
-  # --> Then increment those accordingly at each split point.
-  orig_edge_idxs = rep(edge_idxs, reps)
-  # Original edges are subdivided at each split point.
-  # Therefore, a new edge originates from each split point.
-  # Hence, to get the new edge indices:
-  # --> Increment each original edge index by 1 at each split point.
-  incs = integer(nrow(new_edge_coords)) # By default don't increment.
-  incs[which(is_split) + 1:sum(is_split)] = 1L # Add 1 after each split.
-  new_edge_idxs = orig_edge_idxs + cumsum(incs)
-  new_edge_coords$edge_id = new_edge_idxs
-  # Build the new edge geometries.
-  new_edge_geoms = sfc_linestring(new_edge_coords, linestring_id = "edge_id")
-  st_crs(new_edge_geoms) = st_crs(edges)
-  st_precision(new_edge_geoms) = st_precision(edges)
-  new_edge_coords$edge_id = NULL
-  ## ===================================
-  # STEP V: CONSTRUCT THE NEW EDGE DATA
-  # We now have the geometries of the new edges.
-  # However, the original edge attributes got lost.
-  # We will restore them by:
-  # --> Adding back the attributes to edges that were not split.
-  # --> Duplicating original attributes within splitted edges.
-  # Beware that from and to columns will remain unchanged at this stage.
-  # We will update them later.
-  ## ===================================
-  # Find which *original* edge belongs to which *new* edge:
-  # --> Use the lists of edge indices mapped to the new edge points.
-  # --> There we already mapped each new edge point to its original edge.
-  # --> First define which new edge points are startpoints of new edges.
-  # --> Then retrieve the original edge index from these new startpoints.
-  # --> This gives us a single original edge index for each new edge.
-  is_new_startpoint = !duplicated(new_edge_idxs)
-  orig_edge_idxs = orig_edge_idxs[is_new_startpoint]
-  # Duplicate original edge data whenever needed.
-  new_edges = edges[orig_edge_idxs, ]
-  # Set the new edge geometries as geometries of these new edges.
-  st_geometry(new_edges) = new_edge_geoms
-  ## ==========================================
-  # STEP VI: CONSTRUCT THE NEW NODE GEOMETRIES
-  # All split points are now boundary points of new edges.
-  # All edge boundaries become nodes in the network.
-  ## ==========================================
-  is_new_boundary = rep(is_split | is_boundary, reps)
-  new_node_geoms = sfc_point(new_edge_coords[is_new_boundary, ])
-  st_crs(new_node_geoms) = st_crs(nodes)
-  st_precision(new_node_geoms) = st_precision(nodes)
-  ## =====================================
-  # STEP VII: CONSTRUCT THE NEW NODE DATA
-  # We now have the geometries of the new nodes.
-  # However, the original node attributes got lost.
-  # We will restore them by:
-  # --> Adding back the attributes to nodes that were already a node before.
-  # --> Filling attribute values of newly added nodes with NA.
-  # Beware at this stage the nodes are recreated from scratch.
-  # That means each boundary point of the new edges is stored as separate node.
-  # Boundaries with equal geometries will be merged into a single node later.
-  ## =====================================
-  # Find which of the *original* edge points equaled which *original* node.
-  # If an edge point did not equal a node, store NA instead.
-  node_idxs = rep(NA, nrow(edge_pts))
-  if (directed) {
-    node_idxs[is_boundary] = edge_incident_ids(x)
-  } else {
-    node_idxs[is_boundary] = edge_boundary_ids(x)
-  }
-  # Find which of the *original* nodes belong to which *new* edge boundary.
-  # If a new edge boundary does not equal an original node, store NA instead.
-  orig_node_idxs = rep(node_idxs, reps)[is_new_boundary]
-  # Retrieve original node data for each new edge boundary.
-  # Rows of newly added nodes will be NA.
-  new_nodes = nodes[orig_node_idxs, ]
-  # Set the new node geometries as geometries of these new nodes.
-  st_geometry(new_nodes) = new_node_geoms
-  ## ==================================================
-  # STEP VIII: UPDATE FROM AND TO INDICES OF NEW EDGES
-  # Now we updated the node data, the node indices changes.
-  # Therefore we need to update the from and to columns of the edges as well.
-  ## ==================================================
-  # Define the indices of the new nodes.
-  # Equal geometries should get the same index.
-  new_node_idxs = st_match(new_node_geoms)
-  # Map node indices to edges.
-  is_source = rep(c(TRUE, FALSE), length(new_node_geoms) / 2)
-  new_edges$from = new_node_idxs[is_source]
-  new_edges$to = new_node_idxs[!is_source]
-  ## =============================
-  # STEP IX: UPDATE THE NEW NODES
-  # We can now remove the duplicated node geometries from the new nodes data.
-  # Then, each location is represented by a single node.
-  ## =============================
-  new_nodes = new_nodes[!duplicated(new_node_idxs), ]
-  ## ============================
-  # STEP X: RECREATE THE NETWORK
-  # Use the new nodes data and the new edges data to create the new network.
-  ## ============================
-  # Create new network.
-  x_new = sfnetwork_(new_nodes, new_edges, directed = directed)
-  # Return in a list.
-  list(
-    subdivision = x_new %preserve_network_attrs% x
   )
 }

@@ -32,6 +32,12 @@ It is assumed that the given linestring geometries form the edges
 in the network. Nodes are created at the line boundaries. Shared boundaries
 between multiple linestrings become the same node.
 }
+\note{
+By default sfnetworks rounds coordinates to 12 decimal places to
+determine spatial equality. You can influence this behavior by explicitly
+setting the precision of the linestrings using
+\code{\link[sf]{st_set_precision}}.
+}
 \examples{
 library(sf, quietly = TRUE)
 

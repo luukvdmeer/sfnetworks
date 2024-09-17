@@ -414,6 +414,11 @@ as_sfnetwork.focused_tbl_graph = function(x, ...) {
 #' in the network. Nodes are created at the line boundaries. Shared boundaries
 #' between multiple linestrings become the same node.
 #'
+#' @note By default sfnetworks rounds coordinates to 12 decimal places to
+#' determine spatial equality. You can influence this behavior by explicitly
+#' setting the precision of the linestrings using
+#' \code{\link[sf]{st_set_precision}}.
+#'
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
 #' @examples
@@ -429,48 +434,9 @@ as_sfnetwork.focused_tbl_graph = function(x, ...) {
 #'
 #' par(oldpar)
 #'
-#' @importFrom sf st_as_sf st_sf
+#' @importFrom sf st_as_sf st_precision st_sf
 #' @export
 create_from_spatial_lines = function(x, directed = TRUE,
-                                     compute_length = FALSE) {
-  # The provided lines will form the edges of the network.
-  edges = st_as_sf(x)
-  # Get the boundary points of the edges.
-  nodes = linestring_boundary_points(edges)
-  # Give each unique location a unique ID.
-  indices = st_match(nodes)
-  # Define for each endpoint if it is a source or target node.
-  is_source = rep(c(TRUE, FALSE), length(nodes) / 2)
-  # Define for each edge which node is its source and target node.
-  if ("from" %in% colnames(edges)) raise_overwrite("from")
-  edges$from = indices[is_source]
-  if ("to" %in% colnames(edges)) raise_overwrite("to")
-  edges$to = indices[!is_source]
-  # Remove duplicated nodes from the nodes table.
-  nodes = nodes[!duplicated(indices)]
-  # Convert to sf object
-  nodes = st_sf(geometry = nodes)
-  # Use the same sf column name in the nodes as in the edges.
-  geom_colname = attr(edges, "sf_column")
-  if (geom_colname != "geometry") {
-    names(nodes)[1] = geom_colname
-    attr(nodes, "sf_column") = geom_colname
-  }
-  # Use the same class for the nodes as for the edges.
-  # This mainly affects the "lower level" classes.
-  # For example an sf tibble instead of a sf data frame.
-  class(nodes) = class(edges)
-  # Create a network out of the created nodes and the provided edges.
-  # Force to skip network validity tests because we already know they pass.
-  sfnetwork(nodes, edges,
-    directed = directed,
-    edges_as_lines = TRUE,
-    compute_length = compute_length,
-    force = TRUE
-  )
-}
-
-create_from_spatial_lines_v2 = function(x, directed = TRUE,
                                      compute_length = FALSE) {
   # The provided lines will form the edges of the network.
   edges = st_as_sf(x)

@@ -127,7 +127,10 @@ using the \code{==} operator.}
 be merged into a single node, and should subdivision points at the same
 as an existing node be merged into that node? Defaults to \code{TRUE}. If
 set to \code{FALSE}, each subdivision point is added separately as a new
-node to the network.}
+node to the network. By default sfnetworks rounds coordinates to 12 decimal
+places to determine spatial equality. You can influence this behavior by
+explicitly setting the precision of the network using
+\code{\link[sf]{st_set_precision}}.}
 
 \item{subset_by}{Whether to create subgraphs based on nodes or edges.}
 }
@@ -242,7 +245,10 @@ Returns a \code{morphed_sfnetwork} containing a single element of class
 
 \item \code{to_spatial_unique()}: Merge nodes with equal geometries into a single
 node. Returns a \code{morphed_sfnetwork} containing a single element of
-class \code{\link{sfnetwork}}.
+class \code{\link{sfnetwork}}. By default sfnetworks rounds coordinates to
+12 decimal places to determine spatial equality. You can influence this
+behavior by explicitly setting the precision of the network using
+\code{\link[sf]{st_set_precision}}.
 
 }}
 \examples{

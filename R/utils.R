@@ -24,6 +24,20 @@ st_duplicated = function(x) {
   dup
 }
 
+#' @importFrom sf st_geometry
+#' @importFrom sfheaders sfc_to_df
+st_duplicated_points = function(x, precision = attr(x, "precision")) {
+  x_df = sfc_to_df(st_geometry(x))
+  coords = x_df[, names(x_df) %in% c("x", "y", "z", "m")]
+  st_duplicated_points_df(coords, precision = precision)
+}
+
+st_duplicated_points_df = function(x, precision = NULL) {
+  x_trim = lapply(x, round, digits = precision_digits(precision))
+  x_concat = do.call(paste, x_trim)
+  duplicated(x_concat)
+}
+
 #' Geometry matching
 #'
 #' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
@@ -58,16 +72,9 @@ st_match_points = function(x, precision = attr(x, "precision")) {
 }
 
 st_match_points_df = function(x, precision = NULL) {
-  x_trim = lapply(x, round, digits = precision_to_digits(precision))
+  x_trim = lapply(x, round, digits = precision_digits(precision))
   x_concat = do.call(paste, x_trim)
   match(x_concat, unique(x_concat))
-}
-
-#' @importFrom cli cli_abort
-precision_to_digits = function(x) {
-  if (is.null(x) || x == 0) return (12)
-  if (x > 0) return (log(x, 10))
-  cli_abort("Currently sfnetworks does not support negative precision")
 }
 
 #' Rounding of coordinates of point and linestring geometries
@@ -423,6 +430,24 @@ merge_mranges = function(a, b) {
   ab["mmin"] = min(a["mmin"], b["mmin"])
   ab["mmax"] = max(a["mmax"], b["mmax"])
   ab
+}
+
+#' Infer the number of decimal places from a fixed precision scale factor
+#'
+#' @param x A fixed precision scale factor.
+#'
+#' @details For more information on fixed precision scale factors see
+#' \code{\link[sf]{st_as_binary}}. When the precision scale factor is 0
+#' or not defined, sfnetworks defaults to 12 decimal places.
+#'
+#' @return A numeric value specifying the number of decimal places.
+#'
+#' @importFrom cli cli_abort
+#' @noRd
+precision_digits = function(x) {
+  if (is.null(x) || x == 0) return (12)
+  if (x > 0) return (log(x, 10))
+  cli_abort("Currently sfnetworks does not support negative precision")
 }
 
 #' List-column friendly version of bind_rows

@@ -241,7 +241,7 @@ blend_ = function(x, y, tolerance) {
   # Remove duplicated features in y.
   # These features will have the same blending location.
   # Only one point can be blended per location.
-  is_duplicated = st_duplicated(Y)
+  is_duplicated = st_duplicated_points(Y)
   Y = Y[!is_duplicated]
   ## ==========================================
   # STEP V: INCLUDE FEATURES IN EDGE GEOMETRIES
