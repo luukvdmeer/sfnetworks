@@ -1,3 +1,29 @@
+#' @importFrom cli cli_abort
+#' @importFrom igraph edge_attr
+#' @importFrom rlang enquo eval_tidy
+#' @importFrom tidygraph .E .register_graph_context
+evaluate_edge_query = function(data, edges) {
+  .register_graph_context(data, free = TRUE)
+  edges = eval_tidy(enquo(edges), .E())
+  if (is.logical(edges)) {
+    edges = which(edges)
+  } else if (is.character(edges)) {
+    names = edge_attr(data, "name")
+    if (is.null(names)) {
+      cli_abort(c(
+        "Failed to match edge names.",
+        "x" = "There is no edge attribute {.field name}.",
+        "i" = paste(
+          "When querying edges using names it is expected that these",
+          "names are stored in a edge attribute named {.field name}"
+        )
+      ))
+    }
+    edges = match(edges, names)
+  }
+  edges
+}
+
 #' Query spatial edge measures
 #'
 #' These functions are a collection of specific spatial edge measures, that
