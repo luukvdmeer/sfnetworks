@@ -478,34 +478,8 @@ to_spatial_smooth = function(x,
   ## ===========================
   # Detected pseudo nodes that are protected should be filtered out.
   if (! is.null(protect)) {
-    # Parse the protect parameter values.
-    # If protect is given as character vector:
-    # --> Find the node indices belonging to these node names.
-    # If protect is given as geospatial features:
-    # --> First find the nearest node to each of these features.
-    if (is.character(protect)) {
-      # Obtain node names.
-      # They should be stored in a node attribute column named "name".
-      node_names = vertex_attr(x, "name")
-      if (is.null(node_names)) {
-        cli_abort(c(
-          "Failed to identify protected nodes by their name.",
-          "x" = "There is not node attribute {.field name}"
-        ))
-      }
-      # Match node names to node indices.
-      matched_names = match(protect, node_names)
-      if (any(is.na(matched_names))) {
-        unknown_names = paste(protect[is.na(matched_names)], collapse = ", ")
-        cli_abort(c(
-          "Failed to identify protected nodes by their name.",
-          "x" = "The following node names were not found: {unknown_names}"
-        ))
-      }
-      protect = matched_names
-    } else if (is_sf(protect) | is_sfc(protect)) {
-      protect = nearest_node_ids(x, protect)
-    }
+    # Evaluate the given protected nodes query.
+    protect = evaluate_node_query(x, protect)
     # Mark all protected nodes as not being a pseudo node.
     pseudo[protect] = FALSE
     if (! any(pseudo)) return (x)
