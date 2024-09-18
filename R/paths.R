@@ -187,14 +187,13 @@ st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
                                       type = "shortest", direction = "out",
                                       use_names = TRUE, return_cost = TRUE,
                                       return_geometry = TRUE, ...) {
-  # Parse from and to arguments.
-  # --> Convert geometries to node indices.
-  # --> Raise warnings when igraph requirements are not met.
-  if (is_sf(from) | is_sfc(from)) from = nearest_node_ids(x, from)
-  if (is_sf(to) | is_sfc(to)) to = nearest_node_ids(x, to)
+  # Evaluate the given from node query.
+  from = evaluate_node_query(from)
   if (length(from) > 1) raise_multiple_elements("from"); from = from[1]
   if (any(is.na(from))) raise_na_values("from")
-  if (any(is.na(to))) raise_na_value("to")
+  # Evaluate the given to node query.
+  to = evaluate_node_query(to)
+  if (any(is.na(to))) raise_na_values("to")
   # Evaluate the given weights specification.
   weights = evaluate_weight_spec(x, weights)
   # Compute the shortest paths.
@@ -419,12 +418,12 @@ st_network_cost.sfnetwork = function(x, from = node_ids(x), to = node_ids(x),
                                      weights = edge_length(),
                                      direction = "out",
                                      Inf_as_NaN = FALSE, ...) {
-  # Parse from and to arguments.
-  # --> Convert geometries to node indices.
-  # --> Raise warnings when igraph requirements are not met.
-  if (is_sf(from) | is_sfc(from)) from = nearest_node_ids(x, from)
-  if (is_sf(to) | is_sfc(to)) to = nearest_node_ids(x, to)
-  if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
+  # Evaluate the given from node query.
+  from = evaluate_node_query(from)
+  if (any(is.na(from))) raise_na_values("from")
+  # Evaluate the given to node query.
+  to = evaluate_node_query(to)
+  if (any(is.na(to))) raise_na_values("to")
   # Evaluate the given weights specification.
   weights = evaluate_weight_spec(x, weights)
   # Parse other arguments.

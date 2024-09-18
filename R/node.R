@@ -1,3 +1,31 @@
+#' @importFrom cli cli_abort
+#' @importFrom igraph vertex_attr
+#' @importFrom rlang enquo eval_tidy
+#' @importFrom tidygraph .N .register_graph_context
+evaluate_node_query = function(data, nodes) {
+  .register_graph_context(data, free = TRUE)
+  nodes = eval_tidy(enquo(nodes), .N())
+  if (is_sf(nodes) | is_sfc(nodes)) {
+    nodes = nearest_node_ids(data, nodes)
+  } else if (is.logical(nodes)) {
+    nodes = which(nodes)
+  } else if (is.character(nodes)) {
+    names = vertex_attr(data, "name")
+    if (is.null(names)) {
+      cli_abort(c(
+        "Failed to match node names.",
+        "x" = "There is no node attribute {.field name}.",
+        "i" = paste(
+          "When querying nodes using names it is expected that these",
+          "names are stored in a node attribute named {.field name}"
+        )
+      ))
+    }
+    nodes = match(nodes, names)
+  }
+  nodes
+}
+
 #' Query node coordinates
 #'
 #' These functions allow to query specific coordinate values from the

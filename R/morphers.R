@@ -275,11 +275,6 @@ to_spatial_explicit = function(x, ...) {
 #' @importFrom units as_units deparse_unit
 #' @export
 to_spatial_neighborhood = function(x, node, threshold, ...) {
-  # Parse node argument.
-  # If 'node' is given as a geometry, find the index of the nearest node.
-  # When multiple nodes are given only the first one is taken.
-  if (is_sf(node) | is_sfc(node)) node = nearest_node_ids(x, node)
-  if (length(node) > 1) raise_multiple_elements("node")
   # Compute the cost matrix from the source node.
   # By calling st_network_cost with the given arguments.
   if (hasArg("from")) {
