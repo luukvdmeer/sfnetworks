@@ -148,10 +148,13 @@ deprecate_edges_as_lines = function() {
 }
 
 #' @importFrom lifecycle deprecate_warn
-deprecate_weights_is_string = function(caller) {
+deprecate_weights_is_string = function() {
   deprecate_warn(
       when = "v1.0",
-      what = paste0(caller, "(weights = 'uses tidy evaluation')"),
+      what = paste0(
+        "evaluate_weight_spec",
+        "(weights = 'uses tidy evaluation')"
+      ),
       details = c(
         i = paste(
           "This means you can forward column names without quotations, e.g.",
@@ -164,11 +167,11 @@ deprecate_weights_is_string = function(caller) {
 }
 
 #' @importFrom lifecycle deprecate_warn
-deprecate_weights_is_null = function(caller) {
+deprecate_weights_is_null = function() {
   deprecate_warn(
     when = "v1.0",
     what = paste0(
-      caller,
+      "evaluate_weight_spec",
       "(weights = 'if set to NULL means no edge weights are used')"
     ),
     details = c(

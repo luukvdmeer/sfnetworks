@@ -179,9 +179,8 @@ st_network_paths = function(x, from, to = node_ids(x),
 }
 
 #' @importFrom igraph vertex_attr vertex_attr_names
-#' @importFrom rlang enquo eval_tidy expr has_name
+#' @importFrom rlang has_name
 #' @importFrom sf st_as_sf
-#' @importFrom tidygraph .E .register_graph_context
 #' @export
 st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
                                       weights = edge_length(),
@@ -196,20 +195,8 @@ st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
   if (length(from) > 1) raise_multiple_elements("from"); from = from[1]
   if (any(is.na(from))) raise_na_values("from")
   if (any(is.na(to))) raise_na_value("to")
-  # Parse weights argument using tidy evaluation on the network edges.
-  .register_graph_context(x, free = TRUE)
-  weights = enquo(weights)
-  weights = eval_tidy(weights, .E())
-  if (is_single_string(weights)) {
-    # Allow character values for backward compatibility.
-    deprecate_weights_is_string("st_network_paths")
-    weights = eval_tidy(expr(.data[[weights]]), .E())
-  }
-  if (is.null(weights)) {
-    # Convert NULL to NA to align with tidygraph instead of igraph.
-    deprecate_weights_is_null("st_network_paths")
-    weights = NA
-  }
+  # Evaluate the given weights specification.
+  weights = evaluate_weight_spec(x, weights)
   # Compute the shortest paths.
   paths = igraph_paths(x, from, to, weights, type, direction, ...)
   # Convert node indices to node names if requested.
@@ -426,8 +413,6 @@ st_network_cost = function(x, from = node_ids(x), to = node_ids(x),
 
 #' @importFrom igraph distances
 #' @importFrom methods hasArg
-#' @importFrom rlang enquo eval_tidy expr
-#' @importFrom tidygraph .E .register_graph_context
 #' @importFrom units as_units deparse_unit
 #' @export
 st_network_cost.sfnetwork = function(x, from = node_ids(x), to = node_ids(x),
@@ -440,20 +425,8 @@ st_network_cost.sfnetwork = function(x, from = node_ids(x), to = node_ids(x),
   if (is_sf(from) | is_sfc(from)) from = nearest_node_ids(x, from)
   if (is_sf(to) | is_sfc(to)) to = nearest_node_ids(x, to)
   if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
-  # Parse weights argument using tidy evaluation on the network edges.
-  .register_graph_context(x, free = TRUE)
-  weights = enquo(weights)
-  weights = eval_tidy(weights, .E())
-  if (is_single_string(weights)) {
-    # Allow character values for backward compatibility.
-    deprecate_weights_is_string("st_network_cost")
-    weights = eval_tidy(expr(.data[[weights]]), .E())
-  }
-  if (is.null(weights)) {
-    # Convert NULL to NA to align with tidygraph instead of igraph.
-    deprecate_weights_is_null("st_network_cost")
-    weights = NA
-  }
+  # Evaluate the given weights specification.
+  weights = evaluate_weight_spec(x, weights)
   # Parse other arguments.
   # --> The direction argument is used instead of igraphs mode argument.
   # --> This means the mode argument should not be set.
