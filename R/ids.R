@@ -1,4 +1,4 @@
-#' Extract the node or edge indices from a spatial network
+#' Extract all node or edge indices from a spatial network
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -9,7 +9,7 @@
 #' @details The indices in these objects are always integers that correspond to
 #' rownumbers in respectively the nodes or edges table.
 #'
-#' @return An vector of integers.
+#' @return A vector of integers.
 #'
 #' @examples
 #' net = as_sfnetwork(roxel[1:10, ])
@@ -36,6 +36,148 @@ edge_ids = function(x, focused = TRUE) {
   } else {
     seq_len(n_edges(x))
   }
+}
+
+#' Query specific node indices from a spatial network
+#'
+#' @param data An object of class \code{\link{sfnetwork}}.
+#'
+#' @param query The query that defines for which nodes to extract indices. See
+#' Details.
+#'
+#' @details There are multiple ways in which node indices can be queried in
+#' sfnetworks. The query can be formatted as follows:
+#'
+#' \itemize{
+#'   \item As spatial features: Spatial features can be given as object of
+#'   class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}. The nearest node to
+#'   each feature is found by calling \code{\link[sf]{st_nearest_feature}}.
+#'   \item As node type query function: A
+#'   \link[tidygraph:node_types]{node type query function} defines for each
+#'   node if it is of a given type or not. Nodes that meet the criterium are
+#'   queried.
+#'   \item As node predicate query function: A
+#'   \link[=spatial_node_predicates]{node predicate query function} defines
+#'   for each node if a given spatial predicate applies to the spatial relation
+#'   between that node and other spatial features. Nodes that meet the
+#'   criterium are queried.
+#'   \item As column name: The referenced column is expected to have logical
+#'   values defining for each node if it should be queried or not. Note that
+#'   tidy evaluation is used and hence the column name should be unquoted.
+#'   \item As integers: Integers are interpreted as node indices. A node index
+#'   corresponds to a row-number in the nodes table of the network.
+#'   \item As characters: Characters are interpreted as node names. A node name
+#'   corresponds to a value in a column named "name" in the the nodes table of
+#'   the network. Note that this column is expected to store unique names
+#'   without any duplicated values.
+#'   \item As logicals: Logicals should define for each node if it should be
+#'   queried or not.
+#' }
+#'
+#' Queries that can not be evaluated in any of the ways described above will be
+#' forcefully converted to integers using \code{\link{as.integer}}.
+#'
+#' @return A vector of queried node indices.
+#'
+#' @importFrom cli cli_abort
+#' @importFrom igraph vertex_attr
+#' @importFrom rlang enquo eval_tidy
+#' @importFrom tidygraph .N .register_graph_context
+#' @export
+evaluate_node_query = function(data, query) {
+  .register_graph_context(data, free = TRUE)
+  nodes = eval_tidy(enquo(query), .N())
+  if (is_sf(nodes) | is_sfc(nodes)) {
+    nodes = nearest_node_ids(data, nodes)
+  } else if (is.logical(nodes)) {
+    nodes = which(nodes)
+  } else if (is.character(nodes)) {
+    names = vertex_attr(data, "name")
+    if (is.null(names)) {
+      cli_abort(c(
+        "Failed to match node names.",
+        "x" = "There is no node attribute {.field name}.",
+        "i" = paste(
+          "When querying nodes using names it is expected that these",
+          "names are stored in a node attribute named {.field name}"
+        )
+      ))
+    }
+    nodes = match(nodes, names)
+  }
+  if (! is.integer(nodes)) nodes = as.integer(nodes)
+  nodes
+}
+
+#' Query specific edge indices from a spatial network
+#'
+#' @param data An object of class \code{\link{sfnetwork}}.
+#'
+#' @param query The query that defines for which edges to extract indices. See
+#' Details.
+#'
+#' @details There are multiple ways in which edge indices can be queried in
+#' sfnetworks. The query can be formatted as follows:
+#'
+#' \itemize{
+#'   \item As spatial features: Spatial features can be given as object of
+#'   class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}. The nearest edge to
+#'   each feature is found by calling \code{\link[sf]{st_nearest_feature}}.
+#'   \item As edge type query function: A
+#'   \link[tidygraph:edge_types]{edge type query function} defines for each
+#'   edge if it is of a given type or not. Nodes that meet the criterium are
+#'   queried.
+#'   \item As edge predicate query function: A
+#'   \link[=spatial_edge_predicates]{edge predicate query function} defines
+#'   for each edge if a given spatial predicate applies to the spatial relation
+#'   between that edge and other spatial features. Nodes that meet the
+#'   criterium are queried.
+#'   \item As column name: The referenced column is expected to have logical
+#'   values defining for each edge if it should be queried or not. Note that
+#'   tidy evaluation is used and hence the column name should be unquoted.
+#'   \item As integers: Integers are interpreted as edge indices. A edge index
+#'   corresponds to a row-number in the edges table of the network.
+#'   \item As characters: Characters are interpreted as edge names. A edge name
+#'   corresponds to a value in a column named "name" in the the edges table of
+#'   the network. Note that this column is expected to store unique names
+#'   without any duplicated values.
+#'   \item As logicals: Logicals should define for each edge if it should be
+#'   queried or not.
+#' }
+#'
+#' Queries that can not be evaluated in any of the ways described above will be
+#' forcefully converted to integers using \code{\link{as.integer}}.
+#'
+#' @return A vector of queried edge indices.
+#'
+#' @importFrom cli cli_abort
+#' @importFrom igraph edge_attr
+#' @importFrom rlang enquo eval_tidy
+#' @importFrom tidygraph .E .register_graph_context
+#' @export
+evaluate_edge_query = function(data, query) {
+  .register_graph_context(data, free = TRUE)
+  edges = eval_tidy(enquo(query), .E())
+  if (is_sf(edges) | is_sfc(edges)) {
+    edges = nearest_edge_ids(data, edges)
+  } else if (is.logical(edges)) {
+    edges = which(edges)
+  } else if (is.character(edges)) {
+    names = edge_attr(data, "name")
+    if (is.null(names)) {
+      cli_abort(c(
+        "Failed to match edge names.",
+        "x" = "There is no edge attribute {.field name}.",
+        "i" = paste(
+          "When querying edges using names it is expected that these",
+          "names are stored in a edge attribute named {.field name}"
+        )
+      ))
+    }
+    edges = match(edges, names)
+  }
+  if (! is.integer(edges)) edges = as.integer(edges)
+  edges
 }
 
 #' Extract for each edge in a spatial network the indices of incident nodes

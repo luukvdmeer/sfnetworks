@@ -4,7 +4,7 @@
 \alias{ids}
 \alias{node_ids}
 \alias{edge_ids}
-\title{Extract the node or edge indices from a spatial network}
+\title{Extract all node or edge indices from a spatial network}
 \usage{
 node_ids(x, focused = TRUE)
 
@@ -18,10 +18,10 @@ extracted? Defaults to \code{TRUE}. See \code{\link[tidygraph]{focus}} for
 more information on focused networks.}
 }
 \value{
-An vector of integers.
+A vector of integers.
 }
 \description{
-Extract the node or edge indices from a spatial network
+Extract all node or edge indices from a spatial network
 }
 \details{
 The indices in these objects are always integers that correspond to

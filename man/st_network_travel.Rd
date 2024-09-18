@@ -19,23 +19,13 @@ st_network_travel(
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
 
-\item{pois}{Locations that the travelling salesman will visit.
-Can be an integer vector specifying nodes indices or a character vector
-specifying node names. Can also be an object of class \code{\link[sf]{sf}}
-or \code{\link[sf]{sfc}} containing spatial features.
-In that case, these feature will be snapped to their nearest node before
-solving the algorithm.}
+\item{pois}{Locations that the travelling salesman will visit. Evaluated by
+\code{\link{evaluate_node_query}}.}
 
 \item{weights}{The edge weights to be used in the shortest path calculation.
-Can be a numeric vector of the same length as the number of edges, a
-\link[=spatial_edge_measures]{spatial edge measure function}, or a column in
-the edges table of the network. Tidy evaluation is used such that column
-names can be specified as if they were variables in the environment (e.g.
-simply \code{length} instead of \code{igraph::edge_attr(x, "length")}).
-If set to \code{NULL} or \code{NA} no edge weights are used, and the
-shortest path is the path with the fewest number of edges, ignoring space.
-The default is \code{\link{edge_length}}, which computes the geographic
-lengths of the edges.}
+Evaluated by \code{\link{evaluate_edge_spec}}. The default is
+\code{\link{edge_length}}, which computes the geographic lengths of the
+edges.}
 
 \item{return_paths}{Should the shortest paths between `pois` be computed?
 Defaults to `TRUE`. If `FALSE`, a vector with indices in the visiting order

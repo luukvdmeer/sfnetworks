@@ -257,12 +257,9 @@ to_spatial_explicit = function(x, ...) {
 #' network. Returns a \code{morphed_sfnetwork} containing a single element of
 #' class \code{\link{sfnetwork}}.
 #'
-#' @param node The node for which the neighborhood will be calculated. Can be
-#' an integer specifying its index or a character specifying its name. Can also
-#' be an object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
-#' containing a single spatial feature. In that case, this feature will be
-#' snapped to its nearest node before calculating the neighborhood. When
-#' multiple indices, names or features are given, only the first one is used.
+#' @param node The node for which the neighborhood will be calculated.
+#' Evaluated by \code{\link{evaluate_node_query}}. When multiple nodes are
+#' given, only the first one is used.
 #'
 #' @param threshold The threshold distance to be used. Only nodes within the
 #' threshold distance from the reference node will be included in the
@@ -412,12 +409,8 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' of class \code{\link{sfnetwork}}.
 #'
 #' @param protect Nodes to be protected from being removed, no matter if they
-#' are a pseudo node or not. Can be given as a numeric vector containing node
-#' indices or a character vector containing node names. Can also be a set of
-#' geospatial features as object of class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}. In that case, for each of these features its nearest
-#' node in the network will be protected. Defaults to \code{NULL}, meaning that
-#' none of the nodes is protected.
+#' are a pseudo node or not. Evaluated by \code{\link{evaluate_node_query}}.
+#' Defaults to \code{NULL}, meaning that none of the nodes is protected.
 #'
 #' @param require_equal Should nodes only be removed when the attribute values
 #' of their incident edges are equal? Defaults to \code{FALSE}. If \code{TRUE},

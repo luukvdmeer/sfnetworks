@@ -90,12 +90,9 @@ the original features be stored as an attribute of the new feature, in a
 column named \code{.orig_data}. This is in line with the design principles
 of \code{tidygraph}. Defaults to \code{FALSE}.}
 
-\item{node}{The node for which the neighborhood will be calculated. Can be
-an integer specifying its index or a character specifying its name. Can also
-be an object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
-containing a single spatial feature. In that case, this feature will be
-snapped to its nearest node before calculating the neighborhood. When
-multiple indices, names or features are given, only the first one is used.}
+\item{node}{The node for which the neighborhood will be calculated.
+Evaluated by \code{\link{evaluate_node_query}}. When multiple nodes are
+given, only the first one is used.}
 
 \item{threshold}{The threshold distance to be used. Only nodes within the
 threshold distance from the reference node will be included in the
@@ -109,12 +106,8 @@ to \code{TRUE}.}
 \item{remove_loops}{Should loop edges be removed. Defaults to \code{TRUE}.}
 
 \item{protect}{Nodes to be protected from being removed, no matter if they
-are a pseudo node or not. Can be given as a numeric vector containing node
-indices or a character vector containing node names. Can also be a set of
-geospatial features as object of class \code{\link[sf]{sf}} or
-\code{\link[sf]{sfc}}. In that case, for each of these features its nearest
-node in the network will be protected. Defaults to \code{NULL}, meaning that
-none of the nodes is protected.}
+are a pseudo node or not. Evaluated by \code{\link{evaluate_node_query}}.
+Defaults to \code{NULL}, meaning that none of the nodes is protected.}
 
 \item{require_equal}{Should nodes only be removed when the attribute values
 of their incident edges are equal? Defaults to \code{FALSE}. If \code{TRUE},

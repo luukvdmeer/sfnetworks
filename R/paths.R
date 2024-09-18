@@ -7,30 +7,18 @@
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @param from The node where the paths should start. Can be an integer
-#' specifying its index or a character specifying its name. Can also be an
-#' object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}} containing a
-#' single spatial feature. In that case, this feature will be snapped to its
-#' nearest node before finding the paths. When multiple indices, names or
-#' features are given, only the first one is used.
+#' @param from The node where the paths should start. Evaluated by
+#' \code{\link{evaluate_node_query}}. When multiple nodes are given, only the
+#' first one is used.
 #'
-#' @param to The nodes where the paths should end. Can be an integer vector
-#' specifying their indices or a character vector specifying their name. Can
-#' also be an object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
-#' containing spatial features. In that case, these feature will be snapped to
-#' their nearest node before finding the paths. By default, all nodes in the
-#' network are included.
+#' @param to The node where the paths should start. Evaluated by
+#' \code{\link{evaluate_node_query}}. By default, all nodes in the network are
+#' included.
 #'
 #' @param weights The edge weights to be used in the shortest path calculation.
-#' Can be a numeric vector of the same length as the number of edges, a
-#' \link[=spatial_edge_measures]{spatial edge measure function}, or a column in
-#' the edges table of the network. Tidy evaluation is used such that column
-#' names can be specified as if they were variables in the environment (e.g.
-#' simply \code{length} instead of \code{igraph::edge_attr(x, "length")}).
-#' If set to \code{NULL} or \code{NA} no edge weights are used, and the
-#' shortest path is the path with the fewest number of edges, ignoring space.
-#' The default is \code{\link{edge_length}}, which computes the geographic
-#' lengths of the edges.
+#' Evaluated by \code{\link{evaluate_edge_spec}}. The default is
+#' \code{\link{edge_length}}, which computes the geographic lengths of the
+#' edges.
 #'
 #' @param type Character defining which type of path calculation should be
 #' performed. If set to \code{'shortest'} paths are found using
@@ -65,30 +53,16 @@
 #' Arguments \code{predecessors} and \code{inbound.edges} are ignored.
 #' Instead of the \code{mode} argument, use the \code{direction} argument.
 #'
-#' @details Spatial features provided to the \code{from} and/or
-#' \code{to} argument don't necessarily have to be points. Internally, the
-#' nearest node to each feature is found by calling
-#' \code{\link[sf]{st_nearest_feature}}, so any feature with a geometry type
-#' that is accepted by that function can be provided as \code{from} and/or
-#' \code{to} argument.
-#'
-#' When directly providing integer node indices or character node names to the
-#' \code{from} and/or \code{to} argument, keep the following in mind. A node
-#' index should correspond to a row-number of the nodes table of the network.
-#' A node name should correspond to a value of a column in the nodes table
-#' named \code{name}. This column should contain character values without
-#' duplicates.
-#'
-#' When computing simple paths by setting \code{type = 'all_simple'}, note that
-#' potentially there are exponentially many paths between two nodes, and you
-#' may run out of memory especially in undirected, dense, and/or lattice-like
-#' networks.
-#'
-#' For more details on the wrapped igraph functions see the
+#' @details For more details on the wrapped igraph functions see the
 #' \code{\link[igraph]{distances}} and
 #' \code{\link[igraph]{all_simple_paths}} documentation pages.
 #'
-#' @seealso \code{\link{st_network_cost}}
+#' @note When computing simple paths by setting \code{type = 'all_simple'},
+#' note that potentially there are exponentially many paths between two nodes,
+#' and you may run out of memory especially in undirected, dense, and/or
+#' lattice-like networks.
+#'
+#' @seealso \code{\link{st_network_cost}}, \code{\link{st_network_travel}}
 #'
 #' @return An object of class \code{\link[tibble]{tbl_df}} or
 #' \code{\link[sf]{sf}} with one row per path. If \code{type = 'shortest'}, the
@@ -152,6 +126,9 @@
 #' plot(net, col = "grey")
 #' plot(c(p1, p2), col = "black", pch = 8, add = TRUE)
 #' plot(st_geometry(paths), col = "red", lwd = 1.5, add = TRUE)
+#'
+#' # Use a node type query function to specify destinations.
+#' st_network_paths(net, 1, node_is_adjacent(1))
 #'
 #' # Use a spatial edge measure to specify edge weights.
 #' # By default edge_length() is used.
@@ -296,30 +273,18 @@ igraph_paths = function(x, from, to, weights, type = "shortest",
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @param from The nodes where the paths should start. Can be an integer vector
-#' specifying their indices or a character vector specifying their name. Can
-#' also be an object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
-#' containing spatial features. In that case, these feature will be snapped to
-#' their nearest node before finding the paths. By default, all nodes in the
-#' network are included.
+#' @param from The nodes where the paths should start. Evaluated by
+#' \code{\link{evaluate_node_query}}. By default, all nodes in the network are
+#' included.
 #'
-#' @param to The nodes where the paths should end. Can be an integer vector
-#' specifying their indices or a character vector specifying their name. Can
-#' also be an object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
-#' containing spatial features. In that case, these feature will be snapped to
-#' their nearest node before finding the paths. By default, all nodes in the
-#' network are included.
+#' @param to The nodes where the paths should end. Evaluated by
+#' \code{\link{evaluate_node_query}}. By default, all nodes in the network are
+#' included.
 #'
 #' @param weights The edge weights to be used in the shortest path calculation.
-#' Can be a numeric vector of the same length as the number of edges, a
-#' \link[=spatial_edge_measures]{spatial edge measure function}, or a column in
-#' the edges table of the network. Tidy evaluation is used such that column
-#' names can be specified as if they were variables in the environment (e.g.
-#' simply \code{length} instead of \code{igraph::edge_attr(x, "length")}).
-#' If set to \code{NULL} or \code{NA} no edge weights are used, and the
-#' shortest path is the path with the fewest number of edges, ignoring space.
-#' The default is \code{\link{edge_length}}, which computes the geographic
-#' lengths of the edges.
+#' Evaluated by \code{\link{evaluate_edge_spec}}. The default is
+#' \code{\link{edge_length}}, which computes the geographic lengths of the
+#' edges.
 #'
 #' @param direction The direction of travel. Defaults to \code{'out'}, meaning
 #' that the direction given by the network is followed and costs are computed
@@ -335,27 +300,10 @@ igraph_paths = function(x, from, to, weights, type = "shortest",
 #' @param ... Additional arguments passed on to \code{\link[igraph]{distances}}.
 #' Instead of the \code{mode} argument, use the \code{direction} argument.
 #'
-#' @details \code{st_network_cost} allows to use any set of edge weights, while
-#' \code{st_network_distance} is a intuitive synonym for cost matrix computation
-#' in which the edge weights are set to their geographic length.
-#'
-#' Spatial features provided to the \code{from} and/or \code{to} argument don't
-#' necessarily have to be points. Internally, the nearest node to each feature
-#' is found by calling \code{\link[sf]{st_nearest_feature}}, so any feature
-#' with a geometry type that is accepted by that function can be provided as
-#' \code{from} and/or \code{to} argument.
-#'
-#' When directly providing integer node indices or character node names to the
-#' \code{from} and/or \code{to} argument, keep the following in mind. A node
-#' index should correspond to a row-number of the nodes table of the network.
-#' A node name should correspond to a value of a column in the nodes table
-#' named \code{name}. This column should contain character values without
-#' duplicates.
-#'
-#' For more details on the wrapped igraph function see the
+#' @details For more details on the wrapped igraph function see the
 #' \code{\link[igraph]{distances}} documentation page.
 #'
-#' @seealso \code{\link{st_network_paths}}
+#' @seealso \code{\link{st_network_paths}}, \code{\link{st_network_travel}}
 #'
 #' @return An n times m numeric matrix where n is the length of the \code{from}
 #' argument, and m is the length of the \code{to} argument.
@@ -382,6 +330,9 @@ igraph_paths = function(x, from, to, weights, type = "shortest",
 #' st_crs(p2) = st_crs(net)
 #'
 #' st_network_cost(net, from = c(p1, p2), to = c(p1, p2))
+#'
+#' # Use a node type query function to specify origins and/or destinations.
+#' st_network_cost(net, from = 499, to = node_is_connected(499))
 #'
 #' # Use a spatial edge measure to specify edge weights.
 #' # By default edge_length() is used.

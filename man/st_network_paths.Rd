@@ -20,30 +20,18 @@ st_network_paths(
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
 
-\item{from}{The node where the paths should start. Can be an integer
-specifying its index or a character specifying its name. Can also be an
-object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}} containing a
-single spatial feature. In that case, this feature will be snapped to its
-nearest node before finding the paths. When multiple indices, names or
-features are given, only the first one is used.}
+\item{from}{The node where the paths should start. Evaluated by
+\code{\link{evaluate_node_query}}. When multiple nodes are given, only the
+first one is used.}
 
-\item{to}{The nodes where the paths should end. Can be an integer vector
-specifying their indices or a character vector specifying their name. Can
-also be an object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
-containing spatial features. In that case, these feature will be snapped to
-their nearest node before finding the paths. By default, all nodes in the
-network are included.}
+\item{to}{The node where the paths should start. Evaluated by
+\code{\link{evaluate_node_query}}. By default, all nodes in the network are
+included.}
 
 \item{weights}{The edge weights to be used in the shortest path calculation.
-Can be a numeric vector of the same length as the number of edges, a
-\link[=spatial_edge_measures]{spatial edge measure function}, or a column in
-the edges table of the network. Tidy evaluation is used such that column
-names can be specified as if they were variables in the environment (e.g.
-simply \code{length} instead of \code{igraph::edge_attr(x, "length")}).
-If set to \code{NULL} or \code{NA} no edge weights are used, and the
-shortest path is the path with the fewest number of edges, ignoring space.
-The default is \code{\link{edge_length}}, which computes the geographic
-lengths of the edges.}
+Evaluated by \code{\link{evaluate_edge_spec}}. The default is
+\code{\link{edge_length}}, which computes the geographic lengths of the
+edges.}
 
 \item{type}{Character defining which type of path calculation should be
 performed. If set to \code{'shortest'} paths are found using
@@ -113,28 +101,15 @@ paths, or all simple paths between one node and one or
 more other nodes in the network.
 }
 \details{
-Spatial features provided to the \code{from} and/or
-\code{to} argument don't necessarily have to be points. Internally, the
-nearest node to each feature is found by calling
-\code{\link[sf]{st_nearest_feature}}, so any feature with a geometry type
-that is accepted by that function can be provided as \code{from} and/or
-\code{to} argument.
-
-When directly providing integer node indices or character node names to the
-\code{from} and/or \code{to} argument, keep the following in mind. A node
-index should correspond to a row-number of the nodes table of the network.
-A node name should correspond to a value of a column in the nodes table
-named \code{name}. This column should contain character values without
-duplicates.
-
-When computing simple paths by setting \code{type = 'all_simple'}, note that
-potentially there are exponentially many paths between two nodes, and you
-may run out of memory especially in undirected, dense, and/or lattice-like
-networks.
-
 For more details on the wrapped igraph functions see the
 \code{\link[igraph]{distances}} and
 \code{\link[igraph]{all_simple_paths}} documentation pages.
+}
+\note{
+When computing simple paths by setting \code{type = 'all_simple'},
+note that potentially there are exponentially many paths between two nodes,
+and you may run out of memory especially in undirected, dense, and/or
+lattice-like networks.
 }
 \examples{
 library(sf, quietly = TRUE)
@@ -172,6 +147,9 @@ plot(net, col = "grey")
 plot(c(p1, p2), col = "black", pch = 8, add = TRUE)
 plot(st_geometry(paths), col = "red", lwd = 1.5, add = TRUE)
 
+# Use a node type query function to specify destinations.
+st_network_paths(net, 1, node_is_adjacent(1))
+
 # Use a spatial edge measure to specify edge weights.
 # By default edge_length() is used.
 st_network_paths(net, p1, p2, weights = edge_displacement())
@@ -191,5 +169,5 @@ par(oldpar)
 
 }
 \seealso{
-\code{\link{st_network_cost}}
+\code{\link{st_network_cost}}, \code{\link{st_network_travel}}
 }

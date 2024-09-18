@@ -2,12 +2,8 @@
 #'
 #' The travelling salesman problem is currently implemented
 #'
-#' @param pois Locations that the travelling salesman will visit.
-#' Can be an integer vector specifying nodes indices or a character vector
-#' specifying node names. Can also be an object of class \code{\link[sf]{sf}}
-#' or \code{\link[sf]{sfc}} containing spatial features.
-#' In that case, these feature will be snapped to their nearest node before
-#' solving the algorithm.
+#' @param pois Locations that the travelling salesman will visit. Evaluated by
+#' \code{\link{evaluate_node_query}}.
 #'
 #' @param return_paths Should the shortest paths between `pois` be computed?
 #' Defaults to `TRUE`. If `FALSE`, a vector with indices in the visiting order
@@ -32,25 +28,11 @@ st_network_travel = function(x, pois, weights = edge_length(),
                              return_cost = TRUE,
                              return_geometry = TRUE,
                              ...) {
-  # Parse pois argument.
-  # --> Convert geometries to node indices.
-  ### check # --> Raise warnings when requirements are not met.
-  if (is_sf(pois) | is_sfc(pois)) pois = nearest_node_ids(x, pois)
-  # if (any(is.na(pois))) raise_na_values("pois")
-  # Parse weights argument using tidy evaluation on the network edges.
-  .register_graph_context(x, free = TRUE)
-  weights = enquo(weights)
-  weights = eval_tidy(weights, .E())
-  if (is_single_string(weights)) {
-    # Allow character values for backward compatibility.
-    deprecate_weights_is_string("st_network_travel")
-    weights = eval_tidy(expr(.data[[weights]]), .E())
-  }
-  if (is.null(weights)) {
-    # Convert NULL to NA to align with tidygraph instead of igraph.
-    deprecate_weights_is_null("st_network_travel")
-    weights = NA
-  }
+  # Evaluate the node query for the pois.
+  pois = evaluate_node_query(pois)
+  if (any(is.na(pois))) raise_na_values("pois")
+  # Evaluate the given weights specification.
+  weights = evaluate_weight_spec(x, weights)
   # Compute cost matrix
   costmat = st_network_cost(x, from = pois, to = pois, weights = weights)
   # Use nearest node indices as row and column names
