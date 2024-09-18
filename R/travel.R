@@ -34,7 +34,7 @@ st_network_travel = function(x, pois, weights = edge_length(),
   # Evaluate the given weights specification.
   weights = evaluate_weight_spec(x, weights)
   # Compute cost matrix
-  costmat = st_network_cost(x, from = pois, to = pois, weights = weights)
+  costmat = compute_costs(x, from = pois, to = pois, weights = weights)
   # Use nearest node indices as row and column names
   row.names(costmat) = pois
   colnames(costmat) = pois
@@ -56,18 +56,17 @@ st_network_travel = function(x, pois, weights = edge_length(),
     # All based on the calculated order of visit.
     from_idxs = tour_idxs
     to_idxs = c(tour_idxs[2:length(tour_idxs)], tour_idxs[1])
-
     # Calculate the specified paths.
-    bind_rows(
-      Map(
-        \(...) st_network_paths(x = net, ...,
-                                weights = weights,
-                                use_names = use_names,
-                                return_cost = return_cost,
-                                return_geometry = return_geometry),
-        from = from_idxs,
-        to = to_idxs
+    find_leg = function(...) {
+      find_paths(
+        x = net,
+        ...,
+        weights = weights,
+        use_names = use_names,
+        return_cost = return_cost,
+        return_geometry = return_geometry
       )
-    )
+    }
+    bind_rows(Map(find_leg, from = from_idxs, to = to_idxs))
   }
 }
