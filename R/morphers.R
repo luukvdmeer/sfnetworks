@@ -136,6 +136,16 @@ to_spatial_explicit = function(x, ...) {
   )
 }
 
+#' @describeIn spatial_morphers Drop edge geometries from the network. Returns
+#' a \code{morphed_sfnetwork} containing a single element of class
+#' \code{\link{sfnetwork}}.
+#' @export
+to_spatial_implicit = function(x) {
+  list(
+    implict = make_edges_implict(x, ...)
+  )
+}
+
 #' @describeIn spatial_morphers Limit a network to the spatial neighborhood of
 #' a specific node. \code{...} is forwarded to \code{\link{st_network_cost}} to
 #' compute the travel cost from the source node to all other nodes in the

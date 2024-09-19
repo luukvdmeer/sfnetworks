@@ -448,6 +448,24 @@ make_edges_explicit = function(x, ...) {
   x_new
 }
 
+#' Drop edge geometries of spatially explicit networks
+#'
+#' This function turns spatially explicit networks into spatially implicit
+#' networks by dropping the geometry column of the edge data.
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @note If the network is already spatially implicit it is returned
+#' unmodified.
+#'
+#' @return An object of class \code{\link{sfnetwork}} with spatially implicit
+#' edges.
+#'
+#' @export
+make_edges_implicit = function(x, ...) {
+  drop_edge_geom(x)
+}
+
 #' Match the direction of edge geometries to their specified incident nodes
 #'
 #' This function updates edge geometries in undirected networks such that they

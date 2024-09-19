@@ -5,6 +5,7 @@
 \alias{to_spatial_contracted}
 \alias{to_spatial_directed}
 \alias{to_spatial_explicit}
+\alias{to_spatial_implicit}
 \alias{to_spatial_neighborhood}
 \alias{to_spatial_shortest_paths}
 \alias{to_spatial_simple}
@@ -27,6 +28,8 @@ to_spatial_contracted(
 to_spatial_directed(x)
 
 to_spatial_explicit(x, ...)
+
+to_spatial_implicit(x)
 
 to_spatial_neighborhood(x, node, threshold, ...)
 
@@ -176,6 +179,10 @@ extra arguments can be provided as \code{...} and will be forwarded to
 \code{\link[sf]{st_as_sf}} internally. Otherwise, straight lines will be
 drawn between the source and target node of each edge. Returns a
 \code{morphed_sfnetwork} containing a single element of class
+\code{\link{sfnetwork}}.
+
+\item \code{to_spatial_implicit()}: Drop edge geometries from the network. Returns
+a \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}.
 
 \item \code{to_spatial_neighborhood()}: Limit a network to the spatial neighborhood of
