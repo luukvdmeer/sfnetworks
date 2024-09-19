@@ -9,23 +9,23 @@
 #' @param x An object of class \code{\link{sfnetwork}} with spatially explicit
 #' edges.
 #'
-#' @param merge_equal Should multiple subdivision points at the same location
-#' be merged into a single node, and should subdivision points at the same
-#' as an existing node be merged into that node? Defaults to \code{TRUE}. If
-#' set to \code{FALSE}, each subdivision point is added separately as a new
-#' node to the network. By default sfnetworks rounds coordinates to 12 decimal
-#' places to determine spatial equality. You can influence this behavior by
-#' explicitly setting the precision of the network using
-#' \code{\link[sf]{st_set_precision}}.
+#' @param merge Should multiple subdivision points at the same location be
+#' merged into a single node, and should subdivision points at the same
+#' locationas an existing node be merged into that node? Defaults to
+#' \code{TRUE}. If set to \code{FALSE}, each subdivision point is added
+#' separately as a new node to the network. By default sfnetworks rounds
+#' coordinates to 12 decimal places to determine spatial equality. You can
+#' influence this behavior by explicitly setting the precision of the network
+#' using \code{\link[sf]{st_set_precision}}.
 #'
-#' @returns A subdivision of x as object of class \code{\link{sfnetwork}}.
+#' @returns The subdivision of x as object of class \code{\link{sfnetwork}}.
 #'
 #' @importFrom dplyr arrange bind_rows
 #' @importFrom igraph is_directed
 #' @importFrom sf st_geometry<-
 #' @importFrom sfheaders sf_to_df
-#' @noRd
-subdivide = function(x, merge_equal = TRUE) {
+#' @export
+subdivide_edges = function(x, merge = TRUE) {
   nodes = nodes_as_sf(x)
   edges = edges_as_sf(x)
   ## ===========================
@@ -123,12 +123,12 @@ subdivide = function(x, merge_equal = TRUE) {
   is_new_node = is_new_startpoint | is_new_endpoint
   new_node_pts = new_edge_pts[is_new_node, ]
   # Define the new node indices of those points.
-  # If merge_equal is set to TRUE:
+  # If merge is set to TRUE:
   # --> Equal split points should be added as the same node.
   # --> Split points equal to an existing node should get that existing index.
   # If merge equal is set to FALSE:
   # --> Each split point is added as a separate node.
-  if (merge_equal) {
+  if (merge) {
     # Arrange the new nodes table such that:
     # --> Existing nodes come before split points.
     new_node_pts = arrange(new_node_pts, nid)
@@ -190,5 +190,6 @@ subdivide = function(x, merge_equal = TRUE) {
   # STEP VII: RECREATE THE NETWORK
   # Use the new nodes data and the new edges data to create the new network.
   ## ============================
-  sfnetwork_(new_nodes, new_edges, directed = is_directed(x))
+  x_new = sfnetwork_(new_nodes, new_edges, directed = is_directed(x))
+  x_new %preserve_network_attrs% x
 }

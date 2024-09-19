@@ -43,12 +43,12 @@ to_spatial_simple(
 to_spatial_smooth(
   x,
   protect = NULL,
-  summarise_attributes = "ignore",
   require_equal = FALSE,
+  summarise_attributes = "ignore",
   store_original_data = FALSE
 )
 
-to_spatial_subdivision(x, merge_equal = TRUE)
+to_spatial_subdivision(x, merge = TRUE)
 
 to_spatial_subset(x, ..., subset_by = NULL)
 
@@ -79,16 +79,16 @@ nodes be the centroid of all group members? Defaults to \code{TRUE}. If set
 to \code{FALSE}, the geometry of the first node in each group will be used
 instead, which requires considerably less computing time.}
 
-\item{summarise_attributes}{Whenever multiple features (i.e. nodes and/or
-edges) are merged into a single feature during morphing, how should their
-attributes be combined? Several options are possible, see
+\item{summarise_attributes}{Whenever groups of nodes or edges are merged
+into a single feature during morphing, how should their attributes be
+summarized? There are several options, see
 \code{\link[igraph]{igraph-attribute-combination}} for details.}
 
-\item{store_original_data}{Whenever multiple features (i.e. nodes and/or
-edges) are merged into a single feature during morphing, should the data of
-the original features be stored as an attribute of the new feature, in a
-column named \code{.orig_data}. This is in line with the design principles
-of \code{tidygraph}. Defaults to \code{FALSE}.}
+\item{store_original_data}{Whenever groups of nodes or edges are merged
+into a single feature during morphing, should the data of the original
+features be stored as an attribute of the new feature, in a column named
+\code{.orig_data}. This is in line with the design principles of
+\code{tidygraph}. Defaults to \code{FALSE}.}
 
 \item{node}{The node for which the neighborhood will be calculated.
 Evaluated by \code{\link{evaluate_node_query}}. When multiple nodes are
@@ -109,21 +109,21 @@ to \code{TRUE}.}
 are a pseudo node or not. Evaluated by \code{\link{evaluate_node_query}}.
 Defaults to \code{NULL}, meaning that none of the nodes is protected.}
 
-\item{require_equal}{Should nodes only be removed when the attribute values
+\item{require_equal}{Should nodes only be smoothed when the attribute values
 of their incident edges are equal? Defaults to \code{FALSE}. If \code{TRUE},
 only pseudo nodes that have incident edges with equal attribute values are
-removed. May also be given as a vector of attribute names. In that case only
-those attributes are checked for equality. Equality tests are evaluated
+smoothed. May also be given as a vector of attribute names. In that case
+only those attributes are checked for equality. Equality tests are evaluated
 using the \code{==} operator.}
 
-\item{merge_equal}{Should multiple subdivision points at the same location
-be merged into a single node, and should subdivision points at the same
-as an existing node be merged into that node? Defaults to \code{TRUE}. If
-set to \code{FALSE}, each subdivision point is added separately as a new
-node to the network. By default sfnetworks rounds coordinates to 12 decimal
-places to determine spatial equality. You can influence this behavior by
-explicitly setting the precision of the network using
-\code{\link[sf]{st_set_precision}}.}
+\item{merge}{Should multiple subdivision points at the same location be
+merged into a single node, and should subdivision points at the same
+locationas an existing node be merged into that node? Defaults to
+\code{TRUE}. If set to \code{FALSE}, each subdivision point is added
+separately as a new node to the network. By default sfnetworks rounds
+coordinates to 12 decimal places to determine spatial equality. You can
+influence this behavior by explicitly setting the precision of the network
+using \code{\link[sf]{st_set_precision}}.}
 
 \item{subset_by}{Whether to create subgraphs based on nodes or edges.}
 }
@@ -136,28 +136,27 @@ description of each morpher for details.
 \description{
 Spatial morphers form spatial add-ons to the set of
 \code{\link[tidygraph]{morphers}} provided by \code{tidygraph}. These
-functions are not meant to be called directly. They should either be passed
-into \code{\link[tidygraph]{morph}} to create a temporary alternative
-representation of the input network. Such an alternative representation is a
-list of one or more network objects. Single elements of that list can be
-extracted directly as a new network by passing the morpher to
-\code{\link[tidygraph]{convert}} instead, to make the changes lasting rather
-than temporary. Alternatively, if the morphed state contains multiple
-elements, all of them can be extracted together inside a
-\code{\link[tibble]{tbl_df}} by passing the morpher to
-\code{\link[tidygraph]{crystallise}}.
+functions change the existing structure of the network.
 }
 \details{
-It also possible to create your own morphers. See the documentation
-of \code{\link[tidygraph]{morph}} for the requirements for custom morphers.
+Morphers are not meant to be called directly. Instead, they should
+be called inside the \code{\link[tidygraph]{morph}} verb to change the
+network structure temporarily. Depending on the chosen morpher, this results
+in a list of one or more network objects. Single elements of that list can
+be extracted directly as a new network by calling the morpher inside the
+\code{\link[tidygraph]{convert}} verb instead, to make the changes lasting
+rather than temporary.
+
+It also possible to create your own morphers. See the documentation of
+\code{\link[tidygraph]{morph}} for the requirements for custom morphers.
 }
 \section{Functions}{
 \itemize{
 \item \code{to_spatial_contracted()}: Combine groups of nodes into a single node per
 group. \code{...} is forwarded to \code{\link[dplyr]{group_by}} to
-create the groups. The centroid of the group of nodes will be used by
-default as geometry of the contracted node. If edges are spatially explicit,
-edge geometries are updated accordingly such that the valid spatial network
+create the groups. The centroid of such a group will be used by default as
+geometry of the contracted node. If edges are spatially explicit, edge
+geometries are updated accordingly such that the valid spatial network
 structure is preserved. Returns a \code{morphed_sfnetwork} containing a
 single element of class \code{\link{sfnetwork}}.
 
@@ -194,14 +193,14 @@ the number of requested paths. When unmorphing only the first instance of
 both the node and edge data will be used, as the the same node and/or edge
 can be present in multiple paths.
 
-\item \code{to_spatial_simple()}: Remove loop edges and/or merges multiple edges
-into a single edge. Multiple edges are edges that have the same source and
-target nodes (in directed networks) or edges that are incident to the same
-nodes (in undirected networks). When merging them into a single edge, the
-geometry of the first edge is preserved. The order of the edges can be
-influenced by calling \code{\link[dplyr]{arrange}} before simplifying.
-Returns a \code{morphed_sfnetwork} containing a single element of class
-\code{\link{sfnetwork}}.
+\item \code{to_spatial_simple()}: Construct a simple version of the network. A
+simple network is defined as a network without loop edges and multiple
+edges. A loop edge is an edge that starts and ends at the same node.
+Multiple edges are different edges between the same node pair. When merging
+them into a single edge, the geometry of the first edge is preserved. The
+order of the edges can be influenced by calling \code{\link[dplyr]{arrange}}
+before simplifying. Returns a \code{morphed_sfnetwork} containing a single
+element of class \code{\link{sfnetwork}}.
 
 \item \code{to_spatial_smooth()}: Construct a smoothed version of the network by
 iteratively removing pseudo nodes, while preserving the connectivity of the
@@ -248,25 +247,19 @@ behavior by explicitly setting the precision of the network using
 library(sf, quietly = TRUE)
 library(tidygraph, quietly = TRUE)
 
-net = as_sfnetwork(roxel, directed = FALSE) \%>\%
+net = as_sfnetwork(roxel, directed = FALSE) |>
   st_transform(3035)
 
 # Temporary changes with morph and unmorph.
-net \%>\%
- activate("edges") \%>\%
- mutate(weight = edge_length()) \%>\%
- morph(to_spatial_shortest_paths, from = 1, to = 10) \%>\%
- mutate(in_paths = TRUE) \%>\%
+net |>
+ activate(edges) |>
+ morph(to_spatial_shortest_paths, from = 1, to = 10) |>
+ mutate(in_paths = TRUE) |>
  unmorph()
 
 # Lasting changes with convert.
-net \%>\%
- activate("edges") \%>\%
- mutate(weight = edge_length()) \%>\%
+net |>
+ activate(edges) |>
  convert(to_spatial_shortest_paths, from = 1, to = 10)
 
-}
-\seealso{
-The vignette on
-\href{https://luukvdmeer.github.io/sfnetworks/articles/sfn05_morphers.html}{spatial morphers}.
 }

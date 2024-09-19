@@ -142,3 +142,41 @@ edge_colnames = function(x, idxs = FALSE, geom = TRUE) {
   edge_attr(x) = as.list(value[, !names(value) %in% c("from", "to")])
   x
 }
+
+#' Add original data to merged features
+#'
+#' When morphing networks into a different structure, groups of nodes or edges
+#' may be merged into a single feature. In those cases, there is always the
+#' option to store the data of the original features in a column named
+#' \code{.orig_data}.
+#'
+#' @param x The new network as object of class \code{\link{sfnetwork}}.
+#'
+#' @param orig The original features as object of class \code{\link[sf]{sf}}.
+#'
+#' @return The new network with the original data stored in a column named
+#' \code{.orig_data}.
+#'
+#' @name add_original_data
+#' @noRd
+add_original_node_data = function(x, orig) {
+  # Store the original node data in a .orig_data column.
+  new_nodes = node_data(x, focused = FALSE)
+  orig$.tidygraph_node_index = NULL
+  copy_data = function(i) orig[i, , drop = FALSE]
+  new_nodes$.orig_data = lapply(new_nodes$.tidygraph_node_index, copy_data)
+  node_data(x) = new_nodes
+  x
+}
+
+#' @name add_original_data
+#' @noRd
+add_original_edge_data = function(x, orig) {
+  # Store the original edge data in a .orig_data column.
+  new_edges = edge_data(x, focused = FALSE)
+  orig$.tidygraph_edge_index = NULL
+  copy_data = function(i) orig[i, , drop = FALSE]
+  new_edges$.orig_data = lapply(new_edges$.tidygraph_edge_index, copy_data)
+  edge_data(x) = new_edges
+  x
+}

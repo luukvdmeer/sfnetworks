@@ -105,6 +105,14 @@ edge_agr = function(x) {
   x
 }
 
+update_node_agr = function(x) {
+  node_agr(x) = node_agr(x)
+}
+
+update_edge_agr = function(x) {
+  edge_agr(x) = edge_agr(x)
+}
+
 #' Create an empty agr factor
 #'
 #' @param names A character vector containing the names that should be present
