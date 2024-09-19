@@ -7,6 +7,7 @@
 \alias{to_spatial_explicit}
 \alias{to_spatial_implicit}
 \alias{to_spatial_neighborhood}
+\alias{to_spatial_reversed}
 \alias{to_spatial_shortest_paths}
 \alias{to_spatial_simple}
 \alias{to_spatial_smooth}
@@ -32,6 +33,8 @@ to_spatial_explicit(x, ...)
 to_spatial_implicit(x)
 
 to_spatial_neighborhood(x, node, threshold, ...)
+
+to_spatial_reversed(x, protect = NULL)
 
 to_spatial_shortest_paths(x, ...)
 
@@ -103,14 +106,15 @@ neighborhood. Should be a numeric value in the same units as the weight
 values used for the cost matrix computation. Alternatively, units can be
 specified explicitly by providing a \code{\link[units]{units}} object.}
 
+\item{protect}{Nodes or edges to be protected from being changed in
+structure. Evaluated by \code{\link{evaluate_node_query}} in the case of
+nodes and by \code{\link{evaluate_edge_query}} in the case of edges.
+Defaults to \code{NULL}, meaning that no features are protected.}
+
 \item{remove_multiple}{Should multiple edges be merged into one. Defaults
 to \code{TRUE}.}
 
 \item{remove_loops}{Should loop edges be removed. Defaults to \code{TRUE}.}
-
-\item{protect}{Nodes to be protected from being removed, no matter if they
-are a pseudo node or not. Evaluated by \code{\link{evaluate_node_query}}.
-Defaults to \code{NULL}, meaning that none of the nodes is protected.}
 
 \item{require_equal}{Should nodes only be smoothed when the attribute values
 of their incident edges are equal? Defaults to \code{FALSE}. If \code{TRUE},
@@ -190,6 +194,10 @@ a specific node. \code{...} is forwarded to \code{\link{st_network_cost}} to
 compute the travel cost from the source node to all other nodes in the
 network. Returns a \code{morphed_sfnetwork} containing a single element of
 class \code{\link{sfnetwork}}.
+
+\item \code{to_spatial_reversed()}: Reverse the direction of edges. Returns a
+\code{morphed_sfnetwork} containing a single element of class
+\code{\link{sfnetwork}}.
 
 \item \code{to_spatial_shortest_paths()}: Limit a network to those nodes and edges that
 are part of the shortest path between two nodes. \code{...} is evaluated in

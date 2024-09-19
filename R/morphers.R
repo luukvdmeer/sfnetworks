@@ -6,6 +6,11 @@
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
+#' @param protect Nodes or edges to be protected from being changed in
+#' structure. Evaluated by \code{\link{evaluate_node_query}} in the case of
+#' nodes and by \code{\link{evaluate_edge_query}} in the case of edges.
+#' Defaults to \code{NULL}, meaning that no features are protected.
+#'
 #' @param summarise_attributes Whenever groups of nodes or edges are merged
 #' into a single feature during morphing, how should their attributes be
 #' summarized? There are several options, see
@@ -193,6 +198,35 @@ to_spatial_neighborhood = function(x, node, threshold, ...) {
   )
 }
 
+#' @describeIn spatial_morphers Reverse the direction of edges. Returns a
+#' \code{morphed_sfnetwork} containing a single element of class
+#' \code{\link{sfnetwork}}.
+#' @importFrom igraph is_directed reverse_edges
+#' @importFrom sf st_reverse
+#' @export
+to_spatial_reversed = function(x, protect = NULL) {
+  # Define which edges should be reversed.
+  if (is.null(protect)) {
+    reverse = edge_ids(x, focused = FALSE)
+  } else {
+    protect = evaluate_edge_query(x, protect)
+    reverse = setdiff(edge_ids(x, focused = FALSE), protect)
+  }
+  # Reverse the from and to indices of those edges.
+  # This will have no effect on undirected networks.
+  x_new = reverse_edges(x, eids = reverse) %preserve_all_attrs% x
+  # Reverse the geometries of those edges.
+  if (has_explicit_edges(x)) {
+    edge_geom = pull_edge_geom(x)
+    edge_geom[reverse] = st_reverse(edge_geom)[reverse]
+    x_new = mutate_edge_geom(x_new, edge_geom)
+  }
+  # Return in a list.
+  list(
+    reversed = x_new
+  )
+}
+
 #' @describeIn spatial_morphers Limit a network to those nodes and edges that
 #' are part of the shortest path between two nodes. \code{...} is evaluated in
 #' the same manner as \code{\link{st_network_paths}} with
@@ -271,10 +305,6 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' network is preserved by concatenating the incident edges of each removed
 #' pseudo node. Returns a \code{morphed_sfnetwork} containing a single element
 #' of class \code{\link{sfnetwork}}.
-#'
-#' @param protect Nodes to be protected from being removed, no matter if they
-#' are a pseudo node or not. Evaluated by \code{\link{evaluate_node_query}}.
-#' Defaults to \code{NULL}, meaning that none of the nodes is protected.
 #'
 #' @param require_equal Should nodes only be smoothed when the attribute values
 #' of their incident edges are equal? Defaults to \code{FALSE}. If \code{TRUE},
