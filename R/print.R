@@ -85,7 +85,7 @@ as_named_tbl = function(x, name = "A tibble", suffix = "") {
 #' gorder count_components
 #' @noRd
 describe_graph = function(x, is_explicit = NULL) {
-  if (gorder(x) == 0) return("An empty graph")
+  if (gorder(x) == 0) return("# An empty graph")
   prop = list(
     simple = is_simple(x),
     directed = is_directed(x),
