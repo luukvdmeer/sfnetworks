@@ -57,7 +57,7 @@ to_spatial_smooth(
   store_original_data = FALSE
 )
 
-to_spatial_subdivision(x, all = FALSE, merge = TRUE)
+to_spatial_subdivision(x, protect = NULL, all = FALSE, merge = TRUE)
 
 to_spatial_subset(x, ..., subset_by = NULL)
 

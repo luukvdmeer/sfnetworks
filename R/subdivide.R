@@ -8,6 +8,10 @@
 #' @param x An object of class \code{\link{sfnetwork}} with spatially explicit
 #' edges.
 #'
+#' @param protect Edges to be protected from being subdivided. Evaluated by
+#' \code{\link{evaluate_edge_query}}. Defaults to \code{NULL}, meaning that
+#' none of the edges is protected.
+#'
 #' @param all Should edges be subdivided at all their interior points? If set
 #' to \code{FALSE}, edges are only subdivided at those interior points that
 #' share their location with any other interior or boundary point (a node) in
@@ -31,7 +35,7 @@
 #' @importFrom sf st_geometry<-
 #' @importFrom sfheaders sf_to_df
 #' @export
-subdivide_edges = function(x, all = FALSE, merge = TRUE) {
+subdivide_edges = function(x, protect = NULL, all = FALSE, merge = TRUE) {
   nodes = nodes_as_sf(x)
   edges = edges_as_sf(x)
   ## ===========================
@@ -73,14 +77,20 @@ subdivide_edges = function(x, all = FALSE, merge = TRUE) {
     edge_lids = st_match_points_df(edge_coords, attr(edges, "precision"))
     edge_pts$lid = edge_lids
   }
+  # Define which edges to protect from being subdivided.
+  is_protected = rep(FALSE, nrow(edge_pts))
+  if (! is.null(protect)) {
+    protect = evaluate_edge_query(x, protect)
+    is_protected[edge_pts$eid %in% protect] = TRUE
+  }
   # Define the subdivision points.
   if (all) {
-    is_split = !is_boundary
+    is_split = !is_boundary & !is_protected
   } else {
     has_duplicate_desc = duplicated(edge_lids)
     has_duplicate_asc = duplicated(edge_lids, fromLast = TRUE)
     has_duplicate = has_duplicate_desc | has_duplicate_asc
-    is_split = has_duplicate & !is_boundary
+    is_split = has_duplicate & !is_boundary & !is_protected
   }
   ## ==========================================
   # STEP III: CONSTRUCT THE NEW EDGE GEOMETRIES

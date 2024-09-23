@@ -387,9 +387,10 @@ to_spatial_smooth = function(x, protect = NULL, require_equal = FALSE,
 #' using \code{\link[sf]{st_set_precision}}.
 #'
 #' @export
-to_spatial_subdivision = function(x, all = FALSE, merge = TRUE) {
+to_spatial_subdivision = function(x, protect = NULL, all = FALSE,
+                                  merge = TRUE) {
   # Subdivide.
-  x_new = subdivide_edges(x, all = all, merge = merge)
+  x_new = subdivide_edges(x, protect = protect, all = all, merge = merge)
   # Return in a list.
   list(
     subdivision = x_new
