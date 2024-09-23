@@ -23,7 +23,7 @@ to_spatial_contracted(
   ...,
   simplify = TRUE,
   compute_centroids = TRUE,
-  summarise_attributes = "ignore",
+  summarise_attributes = "concat",
   store_original_data = FALSE
 )
 
@@ -53,7 +53,7 @@ to_spatial_smooth(
   x,
   protect = NULL,
   require_equal = FALSE,
-  summarise_attributes = "ignore",
+  summarise_attributes = "concat",
   store_original_data = FALSE
 )
 
@@ -65,7 +65,7 @@ to_spatial_transformed(x, ...)
 
 to_spatial_unique(
   x,
-  summarise_attributes = "ignore",
+  summarise_attributes = "concat",
   store_original_data = FALSE
 )
 }

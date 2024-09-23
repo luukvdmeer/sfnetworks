@@ -89,7 +89,7 @@ NULL
 #' @export
 to_spatial_contracted = function(x, ..., simplify = TRUE,
                                  compute_centroids = TRUE,
-                                 summarise_attributes = "ignore",
+                                 summarise_attributes = "concat",
                                  store_original_data = FALSE) {
   # Create groups.
   groups = group_by(st_drop_geometry(nodes_as_sf(x)), ...)
@@ -344,7 +344,7 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #'
 #' @export
 to_spatial_smooth = function(x, protect = NULL, require_equal = FALSE,
-                             summarise_attributes = "ignore",
+                             summarise_attributes = "concat",
                              store_original_data = FALSE) {
   # Smooth.
   x_new = smooth_pseudo_nodes(
@@ -447,7 +447,7 @@ to_spatial_transformed = function(x, ...) {
 #' \code{\link[sf]{st_set_precision}}.
 #'
 #' @export
-to_spatial_unique = function(x, summarise_attributes = "ignore",
+to_spatial_unique = function(x, summarise_attributes = "concat",
                              store_original_data = FALSE) {
   # Create groups.
   group_ids = st_match_points(pull_node_geom(x))
