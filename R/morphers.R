@@ -275,12 +275,17 @@ to_spatial_shortest_paths = function(x, ...) {
   edges = edge_data(x, focused = FALSE)
   # Subset the network for each computed shortest path.
   get_single_path = function(i) {
-    node_ids = as.integer(paths$nodes[[i]])
-    edge_ids = as.integer(paths$edges[[i]])
-    N = nodes[node_ids, ]
-    E = edges[edge_ids, ]
-    E$from = c(1:(length(node_ids) - 1))
-    E$to = c(2:length(node_ids))
+    if (paths[i, ]$path_found) {
+      node_ids = paths$nodes[[i]]
+      edge_ids = paths$edges[[i]]
+      N = nodes[node_ids, ]
+      E = edges[edge_ids, ]
+      E$from = c(1:(length(node_ids) - 1))
+      E$to = c(2:length(node_ids))
+    } else {
+      N = nodes[0, ]
+      E = edges[0, ]
+    }
     sfnetwork_(N, E, directed = is_directed(x))
   }
   lapply(seq_len(nrow(paths)), get_single_path)
