@@ -257,7 +257,7 @@ to_spatial_reversed = function(x, protect = NULL) {
 #' the number of requested paths. When unmorphing only the first instance of
 #' both the node and edge data will be used, as the the same node and/or edge
 #' can be present in multiple paths.
-#' @importFrom igraph delete_edges delete_vertices edge_attr vertex_attr
+#' @importFrom igraph is_directed
 #' @export
 to_spatial_shortest_paths = function(x, ...) {
   # Call st_network_paths with the given arguments.
@@ -271,15 +271,17 @@ to_spatial_shortest_paths = function(x, ...) {
     return_geometry = FALSE
   )
   # Retrieve original node and edge indices from the network.
-  orig_node_idxs = vertex_attr(x, ".tidygraph_node_index")
-  orig_edge_idxs = edge_attr(x, ".tidygraph_edge_index")
+  nodes = nodes_as_sf(x)
+  edges = edge_data(x, focused = FALSE)
   # Subset the network for each computed shortest path.
   get_single_path = function(i) {
-    edge_idxs = as.integer(paths$edges[[i]])
-    node_idxs = as.integer(paths$nodes[[i]])
-    x_new = delete_edges(x, orig_edge_idxs[-edge_idxs])
-    x_new = delete_vertices(x_new, orig_node_idxs[-node_idxs])
-    x_new %preserve_all_attrs% x
+    node_ids = as.integer(paths$nodes[[i]])
+    edge_ids = as.integer(paths$edges[[i]])
+    N = nodes[node_ids, ]
+    E = edges[edge_ids, ]
+    E$from = c(1:(length(node_ids) - 1))
+    E$to = c(2:length(node_ids))
+    sfnetwork_(N, E, directed = is_directed(x))
   }
   lapply(seq_len(nrow(paths)), get_single_path)
 }
