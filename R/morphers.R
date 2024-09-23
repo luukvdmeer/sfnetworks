@@ -170,8 +170,11 @@ to_spatial_mixed = function(x, directed) {
 #' @describeIn spatial_morphers Limit a network to the spatial neighborhood of
 #' a specific node. \code{...} is forwarded to \code{\link{st_network_cost}} to
 #' compute the travel cost from the source node to all other nodes in the
-#' network. Returns a \code{morphed_sfnetwork} containing a single element of
-#' class \code{\link{sfnetwork}}.
+#' network. Returns a \code{morphed_sfnetwork} that may contain multiple
+#' elements of class \code{\link{sfnetwork}}, depending on the number of given
+#' thresholds. When unmorphing only the first instance of both the node and
+#' edge data will be used, as the the same node and/or edge can be present in
+#' multiple neighborhoods.
 #'
 #' @param node The node for which the neighborhood will be calculated.
 #' Evaluated by \code{\link{evaluate_node_query}}. When multiple nodes are
@@ -182,6 +185,8 @@ to_spatial_mixed = function(x, directed) {
 #' neighborhood. Should be a numeric value in the same units as the weight
 #' values used for the cost matrix computation. Alternatively, units can be
 #' specified explicitly by providing a \code{\link[units]{units}} object.
+#' Multiple threshold values may be given, in which a neighborhood is created
+#' for each of them separately.
 #'
 #' @importFrom igraph induced_subgraph
 #' @importFrom methods hasArg
@@ -201,17 +206,18 @@ to_spatial_neighborhood = function(x, node, threshold, ...) {
   } else {
     costs = st_network_cost(x, from = node, ...)
   }
-  # Use the given threshold to define which nodes are in the neighborhood.
+  # Parse the given threshold values.
   if (inherits(costs, "units") && ! inherits(threshold, "units")) {
     threshold = as_units(threshold, deparse_unit(costs))
   }
-  in_neighborhood = costs[1, ] <= threshold
-  # Subset the network to keep only the nodes in the neighborhood.
-  x_new = induced_subgraph(x, in_neighborhood) %preserve_all_attrs% x
-  # Return in a list.
-  list(
-    neighborhood = x_new
-  )
+  # For each given threshold:
+  # --> Define which nodes are in the neighborhood.
+  # --> Subset the network to keep only the nodes in the neighborhood.
+  get_single_neighborhood = function(k) {
+    in_neighborhood = costs[1, ] <= k
+    induced_subgraph(x, in_neighborhood) %preserve_all_attrs% x
+  }
+  lapply(threshold, get_single_neighborhood)
 }
 
 #' @describeIn spatial_morphers Reverse the direction of edges. Returns a

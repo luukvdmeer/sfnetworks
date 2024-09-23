@@ -110,7 +110,9 @@ given, only the first one is used.}
 threshold distance from the reference node will be included in the
 neighborhood. Should be a numeric value in the same units as the weight
 values used for the cost matrix computation. Alternatively, units can be
-specified explicitly by providing a \code{\link[units]{units}} object.}
+specified explicitly by providing a \code{\link[units]{units}} object.
+Multiple threshold values may be given, in which a neighborhood is created
+for each of them separately.}
 
 \item{protect}{Nodes or edges to be protected from being changed in
 structure. Evaluated by \code{\link{evaluate_node_query}} in the case of
@@ -204,8 +206,11 @@ single element of class \code{\link{sfnetwork}}.
 \item \code{to_spatial_neighborhood()}: Limit a network to the spatial neighborhood of
 a specific node. \code{...} is forwarded to \code{\link{st_network_cost}} to
 compute the travel cost from the source node to all other nodes in the
-network. Returns a \code{morphed_sfnetwork} containing a single element of
-class \code{\link{sfnetwork}}.
+network. Returns a \code{morphed_sfnetwork} that may contain multiple
+elements of class \code{\link{sfnetwork}}, depending on the number of given
+thresholds. When unmorphing only the first instance of both the node and
+edge data will be used, as the the same node and/or edge can be present in
+multiple neighborhoods.
 
 \item \code{to_spatial_reversed()}: Reverse the direction of edges. Returns a
 \code{morphed_sfnetwork} containing a single element of class
