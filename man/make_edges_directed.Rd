@@ -7,10 +7,10 @@
 make_edges_directed(x)
 }
 \arguments{
-\item{x}{An undirected network as object of class \code{\link{sfnetwork}}.}
+\item{x}{An object of class \code{\link{sfnetwork}}.}
 }
 \value{
-An directed network as object of class \code{\link{sfnetwork}}.
+A directed network as object of class \code{\link{sfnetwork}}.
 }
 \description{
 This function converts an undirected network to a directed network following

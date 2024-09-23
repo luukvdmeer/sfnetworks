@@ -372,7 +372,7 @@ evaluate_edge_predicate = function(predicate, x, y, ...) {
 #' This function converts an undirected network to a directed network following
 #' the direction given by the linestring geometries of the edges.
 #'
-#' @param x An undirected network as object of class \code{\link{sfnetwork}}.
+#' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @details In undirected spatial networks it is required that the boundary of
 #' edge geometries contain their incident node geometries. However, it is not
@@ -385,7 +385,7 @@ evaluate_edge_predicate = function(predicate, x, y, ...) {
 #'
 #' @note If the network is already directed it is returned unmodified.
 #'
-#' @return An directed network as object of class \code{\link{sfnetwork}}.
+#' @return A directed network as object of class \code{\link{sfnetwork}}.
 #'
 #' @importFrom igraph is_directed
 #' @export
@@ -405,6 +405,58 @@ make_edges_directed = function(x) {
   edges$to = to
   # Recreate the network as a directed one.
   sfnetwork_(nodes, edges, directed = TRUE) %preserve_network_attrs% x
+}
+
+#' Make some edges directed and some undirected
+#'
+#' This function creates a mixed network, meaning that some edges are directed,
+#' and some are undirected. In practice this is implemented as a directed
+#' network in which those edges that are meant to be undirected are duplicated
+#' and reversed.
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param directed Which edges should be directed? Evaluated by
+#' \code{\link{evaluate_edge_query}}.
+#'
+#' @return A mixed network as object of class \code{\link{sfnetwork}}.
+#'
+#' @importFrom dplyr arrange bind_rows
+#' @importFrom sf st_reverse
+#' @export
+make_edges_mixed = function(x, directed) {
+  # First make the network directed.
+  x = make_edges_directed(x)
+  # Extract edges from the network
+  edges = edge_data(x, focused = FALSE)
+  edge_ids = seq_len(nrow(edges))
+  # Keep track of the original edge index.
+  # This is used to later sort the edges table.
+  if (".sfnetwork_index" %in% names(edges)) {
+    raise_reserved_attr(".sfnetwork_index")
+  }
+  edges$.sfnetwork_index = edge_ids
+  # Define which edges should be directed, and which undirected.
+  directed = evaluate_edge_query(x, directed)
+  undirected = setdiff(edge_ids, directed)
+  # Duplicate undirected edges.
+  duplicates = edges[undirected, ]
+  # Reverse the duplicated undirected edges.
+  from = duplicates$from
+  to = duplicates$to
+  duplicates$from = to
+  duplicates$to = from
+  if (is_sf(edges)) {
+    duplicates = st_reverse(duplicates)
+  }
+  # Bind duplicated and reversed edges to the original edges.
+  new_edges = bind_rows(edges, duplicates)
+  # Use original indices to sort the new edges table.
+  new_edges = arrange(new_edges, .sfnetwork_index)
+  new_edges$.sfnetwork_index = NULL
+  # Create a new network with the updated edges.
+  x_new = sfnetwork_(nodes_as_sf(x), new_edges, directed = TRUE)
+  x_new %preserve_network_attrs% x
 }
 
 #' Construct edge geometries for spatially implicit networks

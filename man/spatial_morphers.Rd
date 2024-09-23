@@ -6,6 +6,7 @@
 \alias{to_spatial_directed}
 \alias{to_spatial_explicit}
 \alias{to_spatial_implicit}
+\alias{to_spatial_mixed}
 \alias{to_spatial_neighborhood}
 \alias{to_spatial_reversed}
 \alias{to_spatial_shortest_paths}
@@ -31,6 +32,8 @@ to_spatial_directed(x)
 to_spatial_explicit(x, ...)
 
 to_spatial_implicit(x)
+
+to_spatial_mixed(x, directed)
 
 to_spatial_neighborhood(x, node, threshold, ...)
 
@@ -95,6 +98,9 @@ into a single feature during morphing, should the data of the original
 features be stored as an attribute of the new feature, in a column named
 \code{.orig_data}. This is in line with the design principles of
 \code{tidygraph}. Defaults to \code{FALSE}.}
+
+\item{directed}{Which edges should be directed? Evaluated by
+\code{\link{evaluate_edge_query}}.}
 
 \item{node}{The node for which the neighborhood will be calculated.
 Evaluated by \code{\link{evaluate_node_query}}. When multiple nodes are
@@ -188,6 +194,12 @@ drawn between the source and target node of each edge. Returns a
 \item \code{to_spatial_implicit()}: Drop edge geometries from the network. Returns
 a \code{morphed_sfnetwork} containing a single element of class
 \code{\link{sfnetwork}}.
+
+\item \code{to_spatial_mixed()}: Construct a mixed network in which some edges
+are directed, and some are undirected. In practice this is implemented as a
+directed network in which those edges that are meant to be undirected are
+duplicated and reversed. Returns a \code{morphed_sfnetwork} containing a
+single element of class \code{\link{sfnetwork}}.
 
 \item \code{to_spatial_neighborhood()}: Limit a network to the spatial neighborhood of
 a specific node. \code{...} is forwarded to \code{\link{st_network_cost}} to

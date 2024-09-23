@@ -151,6 +151,22 @@ to_spatial_implicit = function(x) {
   )
 }
 
+#' @describeIn spatial_morphers Construct a mixed network in which some edges
+#' are directed, and some are undirected. In practice this is implemented as a
+#' directed network in which those edges that are meant to be undirected are
+#' duplicated and reversed. Returns a \code{morphed_sfnetwork} containing a
+#' single element of class \code{\link{sfnetwork}}.
+#'
+#' @param directed Which edges should be directed? Evaluated by
+#' \code{\link{evaluate_edge_query}}.
+#'
+#' @export
+to_spatial_mixed = function(x, directed) {
+  list(
+    mixed = make_edges_mixed(x, directed)
+  )
+}
+
 #' @describeIn spatial_morphers Limit a network to the spatial neighborhood of
 #' a specific node. \code{...} is forwarded to \code{\link{st_network_cost}} to
 #' compute the travel cost from the source node to all other nodes in the
