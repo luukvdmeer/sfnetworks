@@ -26,6 +26,10 @@ tidygraph::crystallize
 #' @export
 tidygraph::crystallise
 
+#' @importFrom tidygraph with_graph
+#' @export
+tidygraph::with_graph
+
 #' @importFrom tidygraph %>%
 #' @export
 tidygraph::`%>%`
