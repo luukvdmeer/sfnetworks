@@ -162,11 +162,11 @@ st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
                                       use_names = TRUE, return_cost = TRUE,
                                       return_geometry = TRUE, ...) {
   # Evaluate the given from node query.
-  from = evaluate_node_query(from)
+  from = evaluate_node_query(x, from)
   if (length(from) > 1) raise_multiple_elements("from"); from = from[1]
   if (any(is.na(from))) raise_na_values("from")
   # Evaluate the given to node query.
-  to = evaluate_node_query(to)
+  to = evaluate_node_query(x, to)
   if (any(is.na(to))) raise_na_values("to")
   # Evaluate the given weights specification.
   weights = evaluate_weight_spec(x, weights)

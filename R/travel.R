@@ -29,7 +29,7 @@ st_network_travel = function(x, pois, weights = edge_length(),
                              return_geometry = TRUE,
                              ...) {
   # Evaluate the node query for the pois.
-  pois = evaluate_node_query(pois)
+  pois = evaluate_node_query(x, pois)
   if (any(is.na(pois))) raise_na_values("pois")
   # Evaluate the given weights specification.
   weights = evaluate_weight_spec(x, weights)
