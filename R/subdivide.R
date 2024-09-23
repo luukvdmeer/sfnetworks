@@ -1,22 +1,28 @@
 #' Subdivide edges at interior points
 #'
-#' Construct a subdivision of the network by subdividing edges at each interior
-#' point that is equal to any other interior or boundary point in the edges
-#' table. Interior points are those points that shape a linestring geometry
-#' feature but are not endpoints of it, while boundary points are the endpoints
-#' of the linestrings, i.e. the existing nodes in het network.
+#' Construct a subdivision of the network by subdividing edges at interior
+#' points. Subdividing means that a new node is added on an edge, and the edge
+#' is split in two at that location. Interior points are those points that
+#' shape a linestring geometry feature but are not endpoints of it.
 #'
 #' @param x An object of class \code{\link{sfnetwork}} with spatially explicit
 #' edges.
 #'
+#' @param all Should edges be subdivided at all their interior points? If set
+#' to \code{FALSE}, edges are only subdivided at those interior points that
+#' share their location with any other interior or boundary point (a node) in
+#' the edges table. Defaults to \code{FALSE}.
+#'
 #' @param merge Should multiple subdivision points at the same location be
 #' merged into a single node, and should subdivision points at the same
-#' locationas an existing node be merged into that node? Defaults to
+#' location as an existing node be merged into that node? Defaults to
 #' \code{TRUE}. If set to \code{FALSE}, each subdivision point is added
-#' separately as a new node to the network. By default sfnetworks rounds
-#' coordinates to 12 decimal places to determine spatial equality. You can
-#' influence this behavior by explicitly setting the precision of the network
-#' using \code{\link[sf]{st_set_precision}}.
+#' separately as a new node to the network.
+#'
+#' @note By default sfnetworks rounds coordinates to 12 decimal places to
+#' determine spatial equality. You can influence this behavior by explicitly
+#' setting the precision of the network using
+#' \code{\link[sf]{st_set_precision}}.
 #'
 #' @returns The subdivision of x as object of class \code{\link{sfnetwork}}.
 #'
@@ -25,7 +31,7 @@
 #' @importFrom sf st_geometry<-
 #' @importFrom sfheaders sf_to_df
 #' @export
-subdivide_edges = function(x, merge = TRUE) {
+subdivide_edges = function(x, all = FALSE, merge = TRUE) {
   nodes = nodes_as_sf(x)
   edges = edges_as_sf(x)
   ## ===========================
@@ -44,12 +50,10 @@ subdivide_edges = function(x, merge = TRUE) {
   edge_pts$linestring_id = NULL
   ## =======================================
   # STEP II: DEFINE WHERE TO SUBDIVIDE EDGES
-  # Edges should be split at locations where:
-  # --> An edge interior point is equal to a boundary point in another edge.
-  # --> An edge interior point is equal to an interior point in another edge.
-  # Hence, we need to split edges at point that:
-  # --> Are interior points.
-  # --> Have at least one duplicate among the other edge points.
+  # If all = TRUE, edges should be split at all interior points.
+  # Otherwise, edges should be split only at those interior points that:
+  # --> Are equal to a boundary point in another edge.
+  # --> Are equal to an interior point in another edge.
   ## =======================================
   # Define which edge points are boundaries.
   is_startpoint = !duplicated(edge_pts$eid)
@@ -61,13 +65,23 @@ subdivide_edges = function(x, merge = TRUE) {
   edge_pts$nid = edge_nids
   # Compute for each edge point a unique location index.
   # Edge points that are spatially equal get the same location index.
+  # Note that this is only needed if:
+  # --> Only shared interior points should be split.
+  # --> Shared interior points should be merged into a single node afterwards.
   edge_coords = edge_pts[names(edge_pts) %in% c("x", "y", "z", "m")]
-  edge_lids = st_match_points_df(edge_coords, attr(edges, "precision"))
-  edge_pts$lid = edge_lids
-  # Define which edge points are not unique.
-  has_duplicate = duplicated(edge_lids) | duplicated(edge_lids, fromLast = TRUE)
-  # Define at which edge points to split edges.
-  is_split = has_duplicate & !is_boundary
+  if (merge | !all) {
+    edge_lids = st_match_points_df(edge_coords, attr(edges, "precision"))
+    edge_pts$lid = edge_lids
+  }
+  # Define the subdivision points.
+  if (all) {
+    is_split = !is_boundary
+  } else {
+    has_duplicate_desc = duplicated(edge_lids)
+    has_duplicate_asc = duplicated(edge_lids, fromLast = TRUE)
+    has_duplicate = has_duplicate_desc | has_duplicate_asc
+    is_split = has_duplicate & !is_boundary
+  }
   ## ==========================================
   # STEP III: CONSTRUCT THE NEW EDGE GEOMETRIES
   # First we duplicate each split point.

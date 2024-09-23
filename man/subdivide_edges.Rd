@@ -4,28 +4,35 @@
 \alias{subdivide_edges}
 \title{Subdivide edges at interior points}
 \usage{
-subdivide_edges(x, merge = TRUE)
+subdivide_edges(x, all = FALSE, merge = TRUE)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}} with spatially explicit
 edges.}
 
+\item{all}{Should edges be subdivided at all their interior points? If set
+to \code{FALSE}, edges are only subdivided at those interior points that
+share their location with any other interior or boundary point (a node) in
+the edges table. Defaults to \code{FALSE}.}
+
 \item{merge}{Should multiple subdivision points at the same location be
 merged into a single node, and should subdivision points at the same
-locationas an existing node be merged into that node? Defaults to
+location as an existing node be merged into that node? Defaults to
 \code{TRUE}. If set to \code{FALSE}, each subdivision point is added
-separately as a new node to the network. By default sfnetworks rounds
-coordinates to 12 decimal places to determine spatial equality. You can
-influence this behavior by explicitly setting the precision of the network
-using \code{\link[sf]{st_set_precision}}.}
+separately as a new node to the network.}
 }
 \value{
 The subdivision of x as object of class \code{\link{sfnetwork}}.
 }
 \description{
-Construct a subdivision of the network by subdividing edges at each interior
-point that is equal to any other interior or boundary point in the edges
-table. Interior points are those points that shape a linestring geometry
-feature but are not endpoints of it, while boundary points are the endpoints
-of the linestrings, i.e. the existing nodes in het network.
+Construct a subdivision of the network by subdividing edges at interior
+points. Subdividing means that a new node is added on an edge, and the edge
+is split in two at that location. Interior points are those points that
+shape a linestring geometry feature but are not endpoints of it.
+}
+\note{
+By default sfnetworks rounds coordinates to 12 decimal places to
+determine spatial equality. You can influence this behavior by explicitly
+setting the precision of the network using
+\code{\link[sf]{st_set_precision}}.
 }

@@ -57,7 +57,7 @@ to_spatial_smooth(
   store_original_data = FALSE
 )
 
-to_spatial_subdivision(x, merge = TRUE)
+to_spatial_subdivision(x, all = FALSE, merge = TRUE)
 
 to_spatial_subset(x, ..., subset_by = NULL)
 
@@ -131,9 +131,17 @@ smoothed. May also be given as a vector of attribute names. In that case
 only those attributes are checked for equality. Equality tests are evaluated
 using the \code{==} operator.}
 
+\item{all}{Should edges be subdivided at all their interior points? If set
+to \code{FALSE}, edges are only subdivided at those interior points that
+share their location with any other interior or boundary point (a node) in
+the edges table. Defaults to \code{FALSE}. By default sfnetworks rounds
+coordinates to 12 decimal places to determine spatial equality. You can
+influence this behavior by explicitly setting the precision of the network
+using \code{\link[sf]{st_set_precision}}.}
+
 \item{merge}{Should multiple subdivision points at the same location be
 merged into a single node, and should subdivision points at the same
-locationas an existing node be merged into that node? Defaults to
+location as an existing node be merged into that node? Defaults to
 \code{TRUE}. If set to \code{FALSE}, each subdivision point is added
 separately as a new node to the network. By default sfnetworks rounds
 coordinates to 12 decimal places to determine spatial equality. You can
@@ -246,11 +254,10 @@ pseudo node. Returns a \code{morphed_sfnetwork} containing a single element
 of class \code{\link{sfnetwork}}.
 
 \item \code{to_spatial_subdivision()}: Construct a subdivision of the network by
-subdividing edges at each interior point that is equal to any other interior
-or boundary point in the edges table. Interior points are those points that
-shape a linestring geometry feature but are not endpoints of it, while
-boundary points are the endpoints of the linestrings, i.e. the existing
-nodes in het network. Returns a \code{morphed_sfnetwork} containing a single
+subdividing edges at interior points. Subdividing means that a new node is
+added on an edge, and the edge is split in two at that location. Interior
+points are those points that shape a linestring geometry feature but are not
+endpoints of it. Returns a \code{morphed_sfnetwork} containing a single
 element of class \code{\link{sfnetwork}}. This morpher requires edges to be
 spatially explicit.
 
