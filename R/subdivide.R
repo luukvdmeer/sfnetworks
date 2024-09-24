@@ -36,6 +36,7 @@
 #' @importFrom sfheaders sf_to_df
 #' @export
 subdivide_edges = function(x, protect = NULL, all = FALSE, merge = TRUE) {
+  if (will_assume_constant(x)) raise_assume_constant("subdivide_edges")
   nodes = nodes_as_sf(x)
   edges = edges_as_sf(x)
   ## ===========================
