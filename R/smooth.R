@@ -15,16 +15,14 @@
 #' are a pseudo node or not. Evaluated by \code{\link{evaluate_node_query}}.
 #' Defaults to \code{NULL}, meaning that none of the nodes is protected.
 #'
+#' @param require_equal Which attributes of its incident edges should be equal
+#' in order for a pseudo node to be removed? Evaluated as a
+#' \code{\link[dplyr]{dplyr_tidy_select}} argument. Defaults to \code{NULL},
+#' meaning that attribute equality is not considered for pseudo node removal.
+#'
 #' @param summarise_attributes How should the attributes of concatenated edges
 #' be summarized? There are several options, see
 #' \code{\link[igraph]{igraph-attribute-combination}} for details.
-#'
-#' @param require_equal Should nodes only be smoothed when the attribute values
-#' of their incident edges are equal? Defaults to \code{FALSE}. If \code{TRUE},
-#' only pseudo nodes that have incident edges with equal attribute values are
-#' smoothed. May also be given as a vector of attribute names. In that case
-#' only those attributes are checked for equality. Equality tests are evaluated
-#' using the \code{==} operator.
 #'
 #' @param store_original_ids For each concatenated edge, should the indices of
 #' the original edges be stored as an attribute of the new edge, in a column
@@ -39,16 +37,17 @@
 #' @returns The smoothed network as object of class \code{\link{sfnetwork}}.
 #'
 #' @importFrom cli cli_abort
-#' @importFrom igraph adjacent_vertices decompose degree delete_edge_attr
-#' delete_vertices edge_attr edge_attr<- edge_attr_names get.edge.ids
-#' igraph_opt igraph_options incident_edges induced_subgraph is_directed
-#' vertex_attr
-#' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_is
-#' st_line_merge
+#' @importFrom igraph adjacent_vertices decompose degree delete_vertices
+#' edge_attr get.edge.ids igraph_opt igraph_options incident_edges
+#' induced_subgraph is_directed vertex_attr
+#' @importFrom rlang enquo try_fetch
+#' @importFrom sf st_as_sf st_cast st_combine st_crs st_drop_geometry
+#' st_equals st_is st_line_merge
+#' @importFrom tidyselect eval_select
 #' @export
 smooth_pseudo_nodes = function(x, protect = NULL,
+                               require_equal = NULL,
                                summarise_attributes = "concat",
-                               require_equal = FALSE,
                                store_original_ids = FALSE,
                                store_original_data = FALSE) {
   # Change default igraph options.
@@ -58,10 +57,9 @@ smooth_pseudo_nodes = function(x, protect = NULL,
   default_igraph_opt = igraph_opt("return.vs.es")
   igraph_options(return.vs.es = FALSE)
   on.exit(igraph_options(return.vs.es = default_igraph_opt))
-  # Add a index column if not present.
-  if (! ".tidygraph_edge_index" %in% edge_attr_names(x)) {
-    edge_attr(x, ".tidygraph_edge_index") = seq_len(n_edges(x))
-  }
+  # Add index columns if not present.
+  # These keep track of original node and edge indices.
+  x = add_original_ids(x)
   # Retrieve nodes and edges from the network.
   nodes = nodes_as_sf(x)
   edges = edge_data(x, focused = FALSE)
@@ -80,79 +78,40 @@ smooth_pseudo_nodes = function(x, protect = NULL,
   # In undirected networks, we define a pseudo node as follows:
   # --> A node with only two connections.
   ## ==========================
-  if (directed) {
-    pseudo = degree(x, mode = "in") == 1 & degree(x, mode = "out") == 1
-  } else {
-    pseudo = degree(x) == 2
-  }
-  if (! any(pseudo)) return (x)
-  ## ===========================
-  # STEP II: FILTER PSEUDO NODES
-  # Users can define additional requirements for a node to be smoothed:
-  # --> It should not be listed in the provided set of protected nodes.
-  # --> Its incident edges should have equal values for some attributes.
-  # In these cases we need to filter the set of detected pseudo nodes.
-  ## ===========================
+  pseudo = is_pseudo_node(x)
   # Detected pseudo nodes that are protected should be filtered out.
   if (! is.null(protect)) {
     # Evaluate the given protected nodes query.
     protect = evaluate_node_query(x, protect)
     # Mark all protected nodes as not being a pseudo node.
     pseudo[protect] = FALSE
-    if (! any(pseudo)) return (x)
   }
   # Check for equality of certain attributes between incident edges.
   # Detected pseudo nodes that fail this check should be filtered out.
-  if (! isFALSE(require_equal)) {
-    # If require_equal is TRUE all attributes will be checked for equality.
-    # In other cases only a subset of attributes will be checked.
-    if (isTRUE(require_equal)) {
-      require_equal = edge_colnames(x, geom = FALSE)
-    } else {
-      # Check if all given attributes exist in the edges table of x.
-      attr_exists = require_equal %in% edge_colnames(x, geom = FALSE)
-      if (! all(attr_exists)) {
-        unknown_attrs = paste(require_equal[!attr_exists], collapse = ", ")
-        cli_abort(c(
-          "Failed to check for edge attribute equality.",
-          "x" = "The following edge attributes were not found: {unknown_attrs}"
-        ))
-      }
+  if (! try_fetch(is.null(require_equal), error = \(e) FALSE)) {
+    pseudo_ids = which(pseudo)
+    exclude = c("from", "to", ".tidygraph_edge_index")
+    edge_attrs = st_drop_geometry(edges)
+    edge_attrs = edge_attrs[, !(names(edge_attrs) %in% exclude)]
+    edge_attrs = edge_attrs[, eval_select(enquo(require_equal), edge_attrs)]
+    incident_ids = incident_edges(x, pseudo_ids, mode = "all")
+    check_equality = function(i) nrow(distinct(slice(edge_attrs, i + 1))) < 2
+    pass = do.call("c", lapply(incident_ids, check_equality))
+    pseudo[pseudo_ids[!pass]] = FALSE
+  }
+  # If there are no pseudo nodes left:
+  # --> We do not have to smooth anything.
+  if (! any(pseudo)) {
+    # Store original edge data in a .orig_data column if requested.
+    if (store_original_data) {
+      x = add_original_edge_data(x, edges)
     }
-    # Get the node indices of the detected pseudo nodes.
-    pseudo_idxs = which(pseudo)
-    # Get the edge indices of the incident edges of each pseudo node.
-    # Combine them into a single numerical vector.
-    # Note the + 1 since incident_edges returns indices starting from 0.
-    incident_idxs = incident_edges(x, pseudo_idxs, mode = "all")
-    incident_idxs = do.call("c", incident_idxs) + 1
-    # Define for each of the incident edges if they are incoming or outgoing.
-    # In undirected networks this can be read instead as "first or second".
-    is_in = seq(1, 2 * length(pseudo_idxs), by = 2)
-    is_out = seq(2, 2 * length(pseudo_idxs), by = 2)
-    # Obtain the attributes to be checked for each of the incident edges.
-    incident_attrs = edge_attr(x, require_equal, incident_idxs)
-    # For each of these attributes:
-    # --> Check if its value is equal for both incident edges of a pseudo node.
-    check_equality = function(A) {
-      # Check equality for each pseudo node.
-      # NOTE:
-      # --> Operator == is used because element-wise comparisons are needed.
-      # --> Not sure if this approach works with identical() or all.equal().
-      are_equal = A[is_in] == A[is_out]
-      # If one of the two values is NA or NaN:
-      # --> The result of the element-wise comparison is always NA.
-      # --> This means the two elements are certainly not equal.
-      # --> Hence the result of this comparison can be set to FALSE.
-      are_equal[is.na(are_equal)] = FALSE
-      are_equal
+    # Remove original indices if requested.
+    if (! store_original_ids) {
+      x = drop_original_ids(x)
     }
-    tests = lapply(incident_attrs, check_equality)
-    # If one or more equality tests failed for a detected pseudo node:
-    # --> Mark this pseudo node as FALSE, i.e. not being a pseudo node.
-    failed = rowSums(do.call("cbind", tests)) != length(require_equal)
-    pseudo[pseudo_idxs[failed]] = FALSE
-    if (! any(pseudo)) return (x)
+    # Return x without smoothing.
+    return(x)
   }
   ## ====================================
   # STEP II: INITIALIZE REPLACEMENT EDGES
@@ -304,16 +263,8 @@ smooth_pseudo_nodes = function(x, protect = NULL,
   # For each replacement edge:
   # --> Summarise the attributes of the edges it replaces into single values.
   merge_attrs = function(E) {
-    orig_edges = E$.tidygraph_edge_index
-    orig_attrs = lapply(edge_attrs, `[`, orig_edges)
-    apply_summary_function = function(i) {
-      # Store return value in a list.
-      # This prevents automatic type promotion when rowbinding later on.
-      list(get_summary_function(i, summarise_attributes)(orig_attrs[[i]]))
-    }
-    new_attrs = lapply(names(orig_attrs), apply_summary_function)
-    names(new_attrs) = names(orig_attrs)
-    new_attrs
+    ids = E$.tidygraph_edge_index
+    summarize_attributes(edge_attrs, summarise_attributes, subset = ids)
   }
   new_attrs = lapply(new_idxs, merge_attrs)
   ## ===================================
@@ -399,7 +350,7 @@ smooth_pseudo_nodes = function(x, protect = NULL,
   }
   # Remove original indices if requested.
   if (! store_original_ids) {
-    x_new = delete_edge_attr(x_new, ".tidygraph_edge_index")
+    x_new = drop_original_ids(x_new)
   }
   x_new
 }

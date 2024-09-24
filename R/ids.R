@@ -259,3 +259,38 @@ edge_boundary_ids = function(x, focused = FALSE, matrix = FALSE) {
   }
   if (matrix) t(matrix(idvect, nrow = 2)) else idvect
 }
+
+#' Add or drop original feature index columns
+#'
+#' When morphing networks into a different structure, groups of nodes or edges
+#' may be merged into a single feature, or individual nodes or edges may be
+#' split into multiple features. In those cases, tidygraph and sfnetworks keep
+#' track of the original node and edge indices by creating columns named
+#' \code{.tidygraph_node_index} and \code{.tidygraph_edge_index}.
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @returns An object of class \code{\link{sfnetwork}}.
+#'
+#' @name original_ids
+#' @importFrom igraph edge_attr<- edge_attr_names vertex_attr<-
+#' vertex_attr_names
+#' @noRd
+add_original_ids = function(x) {
+  if (! ".tidygraph_node_index" %in% vertex_attr_names(x)) {
+    vertex_attr(x, ".tidygraph_node_index") = seq_len(n_nodes(x))
+  }
+  if (! ".tidygraph_edge_index" %in% edge_attr_names(x)) {
+    edge_attr(x, ".tidygraph_edge_index") = seq_len(n_edges(x))
+  }
+  x
+}
+
+#' @name original_ids
+#' @importFrom igraph delete_edge_attr delete_vertex_attr
+#' @noRd
+drop_original_ids = function(x) {
+  x = delete_vertex_attr(x, ".tidygraph_node_index")
+  x = delete_edge_attr(x, ".tidygraph_edge_index")
+  x
+}

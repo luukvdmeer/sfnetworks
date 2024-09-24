@@ -39,10 +39,9 @@ simplify_network = function(x, remove_multiple = TRUE, remove_loops = TRUE,
                             summarise_attributes = "first",
                             store_original_ids = FALSE,
                             store_original_data = FALSE) {
-  # Add a index column if not present.
-  if (! ".tidygraph_edge_index" %in% edge_attr_names(x)) {
-    edge_attr(x, ".tidygraph_edge_index") = seq_len(n_edges(x))
-  }
+  # Add index columns if not present.
+  # These keep track of original node and edge indices.
+  x = add_original_ids(x)
   ## ==================================================
   # STEP I: REMOVE LOOP EDGES AND MERGE MULTIPLE EDGES
   # For this we simply rely on igraphs simplify function
@@ -89,7 +88,7 @@ simplify_network = function(x, remove_multiple = TRUE, remove_loops = TRUE,
   }
   # Remove original indices if requested.
   if (! store_original_ids) {
-    x_new = delete_edge_attr(x_new, ".tidygraph_edge_index")
+    x_new = drop_original_ids(x_new)
   }
   x_new
 }

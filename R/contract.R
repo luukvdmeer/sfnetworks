@@ -54,10 +54,9 @@ contract_nodes = function(x, groups, simplify = TRUE,
                           summarise_attributes = "concat",
                           store_original_ids = FALSE,
                           store_original_data = FALSE) {
-  # Add a index column if not present.
-  if (! ".tidygraph_node_index" %in% vertex_attr_names(x)) {
-    vertex_attr(x, ".tidygraph_node_index") = seq_len(n_nodes(x))
-  }
+  # Add index columns if not present.
+  # These keep track of original node and edge indices.
+  x = add_original_ids(x)
   # Extract nodes.
   nodes = nodes_as_sf(x)
   node_geomcol = attr(nodes, "sf_column")
@@ -151,7 +150,7 @@ contract_nodes = function(x, groups, simplify = TRUE,
   }
   # Remove original indices if requested.
   if (! store_original_ids) {
-    x_new = delete_vertex_attr(x_new, ".tidygraph_node_index")
+    x_new = drop_original_ids(x_new)
   }
   x_new
 }

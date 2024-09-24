@@ -1,3 +1,45 @@
+#' Query spatial node types
+#'
+#' These functions add to tidygraphs \code{\link[tidygraph][node_types]}
+#' functions that allows to query whether each node is of a certain type. The
+#' functions added here query node types that are commonly used in spatial
+#' network analysis.
+#'
+#' @return A logical vector of the same length as the number of nodes in the
+#' network, indicating if each node is of the type in question.
+#'
+#' @details Just as with all query functions in tidygraph, these functions
+#' are meant to be called inside tidygraph verbs such as
+#' \code{\link[tidygraph]{mutate}} or \code{\link[tidygraph]{filter}}, where
+#' the network that is currently being worked on is known and thus not needed
+#' as an argument to the function. If you want to use an algorithm outside of
+#' the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to
+#' set the context temporarily while the algorithm is being evaluated.
+#'
+#' @name spatial_node_types
+NULL
+
+#' @describeIn spatial_node_types Pseudo nodes in directed networks are those
+#' nodes with only one incoming and one outgoing edge. In undirected networks
+#' pseudo nodes are those nodes with only two incident edges.
+#' @importFrom tidygraph .G
+#' @export
+node_is_pseudo = function() {
+  require_active_nodes()
+  x = .G()
+  is_pseudo = is_pseudo_node(x)
+  if (is_focused(x)) is_pseudo[node_ids(x, focused = TRUE)] else is_pseudo
+}
+
+#' @importFrom igraph degree is_directed
+is_pseudo_node = function(x) {
+  if (is_directed(x)) {
+    pseudo = degree(x, mode = "in") == 1 & degree(x, mode = "out") == 1
+  } else {
+    pseudo = degree(x) == 2
+  }
+}
+
 #' Query node coordinates
 #'
 #' These functions allow to query specific coordinate values from the

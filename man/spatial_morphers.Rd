@@ -52,7 +52,7 @@ to_spatial_simple(
 to_spatial_smooth(
   x,
   protect = NULL,
-  require_equal = FALSE,
+  require_equal = NULL,
   summarise_attributes = "concat",
   store_original_data = FALSE
 )
@@ -124,12 +124,10 @@ to \code{TRUE}.}
 
 \item{remove_loops}{Should loop edges be removed. Defaults to \code{TRUE}.}
 
-\item{require_equal}{Should nodes only be smoothed when the attribute values
-of their incident edges are equal? Defaults to \code{FALSE}. If \code{TRUE},
-only pseudo nodes that have incident edges with equal attribute values are
-smoothed. May also be given as a vector of attribute names. In that case
-only those attributes are checked for equality. Equality tests are evaluated
-using the \code{==} operator.}
+\item{require_equal}{Which attributes of its incident edges should be equal
+in order for a pseudo node to be removed? Evaluated as a
+\code{\link[dplyr]{dplyr_tidy_select}} argument. Defaults to \code{NULL},
+meaning that attribute equality is not considered for pseudo node removal.}
 
 \item{all}{Should edges be subdivided at all their interior points? If set
 to \code{FALSE}, edges are only subdivided at those interior points that

@@ -335,23 +335,21 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' pseudo node. Returns a \code{morphed_sfnetwork} containing a single element
 #' of class \code{\link{sfnetwork}}.
 #'
-#' @param require_equal Should nodes only be smoothed when the attribute values
-#' of their incident edges are equal? Defaults to \code{FALSE}. If \code{TRUE},
-#' only pseudo nodes that have incident edges with equal attribute values are
-#' smoothed. May also be given as a vector of attribute names. In that case
-#' only those attributes are checked for equality. Equality tests are evaluated
-#' using the \code{==} operator.
+#' @param require_equal Which attributes of its incident edges should be equal
+#' in order for a pseudo node to be removed? Evaluated as a
+#' \code{\link[dplyr]{dplyr_tidy_select}} argument. Defaults to \code{NULL},
+#' meaning that attribute equality is not considered for pseudo node removal.
 #'
 #' @export
-to_spatial_smooth = function(x, protect = NULL, require_equal = FALSE,
+to_spatial_smooth = function(x, protect = NULL, require_equal = NULL,
                              summarise_attributes = "concat",
                              store_original_data = FALSE) {
   # Smooth.
   x_new = smooth_pseudo_nodes(
     x = x,
     protect = protect,
-    summarise_attributes = summarise_attributes,
     require_equal = require_equal,
+    summarise_attributes = summarise_attributes,
     store_original_ids = TRUE,
     store_original_data = store_original_data
   )

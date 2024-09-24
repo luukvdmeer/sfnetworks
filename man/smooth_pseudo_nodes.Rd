@@ -7,8 +7,8 @@
 smooth_pseudo_nodes(
   x,
   protect = NULL,
+  require_equal = NULL,
   summarise_attributes = "concat",
-  require_equal = FALSE,
   store_original_ids = FALSE,
   store_original_data = FALSE
 )
@@ -20,16 +20,14 @@ smooth_pseudo_nodes(
 are a pseudo node or not. Evaluated by \code{\link{evaluate_node_query}}.
 Defaults to \code{NULL}, meaning that none of the nodes is protected.}
 
+\item{require_equal}{Which attributes of its incident edges should be equal
+in order for a pseudo node to be removed? Evaluated as a
+\code{\link[dplyr]{dplyr_tidy_select}} argument. Defaults to \code{NULL},
+meaning that attribute equality is not considered for pseudo node removal.}
+
 \item{summarise_attributes}{How should the attributes of concatenated edges
 be summarized? There are several options, see
 \code{\link[igraph]{igraph-attribute-combination}} for details.}
-
-\item{require_equal}{Should nodes only be smoothed when the attribute values
-of their incident edges are equal? Defaults to \code{FALSE}. If \code{TRUE},
-only pseudo nodes that have incident edges with equal attribute values are
-smoothed. May also be given as a vector of attribute names. In that case
-only those attributes are checked for equality. Equality tests are evaluated
-using the \code{==} operator.}
 
 \item{store_original_ids}{For each concatenated edge, should the indices of
 the original edges be stored as an attribute of the new edge, in a column
