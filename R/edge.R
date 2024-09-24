@@ -26,9 +26,7 @@ evaluate_edge_query = function(data, edges) {
 
 #' Query spatial edge measures
 #'
-#' These functions are a collection of specific spatial edge measures, that
-#' form a spatial extension to edge measures in
-#' \code{\link[tidygraph:tidygraph-package]{tidygraph}}.
+#' These functions are a collection of edge measures in spatial networks.
 #'
 #' @details Just as with all query functions in tidygraph, spatial edge
 #' measures are meant to be called inside tidygraph verbs such as
@@ -162,6 +160,23 @@ straight_line_distance = function(x) {
   idxs = edge_incident_ids(x, focused = TRUE, matrix = TRUE)
   # Calculate distances pairwise.
   st_distance(nodes[idxs[, 1]], nodes[idxs[, 2]], by_element = TRUE)
+}
+
+#' @describeIn spatial_edge_measures The number of segments contained in the
+#' linestring geometry of an edge. Segments are those parts of a linestring
+#' geometry that do not contain any interior points.
+#'
+#' @examples
+#' net |>
+#'   activate(edges) |>
+#'   mutate(n_segs = edge_segment_count())
+#'
+#' @importFrom tidygraph .G
+#' @export
+edge_segment_count = function() {
+  require_active_edges()
+  geoms = pull_edge_geom(.G(), focused = TRUE)
+  lengths(geoms) / 2 - 1
 }
 
 #' Query edges with spatial predicates

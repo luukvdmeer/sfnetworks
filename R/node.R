@@ -1,9 +1,8 @@
 #' Query spatial node types
 #'
-#' These functions add to tidygraphs \code{\link[tidygraph][node_types]}
-#' functions that allows to query whether each node is of a certain type. The
-#' functions added here query node types that are commonly used in spatial
-#' network analysis.
+#' These functions are a collection of node type queries that are commonly
+#' used in spatial network analysis, and form a spatial extension to
+#' \code{\link[tidygraph:node_types]{node type queries}} in tidygraph.
 #'
 #' @return A logical vector of the same length as the number of nodes in the
 #' network, indicating if each node is of the type in question.
