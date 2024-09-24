@@ -60,7 +60,7 @@ smooth_pseudo_nodes = function(x, protect = NULL,
   on.exit(igraph_options(return.vs.es = default_igraph_opt))
   # Add a index column if not present.
   if (! ".tidygraph_edge_index" %in% edge_attr_names(x)) {
-    edge_attr(x, ".tidygraph_edge_index") = seq_len(1:n_edges(x))
+    edge_attr(x, ".tidygraph_edge_index") = seq_len(n_edges(x))
   }
   # Retrieve nodes and edges from the network.
   nodes = nodes_as_sf(x)

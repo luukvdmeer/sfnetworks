@@ -56,7 +56,7 @@ contract_nodes = function(x, groups, simplify = TRUE,
                           store_original_data = FALSE) {
   # Add a index column if not present.
   if (! ".tidygraph_node_index" %in% vertex_attr_names(x)) {
-    vertex_attr(x, ".tidygraph_node_index") = seq_len(1:n_nodes(x))
+    vertex_attr(x, ".tidygraph_node_index") = seq_len(n_nodes(x))
   }
   # Extract nodes.
   nodes = nodes_as_sf(x)

@@ -41,7 +41,7 @@ simplify_network = function(x, remove_multiple = TRUE, remove_loops = TRUE,
                             store_original_data = FALSE) {
   # Add a index column if not present.
   if (! ".tidygraph_edge_index" %in% edge_attr_names(x)) {
-    edge_attr(x, ".tidygraph_edge_index") = seq_len(1:n_edges(x))
+    edge_attr(x, ".tidygraph_edge_index") = seq_len(n_edges(x))
   }
   ## ==================================================
   # STEP I: REMOVE LOOP EDGES AND MERGE MULTIPLE EDGES
