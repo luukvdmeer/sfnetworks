@@ -69,4 +69,13 @@ st_network_bbox.sfnetwork = function(x, ...) {
   net_bbox
 }
 
-
+#' @importFrom sf st_as_sfc st_bbox st_buffer st_crs st_distance st_point st_sfc
+extended_network_bbox = function(x, ratio = 0.1) {
+  crs = st_crs(x)
+  bbox = st_network_bbox(x)
+  lowleft = st_sfc(st_point(c(bbox["xmin"], bbox["ymin"])), crs = crs)
+  upright = st_sfc(st_point(c(bbox["xmax"], bbox["ymax"])), crs = crs)
+  diameter = st_distance(lowleft, upright)
+  buffer = st_buffer(st_as_sfc(bbox), dist = diameter * ratio)
+  st_bbox(buffer)
+}
