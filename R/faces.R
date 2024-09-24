@@ -31,10 +31,15 @@
 #'
 #' par(oldpar)
 #'
+#' @export
+st_network_faces = function(x, boundary = NULL) {
+  UseMethod("st_network_faces")
+}
+
 #' @importFrom lwgeom st_split
 #' @importFrom sf st_as_sfc st_collection_extract st_geometry
 #' @export
-st_network_faces = function(x, boundary = NULL) {
+st_network_faces.sfnetwork = function(x, boundary = NULL) {
   if (is.null(boundary)) boundary = st_as_sfc(extended_network_bbox(x, 0.1))
   splits = st_split(st_geometry(boundary), pull_edge_geom(x))
   st_collection_extract(splits, "POLYGON")
