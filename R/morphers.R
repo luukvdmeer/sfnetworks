@@ -169,7 +169,7 @@ to_spatial_mixed = function(x, directed) {
 
 #' @describeIn spatial_morphers Limit a network to the spatial neighborhood of
 #' a specific node. \code{...} is forwarded to \code{\link{st_network_cost}} to
-#' compute the travel cost from the source node to all other nodes in the
+#' compute the travel cost from the specified node to all other nodes in the
 #' network. Returns a \code{morphed_sfnetwork} that may contain multiple
 #' elements of class \code{\link{sfnetwork}}, depending on the number of given
 #' thresholds. When unmorphing only the first instance of both the node and
@@ -185,8 +185,8 @@ to_spatial_mixed = function(x, directed) {
 #' neighborhood. Should be a numeric value in the same units as the weight
 #' values used for the cost matrix computation. Alternatively, units can be
 #' specified explicitly by providing a \code{\link[units]{units}} object.
-#' Multiple threshold values may be given, in which a neighborhood is created
-#' for each of them separately.
+#' Multiple threshold values may be given, which will result in mutliple
+#' neigborhoods being returned.
 #'
 #' @importFrom igraph induced_subgraph
 #' @importFrom methods hasArg
