@@ -15,12 +15,46 @@
 #' the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to
 #' set the context temporarily while the algorithm is being evaluated.
 #'
+#' @examples
+#' library(sf, quietly = TRUE)
+#' library(tidygraph, quietly = TRUE)
+#'
+#' # Create a network.
+#' net = as_sfnetwork(mozart, "mst", directed = FALSE)
+#'
+#' # Use query function in a filter call.
+#' pseudos = net |>
+#'   activate(nodes) |>
+#'   filter(node_is_pseudo())
+#'
+#' danglers = net |>
+#'   activate(nodes) |>
+#'   filter(node_is_dangling())
+#'
+#' oldpar = par(no.readonly = TRUE)
+#' par(mar = c(1,1,1,1), mfrow = c(1,2))
+#' plot(net, main = "Pseudo nodes")
+#' plot(st_geometry(pseudos), pch = 20, cex = 1.2, col = "orange", add = TRUE)
+#' plot(net, main = "Dangling nodes")
+#' plot(st_geometry(danglers), pch = 20, cex = 1.2, col = "orange", add = TRUE)
+#' par(oldpar)
+#'
+#' # Use query function in a mutate call.
+#' net |>
+#'   activate(nodes) |>
+#'   mutate(pseudo = node_is_pseudo(), dangling = node_is_dangling())
+#'
+#' # Use query function directly.
+#' danglers = with_graph(net, node_is_dangling())
+#' head(danglers)
+#'
 #' @name spatial_node_types
 NULL
 
 #' @describeIn spatial_node_types Pseudo nodes in directed networks are those
 #' nodes with only one incoming and one outgoing edge. In undirected networks
-#' pseudo nodes are those nodes with only two incident edges.
+#' pseudo nodes are those nodes with only two incident edges, i.e. nodes of
+#' degree 2.
 #' @importFrom tidygraph .G
 #' @export
 node_is_pseudo = function() {
@@ -37,6 +71,22 @@ is_pseudo_node = function(x) {
   } else {
     pseudo = degree(x) == 2
   }
+}
+
+#' @describeIn spatial_node_types Dangling nodes are nodes with only one
+#' incident edge, i.e. nodes of degree 1.
+#' @importFrom tidygraph .G
+#' @export
+node_is_dangling = function() {
+  require_active_nodes()
+  x = .G()
+  is_dangling = is_dangling_node(x)
+  if (is_focused(x)) is_dangling[node_ids(x, focused = TRUE)] else is_dangling
+}
+
+#' @importFrom igraph degree
+is_dangling_node = function(x) {
+  degree(x) == 1
 }
 
 #' Query node coordinates
