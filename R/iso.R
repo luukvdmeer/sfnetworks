@@ -76,15 +76,28 @@ st_network_iso = function(x, node, cost, weights = edge_length(), ...,
   UseMethod("st_network_iso")
 }
 
+#' @importFrom methods hasArg
+#' @importFrom rlang enquo
 #' @importFrom sf st_combine st_concave_hull st_sf
 #' @importFrom units as_units deparse_unit
 #' @export
 st_network_iso.sfnetwork = function(x, node, cost, weights = edge_length(),
                                     ..., delineate = TRUE, ratio = 1,
                                     allow_holes = FALSE) {
-  x = unfocus(x)
+  # Evaluate the given node query.
+  # Always only the first node is used.
+  node = evaluate_node_query(x, enquo(node))[1]
+  # Evaluate the given weights specification.
+  weights = evaluate_weight_spec(x, enquo(weights))
+  # If the "to" nodes are also given this query has to be evaluated as well.
+  # Otherwise it defaults to all nodes in the network.
+  if (hasArg("to")) {
+    to = evaluate_node_query(x, enquo(to))
+  } else {
+    to = node_ids(x, focused = FALSE)
+  }
   # Compute the cost matrix from the specified node to all other nodes.
-  matrix = st_network_cost(x, from = node, weights = weights, ...)
+  matrix = compute_costs(x, node, to, weights = weights, ...)
   # Parse the given cost values.
   if (inherits(matrix, "units") && ! inherits(cost, "units")) {
     cost = as_units(cost, deparse_unit(matrix))

@@ -35,7 +35,7 @@ to_spatial_implicit(x)
 
 to_spatial_mixed(x, directed)
 
-to_spatial_neighborhood(x, node, threshold, ...)
+to_spatial_neighborhood(x, node, threshold, weights = edge_length(), ...)
 
 to_spatial_reversed(x, protect = NULL)
 
@@ -106,13 +106,17 @@ features be stored as an attribute of the new feature, in a column named
 Evaluated by \code{\link{evaluate_node_query}}. When multiple nodes are
 given, only the first one is used.}
 
-\item{threshold}{The threshold distance to be used. Only nodes within the
-threshold distance from the reference node will be included in the
-neighborhood. Should be a numeric value in the same units as the weight
-values used for the cost matrix computation. Alternatively, units can be
-specified explicitly by providing a \code{\link[units]{units}} object.
-Multiple threshold values may be given, which will result in mutliple
-neigborhoods being returned.}
+\item{threshold}{The threshold cost to be used. Only nodes reachable within
+this threshold cost from the reference node will be included in the
+neighborhood. Should be a numeric value in the same units as the given edge
+weights. Alternatively, units can be specified explicitly by providing a
+\code{\link[units]{units}} object. Multiple threshold values may be given,
+which will result in mutliple neigborhoods being returned.}
+
+\item{weights}{The edge weights to be used for travel cost computation.
+Evaluated by \code{\link{evaluate_edge_spec}}. The default is
+\code{\link{edge_length}}, which computes the geographic lengths of the
+edges.}
 
 \item{protect}{Nodes or edges to be protected from being changed in
 structure. Evaluated by \code{\link{evaluate_node_query}} in the case of

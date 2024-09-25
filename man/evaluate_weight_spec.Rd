@@ -10,13 +10,15 @@ evaluate_weight_spec(data, spec)
 \item{data}{An object of class \code{\link{sfnetwork}}.}
 
 \item{spec}{The specification that defines how to compute or extract edge
-weights. See Details.}
+weights defused into a \code{\link[dplyr:topic-quosure]{quosure}}. See
+Details for the different ways in which edge weights can be specified.}
 }
 \value{
 A numeric vector of edge weights.
 }
 \description{
-Specify edge weights in a spatial network
+This function is not meant to be called directly, but used inside other
+functions that accept the specification of edge weights.
 }
 \details{
 There are multiple ways in which edge weights can be specified in

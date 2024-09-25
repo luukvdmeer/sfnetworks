@@ -72,7 +72,7 @@ n_edges = function(x, focused = FALSE) {
   }
 }
 
-#' Get column names of the nodes or edges table of of a sfnetwork
+#' Get the column names of the node or edge data
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -110,6 +110,45 @@ edge_colnames = function(x, idxs = FALSE, geom = TRUE) {
     }
   }
   attrs
+}
+
+#' Query specific attribute column names in the node or edge data
+#'
+#' This function is not meant to be called directly, but used inside other
+#' functions that accept a attribute column query.
+#'
+#' @param data An object of class \code{\link{sfnetwork}}.
+#'
+#' @param query The query that defines for which attribute column names to
+#' extract, defused into a \code{\link[dplyr:topic-quosure]{quosure}}. The
+#' query is evaluated as a \code{\link[dplyr]{dplyr_tidy_select}} argument.
+#'
+#' @note The geometry column and any index column (e.g. from, to, or the
+#' tidygraph index columns added during morphing) are not considered attribute
+#' columns.
+#'
+#' @returns A character vector of queried attribute column names.
+#'
+#' @name evaluate_attribute_query
+#' @importFrom sf st_drop_geometry
+#' @importFrom tidyselect eval_select
+#' @noRd
+evaluate_node_attribute_query = function(x, query) {
+  nodes = st_drop_geometry(nodes_as_sf(x))
+  exclude = c(".tidygraph_node_index", ".sfnetwork_index")
+  node_attrs = nodes[, !(names(nodes) %in% exclude)]
+  names(node_attrs)[eval_select(query, node_attrs)]
+}
+
+#' @name evaluate_attribute_query
+#' @importFrom sf st_drop_geometry
+#' @importFrom tidyselect eval_select
+#' @noRd
+evaluate_edge_attribute_query = function(x, query) {
+  edges = st_drop_geometry(edge_data(x))
+  exclude = c("from", "to", ".tidygraph_edge_index", ".sfnetwork_index")
+  edge_attrs = edges[, !(names(edges) %in% exclude)]
+  names(edge_attrs)[eval_select(query, edge_attrs)]
 }
 
 #' Set or replace node or edge data in a spatial network

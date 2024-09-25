@@ -160,8 +160,10 @@ to_spatial_implicit = function(x) {
 #' @param directed Which edges should be directed? Evaluated by
 #' \code{\link{evaluate_edge_query}}.
 #'
+#' @importFrom rlang enquo
 #' @export
 to_spatial_mixed = function(x, directed) {
+  directed = evaluate_edge_query(x, enquo(directed))
   list(
     mixed = make_edges_mixed(x, directed)
   )
@@ -180,31 +182,49 @@ to_spatial_mixed = function(x, directed) {
 #' Evaluated by \code{\link{evaluate_node_query}}. When multiple nodes are
 #' given, only the first one is used.
 #'
-#' @param threshold The threshold distance to be used. Only nodes within the
-#' threshold distance from the reference node will be included in the
-#' neighborhood. Should be a numeric value in the same units as the weight
-#' values used for the cost matrix computation. Alternatively, units can be
-#' specified explicitly by providing a \code{\link[units]{units}} object.
-#' Multiple threshold values may be given, which will result in mutliple
-#' neigborhoods being returned.
+#' @param threshold The threshold cost to be used. Only nodes reachable within
+#' this threshold cost from the reference node will be included in the
+#' neighborhood. Should be a numeric value in the same units as the given edge
+#' weights. Alternatively, units can be specified explicitly by providing a
+#' \code{\link[units]{units}} object. Multiple threshold values may be given,
+#' which will result in mutliple neigborhoods being returned.
+#'
+#' @param weights The edge weights to be used for travel cost computation.
+#' Evaluated by \code{\link{evaluate_edge_spec}}. The default is
+#' \code{\link{edge_length}}, which computes the geographic lengths of the
+#' edges.
 #'
 #' @importFrom igraph induced_subgraph
 #' @importFrom methods hasArg
+#' @importFrom rlang enquo
 #' @importFrom units as_units deparse_unit
 #' @export
-to_spatial_neighborhood = function(x, node, threshold, ...) {
+to_spatial_neighborhood = function(x, node, threshold, weights = edge_length(),
+                                   ...) {
+  # Evaluate the given node query.
+  # Always only the first node is used.
+  node = evaluate_node_query(x, enquo(node))[1]
+  # Evaluate the given weights specification.
+  weights = evaluate_weight_spec(x, enquo(weights))
+  # If the "to" nodes are also given this query has to be evaluated as well.
+  # Otherwise it defaults to all nodes in the network.
+  if (hasArg("to")) {
+    to = evaluate_node_query(x, enquo(to))
+  } else {
+    to = node_ids(x, focused = FALSE)
+  }
   # Compute the cost matrix from the source node.
   # By calling st_network_cost with the given arguments.
   if (hasArg("from")) {
     # Deprecate the former "from" argument specifying routing direction.
     deprecate_from()
     if (isFALSE(list(...)$from)) {
-      costs = st_network_cost(x, from = node, direction = "in", ...)
+      costs = compute_costs(x, node, to, weights, direction = "in", ...)
     } else {
-      costs = st_network_cost(x, from = node, ...)
+      costs = compute_costs(x, node, to, weights, ...)
     }
   } else {
-    costs = st_network_cost(x, from = node, ...)
+    costs = compute_costs(x, node, to, weights, ...)
   }
   # Parse the given threshold values.
   if (inherits(costs, "units") && ! inherits(threshold, "units")) {
@@ -224,14 +244,15 @@ to_spatial_neighborhood = function(x, node, threshold, ...) {
 #' \code{morphed_sfnetwork} containing a single element of class
 #' \code{\link{sfnetwork}}.
 #' @importFrom igraph is_directed reverse_edges
+#' @importFrom rlang enquo try_fetch
 #' @importFrom sf st_reverse
 #' @export
 to_spatial_reversed = function(x, protect = NULL) {
   # Define which edges should be reversed.
-  if (is.null(protect)) {
+  if (try_fetch(is.null(protect), error = \(e) FALSE)) {
     reverse = edge_ids(x, focused = FALSE)
   } else {
-    protect = evaluate_edge_query(x, protect)
+    protect = evaluate_edge_query(x, enquo(protect))
     reverse = setdiff(edge_ids(x, focused = FALSE), protect)
   }
   # Reverse the from and to indices of those edges.
@@ -340,10 +361,19 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' \code{\link[dplyr]{dplyr_tidy_select}} argument. Defaults to \code{NULL},
 #' meaning that attribute equality is not considered for pseudo node removal.
 #'
+#' @importFrom rlang enquo try_fetch
 #' @export
 to_spatial_smooth = function(x, protect = NULL, require_equal = NULL,
                              summarise_attributes = "concat",
                              store_original_data = FALSE) {
+  # Evaluate the node query of the protect argument.
+  if (! try_fetch(is.null(protect), error = \(e) FALSE)) {
+    protect = evaluate_node_query(x, enquo(protect))
+  }
+  # Evaluate the edge attribute column query of the require equal argument.
+  if (! try_fetch(is.null(require_equal), error = \(e) FALSE)) {
+    require_equal = evaluate_edge_attribute_query(x, enquo(require_equal))
+  }
   # Smooth.
   x_new = smooth_pseudo_nodes(
     x = x,
@@ -384,9 +414,14 @@ to_spatial_smooth = function(x, protect = NULL, require_equal = NULL,
 #' influence this behavior by explicitly setting the precision of the network
 #' using \code{\link[sf]{st_set_precision}}.
 #'
+#' @importFrom rlang enquo try_fetch
 #' @export
 to_spatial_subdivision = function(x, protect = NULL, all = FALSE,
                                   merge = TRUE) {
+  # Evaluate the edge query of the protect argument.
+  if (! try_fetch(is.null(protect), error = \(e) FALSE)) {
+    protect = evaluate_edge_query(x, enquo(protect))
+  }
   # Subdivide.
   x_new = subdivide_edges(
     x = x,

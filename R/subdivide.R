@@ -8,9 +8,9 @@
 #' @param x An object of class \code{\link{sfnetwork}} with spatially explicit
 #' edges.
 #'
-#' @param protect Edges to be protected from being subdivided. Evaluated by
-#' \code{\link{evaluate_edge_query}}. Defaults to \code{NULL}, meaning that
-#' none of the edges is protected.
+#' @param protect An integer vector of edge indices specifying which edges
+#' should be protected from being subdivided. Defaults to \code{NULL}, meaning
+#' that none of the edges is protected.
 #'
 #' @param all Should edges be subdivided at all their interior points? If set
 #' to \code{FALSE}, edges are only subdivided at those interior points that
@@ -81,7 +81,6 @@ subdivide_edges = function(x, protect = NULL, all = FALSE, merge = TRUE) {
   # Define which edges to protect from being subdivided.
   is_protected = rep(FALSE, nrow(edge_pts))
   if (! is.null(protect)) {
-    protect = evaluate_edge_query(x, protect)
     is_protected[edge_pts$eid %in% protect] = TRUE
   }
   # Define the subdivision points.

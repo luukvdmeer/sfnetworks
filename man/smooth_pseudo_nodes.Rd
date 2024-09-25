@@ -16,14 +16,14 @@ smooth_pseudo_nodes(
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
 
-\item{protect}{Nodes to be protected from being removed, no matter if they
-are a pseudo node or not. Evaluated by \code{\link{evaluate_node_query}}.
-Defaults to \code{NULL}, meaning that none of the nodes is protected.}
+\item{protect}{An integer vector of edge indices specifying which nodes
+should be protected from being removed. Defaults to \code{NULL}, meaning
+that none of the nodes is protected.}
 
-\item{require_equal}{Which attributes of its incident edges should be equal
-in order for a pseudo node to be removed? Evaluated as a
-\code{\link[dplyr]{dplyr_tidy_select}} argument. Defaults to \code{NULL},
-meaning that attribute equality is not considered for pseudo node removal.}
+\item{require_equal}{A character vector of edge column names specifying
+which attributes of the incident edges of a pseudo node should be equal in
+order for the pseudo node to be removed? Defaults to \code{NULL}, meaning
+that attribute equality is not considered for pseudo node removal.}
 
 \item{summarise_attributes}{How should the attributes of concatenated edges
 be summarized? There are several options, see

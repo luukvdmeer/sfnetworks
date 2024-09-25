@@ -11,14 +11,14 @@
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @param protect Nodes to be protected from being removed, no matter if they
-#' are a pseudo node or not. Evaluated by \code{\link{evaluate_node_query}}.
-#' Defaults to \code{NULL}, meaning that none of the nodes is protected.
+#' @param protect An integer vector of edge indices specifying which nodes
+#' should be protected from being removed. Defaults to \code{NULL}, meaning
+#' that none of the nodes is protected.
 #'
-#' @param require_equal Which attributes of its incident edges should be equal
-#' in order for a pseudo node to be removed? Evaluated as a
-#' \code{\link[dplyr]{dplyr_tidy_select}} argument. Defaults to \code{NULL},
-#' meaning that attribute equality is not considered for pseudo node removal.
+#' @param require_equal A character vector of edge column names specifying
+#' which attributes of the incident edges of a pseudo node should be equal in
+#' order for the pseudo node to be removed? Defaults to \code{NULL}, meaning
+#' that attribute equality is not considered for pseudo node removal.
 #'
 #' @param summarise_attributes How should the attributes of concatenated edges
 #' be summarized? There are several options, see
@@ -37,13 +37,12 @@
 #' @returns The smoothed network as object of class \code{\link{sfnetwork}}.
 #'
 #' @importFrom cli cli_abort
+#' @importFrom dplyr distinct slice
 #' @importFrom igraph adjacent_vertices decompose degree delete_vertices
 #' edge_attr get.edge.ids igraph_opt igraph_options incident_edges
 #' induced_subgraph is_directed vertex_attr
-#' @importFrom rlang enquo try_fetch
 #' @importFrom sf st_as_sf st_cast st_combine st_crs st_drop_geometry
 #' st_equals st_is st_line_merge
-#' @importFrom tidyselect eval_select
 #' @export
 smooth_pseudo_nodes = function(x, protect = NULL,
                                require_equal = NULL,
@@ -81,19 +80,14 @@ smooth_pseudo_nodes = function(x, protect = NULL,
   pseudo = is_pseudo_node(x)
   # Detected pseudo nodes that are protected should be filtered out.
   if (! is.null(protect)) {
-    # Evaluate the given protected nodes query.
-    protect = evaluate_node_query(x, protect)
-    # Mark all protected nodes as not being a pseudo node.
     pseudo[protect] = FALSE
   }
   # Check for equality of certain attributes between incident edges.
   # Detected pseudo nodes that fail this check should be filtered out.
-  if (! try_fetch(is.null(require_equal), error = \(e) FALSE)) {
+  if (! is.null(require_equal)) {
     pseudo_ids = which(pseudo)
-    exclude = c("from", "to", ".tidygraph_edge_index")
     edge_attrs = st_drop_geometry(edges)
-    edge_attrs = edge_attrs[, !(names(edge_attrs) %in% exclude)]
-    edge_attrs = edge_attrs[, eval_select(enquo(require_equal), edge_attrs)]
+    edge_attrs = edge_attrs[, names(edge_attrs) %in% require_equal]
     incident_ids = incident_edges(x, pseudo_ids, mode = "all")
     check_equality = function(i) nrow(distinct(slice(edge_attrs, i + 1))) < 2
     pass = do.call("c", lapply(incident_ids, check_equality))

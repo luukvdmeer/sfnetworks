@@ -431,8 +431,8 @@ make_edges_directed = function(x) {
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @param directed Which edges should be directed? Evaluated by
-#' \code{\link{evaluate_edge_query}}.
+#' @param directed An integer vector of edge indices specifying those edges
+#' that should be directed.
 #'
 #' @return A mixed network as object of class \code{\link{sfnetwork}}.
 #'
@@ -451,8 +451,7 @@ make_edges_mixed = function(x, directed) {
     raise_reserved_attr(".sfnetwork_index")
   }
   edges$.sfnetwork_index = edge_ids
-  # Define which edges should be directed, and which undirected.
-  directed = evaluate_edge_query(x, directed)
+  # Define which edges should be undirected.
   undirected = setdiff(edge_ids, directed)
   # Duplicate undirected edges.
   duplicates = edges[undirected, ]

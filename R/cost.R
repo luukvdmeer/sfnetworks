@@ -93,19 +93,20 @@ st_network_cost = function(x, from = node_ids(x), to = node_ids(x),
   UseMethod("st_network_cost")
 }
 
+#' @importFrom rlang enquo
 #' @export
 st_network_cost.sfnetwork = function(x, from = node_ids(x), to = node_ids(x),
                                      weights = edge_length(),
                                      direction = "out",
                                      Inf_as_NaN = FALSE, ...) {
   # Evaluate the given from node query.
-  from = evaluate_node_query(x, from)
+  from = evaluate_node_query(x, enquo(from))
   if (any(is.na(from))) raise_na_values("from")
   # Evaluate the given to node query.
-  to = evaluate_node_query(x, to)
+  to = evaluate_node_query(x, enquo(to))
   if (any(is.na(to))) raise_na_values("to")
   # Evaluate the given weights specification.
-  weights = evaluate_weight_spec(x, weights)
+  weights = evaluate_weight_spec(x, enquo(weights))
   # Parse other arguments.
   # --> The direction argument is used instead of igraphs mode argument.
   # --> This means the mode argument should not be set.

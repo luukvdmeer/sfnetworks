@@ -17,6 +17,7 @@
 #' \code{\link[sf]{sf}} with one row per path, or a vector with ordered indices
 #' for `pois`.
 #'
+#' @importFrom rlang enquo
 #' @importFrom stats as.dist
 #' @importFrom TSP solve_TSP TSP ATSP
 #' @export
@@ -29,10 +30,10 @@ st_network_travel = function(x, pois, weights = edge_length(),
                              return_geometry = TRUE,
                              ...) {
   # Evaluate the node query for the pois.
-  pois = evaluate_node_query(x, pois)
+  pois = evaluate_node_query(x, enquo(pois))
   if (any(is.na(pois))) raise_na_values("pois")
   # Evaluate the given weights specification.
-  weights = evaluate_weight_spec(x, weights)
+  weights = evaluate_weight_spec(x, enquo(weights))
   # Compute cost matrix
   costmat = compute_costs(x, from = pois, to = pois, weights = weights)
   # Use nearest node indices as row and column names

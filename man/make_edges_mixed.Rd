@@ -9,8 +9,8 @@ make_edges_mixed(x, directed)
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
 
-\item{directed}{Which edges should be directed? Evaluated by
-\code{\link{evaluate_edge_query}}.}
+\item{directed}{An integer vector of edge indices specifying those edges
+that should be directed.}
 }
 \value{
 A mixed network as object of class \code{\link{sfnetwork}}.

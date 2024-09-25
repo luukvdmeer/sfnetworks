@@ -1,9 +1,13 @@
 #' Specify edge weights in a spatial network
 #'
+#' This function is not meant to be called directly, but used inside other
+#' functions that accept the specification of edge weights.
+#'
 #' @param data An object of class \code{\link{sfnetwork}}.
 #'
 #' @param spec The specification that defines how to compute or extract edge
-#' weights. See Details.
+#' weights defused into a \code{\link[dplyr:topic-quosure]{quosure}}. See
+#' Details for the different ways in which edge weights can be specified.
 #'
 #' @details There are multiple ways in which edge weights can be specified in
 #' sfnetworks. The specification can be formatted as follows:
@@ -34,12 +38,12 @@
 #' @return A numeric vector of edge weights.
 #'
 #' @importFrom cli cli_abort
-#' @importFrom rlang enquo eval_tidy expr
+#' @importFrom rlang eval_tidy expr
 #' @importFrom tidygraph .E .register_graph_context
 #' @export
 evaluate_weight_spec = function(data, spec) {
   .register_graph_context(data, free = TRUE)
-  weights = eval_tidy(enquo(spec), .E())
+  weights = eval_tidy(spec, .E())
   if (is_single_string(weights)) {
     # Allow character values for backward compatibility.
     deprecate_weights_is_string()

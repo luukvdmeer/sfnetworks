@@ -10,9 +10,9 @@ subdivide_edges(x, protect = NULL, all = FALSE, merge = TRUE)
 \item{x}{An object of class \code{\link{sfnetwork}} with spatially explicit
 edges.}
 
-\item{protect}{Edges to be protected from being subdivided. Evaluated by
-\code{\link{evaluate_edge_query}}. Defaults to \code{NULL}, meaning that
-none of the edges is protected.}
+\item{protect}{An integer vector of edge indices specifying which edges
+should be protected from being subdivided. Defaults to \code{NULL}, meaning
+that none of the edges is protected.}
 
 \item{all}{Should edges be subdivided at all their interior points? If set
 to \code{FALSE}, edges are only subdivided at those interior points that

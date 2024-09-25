@@ -9,14 +9,16 @@ evaluate_node_query(data, query)
 \arguments{
 \item{data}{An object of class \code{\link{sfnetwork}}.}
 
-\item{query}{The query that defines for which nodes to extract indices. See
-Details.}
+\item{query}{The query that defines for which nodes to extract indices,
+defused into a \code{\link[dplyr:topic-quosure]{quosure}}. See Details for
+the different ways in which node queries can be formulated.}
 }
 \value{
 A vector of queried node indices.
 }
 \description{
-Query specific node indices from a spatial network
+This function is not meant to be called directly, but used inside other
+functions that accept a node query.
 }
 \details{
 There are multiple ways in which node indices can be queried in

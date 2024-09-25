@@ -9,14 +9,16 @@ evaluate_edge_query(data, query)
 \arguments{
 \item{data}{An object of class \code{\link{sfnetwork}}.}
 
-\item{query}{The query that defines for which edges to extract indices. See
-Details.}
+\item{query}{The query that defines for which edges to extract indices,
+defused into a \code{\link[dplyr:topic-quosure]{quosure}}. See Details for
+the different ways in which edge queries can be formulated.}
 }
 \value{
 A vector of queried edge indices.
 }
 \description{
-Query specific edge indices from a spatial network
+This function is not meant to be called directly, but used inside other
+functions that accept an edge query.
 }
 \details{
 There are multiple ways in which edge indices can be queried in

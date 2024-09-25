@@ -40,10 +40,14 @@ edge_ids = function(x, focused = TRUE) {
 
 #' Query specific node indices from a spatial network
 #'
+#' This function is not meant to be called directly, but used inside other
+#' functions that accept a node query.
+#'
 #' @param data An object of class \code{\link{sfnetwork}}.
 #'
-#' @param query The query that defines for which nodes to extract indices. See
-#' Details.
+#' @param query The query that defines for which nodes to extract indices,
+#' defused into a \code{\link[dplyr:topic-quosure]{quosure}}. See Details for
+#' the different ways in which node queries can be formulated.
 #'
 #' @details There are multiple ways in which node indices can be queried in
 #' sfnetworks. The query can be formatted as follows:
@@ -81,12 +85,12 @@ edge_ids = function(x, focused = TRUE) {
 #'
 #' @importFrom cli cli_abort
 #' @importFrom igraph vertex_attr
-#' @importFrom rlang enquo eval_tidy
+#' @importFrom rlang eval_tidy
 #' @importFrom tidygraph .N .register_graph_context
 #' @export
 evaluate_node_query = function(data, query) {
   .register_graph_context(data, free = TRUE)
-  nodes = eval_tidy(enquo(query), .N())
+  nodes = eval_tidy(query, .N())
   if (is_sf(nodes) | is_sfc(nodes)) {
     nodes = nearest_node_ids(data, nodes)
   } else if (is.logical(nodes)) {
@@ -111,10 +115,14 @@ evaluate_node_query = function(data, query) {
 
 #' Query specific edge indices from a spatial network
 #'
+#' This function is not meant to be called directly, but used inside other
+#' functions that accept an edge query.
+#'
 #' @param data An object of class \code{\link{sfnetwork}}.
 #'
-#' @param query The query that defines for which edges to extract indices. See
-#' Details.
+#' @param query The query that defines for which edges to extract indices,
+#' defused into a \code{\link[dplyr:topic-quosure]{quosure}}. See Details for
+#' the different ways in which edge queries can be formulated.
 #'
 #' @details There are multiple ways in which edge indices can be queried in
 #' sfnetworks. The query can be formatted as follows:
@@ -152,12 +160,12 @@ evaluate_node_query = function(data, query) {
 #'
 #' @importFrom cli cli_abort
 #' @importFrom igraph edge_attr
-#' @importFrom rlang enquo eval_tidy
+#' @importFrom rlang eval_tidy
 #' @importFrom tidygraph .E .register_graph_context
 #' @export
 evaluate_edge_query = function(data, query) {
   .register_graph_context(data, free = TRUE)
-  edges = eval_tidy(enquo(query), .E())
+  edges = eval_tidy(query, .E())
   if (is_sf(edges) | is_sfc(edges)) {
     edges = nearest_edge_ids(data, edges)
   } else if (is.logical(edges)) {
