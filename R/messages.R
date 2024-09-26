@@ -147,6 +147,21 @@ deprecate_edges_as_lines = function() {
   )
 }
 
+#' @importFrom lifecycle deprecate_stop
+deprecate_type = function() {
+  deprecate_stop(
+    when = "v1.0",
+    what = "st_network_paths(type)",
+    details = c(
+      i = "To compute all shortest paths, set `all = TRUE`.",
+      i = paste(
+        "Computing all simple paths is not supported anymore, but you can now",
+        "compute k shortest paths by setting `k` to an integer higher than 1."
+      )
+    )
+  )
+}
+
 #' @importFrom lifecycle deprecate_warn
 deprecate_weights_is_string = function() {
   deprecate_warn(
@@ -188,6 +203,7 @@ deprecate_weights_is_null = function() {
   )
 }
 
+#' @importFrom lifecycle deprecate_warn
 deprecate_from = function() {
   deprecate_warn(
     when = "v1.0",

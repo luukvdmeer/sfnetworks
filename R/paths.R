@@ -144,6 +144,7 @@ st_network_paths = function(x, from, to = node_ids(x),
   UseMethod("st_network_paths")
 }
 
+#' @importFrom methods hasArg
 #' @importFrom rlang enquo
 #' @export
 st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
@@ -151,6 +152,8 @@ st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
                                       all = FALSE, k = 1, direction = "out",
                                       use_names = TRUE, return_cost = TRUE,
                                       return_geometry = TRUE, ...) {
+  # Deprecate the type argument.
+  if (hasArg("type")) deprecate_type()
   # Evaluate the given from node query.
   from = evaluate_node_query(x, enquo(from))
   if (any(is.na(from))) raise_na_values("from")
@@ -173,7 +176,6 @@ st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
 }
 
 #' @importFrom igraph vertex_attr vertex_attr_names
-#' @importFrom rlang has_name
 #' @importFrom sf st_as_sf
 find_paths = function(x, from, to, weights, all = FALSE, k = 1,
                       direction = "out", use_names = TRUE, return_cost = TRUE,
@@ -190,9 +192,9 @@ find_paths = function(x, from, to, weights, all = FALSE, k = 1,
   # Compute total cost of each path if requested.
   if (return_cost) {
     if (length(weights) == 1 && is.na(weights)) {
-      costs = do.call("c", lapply(paths$edge_paths, length))
+      costs = do.call("c", lapply(paths$edge_path, length))
     } else {
-      costs = do.call("c", lapply(paths$edge_paths, \(x) sum(weights[x])))
+      costs = do.call("c", lapply(paths$edge_path, \(x) sum(weights[x])))
     }
     costs[!paths$path_found] = Inf
     paths$cost = costs
@@ -200,7 +202,7 @@ find_paths = function(x, from, to, weights, all = FALSE, k = 1,
   # Construct path geometries of requested.
   if (return_geometry && has_explicit_edges(x)) {
     egeom = pull_edge_geom(x)
-    pgeom = do.call("c", lapply(paths$edge_paths, \(x) merge_lines(egeom[x])))
+    pgeom = do.call("c", lapply(paths$edge_path, \(x) merge_lines(egeom[x])))
     paths$geometry = pgeom
     paths = st_as_sf(paths)
   }
