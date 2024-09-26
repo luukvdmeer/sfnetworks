@@ -272,21 +272,18 @@ to_spatial_reversed = function(x, protect = NULL) {
 
 #' @describeIn spatial_morphers Limit a network to those nodes and edges that
 #' are part of the shortest path between two nodes. \code{...} is evaluated in
-#' the same manner as \code{\link{st_network_paths}} with
-#' \code{type = 'shortest'}. Returns a \code{morphed_sfnetwork} that may
-#' contain multiple elements of class \code{\link{sfnetwork}}, depending on
-#' the number of requested paths. When unmorphing only the first instance of
-#' both the node and edge data will be used, as the the same node and/or edge
-#' can be present in multiple paths.
+#' the same manner as \code{\link{st_network_paths}}. Returns a
+#' \code{morphed_sfnetwork} that may contain multiple elements of class
+#' \code{\link{sfnetwork}}, depending on the number of requested paths. When
+#' unmorphing only the first instance of both the node and edge data will be
+#' used, as the the same node and/or edge can be present in multiple paths.
 #' @importFrom igraph is_directed
 #' @export
 to_spatial_shortest_paths = function(x, ...) {
   # Call st_network_paths with the given arguments.
-  if (hasArg("type")) raise_unsupported_arg("type")
   paths = st_network_paths(
     x,
     ...,
-    type = "shortest",
     use_names = FALSE,
     return_cost = FALSE,
     return_geometry = FALSE
@@ -297,8 +294,8 @@ to_spatial_shortest_paths = function(x, ...) {
   # Subset the network for each computed shortest path.
   get_single_path = function(i) {
     if (paths[i, ]$path_found) {
-      node_ids = paths$nodes[[i]]
-      edge_ids = paths$edges[[i]]
+      node_ids = paths$node_path[[i]]
+      edge_ids = paths$edge_path[[i]]
       N = nodes[node_ids, ]
       E = edges[edge_ids, ]
       E$from = c(1:(length(node_ids) - 1))

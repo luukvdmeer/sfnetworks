@@ -54,7 +54,8 @@ evaluate_weight_spec = function(data, spec) {
     deprecate_weights_is_null()
     weights = NA
   }
-  if (length(weights) != n_edges(data)) {
+  n = length(weights)
+  if (!(n == 1 && is.na(weights)) && n != n_edges(data)) {
     cli_abort(c(
       "Failed to evaluate the edge weight specification.",
       "x" = "The amount of weights does not equal the number of edges."

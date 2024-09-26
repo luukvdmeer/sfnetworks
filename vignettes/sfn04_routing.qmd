@@ -79,12 +79,12 @@ paths = st_network_paths(net, from = 495, to = c(458, 121), weights = "weight")
 paths
 paths |>
   slice(1) |>
-  pull(nodes) |>
+  pull(node_path) |>
   unlist()
 
 paths |>
   slice(1) |>
-  pull(edges) |>
+  pull(edge_path) |>
   unlist()
 ```
 
@@ -102,7 +102,7 @@ colors = sf.colors(3, categorical = TRUE)
 
 plot(net, col = "grey")
 paths |>
-  pull(nodes) |>
+  pull(node_path) |>
   walk(plot_path)
 net |>
   activate("nodes") |>
@@ -126,7 +126,7 @@ paths = st_network_paths(net, from = p1, to = c(p2, p3), weights = "weight")
 
 plot(net, col = "grey")
 paths |>
-  pull(nodes) |>
+  pull(node_path) |>
   walk(plot_path)
 plot(c(p1, p2, p3), col = colors, pch = 8, cex = 2, lwd = 2, add = TRUE)
 ```
@@ -317,7 +317,7 @@ tsp_paths = mapply(st_network_paths,
     from = from_idxs,
     to = to_idxs,
     MoreArgs = list(x = net, weights = "weight")
-  )["nodes", ] |>
+  )["node_path", ] |>
   unlist(recursive = FALSE)
 
 # Plot the results.

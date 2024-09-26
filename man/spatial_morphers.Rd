@@ -228,12 +228,11 @@ multiple neighborhoods.
 
 \item \code{to_spatial_shortest_paths()}: Limit a network to those nodes and edges that
 are part of the shortest path between two nodes. \code{...} is evaluated in
-the same manner as \code{\link{st_network_paths}} with
-\code{type = 'shortest'}. Returns a \code{morphed_sfnetwork} that may
-contain multiple elements of class \code{\link{sfnetwork}}, depending on
-the number of requested paths. When unmorphing only the first instance of
-both the node and edge data will be used, as the the same node and/or edge
-can be present in multiple paths.
+the same manner as \code{\link{st_network_paths}}. Returns a
+\code{morphed_sfnetwork} that may contain multiple elements of class
+\code{\link{sfnetwork}}, depending on the number of requested paths. When
+unmorphing only the first instance of both the node and edge data will be
+used, as the the same node and/or edge can be present in multiple paths.
 
 \item \code{to_spatial_simple()}: Construct a simple version of the network. A
 simple network is defined as a network without loop edges and multiple

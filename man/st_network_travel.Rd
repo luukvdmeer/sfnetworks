@@ -37,13 +37,12 @@ the node indices? Defaults to \code{TRUE}. Ignored when the nodes table does
 not have a column named \code{name}.}
 
 \item{return_cost}{Should the total cost of each path be computed? Defaults
-to \code{TRUE}. Ignored if \code{type = 'all_simple'}.}
+to \code{TRUE}.}
 
 \item{return_geometry}{Should a linestring geometry be constructed for each
 path? Defaults to \code{TRUE}. The geometries are constructed by calling
 \code{\link[sf]{st_line_merge}} on the linestring geometries of the edges in
-the path. Ignored if \code{type = 'all_simple'} and for networks with
-spatially implicit edges.}
+the path. Ignored for networks with spatially implicit edges.}
 
 \item{...}{Additional arguments passed on to the `TSP::solve_tsp()` function.}
 }

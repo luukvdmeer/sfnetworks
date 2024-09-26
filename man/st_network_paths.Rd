@@ -2,14 +2,15 @@
 % Please edit documentation in R/paths.R
 \name{st_network_paths}
 \alias{st_network_paths}
-\title{Find paths between nodes in a spatial network}
+\title{Find shortest paths between nodes in a spatial network}
 \usage{
 st_network_paths(
   x,
   from,
   to = node_ids(x),
   weights = edge_length(),
-  type = "shortest",
+  all = FALSE,
+  k = 1,
   direction = "out",
   use_names = TRUE,
   return_cost = TRUE,
@@ -24,7 +25,7 @@ st_network_paths(
 \code{\link{evaluate_node_query}}. When multiple nodes are given, only the
 first one is used.}
 
-\item{to}{The node where the paths should start. Evaluated by
+\item{to}{The nodes where the paths should end. Evaluated by
 \code{\link{evaluate_node_query}}. By default, all nodes in the network are
 included.}
 
@@ -33,12 +34,16 @@ Evaluated by \code{\link{evaluate_edge_spec}}. The default is
 \code{\link{edge_length}}, which computes the geographic lengths of the
 edges.}
 
-\item{type}{Character defining which type of path calculation should be
-performed. If set to \code{'shortest'} paths are found using
-\code{\link[igraph]{shortest_paths}}, if set to \code{'all_shortest'} paths
-are found using \code{\link[igraph]{all_shortest_paths}}, if set to
-\code{'all_simple'} paths are found using
-\code{\link[igraph]{all_simple_paths}}. Defaults to \code{'shortest'}.}
+\item{all}{Should all shortest paths be returned for each pair of nodes? If
+set to \code{FALSE}, only one shortest path is returned for each pair of
+nodes, even if multiple shortest paths exist. Defaults to \code{FALSE}.}
+
+\item{k}{The number of paths to find. Setting this to any integer higher
+than 1 returns not only the shortest path, but also the next k - 1 loopless
+shortest paths, which may be longer than the shortest path. Currently, this
+is only supported for one-to-one routing, meaning that both the from and to
+argument should be of length 1. This argument is ignored if \code{all} is
+set to \code{TRUE}.}
 
 \item{direction}{The direction of travel. Defaults to \code{'out'}, meaning
 that the direction given by the network is followed and paths are found from
@@ -54,26 +59,24 @@ the node indices? Defaults to \code{TRUE}. Ignored when the nodes table does
 not have a column named \code{name}.}
 
 \item{return_cost}{Should the total cost of each path be computed? Defaults
-to \code{TRUE}. Ignored if \code{type = 'all_simple'}.}
+to \code{TRUE}.}
 
 \item{return_geometry}{Should a linestring geometry be constructed for each
 path? Defaults to \code{TRUE}. The geometries are constructed by calling
 \code{\link[sf]{st_line_merge}} on the linestring geometries of the edges in
-the path. Ignored if \code{type = 'all_simple'} and for networks with
-spatially implicit edges.}
+the path. Ignored for networks with spatially implicit edges.}
 
 \item{...}{Additional arguments passed on to the wrapped igraph functions.
 Arguments \code{predecessors} and \code{inbound.edges} are ignored.
 Instead of the \code{mode} argument, use the \code{direction} argument.}
 }
 \value{
-An object of class \code{\link[tibble]{tbl_df}} or
-\code{\link[sf]{sf}} with one row per path. If \code{type = 'shortest'}, the
-number of rows is always equal to the number of requested paths, meaning
-that node pairs for which no path could be found are still part of the
-output. For all other path types, the output only contains finite paths.
+An object of class \code{\link[sf]{sf}} with one row per requested
+path. If \code{return_geometry = FALSE}, a \code{\link[tibble]{tbl_df}} is
+returned instead. If a requested path could not be found, it is included in
+the output as an empty path.
 
-Depending on the argument setting, the output may include the following
+Depending on the argument settings, the output may include the following
 columns:
 
 \itemize{
@@ -82,34 +85,22 @@ columns:
   \item \code{nodes}: A vector containing the indices of all nodes on the
   path, in order of visit.
   \item \code{edges}: A vector containing the indices of all edges on the
-  path, in order of visit. Not returned if \code{type = 'all_simple'}.
-  \item \code{path_found}: A boolean describing if a path was found between
-  the two nodes. Returned only if \code{type = 'shortest'}.
+  path, in order of visit.
+  \item \code{path_found}: A boolean describing if the requested path exists.
   \item \code{cost}: The total cost of the path, obtained by summing the
-  weights of all visited edges. Returned only if \code{return_cost = TRUE}.
-  Never returned if \code{type = 'all_simple'}.
+  weights of all visited edges. Included if \code{return_cost = TRUE}.
   \item \code{geometry}: The geometry of the path, obtained by merging the
-  geometries of all visited edges. Returned only if
-  \code{return_geometry = TRUE} and the network has spatially explicit
-  edges. Never returned if \code{type = 'all_simple'}.
+  geometries of all visited edges. Included if \code{return_geometry = TRUE}
+  and the network has spatially explicit edges.
 }
 }
 \description{
-A function implementing one-to-one and one-to-many routing on spatial
-networks. It can be used to either find one shortest path, all shortest
-paths, or all simple paths between one node and one or
-more other nodes in the network.
+Find shortest paths between nodes in a spatial network
 }
 \details{
 For more details on the wrapped igraph functions see the
-\code{\link[igraph]{distances}} and
-\code{\link[igraph]{all_simple_paths}} documentation pages.
-}
-\note{
-When computing simple paths by setting \code{type = 'all_simple'},
-note that potentially there are exponentially many paths between two nodes,
-and you may run out of memory especially in undirected, dense, and/or
-lattice-like networks.
+\code{\link[igraph]{distances}} and \code{\link[igraph]{k_shortest_paths}}
+documentation pages.
 }
 \examples{
 library(sf, quietly = TRUE)
