@@ -75,9 +75,9 @@ chosen routing backend. See Details.}
 }
 \value{
 An object of class \code{\link[sf]{sf}} with one row per requested
-path. If \code{return_geometry = FALSE}, a \code{\link[tibble]{tbl_df}} is
-returned instead. If a requested path could not be found, it is included in
-the output as an empty path.
+path. If \code{return_geometry = FALSE} or edges are spatially implicit, a
+\code{\link[tibble]{tbl_df}} is returned instead. If a requested path could
+not be found, it is included in the output as an empty path.
 
 Depending on the argument settings, the output may include the following
 columns:
