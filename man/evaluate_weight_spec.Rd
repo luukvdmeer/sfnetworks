@@ -34,6 +34,11 @@ sfnetworks. The specification can be formatted as follows:
   \item As a numeric vector: This vector should be of the same length as the
   number of edges in the network, specifying for each edge what its weight
   is.
+  \item As dual weights: Dual weights can be specified by the
+  \code{\link{dual_weights}} function. This allows to use a different set of
+  weights for shortest paths computation and for reporting the total cost of
+  those paths. Note that not every routing backend support dual-weighted
+  routing.
 }
 
 If the weight specification is \code{NULL} or \code{NA}, this means that no

@@ -231,6 +231,7 @@ find_paths = function(x, from, to, weights, all = FALSE, k = 1,
   paths$path_found = lengths(paths$node_path) > 0
   # Compute total cost of each path if requested.
   if (return_cost) {
+    if (inherits(weights, "dual_weights")) weights = weights$reported
     if (length(weights) == 1 && is.na(weights)) {
       costs = do.call("c", lapply(paths$edge_path, length))
     } else {
@@ -249,6 +250,7 @@ find_paths = function(x, from, to, weights, all = FALSE, k = 1,
   paths
 }
 
+#' @importFrom cli cli_abort cli_warn
 #' @importFrom igraph all_shortest_paths shortest_paths k_shortest_paths
 #' igraph_opt igraph_options
 #' @importFrom methods hasArg
@@ -266,12 +268,20 @@ igraph_paths = function(x, from, to, weights, all = FALSE, k = 1,
   # The direction argument is used instead of igraphs mode argument.
   # This means the mode argument should not be set.
   if (hasArg("mode")) raise_unsupported_arg("mode", replacement = "direction")
+  # Dual-weighted routing is not supported by igraph.
+  if (inherits(weights, "dual_weights")) {
+    cli_abort(c(
+      "Router {.pkg igraph} does not support dual-weighted routing.",
+      "i" = "Use the {.pkg dodgr} router for dual-weighted routing."
+    ))
+  }
   # Any igraph paths function supports only a single from node.
   # If multiple from nodes are given we take only the first one.
   if (length(from) > 1) {
     cli_warn(c(
       "Router {.pkg igraph} does not support multiple {.arg from} nodes.",
-      "i" = "Only the first {.arg from} node is considered."
+      "i" = "Only the first {.arg from} node is considered.",
+      "i" = "Use the {.pkg dodgr} router for many-to-many routing."
     ))
     from = from[1]
   }
@@ -397,12 +407,12 @@ dodgr_paths = function(x, from, to, weights, all = FALSE, k = 1,
   # --> For undirected networks we duplicated and reversed all edges.
   # --> Paths that were not found should have numeric(0) as value.
   if (!is_directed(x) | direction == "all") {
-    n = length(weights)
+    n = nrow(x_dodgr) / 2
     update_edge_path = function(E) {
       if (is.null(E) || all(is.na(E))) return (integer(0))
       is_added = E > n
       E[is_added] = E[is_added] - n
-      E
+      as.integer(E)
     }
     epaths = lapply(epaths, update_edge_path)
   } else {
