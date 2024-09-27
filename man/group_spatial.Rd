@@ -7,28 +7,52 @@
 group_spatial(
   dist,
   algorithm = "dbscan",
-  network_distance = TRUE,
+  use_network_distance = TRUE,
   min_nodes = 1,
   ...
 )
 }
 \arguments{
-\item{dist}{distance within which nodes are clustered to each other}
+\item{dist}{The distance within which nodes are clustered together. Should
+be specified in meters.}
 
-\item{algorithm}{the grouping algorithm used to perform spatial clustering.
-Defaults to the `dbscan::dbscan()` algorithm.}
+\item{algorithm}{The spatial clustering algorithm to use. See Details.}
 
-\item{network_distance}{should the distance be based on the network distance
-(default, uses `st_network_distance()` internally) or euclidean distance
-(uses `sf::st_distance()` internally)?}
+\item{use_network_distance}{Should the distance between nodes be computed as
+the distance over the network (using \code{\link{st_network_distance}}?
+Defaults to \code{TRUE}. If set to \code{FALSE}, the straight-line distance
+(using \code{\link[sf]{st_distance}}) is computed instead.}
 
-\item{min_nodes}{minimum number of nodes assigned to each cluster. Defaults
-to 1 so that every node is assigned a cluster even if it is the only member
-of that cluster.}
+\item{min_nodes}{The minimum number of nodes in each cluster. Defaults to 1.}
 
-\item{...}{other arguments passed onto the algorithm,
-e.g. `dbscan::dbscan()`}
+\item{...}{Additional arguments passed on to the clustering algorithm. See
+Details.}
+}
+\value{
+A numeric vector with the membership for each node in the network.
+The enumeration happens in order based on group size progressing from the
+largest to the smallest group.
 }
 \description{
-Group nodes based on spatial distance
+This function forms a spatial extension to the
+\code{\link[tidygraph:group_graph]{grouping}} functions in tidygraph,
+allowing to detect communities with spatial clustering algorithms.
+}
+\details{
+The currently supported spatial clustering algorithms are the
+following:
+
+\itemize{
+  \item \code{dbscan}: Uses density-based spatial clustering as implemented
+  in the \code{\link[dbscan]{dbscan}} function of the dbscan package. This
+  requires the dbscan package to be installed.
+}
+}
+\examples{
+library(tidygraph, quietly = TRUE)
+
+play_spatial(10, 0.5) |>
+  activate(nodes) |>
+  mutate(group = group_spatial(0.25))
+
 }
