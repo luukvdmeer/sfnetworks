@@ -20,7 +20,7 @@ validate_network = function(x, message = TRUE) {
   # Check 1: Are all node geometries points?
   if (message) cli_alert("Checking node geometry types ...")
   if (! are_points(nodes)) {
-    cli_abort("Not all nodes have geometry type POINT")
+    cli_abort("Not all nodes have geometry type {.cls POINT}")
   }
   if (message) cli_alert_success("All nodes have geometry type POINT")
   if (has_explicit_edges(x)) {
@@ -28,7 +28,7 @@ validate_network = function(x, message = TRUE) {
     # Check 2: Are all edge geometries linestrings?
     if (message) cli_alert("Checking edge geometry types ...")
     if (! are_linestrings(edges)) {
-      cli_abort("Not all edges have geometry type LINESTRING")
+      cli_abort("Not all edges have geometry type {.cls LINESTRING}")
     }
     if (message) cli_alert_success("All edges have geometry type LINESTRING")
     # Check 3: Is the CRS of the edges the same as of the nodes?
