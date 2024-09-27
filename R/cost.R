@@ -51,6 +51,9 @@
 #' routing. The dodgr package is a conditional dependency of sfnetworks. Using
 #' the dodgr router requires the dodgr package to be installed.
 #'
+#' The default router can be changed by setting the \code{sfn_default_router}
+#' option.
+#'
 #' @seealso \code{\link{st_network_paths}}, \code{\link{st_network_travel}}
 #'
 #' @return An n times m numeric matrix where n is the length of the \code{from}
@@ -105,7 +108,9 @@
 #' @export
 st_network_cost = function(x, from = node_ids(x), to = node_ids(x),
                            weights = edge_length(), direction = "out",
-                           Inf_as_NaN = FALSE, router = "igraph", ...) {
+                           Inf_as_NaN = FALSE,
+                           router = getOption("sfn_default_router", "igraph"),
+                           ...) {
   UseMethod("st_network_cost")
 }
 
@@ -115,7 +120,8 @@ st_network_cost.sfnetwork = function(x, from = node_ids(x), to = node_ids(x),
                                      weights = edge_length(),
                                      direction = "out",
                                      Inf_as_NaN = FALSE,
-                                     router = "igraph", ...) {
+                                     router = getOption("sfn_default_router", "igraph"),
+                                     ...) {
   # Evaluate the given from node query.
   from = evaluate_node_query(x, enquo(from))
   if (any(is.na(from))) raise_na_values("from")
@@ -138,7 +144,8 @@ st_network_cost.sfnetwork = function(x, from = node_ids(x), to = node_ids(x),
 #' @export
 st_network_distance = function(x, from = node_ids(x), to = node_ids(x),
                                direction = "out", Inf_as_NaN = FALSE,
-                               router = "igraph", ...) {
+                               router = getOption("sfn_default_router", "igraph"),
+                               ...) {
   st_network_cost(
     x, from, to,
     weights = edge_length(),
@@ -151,7 +158,9 @@ st_network_distance = function(x, from = node_ids(x), to = node_ids(x),
 
 #' @importFrom units as_units deparse_unit
 compute_costs = function(x, from, to, weights, direction = "out",
-                         Inf_as_NaN = FALSE, router = "igraph", ...) {
+                         Inf_as_NaN = FALSE,
+                         router = getOption("sfn_default_router", "igraph"),
+                         ...) {
   # Compute cost matrix with the given router.
   costs = switch(
     router,

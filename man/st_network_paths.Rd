@@ -12,7 +12,7 @@ st_network_paths(
   all = FALSE,
   k = 1,
   direction = "out",
-  router = "igraph",
+  router = getOption("sfn_default_router", "igraph"),
   use_names = TRUE,
   return_cost = TRUE,
   return_geometry = TRUE,
@@ -125,6 +125,9 @@ routing. The computation of all shortest paths and k shortest paths is
 currently not supported by the dodgr router. The dodgr package is a
 conditional dependency of sfnetworks. Using the dodgr router requires the
 dodgr package to be installed.
+
+The default router can be changed by setting the \code{sfn_default_router}
+option.
 }
 \examples{
 library(sf, quietly = TRUE)

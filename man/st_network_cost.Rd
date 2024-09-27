@@ -12,7 +12,7 @@ st_network_cost(
   weights = edge_length(),
   direction = "out",
   Inf_as_NaN = FALSE,
-  router = "igraph",
+  router = getOption("sfn_default_router", "igraph"),
   ...
 )
 
@@ -22,7 +22,7 @@ st_network_distance(
   to = node_ids(x),
   direction = "out",
   Inf_as_NaN = FALSE,
-  router = "igraph",
+  router = getOption("sfn_default_router", "igraph"),
   ...
 )
 }
@@ -83,6 +83,9 @@ package supports many-to-many cost matrix computation with the
 \code{\link[dodgr]{dodgr_dists}} function. It also supports dual-weighted
 routing. The dodgr package is a conditional dependency of sfnetworks. Using
 the dodgr router requires the dodgr package to be installed.
+
+The default router can be changed by setting the \code{sfn_default_router}
+option.
 }
 \examples{
 library(sf, quietly = TRUE)

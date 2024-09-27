@@ -1,7 +1,7 @@
 #' @export
 print.sfnetwork = function(x, ...,
-                           n = getOption("sfn_max_print_active", default = 6),
-                           n_non_active = getOption("sfn_max_print_inactive", default = 3)) {
+                           n = getOption("sfn_max_print_active", 6),
+                           n_non_active = getOption("sfn_max_print_inactive", 3)) {
   N = node_data(x, focused = FALSE)
   E = edge_data(x, focused = FALSE)
   is_explicit = is_sf(E)

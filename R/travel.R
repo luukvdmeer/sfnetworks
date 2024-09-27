@@ -110,7 +110,8 @@
 #'
 #' @export
 st_network_travel = function(x, nodes, weights = edge_length(),
-                             optimizer = "TSP", router = "igraph",
+                             optimizer = "TSP",
+                             router = getOption("sfn_default_router", "igraph"),
                              return_paths = TRUE, use_names = TRUE,
                              return_cost = TRUE, return_geometry = TRUE, ...) {
   UseMethod("st_network_travel")
@@ -119,7 +120,8 @@ st_network_travel = function(x, nodes, weights = edge_length(),
 #' @importFrom rlang enquo
 #' @export
 st_network_travel.sfnetwork = function(x, nodes, weights = edge_length(),
-                                       optimizer = "TSP", router = "igraph",
+                                       optimizer = "TSP",
+                                       router = getOption("sfn_default_router", "igraph"),
                                        return_paths = TRUE, use_names = TRUE,
                                        return_cost = TRUE,
                                        return_geometry = TRUE, ...) {
@@ -143,7 +145,8 @@ st_network_travel.sfnetwork = function(x, nodes, weights = edge_length(),
 
 #' @importFrom dplyr bind_rows
 find_optimal_route = function(x, nodes, weights = edge_length(),
-                              optimizer = "TSP", router = "igraph",
+                              optimizer = "TSP",
+                              router = getOption("sfn_default_router", "igraph"),
                               return_paths = TRUE, use_names = TRUE,
                               return_cost = TRUE, return_geometry = TRUE, ...) {
   # Compute cost matrix with the given router.

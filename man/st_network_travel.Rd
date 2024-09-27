@@ -9,7 +9,7 @@ st_network_travel(
   nodes,
   weights = edge_length(),
   optimizer = "TSP",
-  router = "igraph",
+  router = getOption("sfn_default_router", "igraph"),
   return_paths = TRUE,
   use_names = TRUE,
   return_cost = TRUE,

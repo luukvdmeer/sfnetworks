@@ -78,6 +78,9 @@
 #' conditional dependency of sfnetworks. Using the dodgr router requires the
 #' dodgr package to be installed.
 #'
+#' The default router can be changed by setting the \code{sfn_default_router}
+#' option.
+#'
 #' @seealso \code{\link{st_network_cost}}, \code{\link{st_network_travel}}
 #'
 #' @return An object of class \code{\link[sf]{sf}} with one row per requested
@@ -162,7 +165,8 @@
 #' @export
 st_network_paths = function(x, from, to = node_ids(x),
                             weights = edge_length(), all = FALSE, k = 1,
-                            direction = "out", router = "igraph",
+                            direction = "out",
+                            router = getOption("sfn_default_router", "igraph"),
                             use_names = TRUE, return_cost = TRUE,
                             return_geometry = TRUE, ...) {
   UseMethod("st_network_paths")
@@ -174,7 +178,8 @@ st_network_paths = function(x, from, to = node_ids(x),
 st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
                                       weights = edge_length(),
                                       all = FALSE, k = 1,
-                                      direction = "out", router = "igraph",
+                                      direction = "out",
+                                      router = getOption("sfn_default_router", "igraph"),
                                       use_names = TRUE, return_cost = TRUE,
                                       return_geometry = TRUE, ...) {
   # Deprecate the type argument.
@@ -204,8 +209,10 @@ st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
 #' @importFrom igraph vertex_attr vertex_attr_names
 #' @importFrom sf st_as_sf
 find_paths = function(x, from, to, weights, all = FALSE, k = 1,
-                      direction = "out", router = "igraph", use_names = TRUE,
-                      return_cost = TRUE, return_geometry = TRUE, ...) {
+                      direction = "out",
+                      router = getOption("sfn_default_router", "igraph"),
+                      use_names = TRUE, return_cost = TRUE,
+                      return_geometry = TRUE, ...) {
   # Find paths with the given router.
   paths = switch(
     router,
