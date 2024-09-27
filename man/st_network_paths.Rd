@@ -12,6 +12,7 @@ st_network_paths(
   all = FALSE,
   k = 1,
   direction = "out",
+  router = "igraph",
   use_names = TRUE,
   return_cost = TRUE,
   return_geometry = TRUE,
@@ -22,15 +23,14 @@ st_network_paths(
 \item{x}{An object of class \code{\link{sfnetwork}}.}
 
 \item{from}{The node where the paths should start. Evaluated by
-\code{\link{evaluate_node_query}}. When multiple nodes are given, only the
-first one is used.}
+\code{\link{evaluate_node_query}}.}
 
 \item{to}{The nodes where the paths should end. Evaluated by
 \code{\link{evaluate_node_query}}. By default, all nodes in the network are
 included.}
 
 \item{weights}{The edge weights to be used in the shortest path calculation.
-Evaluated by \code{\link{evaluate_edge_spec}}. The default is
+Evaluated by \code{\link{evaluate_weight_spec}}. The default is
 \code{\link{edge_length}}, which computes the geographic lengths of the
 edges.}
 
@@ -53,6 +53,10 @@ given as argument \code{from}. May also be set to \code{'all'}, meaning that
 the network is considered to be undirected. This argument is ignored for
 undirected networks.}
 
+\item{router}{The routing backend to use for the shortest path computation.
+Currently supported options are \code{'igraph'} and \code{'dodgr'}. See
+Details.}
+
 \item{use_names}{If a column named \code{name} is present in the nodes
 table, should these names be used to encode the nodes in a path, instead of
 the node indices? Defaults to \code{TRUE}. Ignored when the nodes table does
@@ -66,9 +70,8 @@ path? Defaults to \code{TRUE}. The geometries are constructed by calling
 \code{\link[sf]{st_line_merge}} on the linestring geometries of the edges in
 the path. Ignored for networks with spatially implicit edges.}
 
-\item{...}{Additional arguments passed on to the wrapped igraph functions.
-Arguments \code{predecessors} and \code{inbound.edges} are ignored.
-Instead of the \code{mode} argument, use the \code{direction} argument.}
+\item{...}{Additional arguments passed on to the underlying function of the
+chosen routing backend. See Details.}
 }
 \value{
 An object of class \code{\link[sf]{sf}} with one row per requested
@@ -82,10 +85,10 @@ columns:
 \itemize{
   \item \code{from}: The index of the node at the start of the path.
   \item \code{to}: The index of the node at the end of the path.
-  \item \code{nodes}: A vector containing the indices of all nodes on the
-  path, in order of visit.
-  \item \code{edges}: A vector containing the indices of all edges on the
-  path, in order of visit.
+  \item \code{node_path}: A vector containing the indices of all nodes on
+  the path, in order of visit.
+  \item \code{edge_path}: A vector containing the indices of all edges on
+  the path, in order of visit.
   \item \code{path_found}: A boolean describing if the requested path exists.
   \item \code{cost}: The total cost of the path, obtained by summing the
   weights of all visited edges. Included if \code{return_cost = TRUE}.
@@ -98,9 +101,30 @@ columns:
 Find shortest paths between nodes in a spatial network
 }
 \details{
-For more details on the wrapped igraph functions see the
-\code{\link[igraph]{distances}} and \code{\link[igraph]{k_shortest_paths}}
-documentation pages.
+The sfnetworks package does not implement its own routing algorithms
+to find shortest paths. Instead, it relies on "routing backends", i.e. other
+R packages that have implemented such algorithms. Currently two different
+routing backends are supported.
+
+The default is \code{\link[igraph]{igraph}}. This package supports
+one-to-many shortest path calculation with the
+\code{\link[igraph]{shortest_paths}} function. Note that multiple from nodes
+are not supported. If multiple from nodes are given, only the first one is
+taken. The igraph router also supports the computation of all shortest path
+(see the \code{all} argument) through the
+\code{\link[igraph]{all_shortest_paths}} function and of k shortest paths
+(see the \code{k} argument) through the
+\code{\link[igraph]{k_shortest_paths}} function. In the latter case, only
+one-to-one routing is supported, meaning that also only one to node should
+be provided. The igraph router does not support dual-weighted routing.
+
+The second supported routing backend is \code{\link[dodgr]{dodgr}}. This
+package supports many-to-many shortest path calculation with the
+\code{\link[dodgr]{dodgr_paths}} function. It also supports dual-weighted
+routing. The computation of all shortest paths and k shortest paths is
+currently not supported by the dodgr router. The dodgr package is a
+conditional dependency of sfnetworks. Using the dodgr router requires the
+dodgr package to be installed.
 }
 \examples{
 library(sf, quietly = TRUE)

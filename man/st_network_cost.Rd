@@ -12,6 +12,7 @@ st_network_cost(
   weights = edge_length(),
   direction = "out",
   Inf_as_NaN = FALSE,
+  router = "igraph",
   ...
 )
 
@@ -21,6 +22,7 @@ st_network_distance(
   to = node_ids(x),
   direction = "out",
   Inf_as_NaN = FALSE,
+  router = "igraph",
   ...
 )
 }
@@ -36,7 +38,7 @@ included.}
 included.}
 
 \item{weights}{The edge weights to be used in the shortest path calculation.
-Evaluated by \code{\link{evaluate_edge_spec}}. The default is
+Evaluated by \code{\link{evaluate_weight_spec}}. The default is
 \code{\link{edge_length}}, which computes the geographic lengths of the
 edges.}
 
@@ -51,8 +53,12 @@ argument is ignored for undirected networks.}
 \item{Inf_as_NaN}{Should the cost values of unconnected nodes be stored as
 \code{NaN} instead of \code{Inf}? Defaults to \code{FALSE}.}
 
-\item{...}{Additional arguments passed on to \code{\link[igraph]{distances}}.
-Instead of the \code{mode} argument, use the \code{direction} argument.}
+\item{router}{The routing backend to use for the cost matrix computation.
+Currently supported options are \code{'igraph'} and \code{'dodgr'}. See
+Details.}
+
+\item{...}{Additional arguments passed on to the underlying function of the
+chosen routing backend. See Details.}
 }
 \value{
 An n times m numeric matrix where n is the length of the \code{from}
@@ -63,8 +69,20 @@ Compute total travel costs of shortest paths between nodes in a spatial
 network.
 }
 \details{
-For more details on the wrapped igraph function see the
-\code{\link[igraph]{distances}} documentation page.
+The sfnetworks package does not implement its own routing algorithms
+to compute cost matrices. Instead, it relies on "routing backends", i.e.
+other R packages that have implemented such algorithms. Currently two
+different routing backends are supported.
+
+The default is \code{\link[igraph]{igraph}}. This package supports
+many-to-many cost matrix computation with the \code{\link[igraph]{distances}}
+function. The igraph router does not support dual-weighted routing.
+
+The second supported routing backend is \code{\link[dodgr]{dodgr}}. This
+package supports many-to-many cost matrix computation with the
+\code{\link[dodgr]{dodgr_dists}} function. It also supports dual-weighted
+routing. The dodgr package is a conditional dependency of sfnetworks. Using
+the dodgr router requires the dodgr package to be installed.
 }
 \examples{
 library(sf, quietly = TRUE)

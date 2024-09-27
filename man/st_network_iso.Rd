@@ -29,7 +29,7 @@ Multiple values may be given, which will result in multiple isolines being
 drawn.}
 
 \item{weights}{The edge weights to be used in the shortest path calculation.
-Evaluated by \code{\link{evaluate_edge_spec}}. The default is
+Evaluated by \code{\link{evaluate_weight_spec}}. The default is
 \code{\link{edge_length}}, which computes the geographic lengths of the
 edges.}
 

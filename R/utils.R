@@ -471,19 +471,3 @@ bind_rows_list = function(...) {
   is_listcol = vapply(out, function(x) any(lengths(x) > 1), logical(1))
   mutate(out, across(which(!is_listcol), unlist))
 }
-
-#' Get the last element of a vector
-#'
-#' @param x A vector.
-#'
-#' @return The last element of \code{x}.
-#'
-#' @noRd
-last_element = function(x) {
-  n = length(x)
-  if (n > 0) {
-    x[n]
-  } else {
-    x[1]
-  }
-}

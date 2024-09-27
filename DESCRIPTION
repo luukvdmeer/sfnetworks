@@ -53,6 +53,7 @@ Imports:
     utils
 Suggests:
     dbscan,
+    dodgr,
     fansi,
     ggplot2 (>= 3.0.0),
     knitr,
@@ -62,6 +63,7 @@ Suggests:
     s2 (>= 1.0.1),
     spatstat.geom,
     spatstat.linnet,
+    spdep,
     testthat,
     TSP
 VignetteBuilder:

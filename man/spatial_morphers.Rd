@@ -114,7 +114,7 @@ weights. Alternatively, units can be specified explicitly by providing a
 which will result in mutliple neigborhoods being returned.}
 
 \item{weights}{The edge weights to be used for travel cost computation.
-Evaluated by \code{\link{evaluate_edge_spec}}. The default is
+Evaluated by \code{\link{evaluate_weight_spec}}. The default is
 \code{\link{edge_length}}, which computes the geographic lengths of the
 edges.}
 

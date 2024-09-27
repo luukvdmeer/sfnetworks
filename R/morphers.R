@@ -190,7 +190,7 @@ to_spatial_mixed = function(x, directed) {
 #' which will result in mutliple neigborhoods being returned.
 #'
 #' @param weights The edge weights to be used for travel cost computation.
-#' Evaluated by \code{\link{evaluate_edge_spec}}. The default is
+#' Evaluated by \code{\link{evaluate_weight_spec}}. The default is
 #' \code{\link{edge_length}}, which computes the geographic lengths of the
 #' edges.
 #'
@@ -203,7 +203,8 @@ to_spatial_neighborhood = function(x, node, threshold, weights = edge_length(),
                                    ...) {
   # Evaluate the given node query.
   # Always only the first node is used.
-  node = evaluate_node_query(x, enquo(node))[1]
+  node = evaluate_node_query(x, enquo(node))
+  if (length(node) > 1) raise_multiple_elements("node"); node = node[1]
   # Evaluate the given weights specification.
   weights = evaluate_weight_spec(x, enquo(weights))
   # If the "to" nodes are also given this query has to be evaluated as well.

@@ -3,15 +3,14 @@
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
 #' @param from The node where the paths should start. Evaluated by
-#' \code{\link{evaluate_node_query}}. When multiple nodes are given, only the
-#' first one is used.
+#' \code{\link{evaluate_node_query}}.
 #'
 #' @param to The nodes where the paths should end. Evaluated by
 #' \code{\link{evaluate_node_query}}. By default, all nodes in the network are
 #' included.
 #'
 #' @param weights The edge weights to be used in the shortest path calculation.
-#' Evaluated by \code{\link{evaluate_edge_spec}}. The default is
+#' Evaluated by \code{\link{evaluate_weight_spec}}. The default is
 #' \code{\link{edge_length}}, which computes the geographic lengths of the
 #' edges.
 #'
@@ -34,6 +33,10 @@
 #' the network is considered to be undirected. This argument is ignored for
 #' undirected networks.
 #'
+#' @param router The routing backend to use for the shortest path computation.
+#' Currently supported options are \code{'igraph'} and \code{'dodgr'}. See
+#' Details.
+#'
 #' @param use_names If a column named \code{name} is present in the nodes
 #' table, should these names be used to encode the nodes in a path, instead of
 #' the node indices? Defaults to \code{TRUE}. Ignored when the nodes table does
@@ -47,13 +50,33 @@
 #' \code{\link[sf]{st_line_merge}} on the linestring geometries of the edges in
 #' the path. Ignored for networks with spatially implicit edges.
 #'
-#' @param ... Additional arguments passed on to the wrapped igraph functions.
-#' Arguments \code{predecessors} and \code{inbound.edges} are ignored.
-#' Instead of the \code{mode} argument, use the \code{direction} argument.
+#' @param ... Additional arguments passed on to the underlying function of the
+#' chosen routing backend. See Details.
 #'
-#' @details For more details on the wrapped igraph functions see the
-#' \code{\link[igraph]{distances}} and \code{\link[igraph]{k_shortest_paths}}
-#' documentation pages.
+#' @details The sfnetworks package does not implement its own routing algorithms
+#' to find shortest paths. Instead, it relies on "routing backends", i.e. other
+#' R packages that have implemented such algorithms. Currently two different
+#' routing backends are supported.
+#'
+#' The default is \code{\link[igraph]{igraph}}. This package supports
+#' one-to-many shortest path calculation with the
+#' \code{\link[igraph]{shortest_paths}} function. Note that multiple from nodes
+#' are not supported. If multiple from nodes are given, only the first one is
+#' taken. The igraph router also supports the computation of all shortest path
+#' (see the \code{all} argument) through the
+#' \code{\link[igraph]{all_shortest_paths}} function and of k shortest paths
+#' (see the \code{k} argument) through the
+#' \code{\link[igraph]{k_shortest_paths}} function. In the latter case, only
+#' one-to-one routing is supported, meaning that also only one to node should
+#' be provided. The igraph router does not support dual-weighted routing.
+#'
+#' The second supported routing backend is \code{\link[dodgr]{dodgr}}. This
+#' package supports many-to-many shortest path calculation with the
+#' \code{\link[dodgr]{dodgr_paths}} function. It also supports dual-weighted
+#' routing. The computation of all shortest paths and k shortest paths is
+#' currently not supported by the dodgr router. The dodgr package is a
+#' conditional dependency of sfnetworks. Using the dodgr router requires the
+#' dodgr package to be installed.
 #'
 #' @seealso \code{\link{st_network_cost}}, \code{\link{st_network_travel}}
 #'
@@ -68,10 +91,10 @@
 #' \itemize{
 #'   \item \code{from}: The index of the node at the start of the path.
 #'   \item \code{to}: The index of the node at the end of the path.
-#'   \item \code{nodes}: A vector containing the indices of all nodes on the
-#'   path, in order of visit.
-#'   \item \code{edges}: A vector containing the indices of all edges on the
-#'   path, in order of visit.
+#'   \item \code{node_path}: A vector containing the indices of all nodes on
+#'   the path, in order of visit.
+#'   \item \code{edge_path}: A vector containing the indices of all edges on
+#'   the path, in order of visit.
 #'   \item \code{path_found}: A boolean describing if the requested path exists.
 #'   \item \code{cost}: The total cost of the path, obtained by summing the
 #'   weights of all visited edges. Included if \code{return_cost = TRUE}.
@@ -139,8 +162,9 @@
 #' @export
 st_network_paths = function(x, from, to = node_ids(x),
                             weights = edge_length(), all = FALSE, k = 1,
-                            direction = "out", use_names = TRUE,
-                            return_cost = TRUE, return_geometry = TRUE, ...) {
+                            direction = "out", router = "igraph",
+                            use_names = TRUE, return_cost = TRUE,
+                            return_geometry = TRUE, ...) {
   UseMethod("st_network_paths")
 }
 
@@ -149,7 +173,8 @@ st_network_paths = function(x, from, to = node_ids(x),
 #' @export
 st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
                                       weights = edge_length(),
-                                      all = FALSE, k = 1, direction = "out",
+                                      all = FALSE, k = 1,
+                                      direction = "out", router = "igraph",
                                       use_names = TRUE, return_cost = TRUE,
                                       return_geometry = TRUE, ...) {
   # Deprecate the type argument.
@@ -168,6 +193,7 @@ st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
     all = all,
     k = k,
     direction = direction,
+    router = router,
     use_names = use_names,
     return_cost = return_cost,
     return_geometry = return_geometry,
@@ -178,10 +204,15 @@ st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
 #' @importFrom igraph vertex_attr vertex_attr_names
 #' @importFrom sf st_as_sf
 find_paths = function(x, from, to, weights, all = FALSE, k = 1,
-                      direction = "out", use_names = TRUE, return_cost = TRUE,
-                      return_geometry = TRUE, ...) {
+                      direction = "out", router = "igraph", use_names = TRUE,
+                      return_cost = TRUE, return_geometry = TRUE, ...) {
   # Find paths with the given router.
-  paths = igraph_paths(x, from, to, weights, all, k, direction, ...)
+  paths = switch(
+    router,
+    igraph = igraph_paths(x, from, to, weights, all, k, direction, ...),
+    dodgr = dodgr_paths(x, from, to, weights, all, k, direction, ...),
+    raise_unknown_input("router", router, c("igraph", "dodgr"))
+  )
   # Convert node indices to node names if requested.
   if (use_names && "name" %in% vertex_attr_names(x)) {
     nnames = vertex_attr(x, "name")
@@ -189,6 +220,8 @@ find_paths = function(x, from, to, weights, all = FALSE, k = 1,
     paths$to = do.call("c", lapply(paths$to, \(x) nnames[x]))
     paths$node_path = lapply(paths$node_path, \(x) nnames[x])
   }
+  # Define if the path was found.
+  paths$path_found = lengths(paths$node_path) > 0
   # Compute total cost of each path if requested.
   if (return_cost) {
     if (length(weights) == 1 && is.na(weights)) {
@@ -213,6 +246,7 @@ find_paths = function(x, from, to, weights, all = FALSE, k = 1,
 #' igraph_opt igraph_options
 #' @importFrom methods hasArg
 #' @importFrom tibble tibble
+#' @importFrom utils tail
 igraph_paths = function(x, from, to, weights, all = FALSE, k = 1,
                         direction = "out", ...) {
   # Change default igraph options.
@@ -227,7 +261,13 @@ igraph_paths = function(x, from, to, weights, all = FALSE, k = 1,
   if (hasArg("mode")) raise_unsupported_arg("mode", replacement = "direction")
   # Any igraph paths function supports only a single from node.
   # If multiple from nodes are given we take only the first one.
-  if (length(from) > 1) raise_multiple_elements("from"); from = from[1]
+  if (length(from) > 1) {
+    cli_warn(c(
+      "Router {.pkg igraph} does not support multiple {.arg from} nodes.",
+      "i" = "Only the first {.arg from} node is considered."
+    ))
+    from = from[1]
+  }
   # Call igraph paths calculation function depending on the settings.
   if (all) {
     # Call igraph::all_shortest_paths to obtain the requested paths.
@@ -242,11 +282,7 @@ igraph_paths = function(x, from, to, weights, all = FALSE, k = 1,
     epaths = paths$epaths
     # Define for each path where it starts and ends.
     starts = do.call("c", lapply(npaths, `[`, 1))
-    ends = do.call("c", lapply(npaths, last_element))
-    # Define for each path if the path was actually found or is empty.
-    # When all = TRUE we return only paths that exist.
-    # Hence each of the returned paths is found.
-    path_found = rep(TRUE, length(starts))
+    ends = do.call("c", lapply(npaths, tail, 1))
   } else {
     k = as.integer(k)
     if (k == 1) {
@@ -264,13 +300,20 @@ igraph_paths = function(x, from, to, weights, all = FALSE, k = 1,
       # Define for each path where it starts and ends.
       starts = rep(from, length(to))
       ends = to
-      # Define for each path if the path was actually found or is empty.
-      path_found = lengths(epaths) > 0 | starts == ends
     } else {
       # For k shortest paths igraph only supports one-to-one routing.
       # Hence only a single to node is supported.
       # If multiple to nodes are given we take only the first one.
-      if (length(to) > 1) raise_multiple_elements("to"); to = to[1]
+      if (length(to) > 1) {
+        cli_warn(c(
+          paste(
+            "Router {.pkg igraph} does not support multiple {.arg to}",
+            "nodes for k shortest paths computation."
+          ),
+          "i" = "Only the first {.arg to} node is considered."
+        ))
+        to = to[1]
+      }
       # Call igraph::k_shortest_paths to obtain the requested paths.
       paths = k_shortest_paths(
         x, from, to,
@@ -295,14 +338,79 @@ igraph_paths = function(x, from, to, weights, all = FALSE, k = 1,
       # Since we do one-to-one routing these are always the same nodes.
       starts = rep(from, k)
       ends = rep(to, k)
-      # Define for each path if the path was actually found or is empty.
-      path_found = c(rep(TRUE, n), rep(FALSE, k - n))
     }
   }
   # Return in a tibble.
   tibble(
     from = starts, to = ends,
-    node_path = npaths, edge_path = epaths,
-    path_found = path_found
+    node_path = npaths, edge_path = epaths
+  )
+}
+
+#' @importFrom cli cli_abort
+#' @importFrom igraph is_directed
+#' @importFrom rlang check_installed
+#' @importFrom tibble tibble
+#' @importFrom utils tail
+dodgr_paths = function(x, from, to, weights, all = FALSE, k = 1,
+                      direction = "out", ...) {
+  check_installed("dodgr") # Package dodgr is required for this function.
+  # The dodgr router currently does not support:
+  # --> Computing all shortest paths or k shortest path.
+  if (all) {
+    cli_abort(
+      "Router {.pkg dodgr} does not support setting {.code all = TRUE}."
+    )
+  }
+  if (k > 1) {
+    cli_abort(
+      "Router {.pkg dodgr} does not support setting {.code k > 1}."
+    )
+  }
+
+  # Convert the network to dodgr format.
+  x_dodgr = sfnetwork_to_minimal_dodgr(x, weights, direction)
+  # Call dodgr::dodgr_paths to compute the requested paths.
+  paths = dodgr::dodgr_paths(
+    x_dodgr,
+    from = as.character(from),
+    to = as.character(to),
+    vertices = FALSE,
+    ...
+  )
+  # Unnest the nested list of edge indices.
+  epaths = lapply(do.call(cbind, paths), \(x) x)
+  # Infer the node paths from the edge paths.
+  get_node_path = function(E) {
+    N = c(x_dodgr$from[E], x_dodgr$to[tail(E, 1)])
+    as.integer(N)
+  }
+  npaths = lapply(epaths, get_node_path)
+  # Update the edge paths:
+  # --> For undirected networks we duplicated and reversed all edges.
+  # --> Paths that were not found should have numeric(0) as value.
+  if (!is_directed(x) | direction == "all") {
+    n = length(weights)
+    update_edge_path = function(E) {
+      if (is.null(E) || all(is.na(E))) return (integer(0))
+      is_added = E > n
+      E[is_added] = E[is_added] - n
+      E
+    }
+    epaths = lapply(epaths, update_edge_path)
+  } else {
+    update_edge_path = function(E) {
+      if (is.null(E) || all(is.na(E))) return (integer(0))
+      E
+    }
+    epaths = lapply(epaths, update_edge_path)
+  }
+  # Define for each path where it starts and ends.
+  starts = rep(from, rep(length(to), length(from)))
+  ends = rep(to, length(from))
+  # Return in a tibble.
+  tibble(
+    from = starts, to = ends,
+    node_path = npaths, edge_path = epaths
   )
 }

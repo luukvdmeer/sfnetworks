@@ -20,7 +20,7 @@
 #' drawn.
 #'
 #' @param weights The edge weights to be used in the shortest path calculation.
-#' Evaluated by \code{\link{evaluate_edge_spec}}. The default is
+#' Evaluated by \code{\link{evaluate_weight_spec}}. The default is
 #' \code{\link{edge_length}}, which computes the geographic lengths of the
 #' edges.
 #'
@@ -86,7 +86,8 @@ st_network_iso.sfnetwork = function(x, node, cost, weights = edge_length(),
                                     allow_holes = FALSE) {
   # Evaluate the given node query.
   # Always only the first node is used.
-  node = evaluate_node_query(x, enquo(node))[1]
+  node = evaluate_node_query(x, enquo(node))
+  if (length(node) > 1) raise_multiple_elements("node"); node = node[1]
   # Evaluate the given weights specification.
   weights = evaluate_weight_spec(x, enquo(weights))
   # If the "to" nodes are also given this query has to be evaluated as well.
