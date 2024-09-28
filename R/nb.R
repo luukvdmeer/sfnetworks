@@ -155,7 +155,7 @@ validate_nb = function(x, nodes) {
     )
   }
   # Check 3: Are all referenced node indices referring to a provided node?
-  ids_in_bounds = function(x) all(x > 0 & x <= n_nodes)
+  ids_in_bounds = function(x) length(x) == 0 || all(x > 0 & x <= n_nodes)
   if (! all(vapply(x, ids_in_bounds, FUN.VALUE = logical(1)))) {
     cli_abort(c(
       "The sparse matrix should contain valid node indices",
