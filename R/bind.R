@@ -43,7 +43,7 @@
 #'
 #' @name bind_spatial
 #' @importFrom cli cli_abort
-#' @importFrom sf st_drop_geometry st_geometry st_geometry<-
+#' @importFrom sf st_drop_geometry st_geometry
 #' @importFrom tidygraph bind_nodes
 #' @export
 bind_spatial_nodes = function(.data, ...) {
@@ -60,14 +60,14 @@ bind_spatial_nodes = function(.data, ...) {
   add = lapply(list(...), st_drop_geometry)
   new_net = bind_nodes(net, add)
   # Add geometries back to the network.
-  st_geometry(new_net) = new_geom
+  new_net = mutate_node_geom(new_net, new_geom)
   new_net
 }
 
 #' @name bind_spatial
 #' @importFrom cli cli_abort
 #' @importFrom igraph is_directed
-#' @importFrom sf st_drop_geometry st_geometry st_geometry<-
+#' @importFrom sf st_drop_geometry st_geometry
 #' @importFrom tidygraph bind_edges
 #' @export
 bind_spatial_edges = function(.data, ..., node_key = "name", force = FALSE) {
@@ -87,7 +87,7 @@ bind_spatial_edges = function(.data, ..., node_key = "name", force = FALSE) {
   add_geom = lapply(list(...), st_geometry)
   new_geom = do.call("c", c(net_geom, add_geom))
   # Validate if binded edges are lines.
-  if (! are_lines(new_geom)) {
+  if (! are_linestrings(new_geom)) {
     cli_abort("Not all edges have geometry type {.cls LINESTRING}")
   }
   # Bind other data.
@@ -95,7 +95,7 @@ bind_spatial_edges = function(.data, ..., node_key = "name", force = FALSE) {
   add = lapply(list(...), st_drop_geometry)
   new_net = bind_edges(net, add, node_key = node_key)
   # Add geometries back to the network.
-  st_geometry(new_net) = new_geom
+  new_net = mutate_edge_geom(new_net, new_geom)
   # Validate if binded edges meet the valid spatial network structure.
   if (! force) {
     if (is_directed(x)) {
