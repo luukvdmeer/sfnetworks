@@ -691,7 +691,7 @@ sequential_neighbors = function(x) {
 
 #' @importFrom igraph as_edgelist graph_from_adjacency_matrix mst
 #' @importFrom sf st_distance st_geometry
-mst_neighbors = function(x, directed = TRUE, edges_as_lines = TRUE) {
+mst_neighbors = function(x) {
   # Create a complete graph.
   n_nodes = length(st_geometry(x))
   connections = upper.tri(matrix(FALSE, ncol = n_nodes, nrow = n_nodes))
