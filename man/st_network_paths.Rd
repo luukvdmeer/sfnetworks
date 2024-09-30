@@ -145,11 +145,17 @@ paths = st_network_paths(net, from = 495, to = 121)
 paths
 
 plot(net, col = "grey")
-plot(st_geometry(paths), col = "red", lwd = 1.5, add = TRUE)
+plot(st_geometry(net)[paths$from], pch = 20, cex = 2, add = TRUE)
+plot(st_geometry(paths), col = "orange", lwd = 3, add = TRUE)
 
 # Compute the shortest paths from one to multiple nodes.
 # This will return a tibble with one row per path.
-st_network_paths(net, from = 495, to = c(121, 131, 141))
+paths = st_network_paths(net, from = 495, to = c(121, 131, 141))
+paths
+
+plot(net, col = "grey")
+plot(st_geometry(net)[paths$from], pch = 20, cex = 2, add = TRUE)
+plot(st_geometry(paths), col = "orange", lwd = 3, add = TRUE)
 
 # Compute the shortest path between two spatial point features.
 # These are snapped to their nearest node before finding the path.
@@ -162,8 +168,9 @@ paths = st_network_paths(net, from = p1, to = p2)
 paths
 
 plot(net, col = "grey")
-plot(c(p1, p2), col = "black", pch = 8, add = TRUE)
-plot(st_geometry(paths), col = "red", lwd = 1.5, add = TRUE)
+plot(c(p1, p2), pch = 20, cex = 2, add = TRUE)
+plot(st_geometry(net)[paths$from], pch = 4, cex = 2, add = TRUE)
+plot(st_geometry(paths), col = "orange", lwd = 3, add = TRUE)
 
 # Use a node type query function to specify destinations.
 st_network_paths(net, 1, node_is_adjacent(1))
@@ -181,7 +188,22 @@ net |>
 
 # Compute the shortest paths without edge weights.
 # This is the path with the fewest number of edges, ignoring space.
-st_network_paths(net, p1, p2, weights = NULL)
+st_network_paths(net, p1, p2, weights = NA)
+
+# Use the dodgr router for many-to-many routing.
+paths = st_network_paths(net,
+  from = c(1, 2),
+  to = c(10, 11),
+  router = "dodgr"
+)
+
+# Use the dodgr router for dual-weighted routing.
+paths = st_network_paths(net,
+  from = c(1, 2),
+  to = c(10, 11),
+  weights = dual_weights(edge_segment_count(), edge_length()),
+  router = "dodgr"
+)
 
 par(oldpar)
 

@@ -104,6 +104,7 @@
 #'
 #' plot(net, col = "grey")
 #' plot(pts, pch = 20, cex = 2, add = TRUE)
+#' plot(st_geometry(net)[route$from], pch = 4, cex = 2, add = TRUE)
 #' plot(st_geometry(route), col = "orange", lwd = 3, add = TRUE)
 #'
 #' par(oldpar)

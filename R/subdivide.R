@@ -109,11 +109,9 @@ subdivide_edges = function(x, protect = NULL, all = FALSE, merge = TRUE) {
   reps[is_split] = 2L
   # Create the new set of edge points by duplicating split points.
   new_edge_pts = edge_pts[rep(seq_len(n), reps), ]
-  # Define the total number of new edge points.
-  nn = nrow(new_edge_pts)
   # Define the new edge index of each new edge point.
   # We do so by incrementing each original edge index by 1 at each split point.
-  incs = rep(0L, nn)
+  incs = rep(0L, nrow(new_edge_pts))
   incs[which(is_split) + 1:sum(is_split)] = 1L
   new_edge_ids = new_edge_pts$eid + cumsum(incs)
   # Use the new edge coordinates to create their linestring geometries.

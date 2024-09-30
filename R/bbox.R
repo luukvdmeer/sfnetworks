@@ -1,6 +1,6 @@
-#' Get the bounding box of a spatial network
+#' Compute the bounding box of a spatial network
 #'
-#' A spatial network specific bounding box extractor, returning the combined
+#' A spatial network specific bounding box creator, returning the combined
 #' bounding box of the nodes and edges in the network.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
@@ -13,17 +13,21 @@
 #' @details See \code{\link[sf]{st_bbox}} for details.
 #'
 #' @examples
-#' library(sf)
+#' library(sf, quietly = TRUE)
+#'
+#' oldpar = par(no.readonly = TRUE)
+#' par(mar = c(1,1,1,1), mfrow = c(1,2))
 #'
 #' # Create a network.
-#' node1 = st_point(c(8, 51))
-#' node2 = st_point(c(7, 51.5))
-#' node3 = st_point(c(8, 52))
-#' node4 = st_point(c(9, 51))
-#' edge1 = st_sfc(st_linestring(c(node1, node2, node3)))
+#' n1 = st_point(c(8, 51))
+#' n2 = st_point(c(7, 51.5))
+#' n3 = st_point(c(8, 52))
+#' n4 = st_point(c(9, 51))
+#' e1 = st_sfc(st_linestring(c(n1, n2, n3)))
 #'
-#' nodes = st_as_sf(c(st_sfc(node1), st_sfc(node3), st_sfc(node4)))
-#' edges = st_as_sf(edge1)
+#' nodes = st_as_sf(c(st_sfc(n1), st_sfc(n3), st_sfc(n4)))
+#'
+#' edges = st_as_sf(e1)
 #' edges$from = 1
 #' edges$to = 2
 #'
@@ -38,13 +42,13 @@
 #' net_bbox
 #'
 #' # Plot.
-#' oldpar = par(no.readonly = TRUE)
-#' par(mar = c(1,1,1,1), mfrow = c(1,2))
 #' plot(net, lwd = 2, cex = 4, main = "Element bounding boxes")
-#' plot(st_as_sfc(node_bbox), border = "red", lty = 2, lwd = 4, add = TRUE)
-#' plot(st_as_sfc(edge_bbox), border = "blue", lty = 2, lwd = 4, add = TRUE)
+#' plot(st_as_sfc(node_bbox), border = "orange", lty = 2, lwd = 4, add = TRUE)
+#' plot(st_as_sfc(edge_bbox), border = "skyblue", lty = 2, lwd = 4, add = TRUE)
+#'
 #' plot(net, lwd = 2, cex = 4, main = "Network bounding box")
-#' plot(st_as_sfc(net_bbox), border = "red", lty = 2, lwd = 4, add = TRUE)
+#' plot(st_as_sfc(net_bbox), border = "orange", lty = 2, lwd = 4, add = TRUE)
+#'
 #' par(oldpar)
 #'
 #' @export

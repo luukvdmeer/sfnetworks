@@ -98,7 +98,15 @@
 #'
 #' # Compute the cost matrix without edge weights.
 #' # Here the cost is defined by the number of edges, ignoring space.
-#' st_network_cost(net, c(p1, p2), c(p1, p2), weights = NULL)
+#' st_network_cost(net, c(p1, p2), c(p1, p2), weights = NA)
+#'
+#' # Use the dodgr router for dual-weighted routing.
+#' paths = st_network_cost(net,
+#'   from = c(p1, p2),
+#'   to = c(p1, p2),
+#'   weights = dual_weights(edge_segment_count(), edge_length()),
+#'   router = "dodgr"
+#' )
 #'
 #' # Not providing any from or to points includes all nodes by default.
 #' with_graph(net, graph_order()) # Our network has 701 nodes.

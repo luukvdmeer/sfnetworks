@@ -11,6 +11,11 @@
 #' spatially explicit, and an object of class \code{\link[tibble]{tibble}}
 #' if the edges are spatially implicity and \code{require_sf = FALSE}.
 #'
+#' @examples
+#' net = as_sfnetwork(roxel[1:10, ])
+#' node_data(net)
+#' edge_data(net)
+#'
 #' @name data
 #' @export
 node_data = function(x, focused = TRUE) {

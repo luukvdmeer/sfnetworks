@@ -30,3 +30,9 @@ if the edges are spatially implicity and \code{require_sf = FALSE}.
 \description{
 Extract the node or edge data from a spatial network
 }
+\examples{
+net = as_sfnetwork(roxel[1:10, ])
+node_data(net)
+edge_data(net)
+
+}
