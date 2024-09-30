@@ -64,32 +64,32 @@
 #' net = as_sfnetwork(c(e1, e2))
 #'
 #' # Create spatial points to blend in.
-#' p1 = c(st_point(c(0.5, 0.5)))
-#' p2 = c(st_point(c(0.5, -1)))
-#' p3 = c(st_point(c(1, 1)))
-#' p4 = c(st_point(c(1.75, 1)))
-#' p5 = c(st_point(c(1.25, 0.5)))
+#' p1 = st_sfc(st_point(c(0.5, 0.1)))
+#' p2 = st_sfc(st_point(c(0.5, -0.2)))
+#' p3 = st_sfc(st_point(c(1, 0.2)))
+#' p4 = st_sfc(st_point(c(1.75, 0.2)))
+#' p5 = st_sfc(st_point(c(1.25, 0.1)))
 #'
-#' pts = st_sf(foo = letters[1:5], geometry = c(p1, p2, p3, p4, p5))
+#' pts = st_sf(foo = letters[1:5], geometry = c(p1, p2, p3, p4, p5), crs = 3857)
 #'
 #' # Blend all points into the network.
 #' b1 = st_network_blend(net, pts)
 #' b1
 #'
-#' plot(pts, pch = 20, col = "orange")
-#' plot(net, add = TRUE)
-#' plot(pts, pch = 20, col = "orange")
-#' plot(b1, add = TRUE)
+#' plot(net)
+#' plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
+#' plot(b1)
+#' plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
 #'
 #' # Blend points within a tolerance distance.
-#' tol = units::set_units(0.6, "m")
+#' tol = units::set_units(0.1, "m")
 #' b2 = st_network_blend(net, pts, tolerance = tol)
 #' b2
 #'
-#' plot(pts, pch = 20, col = "orange")
-#' plot(net, add = TRUE)
-#' plot(pts, pch = 20, col = "orange")
-#' plot(b2, add = TRUE)
+#' plot(net)
+#' plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
+#' plot(b2)
+#' plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
 #'
 #' # Add points with duplicated projected location as isolated nodes.
 #' b3 = st_network_blend(net, pts, ignore_duplicates = FALSE)
@@ -424,21 +424,22 @@ blend = function(x, y, tolerance, ignore_duplicates = TRUE) {
   # This is of course only needed if the given features have attributes.
   if (is_sf(y) && ncol(y) > 1) {
     # Subset y to contain only attributes (not geometries) of blended features.
-    y_blended = st_drop_geometry(y)[do_blend, ][!is_duplicated, ]
+    y_blend = st_drop_geometry(y)
+    y_blend = y_blend[do_blend, , drop = FALSE][!is_duplicated, , drop = FALSE]
     # Subset the node points data frame to contain each node only once.
     new_nodes_df = new_node_pts[!duplicated(new_node_pts$nid), ]
     # Add an index column to match nodes to features.
     if (".sfnetwork_index" %in% c(names(nodes), names(y))) {
       raise_reserved_attr(".sfnetwork_index")
     }
-    y_blended$.sfnetwork_index = seq_len(nrow(y_blended))
+    y_blend$.sfnetwork_index = seq_len(nrow(y_blend))
     new_nodes$.sfnetwork_index = new_nodes_df$fid[order(new_nodes_df$nid)]
     # Join attributes of blended features with the new nodes table.
-    new_nodes = left_join(new_nodes, y_blended, by = ".sfnetwork_index")
+    new_nodes = left_join(new_nodes, y_blend, by = ".sfnetwork_index")
     new_nodes$.sfnetwork_index = NULL
     # Add features with duplicated projection locations if requested.
     if (!ignore_duplicates && any(is_duplicated)) {
-      y_dups = y[do_blend, ][is_duplicated, ]
+      y_dups = y[do_blend, , drop = FALSE][is_duplicated, , drop = FALSE]
       st_geometry(y_dups) = P_dups
       st_geometry(y_dups) = node_colname # Use correct name.
       new_nodes = bind_rows(new_nodes, y_dups)

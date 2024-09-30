@@ -75,32 +75,32 @@ e2 = st_sfc(st_linestring(c(n2, n3)), crs = 3857)
 net = as_sfnetwork(c(e1, e2))
 
 # Create spatial points to blend in.
-p1 = c(st_point(c(0.5, 0.5)))
-p2 = c(st_point(c(0.5, -1)))
-p3 = c(st_point(c(1, 1)))
-p4 = c(st_point(c(1.75, 1)))
-p5 = c(st_point(c(1.25, 0.5)))
+p1 = st_sfc(st_point(c(0.5, 0.1)))
+p2 = st_sfc(st_point(c(0.5, -0.2)))
+p3 = st_sfc(st_point(c(1, 0.2)))
+p4 = st_sfc(st_point(c(1.75, 0.2)))
+p5 = st_sfc(st_point(c(1.25, 0.1)))
 
-pts = st_sf(foo = letters[1:5], geometry = c(p1, p2, p3, p4, p5))
+pts = st_sf(foo = letters[1:5], geometry = c(p1, p2, p3, p4, p5), crs = 3857)
 
 # Blend all points into the network.
 b1 = st_network_blend(net, pts)
 b1
 
-plot(pts, pch = 20, col = "orange")
-plot(net, add = TRUE)
-plot(pts, pch = 20, col = "orange")
-plot(b1, add = TRUE)
+plot(net)
+plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
+plot(b1)
+plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
 
 # Blend points within a tolerance distance.
-tol = units::set_units(0.6, "m")
+tol = units::set_units(0.1, "m")
 b2 = st_network_blend(net, pts, tolerance = tol)
 b2
 
-plot(pts, pch = 20, col = "orange")
-plot(net, add = TRUE)
-plot(pts, pch = 20, col = "orange")
-plot(b2, add = TRUE)
+plot(net)
+plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
+plot(b2)
+plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
 
 # Add points with duplicated projected location as isolated nodes.
 b3 = st_network_blend(net, pts, ignore_duplicates = FALSE)
