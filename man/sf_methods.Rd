@@ -93,7 +93,7 @@
 
 \method{st_simplify}{sfnetwork}(x, ...)
 
-\method{st_join}{sfnetwork}(x, y, ...)
+\method{st_join}{sfnetwork}(x, y, ..., ignore_multiple = TRUE)
 
 \method{st_join}{morphed_sfnetwork}(x, y, ...)
 
@@ -146,6 +146,14 @@ corresponding sf function for details.}
 it using \code{\link[sf]{st_as_sf}}. In some cases, it can also be an object
 of \code{\link[sf:st]{sfg}} or \code{\link[sf:st_bbox]{bbox}}. Always look
 at the documentation of the corresponding \code{sf} function for details.}
+
+\item{ignore_multiple}{When performing a spatial join with the nodes
+table, and there are multiple matches for a single node, only the first one
+of them is joined into the network. But what should happen with the others?
+If this argument is set to \code{TRUE}, they will be ignored. If this
+argument is set to \code{FALSE}, they will be added as isolated nodes to the
+returned network. Nodes at equal locations can then be merged using the
+spatial morpher \code{\link{to_spatial_unique}}. Defaults to \code{TRUE}.}
 }
 \value{
 The methods for \code{\link[sf]{st_join}},
@@ -182,7 +190,8 @@ have a special behavior:
   \code{st_precision}, \code{st_normalize}, \code{st_zm}, and others.
   \item \code{st_join}: When applied to the nodes table and multiple matches
   exist for the same node, only the first match is joined. A warning will be
-  given in this case.
+  given in this case. If \code{ignore_multiple = FALSE}, multiple mathces
+  are instead added as isolated nodes to the returned network.
   \item \code{st_intersection}, \code{st_difference} and \code{st_crop}:
   These methods clip edge geometries when applied to the edges table. To
   preserve a valid spatial network structure, clipped edge boundaries are

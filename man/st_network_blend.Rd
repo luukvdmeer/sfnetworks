@@ -24,7 +24,7 @@ the same projected location, only the first one of them is blended into
 the network. But what should happen with the others? If this argument is set
 to \code{TRUE}, they will be ignored. If this argument is set to
 \code{FALSE}, they will be added as isolated nodes to the returned network.
-Nodes at equal locations can then be merged using the spatial morpher.
+Nodes at equal locations can then be merged using the spatial morpher
 \code{\link{to_spatial_unique}}. Defaults to \code{TRUE}.}
 }
 \value{

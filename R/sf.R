@@ -27,6 +27,14 @@
 #' @param precision The precision to be assigned. See
 #' \code{\link[sf]{st_precision}} for details.
 #'
+#' @param ignore_multiple When performing a spatial join with the nodes
+#' table, and there are multiple matches for a single node, only the first one
+#' of them is joined into the network. But what should happen with the others?
+#' If this argument is set to \code{TRUE}, they will be ignored. If this
+#' argument is set to \code{FALSE}, they will be added as isolated nodes to the
+#' returned network. Nodes at equal locations can then be merged using the
+#' spatial morpher \code{\link{to_spatial_unique}}. Defaults to \code{TRUE}.
+#'
 #' @return The methods for \code{\link[sf]{st_join}},
 #' \code{\link[sf]{st_filter}}, \code{\link[sf]{st_intersection}},
 #' \code{\link[sf]{st_difference}} and \code{\link[sf]{st_crop}}, as well as
@@ -57,7 +65,8 @@
 #'   \code{st_precision}, \code{st_normalize}, \code{st_zm}, and others.
 #'   \item \code{st_join}: When applied to the nodes table and multiple matches
 #'   exist for the same node, only the first match is joined. A warning will be
-#'   given in this case.
+#'   given in this case. If \code{ignore_multiple = FALSE}, multiple mathces
+#'   are instead added as isolated nodes to the returned network.
 #'   \item \code{st_intersection}, \code{st_difference} and \code{st_crop}:
 #'   These methods clip edge geometries when applied to the edges table. To
 #'   preserve a valid spatial network structure, clipped edge boundaries are
@@ -539,12 +548,12 @@ geom_unary_ops = function(op, x, active, ...) {
 #' @importFrom sf st_join
 #' @importFrom tidygraph unfocus
 #' @export
-st_join.sfnetwork = function(x, y, ...) {
+st_join.sfnetwork = function(x, y, ..., ignore_multiple = TRUE) {
   x = unfocus(x)
   active = attr(x, "active")
   switch(
     active,
-    nodes = spatial_join_nodes(x, y, ...),
+    nodes = spatial_join_nodes(x, y, ..., ignore_multiple = ignore_multiple),
     edges = spatial_join_edges(x, y, ...),
     raise_invalid_active(active)
   )
@@ -561,7 +570,7 @@ st_join.morphed_sfnetwork = function(x, y, ...) {
 #' @importFrom cli cli_warn
 #' @importFrom igraph delete_vertices vertex_attr<-
 #' @importFrom sf st_as_sf st_join
-spatial_join_nodes = function(x, y, ...) {
+spatial_join_nodes = function(x, y, ..., ignore_multiple = TRUE) {
   # Convert x and y to sf.
   x_sf = nodes_as_sf(x)
   y_sf = st_as_sf(y)
@@ -580,13 +589,32 @@ spatial_join_nodes = function(x, y, ...) {
   duplicated_match = duplicated(n_new$.sfnetwork_index)
   if (any(duplicated_match)) {
     n_new = n_new[!duplicated_match, ]
-    cli_warn(c(
-      "{.fn st_join} for {.cls sfnetwork} objects only joins one feature per node.",
-      "!" = paste(
-        "Multiple matches were detected for some nodes,",
-        "of which all but the first one are ignored."
-      )
-    ))
+    if (ignore_multiple) {
+      cli_warn(c(
+        "{.fn st_join} did not join all features.",
+        "!" = paste(
+          "Multiple matches were detected for some nodes,",
+          "of which all but the first one are ignored."
+        ),
+        "i" = paste(
+          "If you want to add multiple matches as isolated nodes instead,",
+          "set {.arg ignore_multiple} to {.code FALSE}."
+        )
+      ))
+    } else {
+      cli_warn(c(
+        "{.fn st_join} created isolated nodes.",
+        "!" = paste(
+          "Multiple matches were detected for some nodes, of which all but",
+          "the first one are added as isolated nodes to the network."
+        ),
+        "i" = paste(
+          "If you want to ignore multiple matches instead,",
+          "set {.arg ignore_multiple} to {.code TRUE}."
+        )
+      ))
+      n_dups = n_new[duplicated_match, ]
+    }
   }
   # If an inner join was requested instead of a left join:
   # --> This means only nodes in x that had a match in y are preserved.
@@ -599,6 +627,10 @@ spatial_join_nodes = function(x, y, ...) {
   # Update node attributes of the original network.
   n_new$.sfnetwork_index = NULL
   node_data(x) = n_new
+  # Add duplicated matches as isolated nodes.
+  if (any(duplicated_match) & !ignore_multiple) {
+    x = bind_spatial_nodes(x, n_dups)
+  }
   x
 }
 

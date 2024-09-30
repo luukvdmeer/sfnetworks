@@ -24,7 +24,7 @@
 #' the network. But what should happen with the others? If this argument is set
 #' to \code{TRUE}, they will be ignored. If this argument is set to
 #' \code{FALSE}, they will be added as isolated nodes to the returned network.
-#' Nodes at equal locations can then be merged using the spatial morpher.
+#' Nodes at equal locations can then be merged using the spatial morpher
 #' \code{\link{to_spatial_unique}}. Defaults to \code{TRUE}.
 #'
 #' @return The blended network as an object of class \code{\link{sfnetwork}}.
@@ -246,9 +246,36 @@ blend = function(x, y, tolerance, ignore_duplicates = TRUE) {
   # This features will not be blended into the network.
   # They may be added as isolated nodes afterwards, if ignore_duplicates = FALSE.
   is_duplicated = st_duplicated_points(P)
-  P_dups = P[is_duplicated]
-  P = P[!is_duplicated]
-  nearest = nearest[!is_duplicated]
+  if (any(is_duplicated)) {
+    P = P[!is_duplicated]
+    nearest = nearest[!is_duplicated]
+    if (ignore_duplicates) {
+      cli_warn(c(
+        "{.fn st_network_blend} did not blend in all requested features.",
+        "!" = paste(
+          "Some projected features have duplicated locations, of which all",
+          "but the first one are ignored."
+        ),
+        "i" = paste(
+          "If you want to add duplicated projection locations as isolated",
+          "nodes instead, set {.arg ignore_duplicates} to {.code FALSE}."
+        )
+      ))
+    } else {
+      cli_warn(c(
+        "{.fn st_network_blend} created isolated nodes.",
+        "!" = paste(
+          "Some projected features have duplicated locations, of which all",
+          "but the first one are added as isolated nodes to the network."
+        ),
+        "i" = paste(
+          "If you want to ignore duplicated projection locations instead,",
+          "set {.arg ignore_duplicates} to {.code TRUE}."
+        )
+      ))
+      P_dups = P[is_duplicated]
+    }
+  }
   ## =====================================================
   # STEP V: INCLUDE PROJECTED FEATURES IN EDGE GEOMETRIES
   # The projected features should be included in the edge geometries.
