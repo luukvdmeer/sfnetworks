@@ -137,8 +137,8 @@ sfc_to_sf = function(x, colname = "geometry") {
 #' @param select Should coordinate columns first be selected from the given
 #' data frame? If \code{TRUE}, columns with names "x", "y", "z" and "m" will
 #' first be selected from the data frame. If \code{FALSE}, it is assumed the
-#' data frame only contains these columns in exactly that order. Defaults to
-#' \code{TRUE}.
+#' data frame only contains (a subset of) these columns in exactly that order.
+#' Defaults to \code{TRUE}.
 #'
 #' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
 #' geometries.
@@ -170,8 +170,8 @@ df_to_points = function(x_df, x_sf, select = TRUE) {
 #' data frame? If \code{TRUE}, columns with names "x", "y", "z" and "m" will
 #' first be selected from the data frame, alongside the specified index column.
 #' If \code{FALSE}, it is assumed that the data frame besides the specified
-#' index columns only contains these coordinate columns in exactly that order.
-#' Defaults to \code{TRUE}.
+#' index columns only contains (a subset of) these coordinate columns in
+#' exactly that order. Defaults to \code{TRUE}.
 #'
 #' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
 #' geometries.
@@ -185,6 +185,32 @@ df_to_lines = function(x_df, x_sf, id_col = "linestring_id", select = TRUE) {
   st_crs(lns) = st_crs(x_sf)
   st_precision(lns) = st_precision(x_sf)
   lns
+}
+
+#' Convert a sfheaders data frame into a vector of coordinate strings
+#'
+#' @param x An object of class \code{\link{data.frame}} as constructed by
+#' the \pkg{sfheaders} package.
+#'
+#' @param precision A fixed precision scale factor specifying the precision to
+#' used when rounding the coordinates. For more information on fixed precision
+#' scale factors see \code{\link[sf]{st_as_binary}}. When the precision scale
+#' factor is 0 or \code{NULL}, sfnetworks defaults to 12 decimal places.
+#'
+#' @param select Should coordinate columns first be selected from the given
+#' data frame? If \code{TRUE}, columns with names "x", "y", "z" and "m" will
+#' first be selected from the data frame. If \code{FALSE}, it is assumed that
+#' the data frame only contains (a subset of) these coordinate columns in
+#' exactly that order. Defaults to \code{TRUE}.
+#'
+#' @return A character vector with each element being the concatenated
+#' coordinate values of a row in \code{x}.
+#'
+#' @noRd
+df_to_coords = function(x, precision = NULL, select = TRUE) {
+  if (select) x = x[, names(x) %in% c("x", "y", "z", "m")]
+  coords = lapply(x, round, digits = precision_digits(precision))
+  do.call(paste, coords)
 }
 
 #' Get the boundary points of linestring geometries
@@ -283,7 +309,7 @@ linestring_end_points = function(x ,return_df = FALSE) {
 #' @importFrom sf st_geometry
 #' @importFrom sfheaders sfc_to_df
 #' @noRd
-linestring_segments = function(x) {
+linestring_segments = function(x, return_df = FALSE) {
   # Decompose lines into the points that shape them.
   line_points = sfc_to_df(st_geometry(x))
   # Define which of the points are a startpoint of a line.
@@ -299,6 +325,7 @@ linestring_segments = function(x) {
   # Construct the segments.
   segment_points = rbind(segment_starts, segment_ends)
   segment_points = segment_points[order(segment_points$segment_id), ]
+  if (return_df) return (segment_points)
   df_to_lines(segment_points, x, id_col = "segment_id")
 }
 
