@@ -75,7 +75,7 @@ subdivide_edges = function(x, protect = NULL, all = FALSE, merge = TRUE) {
   # --> Shared interior points should be merged into a single node afterwards.
   edge_coords = edge_pts[names(edge_pts) %in% c("x", "y", "z", "m")]
   if (merge | !all) {
-    edge_lids = st_match_points_df(edge_coords, st_precision(edges))
+    edge_lids = st_match_points_df(edge_coords, network_precision(x))
     edge_pts$lid = edge_lids
   }
   # Define which edges to protect from being subdivided.

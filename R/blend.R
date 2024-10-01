@@ -149,7 +149,10 @@ blend = function(x, y, tolerance, ignore_duplicates = TRUE) {
   Y = st_geometry(y)
   # For later use:
   # --> Retrieve the name of the geometry column of the nodes in x.
+  # --> Retrieve the precision of x and y.
   node_colname = attr(nodes, "sf_column")
+  xp = network_precision(x)
+  yp = st_precision(y)
   ## ===========================
   # STEP I: DECOMPOSE THE EDGES
   # Decompose the edges linestring geometries into the points that shape them.
@@ -300,7 +303,7 @@ blend = function(x, y, tolerance, ignore_duplicates = TRUE) {
   include_in_segment = function(i) {
     # Extract the features to be included in segment i.
     fts = p_pts[which(nearest == i), ]
-    fts_coords = df_to_coords(fts, st_precision(y))
+    fts_coords = df_to_coords(fts, yp)
     # Extract the source edge point of segment i.
     src_pid = which(edge_pts$sid == i)
     src = edge_pts[src_pid, ]
@@ -311,13 +314,13 @@ blend = function(x, y, tolerance, ignore_duplicates = TRUE) {
     if (nrow(fts) == 1) {
       # There is only one feature to be included in segment i.
       # First check if the feature matches the source.
-      src_coords = df_to_coords(src, st_precision(edges))
+      src_coords = df_to_coords(src, xp)
       if (fts_coords == src_coords) {
         src$fid = fts$fid
         fts = src
       } else {
         # Then check if the feature matches the target.
-        trg_coords = df_to_coords(trg, st_precision(edges))
+        trg_coords = df_to_coords(trg, xp)
         if (fts_coords == trg_coords) {
           trg$fid = fts$fid
           fts = trg
@@ -330,8 +333,8 @@ blend = function(x, y, tolerance, ignore_duplicates = TRUE) {
       # There are multiple features to be included in segment i.
       # First check which of them equal source or target.
       # And which should be added as new points to the segment.
-      src_coords = df_to_coords(src, st_precision(edges))
-      trg_coords = df_to_coords(trg, st_precision(edges))
+      src_coords = df_to_coords(src, xp)
+      trg_coords = df_to_coords(trg, xp)
       equal_to_src = fts_coords == src_coords
       equal_to_trg = fts_coords == trg_coords
       not_equal = !(equal_to_src | equal_to_trg)
@@ -383,34 +386,17 @@ blend = function(x, y, tolerance, ignore_duplicates = TRUE) {
   # Now we can subdivide edge geometries at each projected feature.
   # Then we need to build a linestring geometry for each new edge.
   ## ==========================================
-  # Infer the new number of edge points after including the projected features.
-  n = nrow(edge_pts)
   # Define where to subdivide.
   # This is at edge points that:
   # --> Match a projected feature location.
   # --> Are not already an endpoint of an edge.
   is_split = !is.na(edge_pts$fid) & is.na(edge_pts$nid)
-  # Create the repetition vector:
-  # --> This defines for each edge point if it should be duplicated.
-  # --> A value of '1' means 'store once', i.e. don't duplicate.
-  # --> A value of '2' means 'store twice', i.e. duplicate.
-  # --> Split points will be part of two new edges and should be duplicated.
-  reps = rep(1L, n)
-  reps[is_split] = 2L
   # Create the new set of edge points by duplicating split points.
-  new_edge_pts = edge_pts[rep(seq_len(n), reps), ]
-  # Define the total number of new edge points.
-  nn = nrow(new_edge_pts)
+  new_edge_pts = create_new_edge_df(edge_pts, is_split)
   # Define the new edge index of each new edge point.
-  # We do so by incrementing each original edge index by 1 at each split point.
-  incs = rep(0L, nn)
-  incs[which(is_split) + 1:sum(is_split)] = 1L
-  new_edge_ids = new_edge_pts$eid + cumsum(incs)
-  # Use the new edge coordinates to create their linestring geometries.
-  edge_coords = edge_pts[names(edge_pts) %in% c("x", "y", "z", "m")]
-  new_edge_coords = edge_coords[rep(seq_len(n), reps), ]
-  new_edge_coords$eid = new_edge_ids
-  new_edge_geoms = df_to_lines(new_edge_coords, edges, "eid", select = FALSE)
+  new_edge_ids = create_new_edge_ids(new_edge_pts, is_split)
+  # Construct the new edge linestring geometries.
+  new_edge_geoms = create_new_edge_geoms(new_edge_pts, new_edge_ids, edges)
   ## =====================================
   # STEP VII: CONSTRUCT THE NEW EDGE DATA
   # We now have the geometries of the new edges.

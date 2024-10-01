@@ -231,7 +231,7 @@ describe_space = function(x, is_explicit = NULL) {
     }
   }
   # Precision.
-  prc = attr(node_geom, "precision")
+  prc = network_precision(x)
   if (prc < 0.0) {
     desc = append(desc, paste("# Precision: float (single precision)"))
   } else if (prc > 0.0) {

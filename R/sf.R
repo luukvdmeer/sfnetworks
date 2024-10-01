@@ -118,24 +118,30 @@ st_as_sf.sfnetwork = function(x, active = NULL, focused = TRUE, ...) {
 
 #' @importFrom sf st_as_sf
 nodes_as_sf = function(x, focused = FALSE, ...) {
-  st_as_sf(
+  out = st_as_sf(
     nodes_as_regular_tibble(x, focused = focused),
     agr = node_agr(x),
     sf_column_name = node_geom_colname(x),
     ...
   )
+  p = network_precision(x)
+  if (! is.null(p)) st_precision(out) = p
+  out
 }
 
 #' @importFrom sf st_as_sf
 edges_as_sf = function(x, focused = FALSE, ...) {
   geom_colname = edge_geom_colname(x)
   if (is.null(geom_colname)) raise_require_explicit()
-  st_as_sf(
+  out = st_as_sf(
     edges_as_regular_tibble(x, focused = focused),
     agr = edge_agr(x),
     sf_column_name = geom_colname,
     ...
   )
+  p = network_precision(x)
+  if (! is.null(p)) st_precision(out) = p
+  out
 }
 
 # =============================================================================
@@ -343,7 +349,17 @@ st_crs.sfnetwork = function(x, ...) {
 #' @importFrom sf st_precision
 #' @export
 st_precision.sfnetwork = function(x) {
-  st_precision(pull_geom(x))
+  network_precision(x)
+}
+
+#' @importFrom igraph edge_attr vertex_attr
+network_precision = function(x) {
+  nc = node_geom_colname(x)
+  np = attr(vertex_attr(x, nc), "precision")
+  if (! is.null(np)) return (np)
+  ec = edge_geom_colname(x)
+  if (is.null(ec)) return (NULL)
+  attr(edge_attr(x, ec), "precision")
 }
 
 #' @name sf_methods

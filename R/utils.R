@@ -27,7 +27,7 @@ st_duplicated = function(x) {
 #' @importFrom sf st_geometry
 #' @importFrom sfheaders sfc_to_df
 st_duplicated_points = function(x, precision = attr(x, "precision")) {
-  x_df = sfc_to_df(st_geometry(x))
+  x_df = sfc_to_df(x)
   coords = x_df[, names(x_df) %in% c("x", "y", "z", "m")]
   st_duplicated_points_df(coords, precision = precision)
 }
@@ -66,7 +66,7 @@ st_match = function(x) {
 #' @importFrom sf st_geometry
 #' @importFrom sfheaders sfc_to_df
 st_match_points = function(x, precision = attr(x, "precision")) {
-  x_df = sfc_to_df(st_geometry(x))
+  x_df = sfc_to_df(x)
   coords = x_df[, names(x_df) %in% c("x", "y", "z", "m")]
   st_match_points_df(coords, precision = precision)
 }
