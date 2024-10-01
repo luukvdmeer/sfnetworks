@@ -4,7 +4,12 @@
 \alias{create_from_spatial_lines}
 \title{Create a spatial network from linestring geometries}
 \usage{
-create_from_spatial_lines(x, directed = TRUE, compute_length = FALSE)
+create_from_spatial_lines(
+  x,
+  directed = TRUE,
+  compute_length = FALSE,
+  subdivide = FALSE
+)
 }
 \arguments{
 \item{x}{An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
@@ -20,6 +25,12 @@ the length of the edge geometries. If there is already a column named
 column are \strong{not} automatically recognized as edge weights. This needs
 to be specified explicitly when calling a function that uses edge weights.
 Defaults to \code{FALSE}.}
+
+\item{subdivide}{Should the given linestring geometries be subdivided at
+locations where an interior point is equal to an interior or boundary point
+in another feature? This will connect the features at those locations.
+Defaults to \code{FALSE}, meaning that features are only connected at their
+boundaries.}
 }
 \value{
 An object of class \code{\link{sfnetwork}}.
@@ -41,14 +52,18 @@ setting the precision of the linestrings using
 \examples{
 library(sf, quietly = TRUE)
 
-as_sfnetwork(roxel)
-
 oldpar = par(no.readonly = TRUE)
 par(mar = c(1,1,1,1), mfrow = c(1,2))
 
+net = as_sfnetwork(roxel)
+net
+
 plot(st_geometry(roxel))
-plot(as_sfnetwork(roxel))
+plot(net)
 
 par(oldpar)
 
+}
+\seealso{
+\code{\link{create_from_spatial_points}}
 }

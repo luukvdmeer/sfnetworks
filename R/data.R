@@ -140,7 +140,13 @@ edge_colnames = function(x, idxs = FALSE, geom = TRUE) {
 #' @noRd
 evaluate_node_attribute_query = function(x, query) {
   nodes = st_drop_geometry(nodes_as_sf(x))
-  exclude = c(".tidygraph_node_index", ".sfnetwork_index")
+  exclude = c(
+    ".tidygraph_node_index",
+    ".tidygraph_edge_index",
+    ".tidygraph_index",
+    ".tbl_graph_index",
+    ".sfnetwork_index"
+  )
   node_attrs = nodes[, !(names(nodes) %in% exclude)]
   names(node_attrs)[eval_select(query, node_attrs)]
 }
@@ -151,7 +157,15 @@ evaluate_node_attribute_query = function(x, query) {
 #' @noRd
 evaluate_edge_attribute_query = function(x, query) {
   edges = st_drop_geometry(edge_data(x))
-  exclude = c("from", "to", ".tidygraph_edge_index", ".sfnetwork_index")
+  exclude = c(
+    "from",
+    "to",
+    ".tidygraph_node_index",
+    ".tidygraph_edge_index",
+    ".tidygraph_index",
+    ".tbl_graph_index",
+    ".sfnetwork_index"
+  )
   edge_attrs = edges[, !(names(edges) %in% exclude)]
   names(edge_attrs)[eval_select(query, edge_attrs)]
 }

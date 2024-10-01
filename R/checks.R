@@ -292,30 +292,35 @@ nodes_equal_edge_boundaries = function(x) {
   have_equal_geometries(boundary_geoms, incident_geoms)
 }
 
-#' Check if constant edge attributes will be assumed for a network
+#' Check if constant attributes will be assumed for a network
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
+#' @param agr The attribute-geometry relationship values to check against.
+#' Defaults to the agr factor of the edges.
+#'
+#' @param ignore_ids Should known index columns be ignored by the check?
+#' Defaults to \code{TRUE}.
+#'
 #' @return \code{TRUE} when the attribute-geometry relationship of at least
-#' one edge attribute of x is not constant, but sf will for some operations
+#' one attribute of x is not constant, but sf will for some operations
 #' assume that it is, \code{FALSE} otherwise.
 #'
 #' @noRd
-will_assume_constant = function(x) {
-  ignore = c(
-    "from",
-    "to",
-    ".tidygraph_node_index",
-    ".tidygraph_edge_index",
-    ".tidygraph_index",
-    ".tbl_graph_index",
-    ".sfnetwork_node_index",
-    ".sfnetwork_edge_index",
-    ".sfnetwork_index"
-  )
-  agr = edge_agr(x)
-  real_agr = agr[!names(agr) %in% ignore]
-  any(is.na(real_agr)) || any(real_agr != "constant")
+will_assume_constant = function(x, agr = edge_agr(x), ignore_ids = TRUE) {
+  if (ignore_ids) {
+    ignore = c(
+      "from",
+      "to",
+      ".tidygraph_node_index",
+      ".tidygraph_edge_index",
+      ".tidygraph_index",
+      ".tbl_graph_index",
+      ".sfnetwork_index"
+    )
+    agr = agr[!names(agr) %in% ignore]
+  }
+  any(is.na(agr)) || any(agr != "constant")
 }
 
 #' Check if projected coordinates will be assumed for a network

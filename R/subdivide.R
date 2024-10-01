@@ -75,7 +75,7 @@ subdivide_edges = function(x, protect = NULL, all = FALSE, merge = TRUE) {
   # --> Shared interior points should be merged into a single node afterwards.
   edge_coords = edge_pts[names(edge_pts) %in% c("x", "y", "z", "m")]
   if (merge | !all) {
-    edge_lids = st_match_points_df(edge_coords, attr(edges, "precision"))
+    edge_lids = st_match_points_df(edge_coords, st_precision(edges))
     edge_pts$lid = edge_lids
   }
   # Define which edges to protect from being subdivided.
@@ -100,24 +100,12 @@ subdivide_edges = function(x, protect = NULL, all = FALSE, merge = TRUE) {
   # First we define for each edge point the new edge index.
   # Then we need to build a linestring geometry for each new edge.
   ## ==========================================
-  # Create the repetition vector:
-  # --> This defines for each edge point if it should be duplicated.
-  # --> A value of '1' means 'store once', i.e. don't duplicate.
-  # --> A value of '2' means 'store twice', i.e. duplicate.
-  # --> Split points will be part of two new edges and should be duplicated.
-  reps = rep(1L, n)
-  reps[is_split] = 2L
   # Create the new set of edge points by duplicating split points.
-  new_edge_pts = edge_pts[rep(seq_len(n), reps), ]
+  new_edge_pts = create_new_edge_df(edge_pts, is_split)
   # Define the new edge index of each new edge point.
-  # We do so by incrementing each original edge index by 1 at each split point.
-  incs = rep(0L, nrow(new_edge_pts))
-  incs[which(is_split) + 1:sum(is_split)] = 1L
-  new_edge_ids = new_edge_pts$eid + cumsum(incs)
-  # Use the new edge coordinates to create their linestring geometries.
-  new_edge_coords = edge_coords[rep(seq_len(n), reps), ]
-  new_edge_coords$eid = new_edge_ids
-  new_edge_geoms = df_to_lines(new_edge_coords, edges, "eid", select = FALSE)
+  new_edge_ids = create_new_edge_ids(new_edge_pts, is_split)
+  # Construct the new edge linestring geometries.
+  new_edge_geoms = create_new_edge_geoms(new_edge_pts, new_edge_ids, edges)
   ## ===================================
   # STEP IV: CONSTRUCT THE NEW EDGE DATA
   # We now have the geometries of the new edges.
@@ -214,4 +202,32 @@ subdivide_edges = function(x, protect = NULL, all = FALSE, merge = TRUE) {
   ## ============================
   x_new = sfnetwork_(new_nodes, new_edges, directed = is_directed(x))
   x_new %preserve_network_attrs% x
+}
+
+create_new_edge_df = function(df, splits) {
+  # Determine the number of edge points.
+  n = nrow(df)
+  # Create the repetition vector:
+  # --> This defines for each edge point if it should be duplicated.
+  # --> A value of '1' means 'store once', i.e. don't duplicate.
+  # --> A value of '2' means 'store twice', i.e. duplicate.
+  # --> Split points will be part of two new edges and should be duplicated.
+  reps = rep(1L, n)
+  reps[splits] = 2L
+  # Create the new set of edge points by duplicating split points.
+  df[rep(seq_len(n), reps), ]
+}
+
+create_new_edge_ids = function(df, splits, id_col = "eid") {
+  # Define the new edge index of each new edge point.
+  # We do so by incrementing each original edge index by 1 at each split point.
+  incs = rep(0L, nrow(df))
+  incs[which(splits) + 1:sum(splits)] = 1L
+  df[[id_col]] + cumsum(incs)
+}
+
+create_new_edge_geoms = function(df, ids, sf_obj) {
+  coords = df[names(df) %in% c("x", "y", "z", "m")]
+  coords$eid = ids
+  new_edge_geoms = df_to_lines(coords, sf_obj, "eid", select = FALSE)
 }

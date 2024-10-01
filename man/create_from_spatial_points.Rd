@@ -163,3 +163,6 @@ plot(knet, main = "k nearest neighbor graph (k = 2)")
 par(oldpar)
 
 }
+\seealso{
+\code{\link{create_from_spatial_lines}}, \code{\link{play_spatial}}
+}

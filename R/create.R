@@ -410,6 +410,12 @@ as_sfnetwork.focused_tbl_graph = function(x, ...) {
 #' to be specified explicitly when calling a function that uses edge weights.
 #' Defaults to \code{FALSE}.
 #'
+#' @param subdivide Should the given linestring geometries be subdivided at
+#' locations where an interior point is equal to an interior or boundary point
+#' in another feature? This will connect the features at those locations.
+#' Defaults to \code{FALSE}, meaning that features are only connected at their
+#' boundaries.
+#'
 #' @details It is assumed that the given linestring geometries form the edges
 #' in the network. Nodes are created at the line boundaries. Shared boundaries
 #' between multiple linestrings become the same node.
@@ -419,32 +425,83 @@ as_sfnetwork.focused_tbl_graph = function(x, ...) {
 #' setting the precision of the linestrings using
 #' \code{\link[sf]{st_set_precision}}.
 #'
+#' @seealso \code{\link{create_from_spatial_points}}
+#'
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
 #' @examples
 #' library(sf, quietly = TRUE)
 #'
-#' as_sfnetwork(roxel)
-#'
 #' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1), mfrow = c(1,2))
 #'
+#' net = as_sfnetwork(roxel)
+#' net
+#'
 #' plot(st_geometry(roxel))
-#' plot(as_sfnetwork(roxel))
+#' plot(net)
 #'
 #' par(oldpar)
 #'
-#' @importFrom sf st_as_sf st_precision st_sf
+#' @importFrom sf st_agr st_as_sf st_precision st_sf
 #' @export
-create_from_spatial_lines = function(x, directed = TRUE,
-                                     compute_length = FALSE) {
+create_from_spatial_lines = function(x, directed = TRUE, compute_length = FALSE,
+                                     subdivide = FALSE) {
   # The provided lines will form the edges of the network.
   edges = st_as_sf(x)
-  # Get the coordinates of the boundary points of the edges.
-  # These will form the nodes of the network.
-  node_coords = linestring_boundary_points(edges, return_df = TRUE)
-  # Give each unique location a unique ID.
-  indices = st_match_points_df(node_coords, attr(x, "precision"))
+  # Decompose the given edges into the points that shape them.
+  edge_pts = sf_to_df(edges)
+  # Define which edge points are boundaries (i.e. nodes).
+  is_start = !duplicated(edge_pts$linestring_id)
+  is_end = !duplicated(edge_pts$linestring_id, fromLast = TRUE)
+  is_bound = is_start | is_end
+  # Subset those edge points that should become nodes
+  # And assign them a node index.
+  # Nodes at the same location should get the same index.
+  # If requested:
+  # --> First subdivide edges at shared interior points.
+  if (subdivide) {
+    if (will_assume_constant(x, st_agr(x), ignore_ids = FALSE)) {
+      raise_assume_constant("create_from_spatial_lines")
+    }
+    # Assign each edge point a unique location index.
+    # This will define which edge points are equal to each other.
+    edge_coords = edge_pts[names(edge_pts) %in% c("x", "y", "z", "m")]
+    edge_lids = st_match_points_df(edge_coords, st_precision(x))
+    edge_pts$lid = edge_lids
+    # Define where to subdivide the edges.
+    has_duplicate_desc = duplicated(edge_lids)
+    has_duplicate_asc = duplicated(edge_lids, fromLast = TRUE)
+    has_duplicate = has_duplicate_desc | has_duplicate_asc
+    is_split = has_duplicate & !is_bound
+    # Create the new set of edge points by duplicating split points.
+    new_edge_pts = create_new_edge_df(edge_pts, is_split)
+    # Define the new edge index of each new edge point.
+    new_edge_ids = create_new_edge_ids(new_edge_pts, is_split, "linestring_id")
+    # Construct the new edge linestring geometries.
+    new_edge_geoms = create_new_edge_geoms(new_edge_pts, new_edge_ids, edges)
+    # Define for each of the new edge points if its a boundary.
+    is_start = !duplicated(new_edge_ids)
+    is_end = !duplicated(new_edge_ids, fromLast = TRUE)
+    is_bound = is_start | is_end
+    # Update the given edges with the subdivided geometries.
+    edges = edges[new_edge_pts$linestring_id[is_start], ]
+    st_geometry(edges) = new_edge_geoms
+    # Subset the edge points to obtain only those that become a node.
+    node_pts = new_edge_pts[is_bound, ]
+    node_coords = node_pts[names(node_pts) %in% c("x", "y", "z", "m")]
+    # Assign each node a node index.
+    # Edge points sharing a location become the same node.
+    node_lids = node_pts$lid
+    indices = match(node_lids, unique(node_lids))
+  } else {
+    # Subset the edge points to obtain only those that become a node.
+    node_pts = edge_pts[is_bound, ]
+    node_coords = node_pts[names(node_pts) %in% c("x", "y", "z", "m")]
+    # Assign each node a node index.
+    # Edge points sharing a location become the same node.
+    indices = st_match_points_df(node_coords, st_precision(x))
+  }
   # Convert the node coordinates into point geometry objects.
   nodes = df_to_points(node_coords, x, select = FALSE)
   # Define for each endpoint if it is a source or target node.
@@ -560,6 +617,8 @@ create_from_spatial_lines = function(x, directed = TRUE,
 #'   Requires the \href{https://r-spatial.github.io/spdep/index.html}{spdep}
 #'   package to be installed.
 #' }
+#'
+#' @seealso \code{\link{create_from_spatial_lines}}, \code{\link{play_spatial}}
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
