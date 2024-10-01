@@ -5,6 +5,7 @@
 \alias{as_sfnetwork.default}
 \alias{as_sfnetwork.sf}
 \alias{as_sfnetwork.sfc}
+\alias{as_sfnetwork.dodgr_streetnet}
 \alias{as_sfnetwork.linnet}
 \alias{as_sfnetwork.psp}
 \alias{as_sfnetwork.sfNetwork}
@@ -19,6 +20,8 @@ as_sfnetwork(x, ...)
 
 \method{as_sfnetwork}{sfc}(x, ...)
 
+\method{as_sfnetwork}{dodgr_streetnet}(x, edges_as_lines = TRUE)
+
 \method{as_sfnetwork}{linnet}(x, ...)
 
 \method{as_sfnetwork}{psp}(x, ...)
@@ -30,8 +33,7 @@ as_sfnetwork(x, ...)
 \arguments{
 \item{x}{Object to be converted into a \code{\link{sfnetwork}}.}
 
-\item{...}{Additional arguments passed on to the \code{\link{sfnetwork}}
-construction function, unless specified otherwise.}
+\item{...}{Additional arguments passed on to other functions.}
 }
 \value{
 An object of class \code{\link{sfnetwork}}.
@@ -70,30 +72,42 @@ become the nodes in the network, and are connected by edges according to a
 specified method. Additional arguments are forwarded to
 \code{\link{create_from_spatial_points}}.
 
+\item \code{as_sfnetwork(dodgr_streetnet)}: Convert a directed graph of class
+\code{\link[dodgr]{dodgr_streetnet}} directly into a
+\code{\link{sfnetwork}}. Additional arguments are forwarded to
+\code{\link{dodgr_to_sfnetwork}}. This requires the
+\code{\link[dodgr:dodgr-package]{dodgr}} package to be installed.
+
 \item \code{as_sfnetwork(linnet)}: Convert spatial linear networks of class
-\code{\link[spatstat.linnet]{linnet}} directly into an
-\code{\link{sfnetwork}}. This requires the
+\code{\link[spatstat.linnet]{linnet}} directly into a
+\code{\link{sfnetwork}}. Additional arguments are forwarded to
+\code{\link{create_from_spatial_lines}}. This requires the
 \code{\link[spatstat.geom:spatstat.geom-package]{spatstat.geom}} package
 to be installed.
 
 \item \code{as_sfnetwork(psp)}: Convert spatial line segments of class
 \code{\link[spatstat.geom]{psp}} directly into a \code{\link{sfnetwork}}.
 The lines become the edges in the network, and nodes are placed at their
-boundary points.
+boundary points. Additional arguments are forwarded to
+\code{\link{create_from_spatial_lines}}.
 
 \item \code{as_sfnetwork(sfNetwork)}: Convert spatial networks of class
 \code{\link[stplanr:sfNetwork-class]{sfNetwork}} directly into a
 \code{\link{sfnetwork}}. This will extract the edges as an
-\code{\link[sf]{sf}} object and re-create the network structure. The
+\code{\link[sf]{sf}} object and re-create the network structure. Additional
+arguments are forwarded to \code{\link{create_from_spatial_lines}}.The
 directness of the original network is preserved unless specified otherwise
 through the \code{directed} argument.
 
 \item \code{as_sfnetwork(tbl_graph)}: Convert graph objects of class
 \code{\link[tidygraph]{tbl_graph}} directly into a \code{\link{sfnetwork}}.
 This will work if at least the nodes can be converted to an
-\code{\link[sf]{sf}} object through \code{\link[sf]{st_as_sf}}. The
-directness of the original graph is preserved unless specified otherwise
-through the \code{directed} argument.
+\code{\link[sf]{sf}} object through \code{\link[sf]{st_as_sf}}. Arguments
+to \code{\link[sf]{st_as_sf}} can be provided as additional arguments and
+will be forwarded to \code{\link[sf]{st_as_sf}} through the
+code{\link{sfnetwork}} construction function. The directness of the original
+graph is preserved unless specified otherwise through the \code{directed}
+argument.
 
 }}
 \examples{
@@ -116,6 +130,11 @@ plot(st_geometry(mozart))
 plot(as_sfnetwork(mozart))
 
 par(oldpar)
+
+# From a dodgr_streetnet object.
+if (require(dodgr, quietly = TRUE)) {
+  as_sfnetwork(dodgr::weight_streetnet(hampi))
+}
 
 # From a linnet object.
 if (require(spatstat.geom, quietly = TRUE)) {
