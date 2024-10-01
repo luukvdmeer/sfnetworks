@@ -27,7 +27,7 @@
 #' to \code{FALSE} if you know the node geometries did not change, otherwise
 #' the valid spatial network structure is broken.
 #'
-#' @param summarise_attributes How should the attributes of contracted nodes be
+#' @param attribute_summary How should the attributes of contracted nodes be
 #' summarized? There are several options, see
 #' \code{\link[igraph]{igraph-attribute-combination}} for details.
 #'
@@ -51,7 +51,7 @@
 #' @export
 contract_nodes = function(x, groups, simplify = TRUE,
                           compute_centroids = TRUE, reconnect_edges = TRUE,
-                          summarise_attributes = "concat",
+                          attribute_summary = "ignore",
                           store_original_ids = FALSE,
                           store_original_data = FALSE) {
   # Add index columns if not present.
@@ -83,16 +83,16 @@ contract_nodes = function(x, groups, simplify = TRUE,
   # In the summarise attributes only real attribute columns were referenced.
   # On top of those, we need to include:
   # --> The tidygraph node index column.
-  if (! inherits(summarise_attributes, "list")) {
-    summarise_attributes = list(summarise_attributes)
+  if (! inherits(attribute_summary, "list")) {
+    attribute_summary = list(attribute_summary)
   }
-  summarise_attributes[".tidygraph_node_index"] = "concat"
+  attribute_summary[".tidygraph_node_index"] = "concat"
   # The geometries will be summarized at a later stage.
   # However igraph does not know the geometries are special.
   # We therefore temporarily remove the geometries before contracting.
   x_tmp = delete_vertex_attr(x, node_geomcol)
   # Contract with igraph::contract.
-  x_new = as_tbl_graph(contract(x_tmp, groups, summarise_attributes))
+  x_new = as_tbl_graph(contract(x_tmp, groups, attribute_summary))
   ## =======================================
   # STEP II: SUMMARIZE THE NODE GEOMETRIES
   # Each contracted node should get a new geometry.

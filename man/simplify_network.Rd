@@ -8,7 +8,7 @@ simplify_network(
   x,
   remove_multiple = TRUE,
   remove_loops = TRUE,
-  summarise_attributes = "first",
+  attribute_summary = "first",
   store_original_ids = FALSE,
   store_original_data = FALSE
 )
@@ -21,7 +21,7 @@ to \code{TRUE}.}
 
 \item{remove_loops}{Should loop edges be removed. Defaults to \code{TRUE}.}
 
-\item{summarise_attributes}{How should the attributes of merged multiple
+\item{attribute_summary}{How should the attributes of merged multiple
 edges be summarized? There are several options, see
 \code{\link[igraph]{igraph-attribute-combination}} for details.}
 

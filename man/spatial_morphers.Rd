@@ -23,7 +23,8 @@ to_spatial_contracted(
   ...,
   simplify = TRUE,
   compute_centroids = TRUE,
-  summarise_attributes = "concat",
+  attribute_summary = "ignore",
+  summarise_attributes = deprecated(),
   store_original_data = FALSE
 )
 
@@ -45,7 +46,8 @@ to_spatial_simple(
   x,
   remove_multiple = TRUE,
   remove_loops = TRUE,
-  summarise_attributes = "first",
+  attribute_summary = "first",
+  summarise_attributes = deprecated(),
   store_original_data = FALSE
 )
 
@@ -53,7 +55,8 @@ to_spatial_smooth(
   x,
   protect = NULL,
   require_equal = NULL,
-  summarise_attributes = "concat",
+  attribute_summary = "ignore",
+  summarise_attributes = deprecated(),
   store_original_data = FALSE
 )
 
@@ -63,11 +66,7 @@ to_spatial_subset(x, ..., subset_by = NULL)
 
 to_spatial_transformed(x, ...)
 
-to_spatial_unique(
-  x,
-  summarise_attributes = "concat",
-  store_original_data = FALSE
-)
+to_spatial_unique(x, attribute_summary = "ignore", store_original_data = FALSE)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
@@ -88,10 +87,12 @@ nodes be the centroid of all group members? Defaults to \code{TRUE}. If set
 to \code{FALSE}, the geometry of the first node in each group will be used
 instead, which requires considerably less computing time.}
 
-\item{summarise_attributes}{Whenever groups of nodes or edges are merged
+\item{attribute_summary}{Whenever groups of nodes or edges are merged
 into a single feature during morphing, how should their attributes be
 summarized? There are several options, see
 \code{\link[igraph]{igraph-attribute-combination}} for details.}
+
+\item{summarise_attributes}{Deprecated, use \code{attribute_summary} instead.}
 
 \item{store_original_data}{Whenever groups of nodes or edges are merged
 into a single feature during morphing, should the data of the original

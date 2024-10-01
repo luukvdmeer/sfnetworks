@@ -20,7 +20,7 @@
 #' order for the pseudo node to be removed? Defaults to \code{NULL}, meaning
 #' that attribute equality is not considered for pseudo node removal.
 #'
-#' @param summarise_attributes How should the attributes of concatenated edges
+#' @param attribute_summary How should the attributes of concatenated edges
 #' be summarized? There are several options, see
 #' \code{\link[igraph]{igraph-attribute-combination}} for details.
 #'
@@ -46,7 +46,7 @@
 #' @export
 smooth_pseudo_nodes = function(x, protect = NULL,
                                require_equal = NULL,
-                               summarise_attributes = "concat",
+                               attribute_summary = "ignore",
                                store_original_ids = FALSE,
                                store_original_data = FALSE) {
   # Change default igraph options.
@@ -247,7 +247,7 @@ smooth_pseudo_nodes = function(x, protect = NULL,
   # STEP III: SUMMARISE EDGE ATTRIBUTES
   # Each replacement edge replaces multiple original edges.
   # Their attributes should all be summarised in a single value.
-  # The summary techniques to be used are given as summarise_attributes.
+  # The summary techniques to be used are given as attribute_summary.
   ## ===================================
   # Obtain the attribute values of all original edges in the network.
   # These should not include the geometries and original edge indices.
@@ -258,7 +258,7 @@ smooth_pseudo_nodes = function(x, protect = NULL,
   # --> Summarise the attributes of the edges it replaces into single values.
   merge_attrs = function(E) {
     ids = E$.tidygraph_edge_index
-    summarize_attributes(edge_attrs, summarise_attributes, subset = ids)
+    summarize_attributes(edge_attrs, attribute_summary, subset = ids)
   }
   new_attrs = lapply(new_idxs, merge_attrs)
   ## ===================================

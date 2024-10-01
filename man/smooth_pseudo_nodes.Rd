@@ -8,7 +8,7 @@ smooth_pseudo_nodes(
   x,
   protect = NULL,
   require_equal = NULL,
-  summarise_attributes = "concat",
+  attribute_summary = "ignore",
   store_original_ids = FALSE,
   store_original_data = FALSE
 )
@@ -25,7 +25,7 @@ which attributes of the incident edges of a pseudo node should be equal in
 order for the pseudo node to be removed? Defaults to \code{NULL}, meaning
 that attribute equality is not considered for pseudo node removal.}
 
-\item{summarise_attributes}{How should the attributes of concatenated edges
+\item{attribute_summary}{How should the attributes of concatenated edges
 be summarized? There are several options, see
 \code{\link[igraph]{igraph-attribute-combination}} for details.}
 

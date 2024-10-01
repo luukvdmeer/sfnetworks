@@ -11,10 +11,12 @@
 #' nodes and by \code{\link{evaluate_edge_query}} in the case of edges.
 #' Defaults to \code{NULL}, meaning that no features are protected.
 #'
-#' @param summarise_attributes Whenever groups of nodes or edges are merged
+#' @param attribute_summary Whenever groups of nodes or edges are merged
 #' into a single feature during morphing, how should their attributes be
 #' summarized? There are several options, see
 #' \code{\link[igraph]{igraph-attribute-combination}} for details.
+#'
+#' @param summarise_attributes Deprecated, use \code{attribute_summary} instead.
 #'
 #' @param store_original_data Whenever groups of nodes or edges are merged
 #' into a single feature during morphing, should the data of the original
@@ -84,13 +86,16 @@ NULL
 #' to \code{FALSE}, the geometry of the first node in each group will be used
 #' instead, which requires considerably less computing time.
 #'
+#' @importFrom lifecycle deprecated is_present
 #' @importFrom dplyr group_by group_indices
 #' @importFrom sf st_drop_geometry
 #' @export
 to_spatial_contracted = function(x, ..., simplify = TRUE,
                                  compute_centroids = TRUE,
-                                 summarise_attributes = "concat",
+                                 attribute_summary = "ignore",
+                                 summarise_attributes = deprecated(),
                                  store_original_data = FALSE) {
+  if (is_present(summarise_attributes)) deprecate_sa("to_spatial_contracted")
   # Create groups.
   groups = group_by(st_drop_geometry(nodes_as_sf(x)), ...)
   group_ids = group_indices(groups)
@@ -101,7 +106,7 @@ to_spatial_contracted = function(x, ..., simplify = TRUE,
     simplify = simplify,
     compute_centroids = compute_centroids,
     reconnect_edges = TRUE,
-    summarise_attributes = summarise_attributes,
+    attribute_summary = attribute_summary,
     store_original_ids = TRUE,
     store_original_data = store_original_data
   )
@@ -324,16 +329,19 @@ to_spatial_shortest_paths = function(x, ...) {
 #'
 #' @param remove_loops Should loop edges be removed. Defaults to \code{TRUE}.
 #'
+#' @importFrom lifecycle deprecated is_present
 #' @export
 to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
-                             summarise_attributes = "first",
+                             attribute_summary = "first",
+                             summarise_attributes = deprecated(),
                              store_original_data = FALSE) {
+  if (is_present(summarise_attributes)) deprecate_sa("to_spatial_simple")
   # Simplify.
   x_new = simplify_network(
     x = x,
     remove_loops = remove_loops,
     remove_multiple = remove_multiple,
-    summarise_attributes = summarise_attributes,
+    attribute_summary = attribute_summary,
     store_original_ids = TRUE,
     store_original_data = store_original_data
   )
@@ -359,11 +367,14 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' \code{\link[dplyr]{dplyr_tidy_select}} argument. Defaults to \code{NULL},
 #' meaning that attribute equality is not considered for pseudo node removal.
 #'
+#' @importFrom lifecycle deprecated is_present
 #' @importFrom rlang enquo try_fetch
 #' @export
 to_spatial_smooth = function(x, protect = NULL, require_equal = NULL,
-                             summarise_attributes = "concat",
+                             attribute_summary = "ignore",
+                             summarise_attributes = deprecated(),
                              store_original_data = FALSE) {
+  if (is_present(summarise_attributes)) deprecate_sa("to_spatial_smooth")
   # Evaluate the node query of the protect argument.
   if (! try_fetch(is.null(protect), error = \(e) FALSE)) {
     protect = evaluate_node_query(x, enquo(protect))
@@ -377,7 +388,7 @@ to_spatial_smooth = function(x, protect = NULL, require_equal = NULL,
     x = x,
     protect = protect,
     require_equal = require_equal,
-    summarise_attributes = summarise_attributes,
+    attribute_summary = attribute_summary,
     store_original_ids = TRUE,
     store_original_data = store_original_data
   )
@@ -483,7 +494,7 @@ to_spatial_transformed = function(x, ...) {
 #' \code{\link[sf]{st_set_precision}}.
 #'
 #' @export
-to_spatial_unique = function(x, summarise_attributes = "concat",
+to_spatial_unique = function(x, attribute_summary = "ignore",
                              store_original_data = FALSE) {
   # Create groups.
   group_ids = st_match_points(pull_node_geom(x))
@@ -494,7 +505,7 @@ to_spatial_unique = function(x, summarise_attributes = "concat",
     simplify = FALSE,
     compute_centroids = FALSE,
     reconnect_edges = FALSE,
-    summarise_attributes = summarise_attributes,
+    attribute_summary = attribute_summary,
     store_original_ids = TRUE,
     store_original_data = store_original_data
   )

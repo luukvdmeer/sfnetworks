@@ -10,7 +10,7 @@ contract_nodes(
   simplify = TRUE,
   compute_centroids = TRUE,
   reconnect_edges = TRUE,
-  summarise_attributes = "concat",
+  attribute_summary = "ignore",
   store_original_ids = FALSE,
   store_original_data = FALSE
 )
@@ -38,7 +38,7 @@ they match the new node geometries? Defaults to \code{TRUE}. Only set this
 to \code{FALSE} if you know the node geometries did not change, otherwise
 the valid spatial network structure is broken.}
 
-\item{summarise_attributes}{How should the attributes of contracted nodes be
+\item{attribute_summary}{How should the attributes of contracted nodes be
 summarized? There are several options, see
 \code{\link[igraph]{igraph-attribute-combination}} for details.}
 

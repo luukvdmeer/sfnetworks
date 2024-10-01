@@ -12,7 +12,7 @@
 #'
 #' @param remove_loops Should loop edges be removed. Defaults to \code{TRUE}.
 #'
-#' @param summarise_attributes How should the attributes of merged multiple
+#' @param attribute_summary How should the attributes of merged multiple
 #' edges be summarized? There are several options, see
 #' \code{\link[igraph]{igraph-attribute-combination}} for details.
 #'
@@ -36,7 +36,7 @@
 #' @importFrom sf st_as_sf st_crs st_crs<- st_precision st_precision<- st_sfc
 #' @export
 simplify_network = function(x, remove_multiple = TRUE, remove_loops = TRUE,
-                            summarise_attributes = "first",
+                            attribute_summary = "first",
                             store_original_ids = FALSE,
                             store_original_data = FALSE) {
   # Add index columns if not present.
@@ -51,18 +51,18 @@ simplify_network = function(x, remove_multiple = TRUE, remove_loops = TRUE,
   # On top of those, we need to include:
   # --> The geometry column, if present.
   # --> The tidygraph edge index column.
-  if (! inherits(summarise_attributes, "list")) {
-    summarise_attributes = list(summarise_attributes)
+  if (! inherits(attribute_summary, "list")) {
+    attribute_summary = list(attribute_summary)
   }
   edge_geomcol = edge_geom_colname(x)
-  if (! is.null(edge_geomcol)) summarise_attributes[edge_geomcol] = "first"
-  summarise_attributes[".tidygraph_edge_index"] = "concat"
+  if (! is.null(edge_geomcol)) attribute_summary[edge_geomcol] = "first"
+  attribute_summary[".tidygraph_edge_index"] = "concat"
   # Simplify the network.
   x_new = simplify(
     x,
     remove.multiple = remove_multiple,
     remove.loops = remove_loops,
-    edge.attr.comb = summarise_attributes
+    edge.attr.comb = attribute_summary
   ) %preserve_all_attrs% x
   ## ====================================
   # STEP II: RECONSTRUCT EDGE GEOMETRIES

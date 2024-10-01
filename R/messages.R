@@ -82,7 +82,7 @@ raise_unknown_input = function(arg, value, options = NULL) {
 }
 
 #' @importFrom cli cli_abort
-raise_unknown_summariser = function(value) {
+raise_unknown_summarizer = function(value) {
   cli_abort(c(
     "Unknown attribute summary function: {value}.",
     "i" = "For supported values see {.fn igraph::attribute.combination}."
@@ -215,5 +215,14 @@ deprecate_from = function() {
         "`direction = 'in'`, but this may be removed in future versions."
       )
     )
+  )
+}
+
+#' @importFrom lifecycle deprecate_warn
+deprecate_sa = function(caller) {
+  deprecate_warn(
+    when = "v1.0",
+    what = paste0(caller, "(summarise_attributes)"),
+    with = paste0(caller, "(attribute_summary)")
   )
 }
