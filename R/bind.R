@@ -43,8 +43,8 @@
 #'
 #' @name bind_spatial
 #' @importFrom cli cli_abort
-#' @importFrom sf st_drop_geometry st_geometry
-#' @importFrom tidygraph bind_nodes
+#' @importFrom sf st_drop_geometry st_geometry st_geometry<-
+#' @importFrom tidygraph activate bind_nodes
 #' @export
 bind_spatial_nodes = function(.data, ...) {
   # Bind geometries
@@ -60,8 +60,15 @@ bind_spatial_nodes = function(.data, ...) {
   add = lapply(list(...), st_drop_geometry)
   new_net = bind_nodes(net, add)
   # Add geometries back to the network.
-  new_net = mutate_node_geom(new_net, new_geom)
-  new_net
+  active = attr(.data, "active")
+  if (active == "nodes") {
+    st_geometry(new_net) = new_geom
+    new_net
+  } else {
+    new_net = activate(new_net, "nodes")
+    st_geometry(new_net) = new_geom
+    activate(new_net, "edges")
+  }
 }
 
 #' @name bind_spatial

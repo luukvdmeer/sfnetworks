@@ -604,7 +604,6 @@ spatial_join_nodes = function(x, y, ..., ignore_multiple = TRUE) {
   # --> See the package vignettes for more info.
   duplicated_match = duplicated(n_new$.sfnetwork_index)
   if (any(duplicated_match)) {
-    n_new = n_new[!duplicated_match, ]
     if (ignore_multiple) {
       cli_warn(c(
         "{.fn st_join} did not join all features.",
@@ -617,6 +616,7 @@ spatial_join_nodes = function(x, y, ..., ignore_multiple = TRUE) {
           "set {.arg ignore_multiple} to {.code FALSE}."
         )
       ))
+      n_new = n_new[!duplicated_match, ]
     } else {
       cli_warn(c(
         "{.fn st_join} created isolated nodes.",
@@ -630,6 +630,7 @@ spatial_join_nodes = function(x, y, ..., ignore_multiple = TRUE) {
         )
       ))
       n_dups = n_new[duplicated_match, ]
+      n_new = n_new[!duplicated_match, ]
     }
   }
   # If an inner join was requested instead of a left join:
@@ -645,6 +646,7 @@ spatial_join_nodes = function(x, y, ..., ignore_multiple = TRUE) {
   node_data(x) = n_new
   # Add duplicated matches as isolated nodes.
   if (any(duplicated_match) & !ignore_multiple) {
+    n_dups$.sfnetwork_index = NULL
     x = bind_spatial_nodes(x, n_dups)
   }
   x
