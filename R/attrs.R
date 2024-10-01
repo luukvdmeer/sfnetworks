@@ -2,18 +2,15 @@
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
-#' @param name Name of the attribute to query. Either \code{'sf_column'} or
-#' \code{'agr'}.
+#' @param name Name of the attribute to query. Either \code{'sf_column'} to
+#' extract the name of the geometry list column, or \code{'agr'} to extract the
+#' specification of attribute-geometry relationships.
 #'
 #' @param active Which network element (i.e. nodes or edges) to activate before
 #' extracting. If \code{NULL}, it will be set to the current active element of
 #' the given network. Defaults to \code{NULL}.
 #'
-#' @return The value of the attribute matched, or \code{NULL} if no exact
-#' match is found.
-#'
-#' @details sf attributes include \code{sf_column} (the name of the sf column)
-#' and \code{agr} (the attribute-geometry-relationships).
+#' @return The value of the queried attribute.
 #'
 #' @examples
 #' net = as_sfnetwork(roxel)
@@ -120,7 +117,7 @@ update_edge_agr = function(x) {
 #'
 #' @return A named factor with appropriate levels. Values are all equal to
 #' \code{\link[sf]{NA_agr_}}. Names correspond to the  attribute columns of the
-#' targeted element of x. Attribute columns do not  involve the geometry list
+#' targeted element of x. Attribute columns do not involve the geometry list
 #' column, but do involve the from and to columns.
 #'
 #' @noRd
@@ -158,8 +155,8 @@ make_agr_valid = function(agr, names) {
 #'
 #' @param orig An object of class \code{\link{sfnetwork}}.
 #'
-#' @details All attributes include the network attributes *and* the sf specific
-#' attributes of its element objects (i.e. the nodes and edges tables).
+#' @details All attributes include the network attributes and the sf specific
+#' attributes of its elements (i.e. the nodes and edges tables).
 #'
 #' The network attributes always contain the class of the network and the name
 #' of the active element. Users can also add their own attributes to the
@@ -168,9 +165,9 @@ make_agr_valid = function(agr, names) {
 #' The sf specific element attributes contain the name of the geometry list
 #' column and the agr factor of the element. In a spatially implicit network
 #' these attributes will be \code{NULL} for the edges table. Note that we talk
-#' about the attributes of the element *objects*. Hence, attributes attached to
-#' the table that stores the elements data. This is *not* the same as the
-#' attribute columns *in* the element table.
+#' about the attributes of the element objects. Hence, attributes attached to
+#' the table that stores the elements data. This is not the same as the
+#' attribute columns in the element table.
 #'
 #' @importFrom igraph graph_attr graph_attr<-
 #' @noRd
@@ -185,7 +182,7 @@ make_agr_valid = function(agr, names) {
 #' @param orig An object of class \code{\link{sfnetwork}}.
 #'
 #' @details The network attributes are the attributes directly attached to
-#' the network object as a whole. Hence, this does *not* include attributes
+#' the network object as a whole. Hence, this does not include attributes
 #' belonging to the element objects (i.e. the nodes and the edges tables). The
 #' network attributes always contain the class of the network and the name of
 #' the active element. Users can also add their own attributes to the network.
@@ -208,9 +205,9 @@ make_agr_valid = function(agr, names) {
 #' and edges tables) contain the name of the geometry list column and the agr
 #' factor of the element. In a spatially implicit network these attributes will
 #' be \code{NULL} for the edges table. Note that we talk about the attributes
-#' of the element *objects*. Hence, attributes attached to the table that
-#' stores the elements data. This is *not* the same as the attribute columns
-#' *in* the element table.
+#' of the element objects. Hence, attributes attached to the table that
+#' stores the elements data. This is not the same as the attribute columns
+#' in the element table.
 #'
 #' @noRd
 `%preserve_sf_attrs%` = function(new, orig) {

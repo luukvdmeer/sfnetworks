@@ -9,23 +9,19 @@ sf_attr(x, name, active = NULL)
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
 
-\item{name}{Name of the attribute to query. Either \code{'sf_column'} or
-\code{'agr'}.}
+\item{name}{Name of the attribute to query. Either \code{'sf_column'} to
+extract the name of the geometry list column, or \code{'agr'} to extract the
+specification of attribute-geometry relationships.}
 
 \item{active}{Which network element (i.e. nodes or edges) to activate before
 extracting. If \code{NULL}, it will be set to the current active element of
 the given network. Defaults to \code{NULL}.}
 }
 \value{
-The value of the attribute matched, or \code{NULL} if no exact
-match is found.
+The value of the queried attribute.
 }
 \description{
 Query sf attributes from the active element of a sfnetwork
-}
-\details{
-sf attributes include \code{sf_column} (the name of the sf column)
-and \code{agr} (the attribute-geometry-relationships).
 }
 \examples{
 net = as_sfnetwork(roxel)
