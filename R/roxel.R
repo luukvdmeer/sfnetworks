@@ -6,7 +6,7 @@
 #' See `data-raw/roxel.R` for code on its creation.
 #'
 #' @format An object of class \code{\link[sf]{sf}} with \code{LINESTRING}
-#' geometries, containing 851 features and three columns:
+#' geometries, containing 1215 features and three columns:
 #' \describe{
 #'   \item{name}{the name of the road, if it exists}
 #'   \item{type}{the type of the road, e.g. cycleway}

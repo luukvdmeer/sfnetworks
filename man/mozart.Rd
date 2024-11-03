@@ -6,7 +6,7 @@
 \title{Point locations for places about W. A. Mozart in Salzburg, Austria}
 \format{
 An object of class \code{\link[sf]{sf}} with \code{LINESTRING}
-geometries, containing 851 features and three columns:
+geometries, containing 17 features and four columns:
 \describe{
   \item{name}{the name of the point location}
   \item{type}{the type of location, e.g. museum, artwork, cinema, etc.}
