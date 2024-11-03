@@ -37,15 +37,16 @@ roxel_lines = roxel_query$osm_lines |>
 # -> smooth and subdivide
 # -> extract edges with corresponding attributes
 roxel_clean = as_sfnetwork(roxel_lines) |>
-  filter(group_components() <= 180) |>
+  # filter(group_components() <= 180) |>
   convert(to_spatial_smooth) |>
   convert(to_spatial_subdivision) |>
   st_as_sf("edges") |>
-  select(name, type)
+  select(name, type) |>
+  st_set_agr(c(name = "constant", type = "constant"))
 
 # reorder the dataset to have more names on the first 10 rows
 set.seed(92612)
 roxel = roxel_clean[sample(1:nrow(roxel_clean)), ]
 
-# save as lazy datta
+# save as lazy data
 usethis::use_data(roxel, overwrite = TRUE)
