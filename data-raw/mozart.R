@@ -23,13 +23,14 @@ pts = mozart_query$osm_points |>
     "Spirit of Mozart",
     "Mozart-Eine Hommage",
     "Haus für Mozart",
-    "Pizza Mozart",
     "Mozartkugel",
-    "Altstadthotel Kasererbraeu Mozartkino GmbH",
+    "Altstadthotel Kasererbraeu Mozartkino GmbH", #rename just Mozartkino
     "Mozartsteg/Imbergstraße",
-    "Mozartsteg/Rudolfskai",
-    "W. A. Mozart",
-    "Lesessaal Mozarteum"
+    "Mozartsteg/Rudolfskai"
+  )) |>
+  mutate(name = case_when(
+    str_detect(name, "Mozartkino") ~ "Mozartkino",
+    TRUE ~ name
   )) |>
   as_tibble() |>
   st_as_sf()
@@ -41,16 +42,11 @@ pls = mozart_query$osm_polygons |>
   st_centroid() |>
   as_tibble() |>
   st_as_sf()
-mpls = mozart_query$osm_multipolygons |>
-  filter(str_detect(name, "Mozart")) |>
-  st_centroid() |>
-  as_tibble() |>
-  st_as_sf()
 
 # combine datasets, select relevant attributes and combine into
 # a single attribute called type
 # compute x and y coordinates to order the points
-mozart = bind_rows(pts, pls, mpls) |>
+mozart = bind_rows(pts, pls) |>
   select(name, amenity, tourism, craft, building,
          highway, man_made, website) |>
   mutate(
@@ -59,7 +55,9 @@ mozart = bind_rows(pts, pls, mpls) |>
     y = st_coordinates(geometry)[,"Y"]
   ) |>
   arrange(y, x) |>
-  select(name, type, website)
+  select(name, type, website) |>
+  st_set_agr(c(name = "constant", type = "constant", website = "constant")) |>
+  st_transform(3035)
 
 # save as lazy data
 usethis::use_data(mozart, overwrite = TRUE)

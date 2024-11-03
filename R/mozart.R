@@ -7,7 +7,7 @@
 #' See `data-raw/mozart.R` for code on its creation.
 #'
 #' @format An object of class \code{\link[sf]{sf}} with \code{LINESTRING}
-#' geometries, containing 851 features and three columns:
+#' geometries, containing 17 features and three columns:
 #' \describe{
 #'   \item{name}{the name of the point location}
 #'   \item{type}{the type of location, e.g. museum, artwork, cinema, etc.}
