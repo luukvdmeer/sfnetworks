@@ -6,9 +6,10 @@
 [![Codecov test coverage](https://codecov.io/gh/luukvdmeer/sfnetworks/branch/master/graph/badge.svg)](https://app.codecov.io/gh/luukvdmeer/sfnetworks)
 [![CRAN](http://www.r-pkg.org/badges/version/sfnetworks)](https://cran.r-project.org/package=sfnetworks)
 [![Downloads](https://cranlogs.r-pkg.org/badges/sfnetworks)](https://cran.r-project.org/package=sfnetworks)
+
 <!-- badges: end -->
 
-`sfnetworks` is an R package for analysis of geospatial networks. It connects the functionalities of the `tidygraph` package for network analysis and the `sf` package for spatial data science.
+`sfnetworks` is an R package for analysis of geospatial networks. It connects and extends the functionalities of the `tidygraph` package for network analysis and the `sf` package for spatial data science.
 
 ## Background
 
@@ -20,7 +21,7 @@ We created `sfnetworks` to facilitate such an integrated workflow. It combines t
 
 You can install the latest stable version of `sfnetworks` from [CRAN](https://cran.r-project.org/package=sfnetworks) with:
 
-``` r
+```r
 install.packages("sfnetworks")
 ```
 
@@ -46,10 +47,6 @@ There are currently five vignettes that guide you through the functionalities of
 - [Spatial joins and filters](https://luukvdmeer.github.io/sfnetworks/articles/sfn03_join_filter.html)
 - [Routing](https://luukvdmeer.github.io/sfnetworks/articles/sfn04_routing.html)
 - [Spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/sfn05_morphers.html)
-
-<img align="left" src="https://raw.githubusercontent.com/loreabad6/ggraph-spatial-examples/main/figs/sfnetworks-showcase.gif" >
-
-(GIF (c) by [Lore Abad](https://github.com/loreabad6))
 
 ## Contribution
 
