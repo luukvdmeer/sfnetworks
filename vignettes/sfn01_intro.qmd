@@ -42,7 +42,7 @@ old_hooks = fansi::set_knit_hooks(
 )
 ```
 
-The `{sfnetworks}` package is designed to represent and analyze geospatial networks. This are networks that are embedded in geographical space, in which the nodes and edges can be represented by spatial simple features. The nodes most commonly as points, and the edges as linestrings. This vignette provides a basic introduction to the package.
+The `{sfnetworks}` package is designed to represent and analyze geospatial networks. These are networks that are embedded in geographical space, in which the nodes and edges can be represented by spatial simple features. The nodes most commonly as points, and the edges as linestrings. This vignette provides a basic introduction to the package.
 
 ```{r}
 #| message: false
@@ -61,14 +61,17 @@ In R there are very good packages for respectively geospatial analysis and stand
 - The `{sf}` package brings the simple features standard to R, allowing to represent and analyze spatial vector data such as points, lines and polygons.
 - The `{tidygraph}` package provides a tidy interface to the large network analysis library `{igraph}`, which is written in C and also has an R API.
 
-These package by themselves are great for their purposes. However, `{sf}` does not know about networks, while `{tidygraph}` does not know about space. By combining their forces, `{sfnetworks}` enables integrated workflows connecting network analysis with spatial analysis. In addition, it offers functions that are specific for spatial network analysis, and cannot be found in either of the two "parent packages".
+These packages by themselves are great for their purposes. However, `{sf}` does not know about networks, while `{tidygraph}` does not know about space. By combining their forces, `{sfnetworks}` enables integrated workflows connecting network analysis with spatial analysis. In addition, it offers functions that are specific for spatial network analysis, and cannot be found in either of the two "parent packages".
 
 ## Representing spatial networks
 Spatial networks in `{sfnetworks}` are represented by objects of class `sfnetwork`. These objects inherit the `tbl_graph` class from `{tidygraph}`, which in turn inherit the `igraph` class from `{igraph}`. What this means is that in their core they are designed to store graph structures. However, thanks to the design of `{tidygraph}`, they look like a collection of two flat tables: one for the nodes, and one for the edges. Where in `{tidygraph}` these tables can be treated as tibbles, in `{sfnetworks}` they are sf data frames with a list column containing the geometry of each feature. 
 
 In `{sfnetworks}`, edges can either be directed (the default) or undirected. Mixed networks that contain both types of edges, e.g. road networks with oneway streets, can be represented by duplicating and reversing all edges that can be traveled in both ways (see [here]()). Where nodes in spatial networks need to explicitly store geometries, for edges this is not always required. If edges are straight lines, their spatial embedding can also be inferred from the spatial locations of the nodes they connect. In `{sfnetworks}` we refer to these two approaches as *spatially explicit edges* and *spatially implicit edges*, respectively.
 
-*Insert diagram*
+```{r}
+#| echo: false
+knitr::include_graphics("figures/data-structure.png", error = FALSE)
+```
 
 There are many different ways to create a `sfnetwork` object, which are explained in detail in the vignette [Creating and representing spatial networks](). Most commonly you will start with a set of spatial features, stored as an object of class `sf`. If these features are linestrings, they are considered to be the edges of the network, and nodes are created at their endpoints. If multiple linestrings share an endpoint, this becomes a single node in the network, and hence, these edges are adjacent.
 
@@ -84,11 +87,7 @@ plot(net)
 If the features are points, they are considered to be the nodes of the network, and they are connected by edges according to a given adjacency matrix. The adjacency matrix can also be created internally according to a specified method.
 
 ```{r}
-pts = mozart |>
-  st_transform(3035) |>
-  slice(-c(1, 2, 7, 21))
-  
-net = as_sfnetwork(pts, connections = "gabriel", directed = FALSE)
+net = as_sfnetwork(mozart, connections = "gabriel", directed = FALSE)
 net
 ```
 
@@ -140,7 +139,7 @@ net = net |>
 net
 ```
 
-A large set of functions in `{tidygraph}` is dedicated to the computation of quantitative **measures** for nodes, edges, or het network as a whole. Most known are centrality measures, which define the importance of a node in the network. The names of all implemented centrality measure functions are formatted as `centrality_*`. Other implemented measure functions have names formatted as `node_*` (for node measures) or `edge_*` (for edge measures) or `graph_*` (for network measures). A special group of measure functions are the logical measures, which return either `TRUE` or `FALSE`, indicating if the node, edge or network is of a specified type.
+A large set of functions in `{tidygraph}` is dedicated to the computation of quantitative **measures** for nodes, edges, or the network as a whole. Most known are centrality measures, which define the importance of a node in the network. The names of all implemented centrality measure functions are formatted as `centrality_*`. Other implemented measure functions have names formatted as `node_*` (for node measures) or `edge_*` (for edge measures) or `graph_*` (for network measures). A special group of measure functions are the logical measures, which return either `TRUE` or `FALSE`, indicating if the node, edge or network is of a specified type.
 
 None of these functions are meant to be called directly, but used inside tidyverse-verbs such as `dplyr::mutate()` or `dplyr::filter()`, where the analyzed network is know and thus not needed as an input to the function. `tidygraph::with_graph()` can be used to evaluate a measure in the context of a specific network, but outside the tidyverse framework.
 
@@ -199,7 +198,7 @@ ggraph(new_net, "sf") +
 
 By writing methods for many spatial analytical functions from the `{sf}` package, `{sfnetworks}` allows these functions to be called directly on `sfnetwork` objects, without the need for conversion. See [here]() for an overview of all sf functions that have a method for `sfnetwork` objects. For a complete overview of the functionalities of `{sf}`, check the [sf documentation](https://r-spatial.github.io/sf/).
 
-One of the many tasks that `{sf}` covers is the specification **coordinate reference systems**, CRS for short, and the transformation of spatial coordinates between such systems. In a `sfnetwork` object the nodes and edges always have the same CRS, so it does not matter which of the elements is active when you retrieve the CRS, or when you transform coordinates into a different CRS.
+One of the many tasks that `{sf}` covers is the specification of **coordinate reference systems**, CRS for short, and the transformation of spatial coordinates between such systems. In a `sfnetwork` object the nodes and edges always have the same CRS, so it does not matter which of the elements is active when you retrieve the CRS, or when you transform coordinates into a different CRS.
 
 ```{r}
 st_crs(net)$epsg
@@ -212,7 +211,7 @@ st_transform(net, 4326)
 In `{sf}` there are also multiple functions that implement the evaluation of a **spatial predicate**. A spatial predicate describes a spatial relation between two geometries. For example, a point A may be located *within* a polygon B. In the example below we show how to evaluate for each node in a spatial network if it is located within one of two given polygons.
 
 ```{r}
-polys = pts |>
+polys = mozart |>
   slice(4, 15) |>
   st_buffer(325) |>
   mutate(label = c("A", "B")) |>
@@ -277,7 +276,7 @@ net |>
 
 As mentioned, `{sfnetworks}` extends the functionalities of `{tidygraph}` and `{sf}` by offering functions that are specific for spatial network analysis, as well as functions that allow for a smoother integration of `{sf}` into the design of `{tidygraph}` workflows. In contradiction to `{tidygraph}`, all functions in `{sfnetworks}` that consider edge weights will always use geographic edge length as the default weight.
 
-The first family of functions in `{sfnetworks}` all have names formatted as `st_network_*`, adopting the naming conventions of `{sf}`. These functions always take a `sfnetwork` object as first input, and use or compute some set of spatial features. The returned object can either be a set of individual spatial features computed from that network, the network itself with with other spatial features merged into it, or another object (e.g., a matrix) that is the result of a computation utilizing the network and a set of spatial features. This covers a large range of use-cases. Examples include drawing isochrone or isodistance polygons around nodes, finding geographic shortest paths between pairs of nodes, computing cost matrices of travel between nodes, and adding external point data as new nodes to the network. See the vignettes [Routing on spatial networks]() and [Spatial joins and filters]() for detailed examples on this.
+The first family of functions in `{sfnetworks}` have names formatted as `st_network_*`, adopting the naming conventions of `{sf}`. These functions always take a `sfnetwork` object as first input, and use or compute some set of spatial features. The returned object can either be a set of individual spatial features computed from that network, the network itself with other spatial features merged into it, or another object (e.g., a matrix) that is the result of a computation utilizing the network and a set of spatial features. This covers a large range of use-cases. Examples include drawing isochrone or isodistance polygons around nodes, finding geographic shortest paths between pairs of nodes, computing cost matrices of travel between nodes, and adding external point data as new nodes to the network. See the vignettes [Routing on spatial networks]() and [Spatial joins and filters]() for detailed examples on this.
 
 ```{r}
 #| warning: false
@@ -349,7 +348,10 @@ new_net = net |>
   filter(edge_intersects(polys)) |>
   mutate(circuity = edge_circuity()) |>
   activate(nodes) |>
-  mutate(sc = centrality_straightness(), in_poly = node_is_within(polys))
+  mutate(
+    sc = centrality_straightness(),
+    in_poly = node_is_within(polys)
+  )
 
 new_net
 ```
@@ -423,11 +425,10 @@ ggraph(path, "sf") +
 Finally, `{sfnetworks}` exports all kind of utility functions that should make working with spatial networks less cumbersome. An example is finding the nearest node and nearest edge to a given spatial feature. For an overview of all exported functions of the package, see the [function reference]().
 
 ```{r}
-p = st_centroid(st_combine(pts))
+p = st_centroid(st_combine(mozart))
 
 nn = nearest_nodes(net, p)
 nn
-
 ne = nearest_edges(net, p)
 ne
 ```
