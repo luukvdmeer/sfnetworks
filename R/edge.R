@@ -476,7 +476,7 @@ make_edges_explicit = function(x, ...) {
   # In any other case:
   # --> If ... is specified use it to convert edges table to sf.
   # --> Otherwise simply draw straight lines between the incident nodes.
-  if (dots_n() > 0) {
+  if (dots_n(...) > 0) {
     edges = edge_data(x, focused = FALSE)
     new_edges = st_as_sf(edges, ...)
     x_new = x
