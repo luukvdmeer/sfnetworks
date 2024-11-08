@@ -65,7 +65,7 @@ These packages by themselves are great for their purposes. However, `{sf}` does 
 
 ```{r}
 #| echo: false
-knitr::include_graphics("figures/data-structure.png", error = FALSE)
+knitr::include_graphics("figures/dependencies.png", error = FALSE)
 ```
 
 ## Representing spatial networks
