@@ -16,6 +16,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/luukvdmeer/sfnetworks/refs/heads/v1.0/man/figures/dependencies-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/luukvdmeer/sfnetworks/refs/heads/v1.0/man/figures/dependencies.png">
+  <img alt="sfnetworks dependencies and building blocks." src="https://github.com/luukvdmeer/sfnetworks/blob/v1.0/man/figures/dependencies.png">
 </picture>
 
 Geospatial networks are graphs embedded in geographical space. That means that both the nodes and edges in the graph can be represented as geographic features: the nodes most commonly as points, and the edges as linestrings. They play an important role in many different domains, ranging from transportation planning and logistics to ecology and epidemiology. The structure and characteristics of geospatial networks go beyond standard graph topology, and therefore it is crucial to explicitly take space into account when analyzing them.
