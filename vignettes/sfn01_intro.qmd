@@ -58,10 +58,15 @@ library(dplyr)
 
 In R there are very good packages for respectively geospatial analysis and standard network analysis:
 
-- The `{sf}` package brings the simple features standard to R, allowing to represent and analyze spatial vector data such as points, lines and polygons.
+- The `{sf}` package brings the simple features standard to R and provides an interface to low-level geospatial system libraries such as GDAL, GEOS, and s2, allowing to represent and analyze spatial vector data such as points, lines and polygons.
 - The `{tidygraph}` package provides a tidy interface to the large network analysis library `{igraph}`, which is written in C and also has an R API.
 
-These packages by themselves are great for their purposes. However, `{sf}` does not know about networks, while `{tidygraph}` does not know about space. By combining their forces, `{sfnetworks}` enables integrated workflows connecting network analysis with spatial analysis. In addition, it offers functions that are specific for spatial network analysis, and cannot be found in either of the two "parent packages".
+These packages by themselves are great for their purposes. However, `{sf}` does not know about networks, while `{tidygraph}` does not know about space. By combining their forces, `{sfnetworks}` enables integrated workflows connecting network analysis with spatial analysis. In addition, it offers functions that are specific for spatial network analysis, and cannot be found in either of the two "parent packages". For that, it often utilizes additional building blocks from within the R world.
+
+```{r}
+#| echo: false
+knitr::include_graphics("figures/data-structure.png", error = FALSE)
+```
 
 ## Representing spatial networks
 Spatial networks in `{sfnetworks}` are represented by objects of class `sfnetwork`. These objects inherit the `tbl_graph` class from `{tidygraph}`, which in turn inherit the `igraph` class from `{igraph}`. What this means is that in their core they are designed to store graph structures. However, thanks to the design of `{tidygraph}`, they look like a collection of two flat tables: one for the nodes, and one for the edges. Where in `{tidygraph}` these tables can be treated as tibbles, in `{sfnetworks}` they are sf data frames with a list column containing the geometry of each feature. 
@@ -263,7 +268,7 @@ ggraph(new_net, "sf") +
   theme_void()
 ```
 
-Finally, `{sf}` contains a group of functions known as **geometric unary operations**. These functions change the structure of individual geometries. Their usage in the context of spatial networks is limited, since many of them would break the network structure in which endpoints of edges are spatially equal to their respective nodes. Hence, only those geometric unary operations that do not change the type, shape, or position of the geometries have a method for `sfnetwork` objects. These include `sf::st_reverse()` to reverse edge geometries, and `sf::st_segmentize()` to add internal points to edge geometries. However, just as with unsupported tidyverse-verbs, you can still apply unsupported geometric unary operations by first extracting the active element as a `sf` object, and proceed your analysis on a single table.
+Finally, `{sf}` contains a group of functions known as **geometric unary operations**. These functions change the structure of individual geometries. Their usage in the context of spatial networks is limited, since many of them would break the network structure in which endpoints of edges are spatially equal to their respective nodes. Hence, only those geometric unary operations that do not change the type, shape, or position of the geometries have a method for `sfnetwork` objects. These include `sf::st_reverse()` to reverse edge geometries, and `sf::st_segmentize()` to add interior points to edge geometries. However, just as with unsupported tidyverse-verbs, you can still apply unsupported geometric unary operations by first extracting the active element as a `sf` object, and proceed your analysis on a single table.
 
 ```{r}
 net |>
@@ -338,7 +343,7 @@ ggraph(blend, "sf") +
   theme_void()
 ```
   
-As an extension to the measure functions of `{tidygraph}`, there are several spatial measure functions for nodes and edges to be found in `{sfnetworks}`. Just as in `{tidygraph}`, these functions are named in the style of `node_*` or `edge_*`, or when it is a centrality measure, `centrality_*`. Edge measures that can be computed include for example the geographic length of an edge, its azimuth, or its circuity (i.e. the ratio between its geographic length and the shortest euclidean distance from source to target node). For nodes, it is for example possible to compute the straightness centrality (i.e. the average ratio of euclidean distance and network distance between that node and all other nodes in the network). More details in specific measures of spatial networks can be found in the vignette [Measuring spatial networks]().
+As an extension to the measure functions of `{tidygraph}`, there are several **spatial measure functions** for nodes and edges to be found in `{sfnetworks}`. Just as in `{tidygraph}`, these functions are named in the style of `node_*` or `edge_*`, or when it is a centrality measure, `centrality_*`. Edge measures that can be computed include for example the geographic length of an edge, its azimuth, or its circuity (i.e. the ratio between its geographic length and the shortest euclidean distance from source to target node). For nodes, it is for example possible to compute the straightness centrality (i.e. the average ratio of euclidean distance and network distance between that node and all other nodes in the network). More details in specific measures of spatial networks can be found in the vignette [Measuring spatial networks]().
 
 To better integrate spatial predicate functions of `{sf}` into the design of `{tidygraph}`, all applicable predicates are also implemented as node and edge measure function. These functions will return `TRUE` if the node or edge has the specified spatial relation with at least one of the given spatial features, and `FALSE` otherwise. This makes it easy to use the predicates directly inside functions such as `dplyr::filter()` and `dplyr::mutate()`.
 
@@ -356,7 +361,7 @@ new_net = net |>
 new_net
 ```
 
-As an extension to the community detection functions in `{tidygraph}`, `{sfnetworks}` contains the `group_spatial()` function to find spatial clusters of nodes. The idea is to offer multiple spatial clustering algorithms to choose from, but currently the only one implemented is the [DBSCAN](https://en.wikipedia.org/wiki/DBSCAN) algorithm (which does require the `{dbscan}` package to be installed). The algorithm is executed on the network distance matrix of the nodes, and not on the euclidean distance matrix.
+As an extension to the community detection functions in `{tidygraph}`, `{sfnetworks}` contains the `group_spatial()` function to find **spatial clusters** of nodes. The idea is to offer multiple spatial clustering algorithms to choose from, but currently the only one implemented is the [DBSCAN](https://en.wikipedia.org/wiki/DBSCAN) algorithm (which does require the `{dbscan}` package to be installed). The algorithm is executed on the network distance matrix of the nodes, and not on the euclidean distance matrix.
 
 ```{r}
 new_net = net |>
@@ -372,7 +377,7 @@ ggraph(new_net, "sf") +
   theme_void()
 ```
 
-As an extension to the morpher functions in `{tidygraph}`, there are many different spatial morpher functions implemented in `{sfnetworks}`. Just as in `{tidygraph}`, these function change the structure of the input network, for example by subsetting or splitting it, by combining multiple features into one, or by splitting single features. Common examples include subdividing the network at interior points in edge geometries, smoothing pseudo nodes that have a degree of 2, and contracting multiple nodes into one while preserving the network connectivity. All spatial morphers are described in detail in the vignette [Spatial morphers](). Many morphers are used for network cleaning operations, which are described in detail in the vignette [Cleaning spatial networks]().
+As an extension to the morpher functions in `{tidygraph}`, there are many different **spatial morpher functions** implemented in `{sfnetworks}`. Just as in `{tidygraph}`, these function change the structure of the input network, for example by subsetting or splitting it, by combining multiple features into one, or by splitting single features. Common examples include subdividing the network at interior points in edge geometries, smoothing pseudo nodes that have a degree of 2, and contracting multiple nodes into one while preserving the network connectivity. All spatial morphers are described in detail in the vignette [Spatial morphers](). Many morphers are used for network cleaning operations, which are described in detail in the vignette [Cleaning spatial networks]().
 
 ```{r}
 #| warning: false
@@ -445,7 +450,7 @@ ggraph(net, "sf") +
 
 ### Non-tidy workflows
 
-Also if you are not a fan of the tidyverse style of data analysis, `{sfnetworks}` can be for you. Since `sfnetwork` objects inherit the `igraph` class, you can apply all functions from the large `{igraph}` package to it. This means, for example, that instead of using `dplyr::mutate()` and `dplyr::filter()`, you could proceed as follows (note that in `{igraph}`, vertex is used instead of node).
+Also if you are not a fan of the tidyverse style of data analysis, `{sfnetworks}` can be for you. Since `sfnetwork` objects inherit the `igraph` class, you can apply all functions from the large `{igraph}` package to it. This means, for example, that instead of using `dplyr::mutate()` and `dplyr::filter()`, you could proceed as follows (note that in `{igraph}`, the term *vertex* is used instead of *node*).
 
 ```{r}
 # Mutate.
@@ -483,6 +488,8 @@ with_graph(net, edge_circuity())
 
 All spatial morpher functions that implement a larger workflow have their internal workers exported, meaning they can be called directly. All other morphers are easy to replicate using `{sf}` or other `{sfnetworks}` functions directly. See the vignette [Spatial morphers]() for more details on this.
 
+## Visualizing spatial networks
+
 ## Learning more
 
 This vignette provided an introduction to `{sfnetworks}`. The documentation contains several other vignettes that dive into more detail:
@@ -493,5 +500,3 @@ This vignette provided an introduction to `{sfnetworks}`. The documentation cont
 - [Spatial morphers]()
 - [Routing on spatial networks]()
 - [Measuring spatial networks]()
-- [Visualizing spatial networks]()
-- [Working with OpenStreetMap data]()
