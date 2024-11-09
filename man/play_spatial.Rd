@@ -2,9 +2,10 @@
 % Please edit documentation in R/create.R
 \name{play_spatial}
 \alias{play_spatial}
-\title{Create a spatial network with sampled nodes}
+\alias{play_geometric}
+\title{Create random spatial networks}
 \usage{
-play_spatial(
+play_geometric(
   n,
   radius,
   bounds = NULL,
@@ -16,8 +17,7 @@ play_spatial(
 \arguments{
 \item{n}{The number of nodes to be sampled.}
 
-\item{radius}{The radius within which nodes will be connected by an edge.
-See Details.}
+\item{radius}{The radius within which nodes will be connected by an edge.}
 
 \item{bounds}{The spatial features within which the nodes should be sampled
 as object of class \code{\link[sf]{sf}}, \code{\link[sf]{sfc}},
@@ -41,17 +41,21 @@ Defaults to \code{FALSE}.}
 Ignored if \code{bounds = NULL}.}
 }
 \description{
-Create a spatial network with sampled nodes
+Random spatial networks are created by randomly sampling nodes within a
+given area, and connecting them by edges according to a specified method.
 }
-\details{
-Two nodes will be connected by an edge if the distance between them
-is within the given radius. If nodes are sampled on a unit square (i.e. when
-\code{bounds = NULL}) this radius is unitless. If bounds are given as a
-spatial feature, the radius is assumed to be in meters for geographic
-coordinates, and in the units of the coordinate reference system for
-projected coordinates. Alternatively, units can also be specified explicitly
-by providing a \code{\link[units]{units}} object.
-}
+\section{Functions}{
+\itemize{
+\item \code{play_geometric()}: Creates a random geometric graph. Two nodes will be
+connected by an edge if the distance between them is within the given radius.
+If nodes are sampled on a unit square (i.e. when \code{bounds = NULL}) this
+radius is unitless. If bounds are given as a spatial feature, the radius is
+assumed to be in meters for geographic coordinates, and in the units of the
+coordinate reference system for projected coordinates. Alternatively, units
+can also be specified explicitly by providing a \code{\link[units]{units}}
+object.
+
+}}
 \examples{
 library(sf, quietly = TRUE)
 
@@ -60,14 +64,14 @@ par(mar = c(1,1,1,1))
 
 # Sample 10 nodes on a unit square
 # Connect nodes by an edge if they are within 0.25 distance from each other
-net = play_spatial(10, 0.25)
+net = play_geometric(10, 0.25)
 net
 
 plot(net)
 
 # Sample 10 nodes within a spatial bounding box
 # Connect nodes by an edge if they are within 1 km from each other
-net = play_spatial(10, units::set_units(1, "km"), bounds = st_bbox(roxel))
+net = play_geometric(10, units::set_units(1, "km"), bounds = st_bbox(roxel))
 net
 
 plot(net)

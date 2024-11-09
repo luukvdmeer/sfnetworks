@@ -640,7 +640,7 @@ create_from_spatial_lines = function(x, directed = TRUE, compute_length = FALSE,
 #'   package to be installed.
 #' }
 #'
-#' @seealso \code{\link{create_from_spatial_lines}}, \code{\link{play_spatial}}
+#' @seealso \code{\link{create_from_spatial_lines}}, \code{\link{play_geometric}}
 #'
 #' @return An object of class \code{\link{sfnetwork}}.
 #'
@@ -807,12 +807,12 @@ nearest_neighbors = function(x, k = 1) {
   spdep::knn2nb(spdep::knearneigh(st_geometry(x), k = k), sym = FALSE)
 }
 
-#' Create a spatial network with sampled nodes
+#' Create random spatial networks
+#'
+#' Random spatial networks are created by randomly sampling nodes within a
+#' given area, and connecting them by edges according to a specified method.
 #'
 #' @param n The number of nodes to be sampled.
-#'
-#' @param radius The radius within which nodes will be connected by an edge.
-#' See Details.
 #'
 #' @param bounds The spatial features within which the nodes should be sampled
 #' as object of class \code{\link[sf]{sf}}, \code{\link[sf]{sfc}},
@@ -835,13 +835,19 @@ nearest_neighbors = function(x, k = 1) {
 #' @param ... Additional arguments passed on to \code{\link[sf]{st_sample}}.
 #' Ignored if \code{bounds = NULL}.
 #'
-#' @details Two nodes will be connected by an edge if the distance between them
-#' is within the given radius. If nodes are sampled on a unit square (i.e. when
-#' \code{bounds = NULL}) this radius is unitless. If bounds are given as a
-#' spatial feature, the radius is assumed to be in meters for geographic
-#' coordinates, and in the units of the coordinate reference system for
-#' projected coordinates. Alternatively, units can also be specified explicitly
-#' by providing a \code{\link[units]{units}} object.
+#' @name play_spatial
+NULL
+
+#' @describeIn play_spatial Creates a random geometric graph. Two nodes will be
+#' connected by an edge if the distance between them is within the given radius.
+#' If nodes are sampled on a unit square (i.e. when \code{bounds = NULL}) this
+#' radius is unitless. If bounds are given as a spatial feature, the radius is
+#' assumed to be in meters for geographic coordinates, and in the units of the
+#' coordinate reference system for projected coordinates. Alternatively, units
+#' can also be specified explicitly by providing a \code{\link[units]{units}}
+#' object.
+#'
+#' @param radius The radius within which nodes will be connected by an edge.
 #'
 #' @examples
 #' library(sf, quietly = TRUE)
@@ -851,25 +857,25 @@ nearest_neighbors = function(x, k = 1) {
 #'
 #' # Sample 10 nodes on a unit square
 #' # Connect nodes by an edge if they are within 0.25 distance from each other
-#' net = play_spatial(10, 0.25)
+#' net = play_geometric(10, 0.25)
 #' net
 #'
 #' plot(net)
 #'
 #' # Sample 10 nodes within a spatial bounding box
 #' # Connect nodes by an edge if they are within 1 km from each other
-#' net = play_spatial(10, units::set_units(1, "km"), bounds = st_bbox(roxel))
+#' net = play_geometric(10, units::set_units(1, "km"), bounds = st_bbox(roxel))
 #' net
 #'
 #' plot(net)
 #'
 #' par(oldpar)
 #'
-#' @importFrom sf st_is_within_distance st_sample
+#' @importFrom sf st_is_within_distance st_sample st_sf
 #' @importFrom tidygraph play_geometry
 #' @export
-play_spatial = function(n, radius, bounds = NULL, edges_as_lines = TRUE,
-                        compute_length = FALSE, ...) {
+play_geometric = function(n, radius, bounds = NULL, edges_as_lines = TRUE,
+                          compute_length = FALSE, ...) {
   if (is.null(bounds)) {
     # Use play_geometry to create and link n nodes inside a unit square.
     x_tbg = play_geometry(n, radius)
@@ -893,7 +899,7 @@ play_spatial = function(n, radius, bounds = NULL, edges_as_lines = TRUE,
     conns = mapply(setdiff, conns, seq_along(conns), SIMPLIFY = FALSE)
     # Create the sfnetwork.
     x_sfn = create_from_spatial_points(
-      pts,
+      st_sf(geometry = pts), # Use geometry as column name.
       connections = conns,
       directed = FALSE,
       edges_as_lines = edges_as_lines,

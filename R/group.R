@@ -35,7 +35,7 @@
 #' @examples
 #' library(tidygraph, quietly = TRUE)
 #'
-#' play_spatial(10, 0.5) |>
+#' play_geometric(10, 0.5) |>
 #'   activate(nodes) |>
 #'   mutate(group = group_spatial(0.25))
 #'

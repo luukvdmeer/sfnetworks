@@ -158,5 +158,5 @@ par(oldpar)
 
 }
 \seealso{
-\code{\link{create_from_spatial_lines}}, \code{\link{play_spatial}}
+\code{\link{create_from_spatial_lines}}, \code{\link{play_geometric}}
 }
