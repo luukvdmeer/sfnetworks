@@ -856,7 +856,7 @@ spatial_clip_edges = function(x, y, ..., .operator = sf::st_intersection) {
   # Boundaries of clipped edges may not match their original incident node.
   # In these cases we will add the affected edge boundary as a new node.
   # This makes sure the new network has a valid spatial network structure.
-  make_edges_valid(x, preserve_geometries = TRUE)
+  make_edges_valid(x_new, preserve_geometries = TRUE)
 }
 
 find_indices_to_drop = function(x, y, ..., .operator = sf::st_filter) {
