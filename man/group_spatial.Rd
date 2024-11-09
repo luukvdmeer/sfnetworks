@@ -2,31 +2,25 @@
 % Please edit documentation in R/group.R
 \name{group_spatial}
 \alias{group_spatial}
+\alias{group_spatial_dbscan}
 \title{Group nodes based on spatial distance}
 \usage{
-group_spatial(
-  dist,
-  algorithm = "dbscan",
-  use_network_distance = TRUE,
-  min_nodes = 1,
-  ...
-)
+group_spatial_dbscan(epsilon, min_pts = 1, use_network_distance = TRUE, ...)
 }
 \arguments{
-\item{dist}{The distance within which nodes are clustered together. Should
-be specified in meters.}
+\item{epsilon}{The value of the epsilon parameter for the DBSCAN clustering
+algorithm, defining the radius of the neighborhood of a node.}
 
-\item{algorithm}{The spatial clustering algorithm to use. See Details.}
+\item{min_pts}{The value of the minPts parameter for the DBSCAN clustering
+algorithm, defining the minimum number of points in the neighborhood to be
+considered a core point.}
 
 \item{use_network_distance}{Should the distance between nodes be computed as
 the distance over the network (using \code{\link{st_network_distance}}?
 Defaults to \code{TRUE}. If set to \code{FALSE}, the straight-line distance
 (using \code{\link[sf]{st_distance}}) is computed instead.}
 
-\item{min_nodes}{The minimum number of nodes in each cluster. Defaults to 1.}
-
-\item{...}{Additional arguments passed on to the clustering algorithm. See
-Details.}
+\item{...}{Additional arguments passed on to the clustering algorithm.}
 }
 \value{
 A numeric vector with the membership for each node in the network.
@@ -34,25 +28,32 @@ The enumeration happens in order based on group size progressing from the
 largest to the smallest group.
 }
 \description{
-This function forms a spatial extension to the
+These functions forms a spatial extension to the
 \code{\link[tidygraph:group_graph]{grouping}} functions in tidygraph,
 allowing to detect communities with spatial clustering algorithms.
 }
 \details{
-The currently supported spatial clustering algorithms are the
-following:
-
+Just as with all grouping functions in tidygraph, spatial grouping
+functions are meant to be called inside tidygraph verbs such as
+\code{\link[tidygraph]{mutate}} or \code{\link[tidygraph]{filter}}, where
+the network that is currently being worked on is known and thus not needed
+as an argument to the function. If you want to use an algorithm outside of
+the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to
+set the context temporarily while the algorithm is being evaluated.
+}
+\section{Functions}{
 \itemize{
-  \item \code{dbscan}: Uses density-based spatial clustering as implemented
-  in the \code{\link[dbscan]{dbscan}} function of the dbscan package. This
-  requires the dbscan package to be installed.
-}
-}
+\item \code{group_spatial_dbscan()}: Uses density-based spatial clustering as
+implemented in the \code{\link[dbscan]{dbscan}} function of the dbscan
+package. This requires the dbscan package to be installed. Each node marked
+as noise will form its own cluster.
+
+}}
 \examples{
 library(tidygraph, quietly = TRUE)
 
 play_geometric(10, 0.5) |>
   activate(nodes) |>
-  mutate(group = group_spatial(0.25))
+  mutate(group = group_spatial_dbscan(0.25))
 
 }
