@@ -69,6 +69,7 @@ knitr::include_graphics("figures/dependencies.png", error = FALSE)
 ```
 
 ## Representing spatial networks
+
 Spatial networks in `{sfnetworks}` are represented by objects of class `sfnetwork`. These objects inherit the `tbl_graph` class from `{tidygraph}`, which in turn inherit the `igraph` class from `{igraph}`. What this means is that in their core they are designed to store graph structures. However, thanks to the design of `{tidygraph}`, they look like a collection of two flat tables: one for the nodes, and one for the edges. Where in `{tidygraph}` these tables can be treated as tibbles, in `{sfnetworks}` they are sf data frames with a list column containing the geometry of each feature. 
 
 In `{sfnetworks}`, edges can either be directed (the default) or undirected. Mixed networks that contain both types of edges, e.g. road networks with oneway streets, can be represented by duplicating and reversing all edges that can be traveled in both ways (see [here]()). Where nodes in spatial networks need to explicitly store geometries, for edges this is not always required. If edges are straight lines, their spatial embedding can also be inferred from the spatial locations of the nodes they connect. In `{sfnetworks}` we refer to these two approaches as *spatially explicit edges* and *spatially implicit edges*, respectively.
@@ -101,6 +102,7 @@ plot(net)
 ```
 
 ## Analyzing spatial networks
+
 Thanks to the design of both `{sf}` and `{tidygraph}`, spatial network analysis with `{sfnetworks}` can be fitted seamlessly into tidy data analysis workflows using the [tidyverse](https://www.tidyverse.org/) family of packages. Since a `sfnetwork` object can be treated as a collection of two tables, rather than one, you just need to specify to which of them you want to apply a function. For this, `{tidygraph}` invented the `activate()` verb, allowing to set either the nodes or the edges as the target of analysis. Having done that, you can apply your favorite tidyverse verb just as you're used to. As you can see below the activation of a network element also changes the order in which they are printed.
 
 ```{r}
@@ -132,6 +134,7 @@ net |>
 ```
 
 ### Network analysis with tidygraph
+
 To allow performing common network analysis tasks, `{sfnetworks}` builds upon tidygraph. Since `sfnetwork` objects inherit the `tbl_graph` class, all analytical functions from `{tidygraph}` can be directly used. There are a lot of such functions available, most of which are tidy wrappers around functions from the `{igraph}` library. For a complete overview, check the [tidygraph documentation](https://tidygraph.data-imaginist.com/).
 
 It is important to note that in the case of spatial networks it often makes most sense to use geographic length as edge weight. Since `{tidygraph}` does not know about space, it will never set this automatically, so you will have to explicitly specify it every time you call a function that can consider edge weights. Read more about specifying edge weights in the vignette [Routing on spatial networks]().
@@ -281,7 +284,7 @@ net |>
 
 As mentioned, `{sfnetworks}` extends the functionalities of `{tidygraph}` and `{sf}` by offering functions that are specific for spatial network analysis, as well as functions that allow for a smoother integration of `{sf}` into the design of `{tidygraph}` workflows. In contradiction to `{tidygraph}`, all functions in `{sfnetworks}` that consider edge weights will always use geographic edge length as the default weight.
 
-The first family of functions in `{sfnetworks}` have names formatted as `st_network_*`, adopting the naming conventions of `{sf}`. These functions always take a `sfnetwork` object as first input, and use or compute some set of spatial features. The returned object can either be a set of individual spatial features computed from that network, the network itself with other spatial features merged into it, or another object (e.g., a matrix) that is the result of a computation utilizing the network and a set of spatial features. This covers a large range of use-cases. Examples include drawing isochrone or isodistance polygons around nodes, finding geographic shortest paths between pairs of nodes, computing cost matrices of travel between nodes, and adding external point data as new nodes to the network. See the vignettes [Routing on spatial networks]() and [Spatial joins and filters]() for detailed examples on this.
+The first family of functions in `{sfnetworks}` have names formatted as `st_network_*`, adopting the naming conventions of `{sf}`. These functions always take a `sfnetwork` object as first input, and use or compute some set of spatial features. The returned object can either be a set of individual spatial features computed from that network, the network itself with other spatial features merged into it, or another object (e.g., a matrix) that is the result of a computation utilizing the network and a set of spatial features. This covers a large range of use-cases. Examples include drawing isochrone or isodistance polygons around nodes, finding geographic shortest paths between pairs of nodes, computing cost matrices of travel between nodes, extracting the faces of the network, and adding external point data as new nodes to the network. In the other vignettes you will find more details on all of these functions.
 
 ```{r}
 #| warning: false
@@ -291,11 +294,11 @@ path = st_network_paths(net, 1, 17)
 # Draw an isodistance polygon with 500m threshold around node 13.
 iso = st_network_iso(net, 13, 500)
 
-# Compute the combined bounding box of nodes and edges.
-bbox = st_network_bbox(net)
+# Extract the faces of the network.
+faces = st_network_faces(net)
 
 # Blend external points as new nodes into the network.
-feats = st_sample(bbox, 10)
+feats = st_sample(st_bbox(mozart), 10)
 blend = st_network_blend(net, feats)
 ```
 
@@ -305,7 +308,7 @@ blend = st_network_blend(net, feats)
 #| fig-cap: 
 #|   - "Shortest path"
 #|   - "Isodistance polygon" 
-#|   - "Network bounding box"
+#|   - "Network faces"
 #|   - "Blended points"
 ggraph(net, "sf") +
   geom_edge_sf() +
@@ -321,12 +324,10 @@ ggraph(net, "sf") +
   geom_sf(data = st_geometry(net, "nodes")[13], size = 6) +
   theme_void()
 
+faces_sf = st_sf(id = c(1:length(faces)), geometry = faces)
+
 ggraph(net, "sf") +
-  geom_sf(
-    data = st_as_sfc(bbox), 
-    color = "orange", fill = NA,
-    linewidth = 2, linetype = 2
-  ) +
+  geom_sf(data = faces_sf, aes(fill = as.factor(id)), show.legend = FALSE) +
   geom_edge_sf() +
   geom_node_sf(size = 4) +
   theme_void()
@@ -439,12 +440,22 @@ ne
 ```
 
 ```{r}
+#| layout-ncol: 2
+#| fig-cap: 
+#|   - "Nearest node"
+#|   - "Nearest edge"
 ggraph(net, "sf") +
-  geom_sf(data = p, color = "deepskyblue", size = 6, pch = 8) +
-  geom_edge_sf() +
-  geom_sf(data = ne, color = "orange", linewidth = 1) +
-  geom_node_sf(size = 4) +
-  geom_sf(data = nn, color = "orange", size = 4) +
+  geom_sf(data = p, size = 6, pch = 8) +
+  geom_edge_sf(color = "grey") +
+  geom_node_sf(color = "grey", size = 4) +
+  geom_sf(data = nn, color = "orange", size = 6) +
+  theme_void()
+
+ggraph(net, "sf") +
+  geom_sf(data = p, size = 6, pch = 8) +
+  geom_edge_sf(color = "grey") +
+  geom_sf(data = ne, color = "orange", linewidth = 2) +
+  geom_node_sf(color = "grey", size = 4) +
   theme_void()
 ```
 
@@ -489,6 +500,63 @@ with_graph(net, edge_circuity())
 All spatial morpher functions that implement a larger workflow have their internal workers exported, meaning they can be called directly. All other morphers are easy to replicate using `{sf}` or other `{sfnetworks}` functions directly. See the vignette [Spatial morphers]() for more details on this.
 
 ## Visualizing spatial networks
+
+To quickly visualize the network you can use the `plot()` method for `sfnetwork` objects. This will use `sf` to plot the geometries of nodes and edges in one view. Using the regular arguments of `plot()`, you can change the style of the plot as a whole. Arguments `node_args` and `edge_args` are added such that you can also provide style settings for nodes and edges separately, in list-format.
+
+```{r}
+#| layout-ncol: 3
+#| fig-cap: 
+#|   - "Default settings"
+#|   - "Custom settings" 
+#|   - "Custom settings"
+plot(mst)
+
+plot(mst, col = "orange", pch = 8, cex = 4)
+
+plot(
+  mst, 
+  node_args = list(col = "orange", cex = 3), 
+  edge_args = list(col = "grey", lwd = 2)
+)
+```
+
+For more advanced visualizations, we recommend to use `{ggraph}`. This is an extension of `{ggplot}` for network data that works seamlessly with `tbl_graph` data structures. In fact, `{tidygraph}` was initially developed with the idea to provide a suitable data structure for `{ggraph}` visualizations. It now also has native support for `{sfnetworks}` with the *sf* layout and the `ggraph::geom_node_sf()` and `ggraph::geom_edge_sf()` geoms that are aware of the spatial nature of the data. Edges can also be plotted without their spatial embedding, using one of the many other geoms offerend by `{ggraph}`. To plot additional spatial layers that are not networks, you can simply use `ggplot::geom_sf()`. For more details, check the [ggraph documentation](https://ggraph.data-imaginist.com).
+
+```{r}
+#| layout-ncol: 2
+#| layout-nrow: 2
+#| fig-cap: 
+#|   - "Default settings"
+#|   - "Custom settings"
+#|   - "Custom settings" 
+#|   - "Additional layers"
+ggraph(mst, "sf") +
+  geom_edge_sf() +
+  geom_node_sf() +
+  theme_void()
+
+ggraph(mst, "sf") +
+  geom_edge_sf() +
+  geom_node_sf(aes(color = as.factor(type)), size = 4) +
+  scale_color_discrete("type") +
+  theme_void()
+
+ggraph(mst, "sf") +
+  geom_edge_fan(aes(alpha = after_stat(index)), show.legend = FALSE) +
+  geom_node_sf(aes(size = centrality_degree()), color = "orange") +
+  theme_void()
+
+ggraph(mst, "sf") +
+  geom_edge_sf(color = "grey") +
+  geom_node_sf(color = "orange", size = 4) +
+  geom_sf(
+    data = st_buffer(st_centroid(st_combine(mozart)), 300), 
+    fill = "skyblue", alpha = 0.5, linewidth = 0.8
+  ) +
+  theme_void()
+```
+
+If you want to create Leaflet-based interactive maps, take a look at the packages `{mapview}` or `{tmap}`. These are well integrated with `{sf}`, so you can extract nodes and edges from the network, and plot them as two separate layers.
 
 ## Learning more
 
