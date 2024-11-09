@@ -362,12 +362,12 @@ new_net = net |>
 new_net
 ```
 
-As an extension to the community detection functions in `{tidygraph}`, `{sfnetworks}` contains the `group_spatial()` function to find **spatial clusters** of nodes. The idea is to offer multiple spatial clustering algorithms to choose from, but currently the only one implemented is the [DBSCAN](https://en.wikipedia.org/wiki/DBSCAN) algorithm (which does require the `{dbscan}` package to be installed). The algorithm is executed on the network distance matrix of the nodes, and not on the euclidean distance matrix.
+As an extension to the community detection functions in `{tidygraph}`, `{sfnetworks}` contains the `group_spatial_dbscan()` function to find **spatial clusters** of nodes. The idea is to offer multiple spatial clustering algorithms to choose from, but currently the only one implemented is the [DBSCAN](https://en.wikipedia.org/wiki/DBSCAN) algorithm (which does require the `{dbscan}` package to be installed). The algorithm is executed on the network distance matrix of the nodes, and not on the euclidean distance matrix.
 
 ```{r}
 new_net = net |>
   activate(nodes) |>
-  mutate(group = group_spatial(dist = 300))
+  mutate(group = group_spatial_dbscan(300))
 ```
 
 ```{r}
@@ -392,7 +392,7 @@ division = convert(smooth, to_spatial_subdivision, all = TRUE)
 # Contract nodes that are in the same spatial cluster.
 contraction = net |>
   activate(nodes) |>
-  mutate(group = group_spatial(dist = 300)) |>
+  mutate(group = group_spatial_dbscan(300)) |>
   convert(to_spatial_contracted, group)
 
 # Subset the graph to only those edges in a shortest path.
@@ -568,3 +568,9 @@ This vignette provided an introduction to `{sfnetworks}`. The documentation cont
 - [Spatial morphers]()
 - [Routing on spatial networks]()
 - [Measuring spatial networks]()
+
+```{r}
+#| include: false
+par(oldpar)
+options(oldoptions)
+```

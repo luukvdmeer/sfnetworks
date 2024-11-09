@@ -146,8 +146,7 @@ streets = roxel |>
 # Check the distribution of oneway vs twoway streets.
 streets |>
   st_drop_geometry() |>
-  group_by(oneway) |>
-  summarize(n = n())
+  count(oneway)
 # Create a directed network.
 dnet = as_sfnetwork(streets)
 
@@ -389,7 +388,7 @@ ggraph(net, "sf") +
 
 A more common way to create a spatial network is to start with only a set of `LINESTRING` geometries in `sf` format. These are assumed to be the edge of the network. Providing this to `as_sfnetwork()` will automatically call `create_from_spatial_lines()`. This function creates nodes at the endpoints of the lines. Endpoints that are shared between multiple lines, become a single node in the network.
 
-To determine spatial equality of endpoints, `{sfnetworks}` by default uses a 12-digit precision for the coordinates. You can change this by either setting a different precision (see [above](#coordinate-precision)) or by effectively rounding coordinate values using the utility function `round_coordinates()`.
+To determine spatial equality of endpoints, `{sfnetworks}` by default uses a 12-digit precision for the coordinates. You can change this by either setting a different precision (see [above](#coordinate-precision)) or by effectively rounding coordinate values using the utility function `st_round()`.
 
 ```{r}
 # Linestring geometries.
@@ -725,4 +724,10 @@ ggraph(netb, "sf") +
   geom_edge_sf() +
   geom_node_sf(size = 4) +
   theme_void()
+```
+
+```{r}
+#| include: false
+par(oldpar)
+options(oldoptions)
 ```
