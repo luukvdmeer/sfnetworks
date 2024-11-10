@@ -290,7 +290,7 @@ as_sfnetwork.sfc = function(x, ...) {
 #'
 #' @examples
 #' # From a dodgr_streetnet object.
-#' if (require(dodgr, quietly = TRUE)) {
+#' if (require(c(dodgr, geodist), quietly = TRUE)) {
 #'   as_sfnetwork(dodgr::weight_streetnet(hampi))
 #' }
 #'
