@@ -37,7 +37,7 @@ should have a geometry column.
 library(sf, quietly = TRUE)
 
 net = as_sfnetwork(roxel)
-pts = st_sample(st_bbox(roxel))
+pts = st_sample(st_bbox(roxel), 6)
 
 nodes = nearest_nodes(net, pts)
 edges = nearest_edges(net, pts)

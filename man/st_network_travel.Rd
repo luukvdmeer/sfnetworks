@@ -18,6 +18,8 @@ st_network_travel(
 )
 }
 \arguments{
+\item{x}{An object of class \code{\link{sfnetwork}}.}
+
 \item{nodes}{Nodes to be visited. Evaluated by
 \code{\link{evaluate_node_query}}.}
 

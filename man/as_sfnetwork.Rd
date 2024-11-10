@@ -132,7 +132,7 @@ plot(as_sfnetwork(mozart))
 par(oldpar)
 
 # From a dodgr_streetnet object.
-if (require(dodgr, quietly = TRUE)) {
+if (require(dodgr, quietly = TRUE) & require(geodist, quietly = TRUE)) {
   as_sfnetwork(dodgr::weight_streetnet(hampi))
 }
 

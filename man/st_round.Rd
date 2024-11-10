@@ -25,7 +25,7 @@ p1 = st_sfc(st_point(c(1.123, 1.123)))
 p2 = st_sfc(st_point(c(0.789, 0.789)))
 p3 = st_sfc(st_point(c(1.123, 0.789)))
 
-st_round(c(p1, p2, p2, p3, p1), digits = 1)
+st_round(st_as_sf(c(p1, p2, p2, p3, p1)), digits = 1)
 
 }
 \seealso{

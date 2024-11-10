@@ -56,7 +56,7 @@ net
 
 # Plot.
 plot(neta, pch = 15, cex = 2, lwd = 4)
-plot(neb2, col = "orange", pch = 18, cex = 2, lty = 3, lwd = 4, add = TRUE)
+plot(netb, col = "orange", pch = 18, cex = 2, lty = 3, lwd = 4, add = TRUE)
 plot(net, cex = 2, lwd = 4)
 
 par(oldpar)

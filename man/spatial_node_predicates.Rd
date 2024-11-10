@@ -111,7 +111,7 @@ net |>
   select(within)
 
 # Use predicate query function directly.
-within = with_graph(net, node_within(poly))
+within = with_graph(net, node_is_within(poly))
 head(within)
 
 }
