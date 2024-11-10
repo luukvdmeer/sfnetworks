@@ -148,7 +148,7 @@ st_match_points_df = function(x, precision = NULL) {
 #' p2 = st_sfc(st_point(c(0.789, 0.789)))
 #' p3 = st_sfc(st_point(c(1.123, 0.789)))
 #'
-#' st_round(c(p1, p2, p2, p3, p1), digits = 1)
+#' st_round(st_as_sf(c(p1, p2, p2, p3, p1)), digits = 1)
 #'
 #' @importFrom sf st_as_binary st_as_sfc st_geometry st_geometry<-
 #' st_precision<-
