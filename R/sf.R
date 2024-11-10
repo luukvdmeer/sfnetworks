@@ -300,6 +300,10 @@ st_is_valid.sfnetwork = function(x, ...) {
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
+#' @param focused Should only features that are in focus be extracted? Defaults
+#' to \code{TRUE}. See \code{\link[tidygraph]{focus}} for more information on
+#' focused networks.
+#'
 #' @param ... Arguments passed on the corresponding \code{s2} function.
 #'
 #' @return An object of class \code{\link[s2]{s2_geography}}.
