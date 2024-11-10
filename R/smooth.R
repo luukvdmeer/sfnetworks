@@ -39,7 +39,7 @@
 #' @importFrom cli cli_abort
 #' @importFrom dplyr distinct slice
 #' @importFrom igraph adjacent_vertices decompose degree delete_vertices
-#' edge_attr get.edge.ids igraph_opt igraph_options incident_edges
+#' edge_attr get_edge_ids igraph_opt igraph_options incident_edges
 #' induced_subgraph is_directed vertex_attr
 #' @importFrom sf st_as_sf st_cast st_combine st_crs st_drop_geometry
 #' st_equals st_is st_line_merge
@@ -149,14 +149,14 @@ smooth_pseudo_nodes = function(x, protect = NULL,
       # We'll call this the source node and source edge of the set.
       # Note the + 1 since adjacent_vertices returns indices starting from 0.
       source_node = adjacent_vertices(x, n_i, mode = "in")[[1]] + 1
-      source_edge = get.edge.ids(x, c(source_node, n_i))
+      source_edge = get_edge_ids(x, c(source_node, n_i))
       # Find the following:
       # --> The index of the edge that goes out of the pseudo node set.
       # --> The index of the non-pseudo node at the other end of that edge.
       # We'll call this the sink node and sink edge of the set.
       # Note the + 1 since adjacent_vertices returns indices starting from 0.
       sink_node = adjacent_vertices(x, n_o, mode = "out")[[1]] + 1
-      sink_edge = get.edge.ids(x, c(n_o, sink_node))
+      sink_edge = get_edge_ids(x, c(n_o, sink_node))
       # List indices of all edges that will be merged into the replacement edge.
       edge_idxs = c(source_edge, E, sink_edge)
       # Return all retrieved information in a list.
@@ -187,7 +187,7 @@ smooth_pseudo_nodes = function(x, protect = NULL,
           # If there is only one adjacent node to the pseudo node:
           # --> The two adjacent nodes of the set are the same node.
           # --> We only have to query for incident edges of the set once.
-          incident = get.edge.ids(x, c(adjacent, N))
+          incident = get_edge_ids(x, c(adjacent, N))
           source_node = adjacent
           source_edge = incident[1]
           sink_node = adjacent
@@ -197,9 +197,9 @@ smooth_pseudo_nodes = function(x, protect = NULL,
           # --> The one with the lowest index will be source node.
           # --> The one with the highest index will be sink node.
           source_node = min(adjacent)
-          source_edge = get.edge.ids(x, c(source_node, N))
+          source_edge = get_edge_ids(x, c(source_node, N))
           sink_node = max(adjacent)
-          sink_edge = get.edge.ids(x, c(N, sink_node))
+          sink_edge = get_edge_ids(x, c(N, sink_node))
         }
       } else {
         # When we have a set of multiple pseudo nodes:
@@ -227,9 +227,9 @@ smooth_pseudo_nodes = function(x, protect = NULL,
         # The adjacent node with the highest index will be sink node.
         N_b = N_b[order(adjacent)]
         source_node = min(adjacent)
-        source_edge = get.edge.ids(x, c(source_node, N_b[1]))
+        source_edge = get_edge_ids(x, c(source_node, N_b[1]))
         sink_node = max(adjacent)
-        sink_edge = get.edge.ids(x, c(N_b[2], sink_node))
+        sink_edge = get_edge_ids(x, c(N_b[2], sink_node))
       }
       # List indices of all edges that will be merged into the replacement edge.
       edge_idxs = c(source_edge, E, sink_edge)
