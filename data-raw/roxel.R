@@ -30,7 +30,8 @@ roxel_lines = roxel_query$osm_lines |>
     type = highway
   ) |>
   filter(!(type %in% c("construction", "motorway", "bridelway"))) |>
-  st_cast("LINESTRING")
+  st_cast("LINESTRING") |>
+  mutate(across(where(is.character), .fns = function(x){return(`Encoding<-`(x, "UTF-8"))}))
 
 # pre-processing:
 # -> reduce the components
