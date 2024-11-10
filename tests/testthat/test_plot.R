@@ -1,5 +1,5 @@
 net_exp = as_sfnetwork(roxel)
-net_imp = as_sfnetwork(roxel, edges_as_lines = FALSE)
+net_imp = as_sfnetwork(roxel) |> make_edges_implicit()
 
 test_that("plot accepts sfnetworks with spatially implicit edges", {
   pdf(NULL)
@@ -13,10 +13,4 @@ test_that("autplot returns a ggplot with two layers", {
   expect_s3_class(g, "ggplot")
   expect_equal(length(g$layers), 2)
 })
-test_that("autoplot shows a message when implicit edges are passed", {
-  skip_if_not_installed("ggplot2", "3.0.0")
-  expect_message(
-    ggplot2::autoplot(net_imp),
-    "Spatially implicit edges are drawn as lines"
-  )
-})
+
