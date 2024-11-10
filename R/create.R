@@ -295,8 +295,8 @@ as_sfnetwork.sfc = function(x, ...) {
 #' }
 #'
 #' @export
-as_sfnetwork.dodgr_streetnet = function(x, edges_as_lines = TRUE) {
-  dodgr_to_sfnetwork(x, edges_as_lines = edges_as_lines)
+as_sfnetwork.dodgr_streetnet = function(x, ...) {
+  dodgr_to_sfnetwork(x, ...)
 }
 
 #' @describeIn as_sfnetwork Convert spatial linear networks of class
