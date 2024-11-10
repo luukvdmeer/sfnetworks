@@ -20,7 +20,7 @@ as_sfnetwork(x, ...)
 
 \method{as_sfnetwork}{sfc}(x, ...)
 
-\method{as_sfnetwork}{dodgr_streetnet}(x, edges_as_lines = TRUE)
+\method{as_sfnetwork}{dodgr_streetnet}(x, ...)
 
 \method{as_sfnetwork}{linnet}(x, ...)
 
