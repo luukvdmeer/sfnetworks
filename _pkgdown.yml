@@ -9,9 +9,9 @@ template:
 reference:
   - title: Construction & conversion
     desc: >
-      The core of the package is a data structure that can be provided as
-      input to both graph analytical functions of `tidygraph` and to spatial
-      analytical functions of `sf`, without the need for conversion.
+      At the core of the package lies the `sfnetwork` class to represent
+      spatial networks. There are several ways to construct instances of this
+      class, and to convert them to other classes.
     contents:
       - sfnetwork
       - as_sfnetwork
@@ -23,8 +23,10 @@ reference:
       - as.linnet
   - title: Analysis
     desc: >
-      The package extends the existing functionalities of `tidygraph` and `sf`
-      with a set of functions specific for spatial network analysis.
+      The package enables an integrated analysis workflow that combines
+      `tidygraph` and `sf`. On top of this, it extends the functionalities of
+      those two packages with a set of analytical functions specific for
+      spatial network analysis.
     contents:
       - st_network_bbox
       - st_network_blend
@@ -34,49 +36,32 @@ reference:
       - st_network_join
       - st_network_paths
       - st_network_travel
-  - subtitle: Sub
-    desc: >
-      Measures
-    contents:
       - spatial_centrality
       - spatial_node_types
       - spatial_node_predicates
       - node_coordinates
       - spatial_edge_measures
       - spatial_edge_predicates
-  - subtitle: Sub
-    desc: >
-      Community detection
-    contents:
       - group_spatial
-  - subtitle: Sub
-    desc: >
-      Morphers
-    contents:
       - spatial_morphers
+      - bind_spatial
   - title: Utilities
     desc: >
-      General
-    contents:
-      - bind_spatial
-      - dual_weights
-      - is_sfnetwork
-      - 'n'
-      - project_on_network
-      - sf_attr
-      - validate_network
-      - wrap_igraph
-  - subtitle: Sub
+      The package exports different kind of utility functions that are meant
+      to make spatial network analysis smoother, and fitting both into
+      tidyverse and non-tidyverse workflows.
+  - subtitle: Data extraction
     desc: >
-      Extract
+      These functions are about the extraction of data from a network.
     contents:
       - data
       - ids
       - nearest
       - nearest_ids
-  - subtitle: Sub
+      - 'n'
+  - subtitle: Edge geometries
     desc: >
-      Edges
+      These functions allow to modify edge geometries.
     contents:
       - make_edges_directed
       - make_edges_mixed
@@ -84,28 +69,38 @@ reference:
       - make_edges_implicit
       - make_edges_follow_indices
       - make_edges_valid
-  - subtitle: Sub
+  - subtitle: Network cleaning
     desc: >
-      Morpher
+      These functions are the internal workers behind the spatial morphers that
+      are dedicted to network cleaning. They are exported to make it possible
+      to do network cleaning outside of tidyverse workflows.
     contents:
       - contract_nodes
       - simplify_network
       - smooth_pseudo_nodes
       - subdivide_edges
-  - subtitle: Sub
+  - subtitle: Internals
     desc: >
-      Internals
+      These are internal functions that are not meant to be called directly by
+      users. They are exported such that developers aiming to extend the
+      package can use them.
     contents:
       - evaluate_weight_spec
       - evaluate_node_query
       - evaluate_edge_query
-  - subtitle: Sub
+  - subtitle: Other
     desc: >
-      Sf
+      These are other utility functions that do not fit in the categories above.
     contents:
+      - dual_weights
+      - is_sfnetwork
+      - project_on_network
+      - sf_attr
       - st_duplicated
       - st_match
       - st_round
+      - validate_network
+      - wrap_igraph
   - title: Data
     contents:
       - roxel
