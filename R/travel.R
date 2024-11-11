@@ -29,7 +29,7 @@
 #'
 #' @param use_names If a column named \code{name} is present in the nodes
 #' table, should these names be used to encode the nodes in the route, instead
-#' of the node indices? Defaults to \code{TRUE}. Ignored when the nodes table
+#' of the node indices? Defaults to \code{FALSE}. Ignored when the nodes table
 #' does not have a column named \code{name} and if \code{return_paths = FALSE}.
 #'
 #' @param return_cost Should the total cost of each path between two subsequent
@@ -115,7 +115,7 @@
 st_network_travel = function(x, nodes, weights = edge_length(),
                              optimizer = "TSP",
                              router = getOption("sfn_default_router", "igraph"),
-                             return_paths = TRUE, use_names = TRUE,
+                             return_paths = TRUE, use_names = FALSE,
                              return_cost = TRUE, return_geometry = TRUE, ...) {
   UseMethod("st_network_travel")
 }
@@ -125,7 +125,7 @@ st_network_travel = function(x, nodes, weights = edge_length(),
 st_network_travel.sfnetwork = function(x, nodes, weights = edge_length(),
                                        optimizer = "TSP",
                                        router = getOption("sfn_default_router", "igraph"),
-                                       return_paths = TRUE, use_names = TRUE,
+                                       return_paths = TRUE, use_names = FALSE,
                                        return_cost = TRUE,
                                        return_geometry = TRUE, ...) {
   # Evaluate the node query for the given nodes.
@@ -150,7 +150,7 @@ st_network_travel.sfnetwork = function(x, nodes, weights = edge_length(),
 find_optimal_route = function(x, nodes, weights = edge_length(),
                               optimizer = "TSP",
                               router = getOption("sfn_default_router", "igraph"),
-                              return_paths = TRUE, use_names = TRUE,
+                              return_paths = TRUE, use_names = FALSE,
                               return_cost = TRUE, return_geometry = TRUE, ...) {
   # Compute cost matrix with the given router.
   costmat = compute_costs(x, nodes, nodes, weights = weights, router = router)

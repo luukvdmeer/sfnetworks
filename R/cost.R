@@ -33,6 +33,11 @@
 #' Currently supported options are \code{'igraph'} and \code{'dodgr'}. See
 #' Details.
 #'
+#' @param use_names If a column named \code{name} is present in the nodes
+#' table, should these names be used as row and column names in the matrix,
+#' instead of the node indices? Defaults to \code{FALSE}. Ignored when the
+#' nodes table does not have a column named \code{name}.
+#'
 #' @param ... Additional arguments passed on to the underlying function of the
 #' chosen routing backend. See Details.
 #'
@@ -118,7 +123,7 @@ st_network_cost = function(x, from = node_ids(x), to = node_ids(x),
                            weights = edge_length(), direction = "out",
                            Inf_as_NaN = FALSE,
                            router = getOption("sfn_default_router", "igraph"),
-                           ...) {
+                           use_names = FALSE, ...) {
   UseMethod("st_network_cost")
 }
 
@@ -129,7 +134,7 @@ st_network_cost.sfnetwork = function(x, from = node_ids(x), to = node_ids(x),
                                      direction = "out",
                                      Inf_as_NaN = FALSE,
                                      router = getOption("sfn_default_router", "igraph"),
-                                     ...) {
+                                     use_names = FALSE, ...) {
   # Evaluate the given from node query.
   from = evaluate_node_query(x, enquo(from))
   if (any(is.na(from))) raise_na_values("from")
@@ -144,6 +149,7 @@ st_network_cost.sfnetwork = function(x, from = node_ids(x), to = node_ids(x),
     direction = direction,
     Inf_as_NaN = Inf_as_NaN,
     router = router,
+    use_names = use_names,
     ...
   )
 }
@@ -153,13 +159,14 @@ st_network_cost.sfnetwork = function(x, from = node_ids(x), to = node_ids(x),
 st_network_distance = function(x, from = node_ids(x), to = node_ids(x),
                                direction = "out", Inf_as_NaN = FALSE,
                                router = getOption("sfn_default_router", "igraph"),
-                               ...) {
+                               use_names = FALSE, ...) {
   st_network_cost(
     x, from, to,
     weights = edge_length(),
     direction = direction,
     Inf_as_NaN = Inf_as_NaN,
     router = router,
+    use_names = use_names,
     ...
   )
 }
@@ -168,12 +175,12 @@ st_network_distance = function(x, from = node_ids(x), to = node_ids(x),
 compute_costs = function(x, from, to, weights, direction = "out",
                          Inf_as_NaN = FALSE,
                          router = getOption("sfn_default_router", "igraph"),
-                         ...) {
+                         use_names = FALSE, ...) {
   # Compute cost matrix with the given router.
   costs = switch(
     router,
-    igraph = igraph_costs(x, from, to, weights, direction, ...),
-    dodgr = dodgr_costs(x, from, to, weights, direction, ...),
+    igraph = igraph_costs(x, from, to, weights, direction, use_names, ...),
+    dodgr = dodgr_costs(x, from, to, weights, direction, use_names, ...),
     raise_unknown_input("router", router, c("igraph", "dodgr"))
   )
   # Post-process and return.
@@ -189,7 +196,8 @@ compute_costs = function(x, from, to, weights, direction = "out",
 
 #' @importFrom igraph distances
 #' @importFrom methods hasArg
-igraph_costs = function(x, from, to, weights, direction = "out", ...) {
+igraph_costs = function(x, from, to, weights, direction = "out",
+                        use_names = FALSE, ...) {
   # The direction argument is used instead of igraphs mode argument.
   # This means the mode argument should not be set.
   if (hasArg("mode")) raise_unsupported_arg("mode", replacement = "direction")
@@ -205,16 +213,30 @@ igraph_costs = function(x, from, to, weights, direction = "out", ...) {
   } else {
     mat = distances(x, from, to, weights = weights, mode = direction, ...)
   }
+  # Drop node names as row and column names if not requested.
+  if (!use_names) {
+    rownames(mat) = from
+    colnames(mat) = to
+  }
   mat
 }
 
+#' @importFrom igraph vertex_attr_names
 #' @importFrom rlang check_installed
-dodgr_costs = function(x, from, to, weights, direction = "out", ...) {
+dodgr_costs = function(x, from, to, weights, direction = "out",
+                       use_names = FALSE, ...) {
   check_installed("dodgr") # Package dodgr is required for this function.
   # Convert the network to dodgr format.
   x_dodgr = sfnetwork_to_minimal_dodgr(x, weights, direction)
   # Call dodgr::dodgr_dists to compute the cost matrix.
   mat = dodgr::dodgr_dists(x_dodgr, as.character(from), as.character(to), ...)
+  # Assign infinite cost to paths that were not found.
   mat[is.na(mat)] = Inf
+  # Use node names as row and column names if requested.
+  if (use_names && "name" %in% vertex_attr_names(x)) {
+    nnames = vertex_attr(x, "name")
+    rownames(mat) = nnames[from]
+    colnames(mat) = nnames[to]
+  }
   mat
 }

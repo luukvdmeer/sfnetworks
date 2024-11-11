@@ -39,7 +39,7 @@
 #'
 #' @param use_names If a column named \code{name} is present in the nodes
 #' table, should these names be used to encode the nodes in a path, instead of
-#' the node indices? Defaults to \code{TRUE}. Ignored when the nodes table does
+#' the node indices? Defaults to \code{FALSE}. Ignored when the nodes table does
 #' not have a column named \code{name}.
 #'
 #' @param return_cost Should the total cost of each path be computed? Defaults
@@ -189,7 +189,7 @@ st_network_paths = function(x, from, to = node_ids(x),
                             weights = edge_length(), all = FALSE, k = 1,
                             direction = "out",
                             router = getOption("sfn_default_router", "igraph"),
-                            use_names = TRUE, return_cost = TRUE,
+                            use_names = FALSE, return_cost = TRUE,
                             return_geometry = TRUE, ...) {
   UseMethod("st_network_paths")
 }
@@ -202,7 +202,7 @@ st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
                                       all = FALSE, k = 1,
                                       direction = "out",
                                       router = getOption("sfn_default_router", "igraph"),
-                                      use_names = TRUE, return_cost = TRUE,
+                                      use_names = FALSE, return_cost = TRUE,
                                       return_geometry = TRUE, ...) {
   # Deprecate the type argument.
   if (hasArg("type")) deprecate_type()
@@ -233,7 +233,7 @@ st_network_paths.sfnetwork = function(x, from, to = node_ids(x),
 find_paths = function(x, from, to, weights, all = FALSE, k = 1,
                       direction = "out",
                       router = getOption("sfn_default_router", "igraph"),
-                      use_names = TRUE, return_cost = TRUE,
+                      use_names = FALSE, return_cost = TRUE,
                       return_geometry = TRUE, ...) {
   # Find paths with the given router.
   paths = switch(

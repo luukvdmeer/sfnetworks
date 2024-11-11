@@ -13,7 +13,7 @@ st_network_paths(
   k = 1,
   direction = "out",
   router = getOption("sfn_default_router", "igraph"),
-  use_names = TRUE,
+  use_names = FALSE,
   return_cost = TRUE,
   return_geometry = TRUE,
   ...
@@ -59,7 +59,7 @@ Details.}
 
 \item{use_names}{If a column named \code{name} is present in the nodes
 table, should these names be used to encode the nodes in a path, instead of
-the node indices? Defaults to \code{TRUE}. Ignored when the nodes table does
+the node indices? Defaults to \code{FALSE}. Ignored when the nodes table does
 not have a column named \code{name}.}
 
 \item{return_cost}{Should the total cost of each path be computed? Defaults

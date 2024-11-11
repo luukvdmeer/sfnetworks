@@ -11,7 +11,7 @@ st_network_travel(
   optimizer = "TSP",
   router = getOption("sfn_default_router", "igraph"),
   return_paths = TRUE,
-  use_names = TRUE,
+  use_names = FALSE,
   return_cost = TRUE,
   return_geometry = TRUE,
   ...
@@ -44,7 +44,7 @@ of the visited node in the \code{from} argument.}
 
 \item{use_names}{If a column named \code{name} is present in the nodes
 table, should these names be used to encode the nodes in the route, instead
-of the node indices? Defaults to \code{TRUE}. Ignored when the nodes table
+of the node indices? Defaults to \code{FALSE}. Ignored when the nodes table
 does not have a column named \code{name} and if \code{return_paths = FALSE}.}
 
 \item{return_cost}{Should the total cost of each path between two subsequent

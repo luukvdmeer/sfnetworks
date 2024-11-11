@@ -13,6 +13,7 @@ st_network_cost(
   direction = "out",
   Inf_as_NaN = FALSE,
   router = getOption("sfn_default_router", "igraph"),
+  use_names = FALSE,
   ...
 )
 
@@ -23,6 +24,7 @@ st_network_distance(
   direction = "out",
   Inf_as_NaN = FALSE,
   router = getOption("sfn_default_router", "igraph"),
+  use_names = FALSE,
   ...
 )
 }
@@ -56,6 +58,11 @@ argument is ignored for undirected networks.}
 \item{router}{The routing backend to use for the cost matrix computation.
 Currently supported options are \code{'igraph'} and \code{'dodgr'}. See
 Details.}
+
+\item{use_names}{If a column named \code{name} is present in the nodes
+table, should these names be used as row and column names in the matrix,
+instead of the node indices? Defaults to \code{FALSE}. Ignored when the
+nodes table does not have a column named \code{name}.}
 
 \item{...}{Additional arguments passed on to the underlying function of the
 chosen routing backend. See Details.}
