@@ -35,8 +35,8 @@ reference:
       - st_network_iso
       - st_network_join
       - st_network_paths
-      - st_network_project
       - st_network_travel
+      - st_project_on_network
       - spatial_centrality
       - spatial_node_types
       - spatial_node_predicates

@@ -46,14 +46,14 @@
 #' pts = st_sf(foo = letters[1:3], geometry = c(p1, p2, p3), crs = 3857)
 #'
 #' # Project points to the edges of the network.
-#' p1 = st_network_project(pts, net)
+#' p1 = st_project_on_network(pts, net)
 #'
 #' plot(net)
 #' plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
 #' plot(st_geometry(p1), pch = 4, col = "orange", add = TRUE)
 #'
 #' # Project points to the nodes of the network.
-#' p2 = st_network_project(pts, net, on = "nodes")
+#' p2 = st_project_on_network(pts, net, on = "nodes")
 #'
 #' plot(net)
 #' plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
@@ -62,18 +62,24 @@
 #' par(oldpar)
 #'
 #' @export
-st_network_project = function(x, network, on = "edges") {
-  UseMethod("st_network_project")
+st_project_on_network = function(x, network, on = "edges") {
+  UseMethod("st_project_on_network")
 }
 
 #' @export
-st_network_project.sfnetwork = function(x, network, on = "edges") {
+st_project_on_network.sfc = function(x, network, on = "edges") {
   switch(
     on,
     edges = project_on_edges(x, network),
     nodes = project_on_nodes(x, network),
     raise_unknown_input("on", on, c("edges", "nodes"))
   )
+}
+
+#' @export
+st_project_on_network.sf = function(x, network, on = "edges") {
+  P = st_project_on_network(st_geometry(x), network, on)
+  st_set_geometry(x, P)
 }
 
 #' @importFrom sf st_geometry<- st_nearest_feature st_nearest_points
@@ -87,13 +93,10 @@ project_on_edges = function(x, y) {
   # --> A straight line between feature and point if they are different.
   # --> A multipoint of feature and point if they are equal.
   # To make it easier for ourselves we cast all outputs to lines.
-  # Then, the endpoint of that line is the location we are looking for.
   L = st_nearest_points(x, E[nearest], pairwise = TRUE)
   L = sfc_cast(L, "LINESTRING")
-  P = linestring_end_points(L)
-  # Replace geometry of y with the projected points.
-  st_geometry(x) = P
-  x
+  # Then, the endpoint of that line is the location we are looking for.
+  linestring_end_points(L)
 }
 
 #' @importFrom sf st_geometry<- st_nearest_feature
@@ -101,7 +104,6 @@ project_on_nodes = function(x, y) {
   N = pull_node_geom(y)
   # Find the nearest node to each feature.
   nearest = st_nearest_feature(x, N)
-  # Replace geometry of y with the nearest nodes.
-  st_geometry(x) = N[nearest]
-  x
+  # Return the nearest node geometries.
+  N[nearest]
 }

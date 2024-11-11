@@ -287,7 +287,7 @@ For non-spatial joins based on attribute columns, simply use a join function fro
 
 ### Join points to their nearest node
 
-Another network specific use-case of spatial joins would be to join information from external points of interest (POIs) into the nodes of the network. However, to do so, such points need to have exactly equal coordinates to one of the nodes. Often this will not be the case. To solve such situations, you will first need to update the coordinates of the POIs to match those of their nearest node. This can be done using `st_network_project()`.
+Another network specific use-case of spatial joins would be to join information from external points of interest (POIs) into the nodes of the network. However, to do so, such points need to have exactly equal coordinates to one of the nodes. Often this will not be the case. To solve such situations, you will first need to update the coordinates of the POIs to match those of their nearest node. This can be done using `st_project_on_network()`.
 
 ```{r}
 # Create a network.
@@ -307,7 +307,7 @@ pois = st_sf(
 )
 
 # Update coordinates of POIs to match their nearest node.
-ppois = project_on_network(pois, net, on = "nodes")
+ppois = st_project_on_network(pois, net, on = "nodes")
 ```
 
 ```{r}
