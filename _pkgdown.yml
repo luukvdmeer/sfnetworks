@@ -35,6 +35,7 @@ reference:
       - st_network_iso
       - st_network_join
       - st_network_paths
+      - st_network_project
       - st_network_travel
       - spatial_centrality
       - spatial_node_types
@@ -47,9 +48,9 @@ reference:
       - bind_spatial
   - title: Utilities
     desc: >
-      The package exports different kind of utility functions that are meant
-      to make spatial network analysis smoother, and fitting both into
-      tidyverse and non-tidyverse workflows.
+      The package exports different kind of utility and internal functions that
+      are meant to make spatial network analysis smoother, and fitting both
+      into tidyverse and non-tidyverse workflows.
   - subtitle: Data extraction
     desc: >
       These functions are about the extraction of data from a network.
@@ -94,7 +95,6 @@ reference:
     contents:
       - dual_weights
       - is_sfnetwork
-      - project_on_network
       - sf_attr
       - st_duplicated
       - st_match
@@ -123,4 +123,3 @@ articles:
       - sfn03_cleaning
       - sfn04_join_filter
       - sfn05_routing
-      - sfn06_morphers

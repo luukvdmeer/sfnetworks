@@ -57,7 +57,7 @@ library(dplyr)
 
 ## The basics
 
-Functions that modify the topology of the network are implemented in `{sfnetworks}` as **spatial morphers**. Network cleaning functions belong to this family. To learn more about morphing in general, see the vignette [Spatial morphers](). For now, it is sufficient to know that you can use any spatial morpher function inside the `tidygraph::convert()` verb to convert your network into a new structure.
+Functions that modify the topology of the network are implemented in `{sfnetworks}` as [spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/sfn01_intro.html/#spatial-morphers). Network cleaning functions belong to this family. For the applications described here, it is sufficient to know that you can use any spatial morpher function inside the `tidygraph::convert()` verb to convert your network into a new structure.
 
 Before presenting the cleaning functions that are currently implemented, lets create a network to be cleaned.
 
@@ -187,7 +187,9 @@ make_ggraph(simple)
 make_ggraph(subdivision)
 ```
 
-### Smooth pseudo nodes
+#### Protect edges
+
+## Smooth pseudo nodes
 
 A network may contain nodes that have only one incoming and one outgoing edge. For tasks like calculating shortest paths, such nodes are redundant, because they don't represent a point where different directions can possibly be taken. Sometimes, these type of nodes are referred to as *pseudo nodes*. Note that their equivalent in undirected networks is any node with only two incident edges, since incoming and outgoing does not have a meaning there. To reduce complexity of subsequent operations, we might want to get rid of these pseudo nodes.
 
@@ -205,6 +207,8 @@ smooth = subdivision |>
 make_ggraph(subdivision)
 make_ggraph(smooth)
 ```
+
+#### Require equal attributes
 
 Pseudo nodes may have a function by representing a location where a certain attribute changes. For example, from that point on the street has a different surface type. The `require_equal` argument allows you to specify one or more edge attributes that will be checked for equality before removing a pseudo node. If those attributes are equal, the node will be removed, but if not, it will remain. The argument value is evaluated using tidy selection, meaning you can specify column names unquoted, but also use [selection helpers](https://dplyr.tidyverse.org/reference/select.html).
 
@@ -225,7 +229,11 @@ smooth_c = net_with_attrs |>
   convert(to_spatial_smooth, require_equal = everything())
 ```
 
-The `to_spatial_smooth()` morpher also allows you to specify if and how you want to combine attributes of concatenated edges. This is done through the `attribute_summary` argument and explained in more detail [here]().
+#### Summarize attribute values
+
+The `to_spatial_smooth()` morpher also allows you to specify if and how you want to combine attributes of concatenated edges. This is done through the `attribute_summary` argument ...
+
+#### Protect nodes
 
 ## Simplify intersections
 
@@ -249,7 +257,9 @@ make_ggraph(smooth)
 make_ggraph(contraction)
 ```
 
-The `to_spatial_contracted()` morpher also allows you to specify if and how you want to combine attributes of contracted nodes. This is done through the `attribute_summary` argument and explained in more detail [here]().
+The `to_spatial_contracted()` morpher also allows you to specify if and how you want to combine attributes of contracted nodes. This is done through the `attribute_summary` argument and works the same as explained [above](#summarize-attributes) for `to_spatial_smooth()`.
+
+## Merge nodes at equal locations
 
 ## Overview
 
@@ -260,10 +270,10 @@ In a single pipeline, we can clean our dirty network as follows.
 clean = net |>
   activate(edges) |>
   arrange(edge_length()) |>
+  activate(nodes) |>
   convert(to_spatial_simple) |>
   convert(to_spatial_subdivision) |>
   convert(to_spatial_smooth) |>
-  activate(nodes) |>
   convert(to_spatial_contracted, group_spatial_dbscan(0.5))
 ```
 
@@ -273,7 +283,7 @@ make_ggraph(net)
 make_ggraph(clean)
 ```
 
-## Non-tidy workflow
+## Non-tidyverse workflow
 
 All cleaning morphers have their internal worker exported as well. They can be used if you want to work outside the "tidy workflow". The same cleaning operation can be done as follows:
 
@@ -283,7 +293,7 @@ simple = simplify_network(net)
 subdivision = subdivide_edges(simple)
 smooth = smooth_pseudo_nodes(subdivision)
 groups = with_graph(smooth, group_spatial_dbscan(0.5))
-clean = contract_nodes(smooth, groups)
+contraction = contract_nodes(smooth, groups)
 ```
 
 ```{r}

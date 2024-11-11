@@ -257,7 +257,7 @@ ggraph(joined, "sf") +
 
 In the example above, the polygons are spatially distinct. Hence, each node can only intersect with a single polygon. But what would happen if we do a join with polygons that overlap? The attributes from which polygon will then be attached to a node that intersects with multiple polygons at once? In `{sf}` this issue is solved by duplicating such a point as much times as the number of polygons it intersects with, and attaching attributes of each intersecting polygon to one of these duplicates. This approach does not fit the network case, however. An edge can only have a single node at each of its endpoints, and thus, the duplicated nodes will be isolated and redundant in the network structure. Therefore, `{sfnetworks}` will only join the information from the first match whenever there are multiple matches for a single node. A warning is given in that case such that you are aware of the fact that not all information was joined into the network. 
 
-Only when you set `ignore_multiple = FALSE`, multiple matches will result in duplicated nodes, but these duplicates are isolated (i.e. not connected to the rest of the network). You can then use the morpher `to_spatial_unique()` to merge spatially duplicated nodes into one, specifying how their attributes should be combined.
+Only when you set `ignore_multiple = FALSE`, multiple matches will result in duplicated nodes, but these duplicates are isolated (i.e. not connected to the rest of the network). You can then use the morpher `to_spatial_unique()` to merge spatially duplicated nodes into one, specifying how their attributes should be combined. See [here](https://luukvdmeer.github.io/sfnetworks/articles/sfn03_cleaning.html/#merge-nodes-at-equal-locations) for an example.
 
 Note that in the case of joining on the edges, multiple matches per edge are not a problem for the network structure. It will simply duplicate the edge (i.e. creating a set of parallel edges) whenever this occurs.
 
@@ -287,7 +287,7 @@ For non-spatial joins based on attribute columns, simply use a join function fro
 
 ### Join points to their nearest node
 
-Another network specific use-case of spatial joins would be to join information from external points of interest (POIs) into the nodes of the network. However, to do so, such points need to have exactly equal coordinates to one of the nodes. Often this will not be the case. To solve such situations, you will first need to update the coordinates of the POIs to match those of their nearest node. This can be done using the utlity function `project_on_network()`.
+Another network specific use-case of spatial joins would be to join information from external points of interest (POIs) into the nodes of the network. However, to do so, such points need to have exactly equal coordinates to one of the nodes. Often this will not be the case. To solve such situations, you will first need to update the coordinates of the POIs to match those of their nearest node. This can be done using `st_network_project()`.
 
 ```{r}
 # Create a network.
@@ -438,7 +438,7 @@ ggraph(blend_with_tolerance, "sf") +
   theme_void()
 ```
 
-There are a few important details to be aware of when using `st_network_blend()`. Firstly: when multiple POIs have the same nearest location on the nearest edge, only the first of them is blended into the network. This is for the same reasons as explained before: in the network structure there is no clear approach for dealing with duplicated nodes. By arranging your table of POIs with `dplyr::arrange()` before blending you can influence which (type of) POI is given priority in such cases. There is also the option to set `ignore_duplicates = FALSE`. Then, duplicated projections will result in duplicated nodes, but these duplicates are isolated (i.e. not connected to the rest of the network). You can then use the morpher `to_spatial_unique()` to merge spatially duplicated nodes into one, specifying how their attributes should be combined.
+There are a few important details to be aware of when using `st_network_blend()`. Firstly: when multiple POIs have the same nearest location on the nearest edge, only the first of them is blended into the network. This is for the same reasons as explained before: in the network structure there is no clear approach for dealing with duplicated nodes. By arranging your table of POIs with `dplyr::arrange()` before blending you can influence which (type of) POI is given priority in such cases. There is also the option to set `ignore_duplicates = FALSE`. Then, duplicated projections will result in duplicated nodes, but these duplicates are isolated (i.e. not connected to the rest of the network). You can then use the morpher `to_spatial_unique()` to merge spatially duplicated nodes into one, specifying how their attributes should be combined. See [here](https://luukvdmeer.github.io/sfnetworks/articles/sfn03_cleaning.html/#merge-nodes-at-equal-locations) for an example.
 
 Secondly: when a single POI has multiple nearest edges, it is only blended into the first of these edges. Therefore, it might be a good idea to run the `to_spatial_subdivision()` morpher after blending, such that intersecting but unconnected edges get connected.
 

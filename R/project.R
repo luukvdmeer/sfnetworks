@@ -1,17 +1,17 @@
-#' Project a spatial point on the network
+#' Project spatial points on a spatial network
 #'
-#' @param x The spatial features to be blended, either as object of class
+#' @param x The spatial features to be projected, either as object of class
 #' \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}, with \code{POINT} geometries.
 #'
 #' @param network An object of class \code{\link{sfnetwork}}.
 #'
 #' @param on On what component of the network should the points be projected?
 #' Setting it to \code{'edges'} (the default) will find the nearest point on
-#' the nearest edge to each point in \code{y}. Setting it to \code{'nodes'} 
-#' will find the nearest node to each point in \code{y}.
+#' the nearest edge to each point in \code{x}. Setting it to \code{'nodes'}
+#' will find the nearest node to each point in \code{x}.
 #'
-#' @details This function used \code{\link[sf]{st_nearest_feature}} to find
-#' the nearest edge or node to each feature in \code{y}. When projecting on
+#' @details This function uses \code{\link[sf]{st_nearest_feature}} to find
+#' the nearest edge or node to each feature in \code{x}. When projecting on
 #' edges, it then finds the nearest point on the nearest edge by calling
 #' \code{\link[sf]{st_nearest_points}} in a pairwise manner.
 #'
@@ -19,8 +19,8 @@
 #' on an edge may not be evaluated as actually intersecting that edge when
 #' calling \code{\link[sf]{st_intersects}}.
 #'
-#' @returns The same object as \code{y} but with its geometries replaced by the
-#' projected points.
+#' @returns The same object as \code{x} but with its geometries replaced by the
+#' projections.
 #'
 #' @examples
 #' library(sf, quietly = TRUE)
@@ -46,14 +46,14 @@
 #' pts = st_sf(foo = letters[1:3], geometry = c(p1, p2, p3), crs = 3857)
 #'
 #' # Project points to the edges of the network.
-#' p1 = project_on_network(pts, net)
+#' p1 = st_network_project(pts, net)
 #'
 #' plot(net)
 #' plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
 #' plot(st_geometry(p1), pch = 4, col = "orange", add = TRUE)
 #'
 #' # Project points to the nodes of the network.
-#' p2 = project_on_network(pts, net, on = "nodes")
+#' p2 = st_network_project(pts, net, on = "nodes")
 #'
 #' plot(net)
 #' plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
@@ -62,7 +62,12 @@
 #' par(oldpar)
 #'
 #' @export
-project_on_network = function(x, network, on = "edges") {
+st_network_project = function(x, network, on = "edges") {
+  UseMethod("st_network_project")
+}
+
+#' @export
+st_network_project.sfnetwork = function(x, network, on = "edges") {
   switch(
     on,
     edges = project_on_edges(x, network),

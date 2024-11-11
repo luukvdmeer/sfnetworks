@@ -136,7 +136,7 @@ as_sfnetwork(roxel, directed = FALSE)
 
 #### Mixed networks
 
-In `{sfnetworks}` there is no native support to represent mixed networks, i.e. networks in which some edges can be traveled in both ways, and others in only one way. However, these type of networks are quite common in some applications of spatial network analysis. For example, road networks in which some streets are oneway streets. By creating a directed network, but duplicating and reversing those edges that should be undirected, you can mimic such a mixed network structure. The morpher `to_spatial_mixed()` does exactly that. Since some of the [network cleaning]() functions do not work well with duplicated and reversed edges, it is usually a good idea to first create the directed network, clean it, and only then mimic the mixed representation.
+In `{sfnetworks}` there is no native support to represent mixed networks, i.e. networks in which some edges can be traveled in both ways, and others in only one way. However, these type of networks are quite common in some applications of spatial network analysis. For example, road networks in which some streets are oneway streets. By creating a directed network, but duplicating and reversing those edges that should be undirected, you can mimic such a mixed network structure. The morpher `to_spatial_mixed()` does exactly that. Since some of the [network cleaning](https://luukvdmeer.github.io/sfnetworks/articles/sfn03_cleaning.html) functions do not work well with duplicated and reversed edges, it is usually a good idea to first create the directed network, clean it, and only then mimic the mixed representation.
 
 ```{r}
 # First we mark some streets as oneway.
@@ -451,7 +451,7 @@ ggraph(net, "sf") +
   theme_void()
 ```
 
-The adjacency matrix can also be provided in sparse form, where for each node the indices of the nodes it is connected to are listed. This allows to directly forward the output of a [binary spatial predicate](). For example, using `sf::st_is_within_distance()`, we can connect nodes that are within a given distance from each other.
+The adjacency matrix can also be provided in sparse form, where for each node the indices of the nodes it is connected to are listed. This allows to directly forward the output of a [binary spatial predicate](https://r-spatial.github.io/sf/articles/sf3.html#binary-logical-operations). For example, using `sf::st_is_within_distance()`, we can connect nodes that are within a given distance from each other.
 
 ```{r}
 adj = st_is_within_distance(mozart, dist = units::set_units(250, "m"))
