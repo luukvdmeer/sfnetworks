@@ -290,7 +290,7 @@ as_sfnetwork.sfc = function(x, ...) {
 #'
 #' @examples
 #' # From a dodgr_streetnet object.
-#' if (require(dodgr, quietly = TRUE)) {
+#' if (require(dodgr, quietly = TRUE) & require(geodist, quietly = TRUE)) {
 #'   as_sfnetwork(dodgr::weight_streetnet(hampi))
 #' }
 #'
@@ -653,7 +653,7 @@ create_from_spatial_lines = function(x, directed = TRUE, compute_length = FALSE,
 #' pts = st_transform(mozart, 3035)
 #'
 #' # Using a custom adjacency matrix
-#' adj = matrix(c(rep(TRUE, 21), rep(rep(FALSE, 21), 20)), nrow = 21)
+#' adj = matrix(c(rep(TRUE, 17), rep(rep(FALSE, 17), 16)), nrow = 17)
 #' net = as_sfnetwork(pts, connections = adj)
 #'
 #' plot(net)

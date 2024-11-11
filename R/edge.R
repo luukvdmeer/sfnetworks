@@ -502,7 +502,7 @@ make_edges_explicit = function(x, ...) {
 #' edges.
 #'
 #' @export
-make_edges_implicit = function(x, ...) {
+make_edges_implicit = function(x) {
   drop_edge_geom(x)
 }
 

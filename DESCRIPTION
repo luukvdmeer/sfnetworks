@@ -55,6 +55,7 @@ Suggests:
     dbscan,
     dodgr,
     fansi,
+    geodist,
     ggplot2 (>= 3.0.0),
     knitr,
     purrr,
@@ -72,4 +73,4 @@ VignetteBuilder:
 ByteCompile: true
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2

@@ -57,7 +57,9 @@ mozart = bind_rows(pts, pls) |>
   arrange(y, x) |>
   select(name, type, website) |>
   st_set_agr(c(name = "constant", type = "constant", website = "constant")) |>
-  st_transform(3035)
+  st_transform(3035) |>
+  mutate(across(where(is.character), .fns = function(x){return(`Encoding<-`(x, "UTF-8"))}))
+
 
 # save as lazy data
 usethis::use_data(mozart, overwrite = TRUE)

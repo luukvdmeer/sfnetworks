@@ -152,7 +152,7 @@ to_spatial_explicit = function(x, ...) {
 #' @export
 to_spatial_implicit = function(x) {
   list(
-    implict = make_edges_implicit(x, ...)
+    implict = make_edges_implicit(x)
   )
 }
 

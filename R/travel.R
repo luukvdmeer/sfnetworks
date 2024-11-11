@@ -3,6 +3,8 @@
 #' Solve the travelling salesman problem by finding the shortest route through
 #' a set of nodes that visits each of those nodes once.
 #'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
 #' @param nodes Nodes to be visited. Evaluated by
 #' \code{\link{evaluate_node_query}}.
 #'

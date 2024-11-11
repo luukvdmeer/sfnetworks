@@ -4,7 +4,7 @@
 \alias{make_edges_implicit}
 \title{Drop edge geometries of spatially explicit networks}
 \usage{
-make_edges_implicit(x, ...)
+make_edges_implicit(x)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}

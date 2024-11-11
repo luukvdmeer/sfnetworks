@@ -10,6 +10,10 @@ as_s2_geography.sfnetwork(x, focused = TRUE, ...)
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
 
+\item{focused}{Should only features that are in focus be extracted? Defaults
+to \code{TRUE}. See \code{\link[tidygraph]{focus}} for more information on
+focused networks.}
+
 \item{...}{Arguments passed on the corresponding \code{s2} function.}
 }
 \value{

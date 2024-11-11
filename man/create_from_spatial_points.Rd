@@ -121,7 +121,7 @@ par(mar = c(1,1,1,1))
 pts = st_transform(mozart, 3035)
 
 # Using a custom adjacency matrix
-adj = matrix(c(rep(TRUE, 21), rep(rep(FALSE, 21), 20)), nrow = 21)
+adj = matrix(c(rep(TRUE, 17), rep(rep(FALSE, 17), 16)), nrow = 17)
 net = as_sfnetwork(pts, connections = adj)
 
 plot(net)
