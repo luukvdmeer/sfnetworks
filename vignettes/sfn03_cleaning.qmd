@@ -57,7 +57,7 @@ library(dplyr)
 
 ## The basics
 
-Functions that modify the topology of the network are implemented in `{sfnetworks}` as [spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/sfn01_intro.html/#spatial-morphers). Network cleaning functions belong to this family. For the applications described here, it is sufficient to know that you can use any spatial morpher function inside the `tidygraph::convert()` verb to convert your network into a new structure.
+Functions that modify the topology of the network are implemented in `{sfnetworks}` as [spatial morphers](https://luukvdmeer.github.io/sfnetworks/articles/sfn01_intro.html/#spatial-morphers). Network cleaning functions belong to this family. For the applications described here, it is sufficient to know that you can use any spatial morpher function inside the `tidygraph::convert()` verb to convert your network into a new structure. One thing you will notice is that `{tidygraph}` keeps track of the original node and edge indices through the columns *.tidygraph_node_index* and *.tidygraph_edge_index*. If you do not want them in your output, add `.clean = TRUE` to the `tidygraph::convert()` call.
 
 Before presenting the cleaning functions that are currently implemented, lets create a network to be cleaned.
 
@@ -82,6 +82,8 @@ p17 = st_point(c(6, 0.8))
 p18 = st_point(c(6, 2))
 p19 = st_point(c(6, -1))
 p20 = st_point(c(7, 1))
+p21 = st_point(c(0, 2))
+p22 = st_point(c(0, -1))
 
 l01 = st_sfc(st_linestring(c(p01, p02, p03)))
 l02 = st_sfc(st_linestring(c(p03, p04, p05)))
@@ -98,6 +100,8 @@ l12 = st_sfc(st_linestring(c(p17, p16)))
 l13 = st_sfc(st_linestring(c(p15, p18)))
 l14 = st_sfc(st_linestring(c(p17, p19)))
 l15 = st_sfc(st_linestring(c(p16, p20)))
+l16 = st_sfc(st_linestring(c(p21, p01)))
+l17 = st_sfc(st_linestring(c(p22, p01)))
 
 lines = c(
   l01, l02, l03, l04, l05,
@@ -107,7 +111,18 @@ lines = c(
 
 edges = st_sf(id = seq_along(lines), geometry = lines)
 
-net = as_sfnetwork(edges)
+net = as_sfnetwork(edges) |>
+  bind_spatial_nodes(st_sf(geometry = st_sfc(p01, p21, p22))) |>
+  mutate(
+    foo = sample(letters, n(), replace = TRUE),
+    bar = sample(c(1:10), n(), replace = TRUE)
+  ) |>
+  activate(edges) |>
+  bind_spatial_edges(st_sf(from = c(17, 18), to = c(16, 16), geometry = c(l16, l17))) |>
+  mutate(
+    foo = sample(letters, n(), replace = TRUE), 
+    bar = sample(c(1:10), n(), replace = TRUE)
+  )
 ```
 
 ```{r}
@@ -187,7 +202,7 @@ make_ggraph(simple)
 make_ggraph(subdivision)
 ```
 
-#### Protect edges
+<!-- #### Protect edges -->
 
 ## Smooth pseudo nodes
 
@@ -213,27 +228,35 @@ make_ggraph(smooth)
 Pseudo nodes may have a function by representing a location where a certain attribute changes. For example, from that point on the street has a different surface type. The `require_equal` argument allows you to specify one or more edge attributes that will be checked for equality before removing a pseudo node. If those attributes are equal, the node will be removed, but if not, it will remain. The argument value is evaluated using tidy selection, meaning you can specify column names unquoted, but also use [selection helpers](https://dplyr.tidyverse.org/reference/select.html).
 
 ```{r}
-net_with_attrs = subdivision |>
-  activate(edges) |>
-  mutate(
-    foo = sample(letters, n(), replace = TRUE), 
-    bar = sample(c(1:10), n(), replace = TRUE)
-  )
-
 # Only smooth pseudo nodes if incident edges have the same value for "foo".
-smooth_b = net_with_attrs |>
+smooth_b = net |>
   convert(to_spatial_smooth, require_equal = foo)
 
 # Only smooth pseudo nodes if incident edges have the same value for all attributes.
-smooth_c = net_with_attrs |>
+smooth_c = net |>
   convert(to_spatial_smooth, require_equal = everything())
 ```
 
 #### Summarize attribute values
 
-The `to_spatial_smooth()` morpher also allows you to specify if and how you want to combine attributes of concatenated edges. This is done through the `attribute_summary` argument ...
+The `to_spatial_smooth()` morpher also allows you to specify if and how you want to combine attributes of concatenated edges. This is done through the `attribute_summary` argument. How attributes should be combined is of course dependent on the type and purpose of each attribute. Therefore, the combination technique can be specified on a per-attribute basis. There are two ways to specify the combination technique for an attribute:
 
-#### Protect nodes
+- As a character, referring to the name of a pre-defined combination technique in `{igraph}`. Examples include `mean`, `sum`, `first` and `last`. See [here](https://igraph.org/r/doc/igraph-attribute-combination.html) for an overview of all implemented techniques.
+- As a function, taking a vector of attribute values as input and returning a single value. This is helpful when you want to combine attributes in a way that is not pre-defined.
+
+Providing a single character or a single function (e.g. `attribute_summary = "sum"`) will apply the same technique to each attribute. Instead, you can provide a named list with a different technique for each attribute. This list can also include one unnamed element containing the technique that should be applied to all attributes that were not referenced in any of the other elements. Note that the geometry-list column, the tidygraph index columns, as well as the *from* and *to* columns are not considered as attributes!
+
+```{r}
+smooth_d = subdivision |>
+  convert(
+    to_spatial_smooth,
+    attribute_summary = list(foo = paste, bar = "sum")
+  )
+
+smooth_d
+```
+
+<!-- #### Protect nodes -->
 
 ## Simplify intersections
 
@@ -257,9 +280,60 @@ make_ggraph(smooth)
 make_ggraph(contraction)
 ```
 
-The `to_spatial_contracted()` morpher also allows you to specify if and how you want to combine attributes of contracted nodes. This is done through the `attribute_summary` argument and works the same as explained [above](#summarize-attributes) for `to_spatial_smooth()`.
-
 ## Merge nodes at equal locations
+
+The attentive reader may have noticed our network still consists of two disconnected components, caused by the fact that there are two seperate nodes at exactly the same location.
+
+```{r}
+st_equals(contraction)
+```
+
+```{r}
+with_graph(contraction, graph_component_count())
+```
+
+The `to_spatial_unique()` morpher implements a special variation of node contraction: it contracts nodes that share their spatial location. All incident edges of the contracted nodes become incident to the new node.
+
+```{r}
+unique = contraction |>
+  convert(to_spatial_unique)
+```
+
+```{r}
+#| layout-ncol: 2
+make_ggraph(contraction)
+make_ggraph(unique)
+```
+
+Visually we do not see a difference, but we have now reduced our number of components to 1:
+
+```{r}
+with_graph(unique, graph_component_count())
+```
+
+```{r}
+#| layout-ncol: 2
+# Plot components before and after.
+contraction |>
+  mutate(comp = group_components()) |>
+  activate(edges) |>
+  mutate(comp = .N()$comp[from]) |>
+  ggraph("sf") +
+    geom_edge_sf(aes(color = as.factor(comp)), linewidth = 2, show.legend = FALSE) +
+    geom_node_sf(size = 4) +
+    theme_void()
+
+unique |>
+  mutate(comp = group_components()) |>
+  activate(edges) |>
+  mutate(comp = .N()$comp[from]) |>
+  ggraph("sf") +
+    geom_edge_sf(aes(color = as.factor(comp)), linewidth = 2, show.legend = FALSE) +
+    geom_node_sf(size = 4) +
+    theme_void()
+```
+
+The `to_spatial_unique()` morpher also allows you to specify if and how you want to combine attributes of contracted nodes. This is done through the `attribute_summary` argument and works the same as explained [above](#summarize-attributes) for `to_spatial_smooth()`.
 
 ## Overview
 
@@ -274,7 +348,8 @@ clean = net |>
   convert(to_spatial_simple) |>
   convert(to_spatial_subdivision) |>
   convert(to_spatial_smooth) |>
-  convert(to_spatial_contracted, group_spatial_dbscan(0.5))
+  convert(to_spatial_contracted, group_spatial_dbscan(0.5)) |>
+  convert(to_spatial_unique)
 ```
 
 ```{r}
@@ -294,6 +369,13 @@ subdivision = subdivide_edges(simple)
 smooth = smooth_pseudo_nodes(subdivision)
 groups = with_graph(smooth, group_spatial_dbscan(0.5))
 contraction = contract_nodes(smooth, groups)
+unique = contract_nodes(contraction, st_match(st_geometry(net)))
+```
+
+```{r}
+#| layout-ncol: 2
+make_ggraph(net)
+make_ggraph(unique)
 ```
 
 ```{r}

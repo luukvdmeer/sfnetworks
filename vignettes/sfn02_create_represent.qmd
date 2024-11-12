@@ -51,6 +51,7 @@ library(sf)
 library(tidygraph)
 library(ggraph)
 library(dplyr)
+library(units)
 ```
 
 ## The sfnetwork class
@@ -454,7 +455,7 @@ ggraph(net, "sf") +
 The adjacency matrix can also be provided in sparse form, where for each node the indices of the nodes it is connected to are listed. This allows to directly forward the output of a [binary spatial predicate](https://r-spatial.github.io/sf/articles/sf3.html#binary-logical-operations). For example, using `sf::st_is_within_distance()`, we can connect nodes that are within a given distance from each other.
 
 ```{r}
-adj = st_is_within_distance(mozart, dist = units::set_units(250, "m"))
+adj = st_is_within_distance(mozart, dist = set_units(250, "m"))
 adj
 ```
 
@@ -639,7 +640,7 @@ The function `play_geometric()` creates a [random geometric graph](https://en.wi
 neta = play_geometric(10, 0.3)
 
 # Sample on a spatial feature.
-netb = play_geometric(20, units::set_units(250, "m"), bounds = st_bbox(mozart))
+netb = play_geometric(20, set_units(250, "m"), bounds = st_bbox(mozart))
 ```
 
 ```{r}
