@@ -105,16 +105,16 @@ bind_spatial_edges = function(.data, ..., node_key = "name", force = FALSE) {
   new_net = mutate_edge_geom(new_net, new_geom)
   # Validate if binded edges meet the valid spatial network structure.
   if (! force) {
-    if (is_directed(x)) {
+    if (is_directed(.data)) {
       # Start point should equal start node.
       # End point should equal end node.
-      if (! all(nodes_equal_edge_boundaries(x))) {
+      if (! all(nodes_equal_edge_boundaries(.data))) {
         cli_abort("Node locations do not match edge boundaries")
       }
     } else {
       # Start point should equal either start or end node.
       # End point should equal either start or end node.
-      if (! all(nodes_in_edge_boundaries(x))) {
+      if (! all(nodes_in_edge_boundaries(.data))) {
         cli_abort("Node locations do not match edge boundaries")
       }
     }
