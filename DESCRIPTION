@@ -37,7 +37,7 @@ Imports:
     cli,
     dplyr,
     graphics,
-    igraph (>= 2.1.0),
+    igraph,
     lifecycle,
     lwgeom,
     methods,
