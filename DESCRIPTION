@@ -34,22 +34,22 @@ BugReports: https://github.com/luukvdmeer/sfnetworks/issues/
 Depends:
     R (>= 3.6)
 Imports:
-    cli,
-    dplyr,
+    cli (>= 3.0.0),
+    dplyr (>= 1.1.0),
     graphics,
-    igraph,
-    lifecycle,
+    igraph (>= 2.1.0),
+    lifecycle (>= 1.0.0),
     lwgeom,
     methods,
     pillar,
-    rlang,
-    sf,
-    sfheaders,
+    rlang (>= 1.0.0),
+    sf (>= 1.0-11),
+    sfheaders (>= 0.2.2),
     stats,
     tibble,
-    tidygraph,
-    tidyselect,
-    units,
+    tidygraph (>= 1.3.0),
+    tidyselect (>= 1.0.0),
+    units (>= 0.4.6),
     utils
 Suggests:
     dbscan,
