@@ -1,0 +1,734 @@
+---
+title: "Creating and representing spatial networks"
+date: "`r Sys.Date()`"
+vignette: >
+  %\VignetteIndexEntry{2. Creating and representing spatial networks}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{quarto::html}
+format:
+  html:
+    toc: true
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: '#>'
+  opts_knit:
+    global.par: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+current_geos = numeric_version(sf::sf_extSoftVersion()["GEOS"])
+required_geos = numeric_version("3.7.0")
+geos37 = current_geos >= required_geos
+```
+
+```{r}
+#| label: plot
+#| echo: false
+#| results: asis
+# plot margins
+oldpar = par(no.readonly = TRUE)
+par(mar = c(0, 0, 0, 0))
+# crayon needs to be explicitly activated in Rmd
+oldoptions = options()
+options(crayon.enabled = TRUE)
+# Hooks needs to be set to deal with outputs
+# thanks to fansi logic
+old_hooks = fansi::set_knit_hooks(
+  knitr::knit_hooks,
+  which = c("output", "message", "error")
+)
+```
+
+The `{sfnetworks}` contains the `sfnetwork` class to represent spatial networks in R. There are several ways in which you can create instances of this class. This vignette describes these ways, and provides more detail on the ins and outs of the data structure.
+
+```{r}
+#| message: false
+library(sfnetworks)
+library(sf)
+library(tidygraph)
+library(ggraph)
+library(dplyr)
+library(units)
+```
+
+## The sfnetwork class
+
+Spatial networks in `{sfnetworks}` are represented by objects of class `sfnetwork`. These objects inherit the `tbl_graph` class from `{tidygraph}`, which in turn inherit the `igraph` class from `{igraph}`. What this means is that in their core they are designed to store graph structures. However, thanks to the design of `{tidygraph}`, they look like a collection of two flat tables: one for the nodes, and one for the edges. In the documentation of `{tidygraph}`, this design choice is explained as follows. 
+
+> Relational data cannot in any meaningful way be encoded as a single tidy data frame. On the other hand, both node and edge data by itself fits very well within the tidy concept as each node and edge is, in a sense, a single observation. Thus, a close approximation of tidyness for relational data is two tidy data frames, one describing the node data and one describing the edge data.
+
+Since the `sfnetwork` class inherits the `tbl_graph` class, it shares the same philosophy. However, it extends it into the domain of geospatial data analysis, where each observation has a location in geographical space. For that, it brings `{sf}` into the game. An object of class `sf` stores the geographical coordinates of each observation in standardized format in a geometry list-column, which has a coordinate reference system (CRS) associated with it. Thus, in `{sfnetworks}`, we re-formulate the last sentence of the paragraph above to the following. 
+
+> A close approximation of tidyness for relational *geospatial data* is two *sf objects*, one describing the node data and one describing the edge data.
+
+### Structure
+
+Obviously a network is more than just a list of two distinct elements. Nodes and edges are related to each other. The first two columns of the edges table are always named *from* and *to* and contain integer indices of the source and target node of each edge. These integer indices correspond to rownumbers in the nodes table. That is, if nodes are filtered, or they order changes, the indices are updated. 
+
+The geometries of the nodes and edges should also match. In `{sfnetworks}`, the following requirements are specified for a valid geospatial network:
+
+- Nodes should have geometries of type `POINT`.
+- Edges should have geometries of type `LINESTRING`.
+- The endpoints of edge geometries should be spatially equal to their corresponding node geometries.
+- Nodes and edge geometries should have the same coordinate reference system and the same coordinate precision.
+
+We do need to make a note here. In a geospatial network, the nodes always have coordinates in geographic space, and thus, can always be described by an sf object. The edges, however, can also be described by only the indices of the nodes at their ends. This still makes them geospatial, because they connect two specific points in space, but the spatial information is not explicitly attached to them. Both representations can be useful. In geolocated social networks, for example, there is often no explicit spatial embedding of edges. In road networks, however, edges are usually not straight lines, and their geometries should be stored explicitly. In `{sfnetworks}` both variants are supported: edges can be described by an sf object with their own geometries, but also by a regular tibble without a geometry column. We refer to them as *spatially explicit edges* and *spatially implicit edges*, respectively. In most of the documentation, however, we focus on the first type.
+
+The figure below summarizes the structure of `sfnetwork` objects.
+
+```{r}
+#| echo: false
+knitr::include_graphics("figures/data-structure.png", error = FALSE)
+```
+
+Just like in `tbl_graph` objects, there is always one element (nodes or edges) in an `sfnetwork` object that is *active*. This means that element is the main target of analysis. By default, nodes are the active element when creating a network. The active element can be changed using the `activate()` verb, which will also change the order in which the elements are printed.
+
+In practice, it all looks as follows. Note that here we create the network from a set of spatial lines, by creating nodes at their endpoints. See the section [Creating sfnetwork objects](#creating-sfnetwork-objects) for many more examples on how to create a spatial network.
+
+```{r}
+# Spatially explicit edges.
+net = as_sfnetwork(roxel)
+net
+```
+
+```{r}
+# Make edges spatially implicit.
+inet = net |>
+  activate(edges) |>
+  st_drop_geometry()
+
+inet
+```
+
+```{r}
+#| layout-ncol: 2
+#| fig-cap: 
+#|   - "Spatially explicit edges"
+#|   - "Spatially implicit edges"
+ggraph(net, "sf") +
+  geom_edge_sf() +
+  geom_node_sf() +
+  theme_void()
+
+ggraph(inet, "sf") +
+  geom_edge_link(linetype = 2) +
+  geom_node_sf() +
+  theme_void()
+```
+
+### Directionality
+
+With `sfnetwork` objects it is possible to represent networks with directed edges, and with undirected edges. It is also possible to mimic mixed representations in which both these edge types exist.
+
+#### Directed networks
+
+By default an instance of the `sfnetwork` class will be initialized as a directed network. That means that each edge can only be traveled in from the source node to the target node, and not vice versa. In this case, the geometry of the edge always matches the direction, with the startpoint of the line being the location of the source node, and the endpoint of the line the location of the target node.
+
+#### Undirected networks
+
+The `sfnetwork` data structure also supports undirected networks. In such networks each edge can be traveled in both directions. Since there is no clear source and target, the node with the lowest index will be referenced in the *from* column, and the node with the highest index in the *to* column. The linestring geometry, however, remains unchanged. That is, in undirected networks the specified source node may not always correspond with the startpoint of the edge geometry, but instead with the endpoint. The behavior of ordering the indices comes from `{igraph}` and might be confusing, but remember that in undirected networks the terms *from* and *to* do not have a meaning and can thus be used interchangeably. If for a computation you really need the edge geometries to match the specified node indices, you can use the utility function `make_edges_follow_indices()`. This function will reverse edge geometries where needed.
+
+```{r}
+as_sfnetwork(roxel, directed = FALSE)
+```
+
+#### Mixed networks
+
+In `{sfnetworks}` there is no native support to represent mixed networks, i.e. networks in which some edges can be traveled in both ways, and others in only one way. However, these type of networks are quite common in some applications of spatial network analysis. For example, road networks in which some streets are oneway streets. By creating a directed network, but duplicating and reversing those edges that should be undirected, you can mimic such a mixed network structure. The morpher `to_spatial_mixed()` does exactly that. Since some of the [network cleaning](https://luukvdmeer.github.io/sfnetworks/articles/sfn03_cleaning.html) functions do not work well with duplicated and reversed edges, it is usually a good idea to first create the directed network, clean it, and only then mimic the mixed representation.
+
+```{r}
+# First we mark some streets as oneway.
+streets = roxel |>
+  mutate(oneway = sample(c(TRUE, FALSE), n(), replace = TRUE, prob = c(0.8, 0.2)))
+
+# Check the distribution of oneway vs twoway streets.
+streets |>
+  st_drop_geometry() |>
+  count(oneway)
+# Create a directed network.
+dnet = as_sfnetwork(streets)
+
+# Check the number of edges in the directed network.
+# This equals the total number of streets.
+n_edges(dnet)
+
+# Convert it into a mixed network.
+# Oneway streets remain directed.
+# Twoway streets are duplicated and reversed.
+mnet = dnet |>
+  convert(to_spatial_mixed, directed = oneway)
+
+# Check number of edges in the mixed network.
+# This equals the number of oneway streets ...
+# ... plus twice the number of twoway streets.
+n_edges(mnet)
+```
+
+### Geometries
+
+What makes `sfnetwork` objects different from `tbl_graph` objects is that nodes and (optionally) edges have geometries. These geometries are stored in a geometry list-column, following the design of `{sf}`. That also means that just as in `{sf}`, these columns are "sticky", and will survive column subsetting operations.
+
+#### Extract geometries
+
+Like in `{sf}`, you can always extract geometries of the active network element using `sf::st_geometry()`. The shortcuts `st_geometry(x, "nodes")` and `st_geometry(net, "edges")` can be used to extract geometries of a network element, regardless if it is active or not.
+
+```{r}
+net |>
+  activate(edges) |>
+  st_geometry()
+```
+
+#### Replace geometries
+
+The other way around, you can also replace geometries using the setter function `sf::set_set_geometry()` (or alternatively: `st_geometry(x) = new`). New node geometries are required to be of geometry type `POINT`, and new edge geometries of geometry type `LINESTRING`. To preserve the valid spatial network structure, the following is done:
+
+- When replacing node geometries, the endpoints of edge geometries will be replaced as well to match the new node geometries.
+- When replacing edge geometries, the endpoints of those geometries are added as new nodes to the network whenever they don't equal their original location. The original nodes remain in the network even if they are now isolated.
+
+```{r}
+#| layout-ncol: 2
+#| fig-cap: 
+#|   - "Original network"
+#|   - "New network"
+orig_net = as_sfnetwork(mozart, "gabriel")
+
+orig_nodes = st_geometry(orig_net, "nodes")
+new_nodes = st_jitter(orig_nodes, 250)
+
+new_net = orig_net |>
+  st_set_geometry(new_nodes)
+
+ggraph(orig_net, "sf") +
+  geom_sf(data = new_nodes, color = "orange") +
+  geom_edge_sf() +
+  geom_node_sf(color = "darkgrey", size = 4) +
+  theme_void()
+
+ggraph(new_net, "sf") +
+  geom_sf(data = orig_nodes, color = "darkgrey") +
+  geom_edge_sf() +
+  geom_node_sf(color = "orange", size = 4) +
+  theme_void()
+```
+
+#### Drop geometries
+
+You can drop geometries using `sf::st_drop_geometry()` (or alternatively: `st_geometry(x) = NULL`). As already shown in the previous section, dropping edge geometries will still return a `sfnetwork` object, but now with spatially implicit instead of spatially explicit edges. Dropping node geometries, however, will return a `tbl_graph`.
+
+```{r}
+net |>
+  activate(nodes) |>
+  st_drop_geometry()
+```
+
+#### Bounding box
+
+The area that geometries occupy is bounded by their bounding box. You can use `sf::st_bbox()` to compute the bounding box of the active element in a `sfnetwork` object. To compute the bounding box of the full network, use `st_network_bbox()`. In some cases, the network bounding box may be different than the bounding box of the nodes only.
+
+```{r}
+#| message: false
+p1 = st_point(c(1, 0))
+p2 = st_point(c(0, 0.5))
+p3 = st_point(c(1, 1))
+p4 = st_point(c(2, 0.5))
+
+nodes = st_sf(geometry = c(st_sfc(p1), st_sfc(p3), st_sfc(p4)))
+edges = st_sf(geometry = st_sfc(st_linestring(c(p1, p2, p3))))
+edges$from = 1
+edges$to = 2
+
+G = sfnetwork(nodes, edges)
+
+node_bbox = G |>
+  st_bbox() |>
+  st_as_sfc()
+
+edge_bbox = G |>
+  activate(edges) |>
+  st_bbox() |>
+  st_as_sfc()
+
+net_bbox = G |>
+  st_network_bbox() |>
+  st_as_sfc()
+```
+
+```{r}
+#| layout-ncol: 2
+#| fig-cap: 
+#|   - "Element bounding boxes"
+#|   - "Network bounding box"
+ggraph(G, "sf") +
+  geom_sf(
+    data = node_bbox,
+    color = "#F8766D", fill = NA,
+    linewidth = 1.5, linetype = 4
+  ) +
+  geom_sf(
+    data = edge_bbox,
+    color = "#619CFF", fill = NA,
+    linewidth = 1.5, linetype = 4
+  ) +
+  geom_edge_sf() +
+  geom_node_sf(size = 4) +
+  theme_void()
+
+ggraph(G, "sf") +
+  geom_sf(
+    data = net_bbox,
+    color = "orange", fill = NA,
+    linewidth = 1.5, linetype = 4
+  ) +
+  geom_edge_sf() +
+  geom_node_sf(size = 4) +
+  theme_void()
+```
+
+#### Coordinate reference system
+
+The coordinates of geometries are always expressed in a specified coordinate reference system (CRS). In a `sfnetwork` object, the CRS of the node and edge geometries is required to be equal. You can extract the CRS using `sf::st_crs()`. To transform coordinates into a different CRS, use `sf::st_transform()`, while specifying for example the EPSG code of the new CRS (other ways of specifying are possible as well, see the documentation of `{sf}`).
+
+```{r}
+st_transform(net, 3035)
+```
+
+#### Coordinate precision
+
+Geometries also have a coordinate precision associated with them. This precision does not round the coordinate values, but will be applied during spatial operations. Just as with the CRS, nodes and edges in a `sfnetwork` object are required to have the same precision. You can extract the precision using `sf::st_precision()`, and set it using `sf::st_set_precision()`. Precision values should be specified as a scale factor. For example, to specify 3 decimal places of precision, use a scale factor of 1000. When no precision is specified, it defaults to machine precision. However, in `{sfnetworks}`, functions that assess the spatial equality of nodes use a default precision of 1e12 (i.e. 12 decimal places) to speed up processing.
+
+```{r}
+# With unspecified precision, no node is equal to another node.
+any(lengths(st_equals(net)) > 1)
+
+# With an extremely low precision, all nodes are equal to each other.
+all(lengths(st_equals(st_set_precision(net, 1))) == n_nodes(net))
+```
+
+#### Attribute-geometry relations
+
+Thanks to `{sf}`, it is also possible to explicitly specify attribute-geometry relations. These define for each attribute column if the attribute is a constant, an aggregate, or an identity. See [here](https://r-spatial.github.io/sf/articles/sf1.html#how-attributes-relate-to-geometries) for more information. You can get and set attribute-geometry relations of the active network element with the function `sf::st_agr()`. For the setter, you can also use the pipe-friendly version `sf::st_set_agr()`. Note that the *to* and *from* columns are not really attributes of edges seen from a network analysis perspective, but they are included in the attribute-geometry relation specification to ensure smooth interaction with `{sf}`.
+
+```{r}
+net |>
+  activate(edges) |>
+  st_agr()
+```
+
+```{r}
+net |>
+  activate(edges) |>
+  st_set_agr(c(type = "aggregate")) |>
+  st_agr()
+```
+
+## Creating sfnetwork objects 
+
+There are several ways to create a `sfnetwork` object, which are discussed in more detail below.
+
+### From node and edge tables
+The most basic way to create a `sfnetwork` object is to provide ready-to-use node and edge tables to the `sfnetwork()` construction function. Remember that the nodes should be an `sf` object with `POINT` geometries, while the first two columns in the edges table are required to be named *from* and *to* and contain the rownumbers of the nodes at the start and end of each edge. If the edges are spatially explicit, and hence, also have geometries, these should be of type `LINESTRING` and their endpoints should equal the locations of their source and target nodes. The construction function will check if the provided input meets these criteria. If you are already sure your data forms a valid spatial network, you can set `force = TRUE`.
+
+```{r}
+#| message: false
+p1 = st_point(c(6, 52))
+p2 = st_point(c(8, 53))
+p3 = st_point(c(8, 51))
+
+l1 = st_linestring(c(p1, p2))
+l2 = st_linestring(c(p2, p3))
+l3 = st_linestring(c(p3, p1))
+
+edges = st_sf(geometry = st_sfc(l1, l2, l3), crs = 4326)
+nodes = st_sf(geometry = st_sfc(p1, p2, p3), crs = 4326)
+
+edges$from = c(1, 2, 3)
+edges$to = c(2, 3, 1)
+
+net = sfnetwork(nodes, edges)
+net
+```
+
+It is also possible to provide nodes that are not an `sf` object, but can be converted to it. For example, a table with two coordinate columns. Any additional arguments provided to the `sfnetwork()` construction function will be forwarded to `sf::st_as_sf()` to convert the provided nodes table into a `sf` object.
+
+```{r}
+#| message: false
+nodes_tbl = tibble(x = c(6, 8, 8), y = c(52, 53, 51))
+
+net = sfnetwork(nodes_tbl, edges, coords = c("x", "y"), crs = 4326)
+net
+```
+
+Instead of integers referring to rownumbers in the nodes table, the *from* and *to* columns in the edges table can also contain characters that refer to values in a specific node attribute column. The name of that column should than be given as argument `node_key`. By default, it is assumed the column is named *name*. Internally, the construction function will convert the character values into integer indices referencing rownumbers.
+
+If your edges do not have geometries, you can still create a network with spatially explicit edges by setting `edges_as_lines = TRUE`. This will create linestring geometries as straight lines between the source and target nodes.
+
+```{r}
+#| message: false
+nodes$type = c("city", "village", "farm")
+
+edges = st_drop_geometry(edges)
+edges$from = c("city", "village", "farm")
+edges$to = c("village", "farm", "city")
+
+net = sfnetwork(nodes, edges, node_key = "type", edges_as_lines = TRUE)
+net
+```
+
+```{r}
+ggraph(net, "sf") +
+  geom_edge_sf() +
+  geom_node_sf(aes(color = as.factor(type)), size = 4) +
+  scale_color_discrete("type") +
+  theme_void()
+```
+
+### From spatial lines
+
+A more common way to create a spatial network is to start with only a set of `LINESTRING` geometries in `sf` format. These are assumed to be the edge of the network. Providing this to `as_sfnetwork()` will automatically call `create_from_spatial_lines()`. This function creates nodes at the endpoints of the lines. Endpoints that are shared between multiple lines, become a single node in the network.
+
+To determine spatial equality of endpoints, `{sfnetworks}` by default uses a 12-digit precision for the coordinates. You can change this by either setting a different precision (see [above](#coordinate-precision)) or by effectively rounding coordinate values using the utility function `st_round()`.
+
+```{r}
+# Linestring geometries.
+roxel
+```
+
+```{r}
+# Network.
+net = as_sfnetwork(roxel)
+net
+```
+
+```{r}
+#| layout-ncol: 2
+#| fig-cap: 
+#|   - "Lines"
+#|   - "Network"
+ggplot(roxel) +
+  geom_sf() +
+  theme_void()
+
+ggraph(net, "sf") +
+  geom_edge_sf() +
+  geom_node_sf() +
+  theme_void()
+```
+
+Besides their endpoints, linestring geometries may have interior points that define their shape. It may be that multiple linestrings have interior points at the same location. Since these are not endpoints, they will not become a node in the network. If you also want to add nodes at shared interior points, set `subdivide = TRUE`, or call the `to_spatial_subdivision()` morpher after construction. See the vignette on [Spatial morphers]() for details.
+
+### From spatial points
+
+It is also possible to create a network from a set of `POINT` geometries. These are assumed to be the nodes of the network. Providing this to `as_sfnetwork()` will automatically call `create_from_spatial_points()`. As a second input it requires an adjacency matrix that specifies which nodes should be connected to each other. Adjacency matrices of networks are $n \times n$ matrices with $n$ being the number of nodes, and element $A_{ij}$ holding a \code{TRUE} value if there is an edge from node $i$ to node $j$, and a \code{FALSE} value otherwise.
+
+```{r}
+# Point geometries.
+mozart
+```
+
+```{r}
+# Adjacency matrix.
+adj = matrix(c(rep(TRUE, 17), rep(rep(FALSE, 17), 16)), nrow = 17)
+
+# Network.
+net = as_sfnetwork(mozart, adj)
+net
+```
+
+```{r}
+#| layout-ncol: 2
+#| fig-cap: 
+#|   - "Points"
+#|   - "Network"
+ggplot(mozart) +
+  geom_sf(size = 4) +
+  theme_void()
+
+ggraph(net, "sf") +
+  geom_edge_sf() +
+  geom_node_sf(size = 4) +
+  theme_void()
+```
+
+The adjacency matrix can also be provided in sparse form, where for each node the indices of the nodes it is connected to are listed. This allows to directly forward the output of a [binary spatial predicate](https://r-spatial.github.io/sf/articles/sf3.html#binary-logical-operations). For example, using `sf::st_is_within_distance()`, we can connect nodes that are within a given distance from each other.
+
+```{r}
+adj = st_is_within_distance(mozart, dist = set_units(250, "m"))
+adj
+```
+
+```{r}
+net = as_sfnetwork(mozart, adj)
+```
+
+```{r}
+#| layout-ncol: 2
+#| fig-cap: 
+#|   - "Points"
+#|   - "Network"
+ggplot(mozart) +
+  geom_sf(size = 4) +
+  theme_void()
+
+ggraph(net, "sf") +
+  geom_edge_sf() +
+  geom_node_sf(size = 4) +
+  theme_void()
+```
+
+Finally, `{sfnetworks}` can create the adjacency matrix internally according to some specified method. In that case, you just need to provide the name of the method. Supported options currently are:
+
+- `complete`: All nodes are directly connected to each other. 
+- `sequence`: The nodes are sequentially connected to each other, meaning that the first node is connected to the second node, the second node is connected to the third node, etc. 
+- `minimum_spanning_tree`: The nodes are connected by their spatial [minimum spanning tree](https://en.wikipedia.org/wiki/Minimum_spanning_tree), i.e. the set of edges with the minimum total edge length required to connect all nodes. Can also be specified as `mst`. 
+- `delaunay`: The nodes are connected by their [Delaunay triangulation](https://en.wikipedia.org/wiki/Delaunay_triangulation). Requires the `{spdep}` package to be installed, and assumes planar coordinates.
+- `gabriel`: The nodes are connected as a [Gabriel graph](https://en.wikipedia.org/wiki/Gabriel_graph). Requires the `{spdep}` package to be installed, and assumes planar coordinates. 
+- `relative_neighborhood`: The nodes are connected as a [relative neighborhood graph](https://en.wikipedia.org/wiki/Relative_neighborhood_graph). Can also be specified as `rn`. Requires the `{spdep}` package to be installed, and assumes planar coordinates.
+- `nearest_neighbors`: Each node is connected to its $k$ nearest neighbors, with $k$ being specified through the `k` argument. By default, `k = 1`, meaning that the nodes are connected as a [nearest neighbor graph](https://en.wikipedia.org/wiki/Nearest_neighbor_graph). Can also be specified as `knn`. Requires the `{spdep}` package to be installed. 
+
+```{r}
+#| layout-ncol: 2
+#| layout-nrow: 4
+#| fig-cap: 
+#|   - "Complete"
+#|   - "Sequential"
+#|   - "Minimum spanning tree"
+#|   - "Delaunay triangulation"
+#|   - "Gabriel"
+#|   - "Relative neighbors"
+#|   - "Nearest neighbors"
+#|   - "K nearest neighbors (k = 3)"
+make_ggraph = function(x) {
+  ggraph(x, "sf") +
+    geom_edge_sf() +
+    geom_node_sf(size = 4) +
+    theme_void()
+}
+
+make_ggraph(as_sfnetwork(mozart, "complete"))
+make_ggraph(as_sfnetwork(mozart, "sequence"))
+make_ggraph(as_sfnetwork(mozart, "mst"))
+make_ggraph(as_sfnetwork(mozart, "delaunay"))
+make_ggraph(as_sfnetwork(mozart, "gabriel"))
+make_ggraph(as_sfnetwork(mozart, "rn"))
+make_ggraph(as_sfnetwork(mozart, "knn"))
+make_ggraph(as_sfnetwork(mozart, "knn", k = 3))
+```
+
+### From other network representations
+
+The conversion function `as_sfnetwork()` can also be used to convert instances of other network classes to a `sfnetwork` object. This includes classes that are also designed for spatial networks, such as `dodgr_streetnet` from the `{dodgr}` package for routing on street networks, and `linnet` from the `{spatstat.linnet}` package for statistical point pattern analysis on spatial linear networks. However, it can also be used to convert instances of non-spatial network formats, as long as they do specify in some way a spatial location for the nodes. For example, an `igraph` object with x and y coordinates stored as node attributes. In such a case, any additional arguments provided to `as_sfnetwork()` will be forwarded to `sf::st_as_sf()` to convert the nodes of the given network into a `sf` object.
+
+```{r}
+# igraph object.
+inet = igraph::sample_grg(5, 0.5, coords = TRUE)
+inet
+```
+
+```{r}
+#| message: false
+# sfnetwork object.
+net = as_sfnetwork(inet, coords = c("x", "y"))
+net
+```
+
+### From files
+
+There are currently no functions in `{sfnetworks}` for reading and writing data (there are some [ideas](https://github.com/luukvdmeer/sfnetworks/discussions/264)). However, you can use `sf::st_read()` for spatial file formats to read in points and/or lines, and then construct a network using `sfnetwork()` (as described [here](#from-node-and-edge-tables)) or `as_sfnetwork()` (as described [here](#from-spatial-lines) for lines and [here](#from-spatial-points) for points). For network specific file types, you can use `igraph::read_graph()` to read the data into R, and then convert it to spatial network format using `as_sfnetwork()` as long as the required spatial information is present (see [here](#from-other-network-representations)).
+
+A common format of the latter category is GraphML. An example of such a file can be found [here](https://github.com/ComplexNetTSP/Power_grids), containing the power grid of The Netherlands. After reading it using `{igraph}`, we will first convert it to a `tbl_graph` such that we can easily explore the data.
+
+```{r}
+url = "https://raw.githubusercontent.com/ComplexNetTSP/Power_grids/v1.0.0/Countries/Netherlands/graphml/Netherlands_highvoltage.graphml"
+```
+
+```{r}
+igraph::read_graph(url, format = "graphml") |>
+  as_tbl_graph()
+```
+
+We can see that the spatial geometries of nodes and edges are stored as WKT strings in columns named *wktsrid4326*. Remember that additional arguments to `as_sfnetwork()` for `igraph` objects are forwarded to `sf::st_as_sf()` to convert the nodes into a `sf` object. This makes conversion into a `sfnetwork` object as easy as: 
+
+```{r}
+#| message: false
+net = igraph::read_graph(url, format = "graphml") |>
+  as_sfnetwork(wkt = "wktsrid4326", crs = 4326) |>
+  rename(geometry = wktsrid4326)
+
+net
+```
+
+However, this did only affect the nodes table (since that one is *required* to have geometries). The edges do not have explicit geometries yet. Using the morpher function `to_spatial_explicit()`, we can "explicitize" the edge geometries of the constructed network. Also here, additional arguments are forwarded to `sf::st_as_sf()`.
+
+```{r}
+net = net |>
+  convert(to_spatial_explicit, wkt = "wktsrid4326", crs = 4326, .clean = TRUE) |>
+  activate(edges) |>
+  rename(geometry = wktsrid4326)
+
+net
+```
+
+```{r}
+ggraph(net, "sf") +
+  geom_edge_sf() +
+  geom_node_sf(size = 4) +
+  theme_void()
+```
+
+### From OpenStreetMap data
+
+A common source for spatial network data is [OpenStreetMap](https://www.openstreetmap.org).This is an open and collaborative geographic database. It can be used for example to extract geometries of streets or rivers anywhere in the world. In R, there are two main packages that allow to read OpenStreetMap data:
+
+- The `{osmdata}` package provides an interface to the Overpass API of OpenStreetMap.
+- The `{osmextract}` package can read OpenStreetMap data from `osm.pbf` files.
+
+For small areas and few repeated calls, the Overpass API is the easiest way to get the data. However, if your area of interest is large, or you want to load the data many times, it is preferred to not overload the API and read from `osm.pbf` files instead. [Geofabrik](https://download.geofabrik.de/) is one of the platforms where you can download such files for many different regions in the world.
+
+Here, we will show a small example using `{osmdata}`. We can read in the street centerlines of Anif, a small village in Austria, as shown below. For details on this workflow, check the [osmdata documentation](https://docs.ropensci.org/osmdata/articles/osmdata.html).
+
+```{r}
+library(osmdata)
+
+# Call the Overpass API to extract streets in Anif.
+data = opq("Anif, Austria") |>
+  add_osm_feature(key = "highway") |>
+  osmdata_sf() |>
+  osm_poly2line()
+
+# Extract only the linestring geometries from the response.
+streets = data$osm_lines |>
+  select(name, "type" = highway, surface)
+
+streets
+```
+
+Now, we can simply create a network out of these lines using `as_sfnetwork()`, as shown [before](#from-spatial-lines).
+
+```{r}
+net = as_sfnetwork(streets, directed = FALSE)
+net
+```
+
+However, we need to be aware that OpenStreetMap data is not created primarily with a network structure in mind. This means that locations where two streets connect are not always the endpoints of the linestring geometries, but they can be an interior point of such a geometry as well. By setting `subdivide = TRUE` linestring geometries will be subdivided at places where an interior point is shared between multiple features. In that way, a node will be placed at such locations.
+
+```{r}
+#| warning: false
+# The create network without subdivision has many disconnected components.
+with_graph(net, graph_component_count())
+
+# Creating the network with subdivsion reduces this number drastically.
+net = as_sfnetwork(streets, subdivide = TRUE)
+with_graph(net, graph_component_count())
+```
+
+```{r}
+ggraph(net, "sf") +
+  geom_edge_sf() +
+  geom_node_sf() +
+  theme_void()
+```
+
+### Random networks
+
+The function `play_geometric()` creates a [random geometric graph](https://en.wikipedia.org/wiki/Random_geometric_graph). This randomly samples $n$ nodes, and connects them by an edge if they are within a given distance threshold from each other. By default, sampling will take place on the unit square. However, through the `bounds` argument you can also provide any spatial feature to sample on. This will use `sf::st_sample()` internally.
+
+```{r}
+# Sample on a unit square.
+neta = play_geometric(10, 0.3)
+
+# Sample on a spatial feature.
+netb = play_geometric(20, set_units(250, "m"), bounds = st_bbox(mozart))
+```
+
+```{r}
+#| layout-ncol: 2
+#| fig-cap: 
+#|   - "Random network A"
+#|   - "Random network B"
+ggraph(neta, "sf") +
+  geom_edge_sf() +
+  geom_node_sf(size = 4) +
+  theme_void()
+
+ggraph(netb, "sf") +
+  geom_edge_sf() +
+  geom_node_sf(size = 4) +
+  theme_void()
+```
+
+## Validating sfnetwork objects
+
+As described in the [beginning](#structure), there are several requirements for a `sfnetwork` object to be considered a valid spatial network. The `validate_network()` utility function checks if these requirements are met.
+
+```{r}
+validate_network(net)
+```
+
+These checks are executed already during construction. Trying to construct an invalid network will result in an error:
+
+```{r}
+#| error: true
+p1 = st_point(c(6, 52))
+p2 = st_point(c(8, 53))
+p3 = st_point(c(8, 51))
+p4 = st_point(c(7, 52.5))
+p5 = st_point(c(7, 52))
+
+l1 = st_linestring(c(p2, p4))
+l2 = st_linestring(c(p2, p5))
+
+edges = st_sf(geometry = st_sfc(l1, l2), crs = 4326)
+nodes = st_sf(geometry = st_sfc(p1, p2, p3), crs = 4326)
+
+edges$from = c(2, 2)
+edges$to = c(1, 3)
+
+net = sfnetwork(nodes, edges)
+```
+
+However, you could work around this by setting `force = TRUE`. This will skip the checks, and create the `sfnetwork` object even if its structure is not valid. Be aware that functions in `{sfnetworks}` are designed under the assumption that the analyzed network is valid.
+
+```{r}
+net = sfnetwork(nodes, edges, force = TRUE)
+```
+
+If your issue is that node and edge geometries do not match (i.e. the endpoints of the edges are not equal to the nodes that are supposed to be their source and target), there is the utility function `make_edges_valid()` that can fix this in two different ways:
+
+1) By default, it will replace each invalid endpoint in an edge geometry with the point geometry of the node that is referenced in the *from* or *to* column.
+2) If you set `preserve_geometries = TRUE`, the edge geometries remain unchanged. Invalid endpoints are added as new nodes to the network, and the *from* and *to* columns are updated accordingly.
+
+```{r}
+neta = make_edges_valid(net)
+netb = make_edges_valid(net, preserve_geometries = TRUE)
+```
+
+```{r}
+#| layout-ncol: 3
+#| fig-cap: 
+#|   - "Invalid network"
+#|   - "Valid network A"
+#|   - "Valid network B"
+ggraph(net, "sf") +
+  geom_edge_sf() +
+  geom_node_sf(size = 4) +
+  theme_void()
+
+ggraph(neta, "sf") +
+  geom_edge_sf() +
+  geom_node_sf(size = 4) +
+  theme_void()
+
+ggraph(netb, "sf") +
+  geom_edge_sf() +
+  geom_node_sf(size = 4) +
+  theme_void()
+```
+
+```{r}
+#| include: false
+par(oldpar)
+options(oldoptions)
+```

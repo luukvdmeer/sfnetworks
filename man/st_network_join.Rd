@@ -19,36 +19,46 @@ The joined networks as an object of class \code{\link{sfnetwork}}.
 }
 \description{
 A spatial network specific join function which makes a spatial full join on
-the geometries of the nodes data, based on the \code{\link[sf]{st_equals}}
-spatial predicate. Edge data are combined using a
+the geometries of the nodes data. Edge data are combined using a
 \code{\link[dplyr]{bind_rows}} semantic, meaning that data are matched by
 column name and values are filled with \code{NA} if missing in either of
 the networks. The \code{from} and \code{to} columns in the edge data are
 updated such that they match the new node indices of the resulting network.
 }
+\note{
+By default sfnetworks rounds coordinates to 12 decimal places to
+determine spatial equality. You can influence this behavior by explicitly
+setting the precision of the networks using
+\code{\link[sf]{st_set_precision}}.
+}
 \examples{
 library(sf, quietly = TRUE)
 
-node1 = st_point(c(0, 0))
-node2 = st_point(c(1, 0))
-node3 = st_point(c(1,1))
-node4 = st_point(c(0,1))
-edge1 = st_sfc(st_linestring(c(node1, node2)))
-edge2 = st_sfc(st_linestring(c(node2, node3)))
-edge3 = st_sfc(st_linestring(c(node3, node4)))
-
-net1 = as_sfnetwork(c(edge1, edge2))
-net2 = as_sfnetwork(c(edge2, edge3))
-
-joined = st_network_join(net1, net2)
-joined
-
-## Plot results.
 oldpar = par(no.readonly = TRUE)
 par(mar = c(1,1,1,1), mfrow = c(1,2))
-plot(net1, pch = 15, cex = 2, lwd = 4)
-plot(net2, col = "red", pch = 18, cex = 2, lty = 3, lwd = 4, add = TRUE)
-plot(joined, cex = 2, lwd = 4)
+
+# Create two networks.
+n1 = st_point(c(0, 0))
+n2 = st_point(c(1, 0))
+n3 = st_point(c(1,1))
+n4 = st_point(c(0,1))
+
+e1 = st_sfc(st_linestring(c(n1, n2)))
+e2 = st_sfc(st_linestring(c(n2, n3)))
+e3 = st_sfc(st_linestring(c(n3, n4)))
+
+neta = as_sfnetwork(c(e1, e2))
+netb = as_sfnetwork(c(e2, e3))
+
+# Join the networks based on spatial equality of nodes.
+net = st_network_join(neta, netb)
+net
+
+# Plot.
+plot(neta, pch = 15, cex = 2, lwd = 4)
+plot(netb, col = "orange", pch = 18, cex = 2, lty = 3, lwd = 4, add = TRUE)
+plot(net, cex = 2, lwd = 4)
+
 par(oldpar)
 
 }

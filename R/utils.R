@@ -1,112 +1,411 @@
-#' List-column friendly version of bind_rows
+#' Run an igraph function on an sfnetwork object
 #'
-#' @param ... Tables to be row-binded.
+#' Since \code{\link{sfnetwork}} objects inherit \code{\link[igraph]{igraph}}
+#' objects, any igraph function can be called on a sfnetwork. However, if this
+#' function returns a network, it will be an igraph object rather than a
+#' sfnetwork object. With \code{\link{wrap_igraph}}, such a function will
+#' preserve the sfnetwork class, after checking if the network returned by
+#' igraph still has a valid spatial network structure.
 #'
-#' @details Behaviour of this function should be similar to rbindlist from the
-#' data.table package.
+#' @param .data An object of class \code{\link{sfnetwork}}.
 #'
-#' @importFrom dplyr across bind_rows mutate
-#' @noRd
-bind_rows_list = function(...) {
-  cols_as_list = function(x) list2DF(lapply(x, function(y) unname(as.list(y))))
-  ins = lapply(list(...), cols_as_list)
-  out = bind_rows(ins)
-  is_listcol = vapply(out, function(x) any(lengths(x) > 1), logical(1))
-  mutate(out, across(which(!is_listcol), unlist))
+#' @param .f An function from the \code{\link[igraph]{igraph}} package that
+#' accepts a graph as its first argument, and returns a graph.
+#'
+#' @param ... Arguments passed on to \code{.f}.
+#'
+#' @param .force Should network validity checks be skipped? Defaults to
+#' \code{FALSE}, meaning that network validity checks are executed when
+#' returning the new network. These checks guarantee a valid spatial network
+#' structure. For the nodes, this means that they all should have \code{POINT}
+#' geometries. In the case of spatially explicit edges, it is also checked that
+#' all edges have \code{LINESTRING} geometries, nodes and edges have the same
+#' CRS and boundary points of edges match their corresponding node coordinates.
+#' These checks are important, but also time consuming. If you are already sure
+#' your input data meet the requirements, the checks are unnecessary and can be
+#' turned off to improve performance.
+#'
+#' @param .message Should informational messages (those messages that are
+#' neither warnings nor errors) be printed when constructing the network?
+#' Defaults to \code{TRUE}.
+#'
+#' @return An object of class \code{\link{sfnetwork}}.
+#'
+#' @examples
+#' oldpar = par(no.readonly = TRUE)
+#' par(mar = c(1,1,1,1), mfrow = c(1,2))
+#'
+#' net = as_sfnetwork(mozart, "delaunay", directed = FALSE)
+#' mst = wrap_igraph(net, igraph::mst, .message = FALSE)
+#' mst
+#'
+#' plot(net)
+#' plot(mst)
+#'
+#' par(oldpar)
+#'
+#' @export
+wrap_igraph = function(.data, .f, ..., .force = FALSE, .message = TRUE) {
+  out = .f(.data, ...) %preserve_all_attrs% .data
+  if (! .force) validate_network(out, message = .message)
+  out
 }
 
-#' Print a string with a subtle style.
+#' Determine duplicated geometries
 #'
-#' @param ... A string to print.
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
 #'
-#' @return A printed string to console with subtle style.
+#' @return A logical vector specifying for each feature in \code{x} if its
+#' geometry is equal to a previous feature in \code{x}.
 #'
-#' @importFrom crayon silver
-#' @noRd
-cat_subtle = function(...) { # nocov start
-  # Util function for print method, testing should be up to crayon
-  cat(silver(...))
-} # nocov end
-
-#' Create edges from nodes
+#' @seealso \code{\link{duplicated}}
 #'
-#' @param nodes An object of class \code{\link[sf]{sf}} with \code{POINT}
-#' geometries.
+#' @examples
+#' library(sf, quietly = TRUE)
 #'
-#' @details It is assumed that the given POINT geometries form the nodes. Edges
-#' need to be created as linestrings between those nodes. It is assumed that
-#' the given nodes are connected sequentially.
+#' p1 = st_sfc(st_point(c(1, 1)))
+#' p2 = st_sfc(st_point(c(0, 0)))
+#' p3 = st_sfc(st_point(c(1, 0)))
 #'
-#' @return A list with the nodes as an object of class \code{\link[sf]{sf}}
-#' with \code{POINT} geometries and the created edges as an object of class
-#' \code{\link[sf]{sf}} with \code{LINESTRING} geometries.
+#' st_duplicated(c(p1, p2, p2, p3, p1))
 #'
-#' @importFrom sf st_geometry st_sf
-#' @noRd
-create_edges_from_nodes = function(nodes) {
-  # Define indices for source and target nodes.
-  source_ids = 1:(nrow(nodes) - 1)
-  target_ids = 2:nrow(nodes)
-  # Create separate tables for source and target nodes.
-  sources = nodes[source_ids, ]
-  targets = nodes[target_ids, ]
-  # Create linestrings between the source and target nodes.
-  edges = st_sf(
-    from = source_ids,
-    to = target_ids,
-    geometry = draw_lines(st_geometry(sources), st_geometry(targets))
-  )
-  # Use the same sf column name as in the nodes.
-  nodes_geom_colname = attr(nodes, "sf_column")
-  if (nodes_geom_colname != "geometry") {
-    names(edges)[3] = nodes_geom_colname
-    attr(edges, "sf_column") = nodes_geom_colname
-  }
-  # Return a list with both the nodes and edges.
-  class(edges) = class(nodes)
-  list(nodes = nodes, edges = edges)
+#' @importFrom sf st_equals st_geometry
+#' @export
+st_duplicated = function(x) {
+  dup = rep(FALSE, length(st_geometry(x)))
+  dup[unique(do.call("c", lapply(st_equals(x), `[`, - 1)))] = TRUE
+  dup
 }
 
-#' Create nodes from edges
+#' @importFrom sf st_geometry
+#' @importFrom sfheaders sfc_to_df
+st_duplicated_points = function(x, precision = attr(x, "precision")) {
+  x_df = sfc_to_df(x)
+  coords = x_df[, names(x_df) %in% c("x", "y", "z", "m")]
+  st_duplicated_points_df(coords, precision = precision)
+}
+
+st_duplicated_points_df = function(x, precision = NULL) {
+  x_trim = lapply(x, round, digits = precision_digits(precision))
+  x_concat = do.call(paste, x_trim)
+  duplicated(x_concat)
+}
+
+#' Geometry matching
 #'
-#' @param edges An object of class \code{\link[sf]{sf}} with \code{LINESTRING}
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
+#'
+#' @return A numeric vector giving for each feature in \code{x} the position of
+#' the first feature in \code{x} that has an equal geometry.
+#'
+#' @seealso \code{\link{match}}
+#'
+#' @examples
+#' library(sf, quietly = TRUE)
+#'
+#' p1 = st_sfc(st_point(c(1, 1)))
+#' p2 = st_sfc(st_point(c(0, 0)))
+#' p3 = st_sfc(st_point(c(1, 0)))
+#'
+#' st_match(c(p1, p2, p2, p3, p1))
+#'
+#' @importFrom sf st_equals
+#' @export
+st_match = function(x) {
+  idxs = do.call("c", lapply(st_equals(x), `[`, 1))
+  match(idxs, unique(idxs))
+}
+
+#' @importFrom sf st_geometry
+#' @importFrom sfheaders sfc_to_df
+st_match_points = function(x, precision = attr(x, "precision")) {
+  x_df = sfc_to_df(x)
+  coords = x_df[, names(x_df) %in% c("x", "y", "z", "m")]
+  st_match_points_df(coords, precision = precision)
+}
+
+st_match_points_df = function(x, precision = NULL) {
+  x_trim = lapply(x, round, digits = precision_digits(precision))
+  x_concat = do.call(paste, x_trim)
+  match(x_concat, unique(x_concat))
+}
+
+#' Rounding of geometry coordinates
+#'
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
+#'
+#' @param digits Integer indicating the number of decimal places to be used.
+#'
+#' @return An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+#' with rounded coordinates.
+#'
+#' @seealso \code{\link{round}}
+#'
+#' @examples
+#' library(sf, quietly = TRUE)
+#'
+#' p1 = st_sfc(st_point(c(1.123, 1.123)))
+#' p2 = st_sfc(st_point(c(0.789, 0.789)))
+#' p3 = st_sfc(st_point(c(1.123, 0.789)))
+#'
+#' st_round(st_as_sf(c(p1, p2, p2, p3, p1)), digits = 1)
+#'
+#' @importFrom sf st_as_binary st_as_sfc st_geometry st_geometry<-
+#' st_precision<-
+#' @export
+st_round = function(x, digits = 0) {
+  x_geom = st_geometry(x)
+  st_precision(x_geom) = 10^digits
+  x_geom_rounded = st_as_sfc(st_as_binary(x_geom))
+  st_geometry(x) = x_geom_rounded
+  x
+}
+
+#' Convert a sfc object into a sf object.
+#'
+#' @param x An object of class \code{\link[sf]{sfc}}.
+#'
+#' @param colname The name that should be given to the geometry column.
+#'
+#' @return An object of class \code{\link[sf]{sf}}.
+#'
+#' @importFrom sf st_as_sf
+#' @noRd
+sfc_to_sf = function(x, colname = "geometry") {
+  x_sf = st_as_sf(x)
+  names(x_sf) = colname
+  attr(x_sf, "sf_column") = colname
+  x_sf
+}
+
+#' Convert a sfheaders data frame into sfc point geometries
+#'
+#' @param x_df An object of class \code{\link{data.frame}} as constructed by
+#' the \pkg{sfheaders} package.
+#'
+#' @param x_sf The object of class \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}} from which \code{x_df} was constructed. This is used
+#' to copy the CRS and the precision to the new geometries.
+#'
+#' @param select Should coordinate columns first be selected from the given
+#' data frame? If \code{TRUE}, columns with names "x", "y", "z" and "m" will
+#' first be selected from the data frame. If \code{FALSE}, it is assumed the
+#' data frame only contains (a subset of) these columns in exactly that order.
+#' Defaults to \code{TRUE}.
+#'
+#' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
 #' geometries.
 #'
-#' @details It is assumed that the given LINESTRING geometries form the edges.
-#' Nodes need to be created at the boundary points of the edges. Identical
-#' boundary points should become the same node.
-#'
-#' @return A list with the edges as an object of class \code{\link[sf]{sf}}
-#' with \code{LINESTRING} geometries and the created nodes as an object of
-#' class \code{\link[sf]{sf}} with \code{POINT} geometries.
-#'
-#' @importFrom sf st_sf
+#' @importFrom sf st_crs st_crs<- st_precision st_precision<-
+#' @importFrom sfheaders sfc_point
 #' @noRd
-create_nodes_from_edges = function(edges) {
-  # Get the boundary points of the edges.
-  nodes = linestring_boundary_points(edges)
-  # Give each unique location a unique ID.
-  indices = st_match(nodes)
-  # Define for each endpoint if it is a source or target node.
-  is_source = rep(c(TRUE, FALSE), length(nodes) / 2)
-  # Define for each edges which node is its source and target node.
-  if ("from" %in% colnames(edges)) raise_overwrite("from")
-  edges$from = indices[is_source]
-  if ("to" %in% colnames(edges)) raise_overwrite("to")
-  edges$to = indices[!is_source]
-  # Remove duplicated nodes from the nodes table.
-  nodes = nodes[!duplicated(indices)]
-  # Convert to sf object
-  nodes = st_sf(geometry = nodes)
-  # Use the same sf column name as in the edges.
-  edges_geom_colname = attr(edges, "sf_column")
-  if (edges_geom_colname != "geometry") {
-    names(nodes)[1] = edges_geom_colname
-    attr(nodes, "sf_column") = edges_geom_colname
-  }
-  # Return a list with both the nodes and edges.
-  class(nodes) = class(edges)
-  list(nodes = nodes, edges = edges)
+df_to_points = function(x_df, x_sf, select = TRUE) {
+  if (select) x_df = x_df[, names(x_df) %in% c("x", "y", "z", "m")]
+  pts = sfc_point(x_df)
+  st_crs(pts) = st_crs(x_sf)
+  st_precision(pts) = st_precision(x_sf)
+  pts
+}
+
+#' Convert a sfheaders data frame into sfc linestring geometries
+#'
+#' @param x_df An object of class \code{\link{data.frame}} as constructed by
+#' the \pkg{sfheaders} package.
+#'
+#' @param x_sf The object of class \code{\link[sf]{sf}} or
+#' \code{\link[sf]{sfc}} from which \code{x_df} was constructed. This is used
+#' to copy the CRS and the precision to the new geometries.
+#'
+#' @param id_col The name of the column in \code{x_df} that identifies which
+#' row belongs to which linestring.
+#'
+#' @param select Should coordinate columns first be selected from the given
+#' data frame? If \code{TRUE}, columns with names "x", "y", "z" and "m" will
+#' first be selected from the data frame, alongside the specified index column.
+#' If \code{FALSE}, it is assumed that the data frame besides the specified
+#' index columns only contains (a subset of) these coordinate columns in
+#' exactly that order. Defaults to \code{TRUE}.
+#'
+#' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
+#' geometries.
+#'
+#' @importFrom sf st_crs st_crs<- st_precision st_precision<-
+#' @importFrom sfheaders sfc_linestring
+#' @noRd
+df_to_lines = function(x_df, x_sf, id_col = "linestring_id", select = TRUE) {
+  if (select) x_df = x_df[, names(x_df) %in% c("x", "y", "z", "m", id_col)]
+  lns = sfc_linestring(x_df, linestring_id = id_col)
+  st_crs(lns) = st_crs(x_sf)
+  st_precision(lns) = st_precision(x_sf)
+  lns
+}
+
+#' Convert a sfheaders data frame into a vector of coordinate strings
+#'
+#' @param x An object of class \code{\link{data.frame}} as constructed by
+#' the \pkg{sfheaders} package.
+#'
+#' @param precision A fixed precision scale factor specifying the precision to
+#' used when rounding the coordinates. For more information on fixed precision
+#' scale factors see \code{\link[sf]{st_as_binary}}. When the precision scale
+#' factor is 0 or \code{NULL}, sfnetworks defaults to 12 decimal places.
+#'
+#' @param select Should coordinate columns first be selected from the given
+#' data frame? If \code{TRUE}, columns with names "x", "y", "z" and "m" will
+#' first be selected from the data frame. If \code{FALSE}, it is assumed that
+#' the data frame only contains (a subset of) these coordinate columns in
+#' exactly that order. Defaults to \code{TRUE}.
+#'
+#' @return A character vector with each element being the concatenated
+#' coordinate values of a row in \code{x}.
+#'
+#' @noRd
+df_to_coords = function(x, precision = NULL, select = TRUE) {
+  if (select) x = x[, names(x) %in% c("x", "y", "z", "m")]
+  coords = lapply(x, round, digits = precision_digits(precision))
+  do.call(paste, coords)
+}
+
+#' Get the boundary points of linestring geometries
+#'
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+#' with \code{LINESTRING} geometries.
+#'
+#' @param return_df Should a data frame with one column per coordinate be
+#' returned instead of a \code{\link[sf]{sfc}} object? Defaults to
+#' \code{FALSE}.
+#'
+#' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
+#' geometries, of length equal to twice the number of lines in x, and ordered
+#' as [start of line 1, end of line 1, start of line 2, end of line 2, ...].
+#' If \code{return_df = TRUE}, a data frame with one column per coordinate is
+#' returned instead, with number of rows equal to twice the number of lines in
+#' x.
+#'
+#' @details With boundary points we mean the points at the start and end of
+#' a linestring.
+#'
+#' @importFrom sf st_geometry
+#' @importFrom sfheaders sfc_to_df
+#' @noRd
+linestring_boundary_points = function(x, return_df = FALSE) {
+  coords = sfc_to_df(st_geometry(x))
+  is_start = !duplicated(coords[["linestring_id"]])
+  is_end = !duplicated(coords[["linestring_id"]], fromLast = TRUE)
+  is_bound = is_start | is_end
+  bounds = coords[is_bound, names(coords) %in% c("x", "y", "z", "m")]
+  if (return_df) return (bounds)
+  df_to_points(bounds, x, select = FALSE)
+}
+
+#' Get the start points of linestring geometries
+#'
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+#' with \code{LINESTRING} geometries.
+#'
+#' @param return_df Should a data frame with one column per coordinate be
+#' returned instead of a \code{\link[sf]{sfc}} object? Defaults to
+#' \code{FALSE}.
+#'
+#' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
+#' geometries, of length equal to the number of lines in x. If
+#' \code{return_df = TRUE}, a data frame with one column per coordinate is
+#' returned instead, with number of rows equal to the number of lines in x.
+#'
+#' @importFrom sf st_geometry
+#' @importFrom sfheaders sfc_to_df
+#' @noRd
+linestring_start_points = function(x, return_df = FALSE) {
+  coords = sfc_to_df(st_geometry(x))
+  is_start = !duplicated(coords[["linestring_id"]])
+  starts = coords[is_start, names(coords) %in% c("x", "y", "z", "m")]
+  if (return_df) return (starts)
+  df_to_points(starts, x, select = FALSE)
+}
+
+#' Get the end points of linestring geometries
+#'
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+#' with \code{LINESTRING} geometries.
+#'
+#' @param return_df Should a data frame with one column per coordinate be
+#' returned instead of a \code{\link[sf]{sfc}} object? Defaults to
+#' \code{FALSE}.
+#'
+#' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
+#' geometries, of length equal to the number of lines in x. If
+#' \code{return_df = TRUE}, a data frame with one column per coordinate is
+#' returned instead, with number of rows equal to the number of lines in x.
+#'
+#' @importFrom sf st_geometry
+#' @importFrom sfheaders sfc_to_df
+#' @noRd
+linestring_end_points = function(x ,return_df = FALSE) {
+  coords = sfc_to_df(st_geometry(x))
+  is_end = !duplicated(coords[["linestring_id"]], fromLast = TRUE)
+  ends = coords[is_end, names(coords) %in% c("x", "y", "z", "m")]
+  if (return_df) return (ends)
+  df_to_points(ends, x, select = FALSE)
+}
+
+#' Get the segments of linestring geometries
+#'
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+#' with \code{LINESTRING} geometries.
+#'
+#' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
+#' geometries.
+#'
+#' @details With a line segment we mean a linestring geometry that has no
+#' interior points.
+#'
+#' @importFrom sf st_geometry
+#' @importFrom sfheaders sfc_to_df
+#' @noRd
+linestring_segments = function(x, return_df = FALSE) {
+  # Decompose lines into the points that shape them.
+  line_points = sfc_to_df(st_geometry(x))
+  # Define which of the points are a startpoint of a line.
+  # Define which of the points are an endpoint of a line.
+  is_start = !duplicated(line_points[["linestring_id"]])
+  is_end = !duplicated(line_points[["linestring_id"]], fromLast = TRUE)
+  # Extract coordinates of the point that are a startpoint of a segment.
+  # Extract coordinates of the point that are an endpoint of a segment.
+  segment_starts = line_points[!is_end, ]
+  segment_ends = line_points[!is_start, ]
+  segment_starts$segment_id = seq_len(nrow(segment_starts))
+  segment_ends$segment_id = seq_len(nrow(segment_ends))
+  # Construct the segments.
+  segment_points = rbind(segment_starts, segment_ends)
+  segment_points = segment_points[order(segment_points$segment_id), ]
+  if (return_df) return (segment_points)
+  df_to_lines(segment_points, x, id_col = "segment_id")
+}
+
+#' Forcefully cast multilinestrings to single linestrings.
+#'
+#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
+#' with \code{MULTILINESTRING} geometries or a combination of
+#' \code{LINESTRING} geometries and \code{MULTILINESTRING} geometries.
+#'
+#' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
+#' geometries.
+#'
+#' @details This may create invalid linestrings according to the simple feature
+#' standard, e.g. linestrings may cross themselves.
+#'
+#' @importFrom sf st_geometry
+#' @importFrom sfheaders sfc_to_df
+#' @noRd
+force_multilinestrings_to_linestrings = function(x) {
+  # Decompose lines into the points that shape them.
+  pts = sfc_to_df(st_geometry(x))
+  # Add a linestring ID to each of these points.
+  # Points of a multilinestring should all have the same ID.
+  is_in_multi = !is.na(pts$multilinestring_id)
+  pts$linestring_id[is_in_multi] = pts$multilinestring_id[is_in_multi]
+  # (Re)create linestring geometries.
+  df_to_lines(pts, x, id_col = "linestring_id")
 }
 
 #' Draw lines between two sets of points, row-wise
@@ -128,329 +427,127 @@ create_nodes_from_edges = function(edges) {
 #' @importFrom sfheaders sfc_linestring sfc_to_df
 #' @noRd
 draw_lines = function(x, y) {
-  df = rbind(sfc_to_df(x), sfc_to_df(y))
-  df = df[order(df$point_id), ]
-  lines = sfc_linestring(df, x = "x", y = "y", linestring_id = "point_id")
-  st_crs(lines) = st_crs(x)
-  st_precision(lines) = st_precision(x)
-  lines
+  all_points = rbind(sfc_to_df(x), sfc_to_df(y))
+  all_points = all_points[order(all_points$point_id), ]
+  df_to_lines(all_points, x, id_col = "point_id")
 }
 
-#' Get the geometries of the boundary nodes of edges in an sfnetwork
+#' Merge multiple linestring geometries into one linestring
 #'
-#' @param x An object of class \code{\link{sfnetwork}}.
+#' @param x An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
+#' geometries.
 #'
-#' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
-#' geometries, of length equal to twice the number of edges in x, and ordered
-#' as [start of edge 1, end of edge 1, start of edge 2, end of edge 2, ...].
+#' @details If linestrings share endpoints they will be connected and form a
+#' single linestring. If there are multiple disconnected components the result
+#' will be a multi-linestring. If \code{x} does not contain any geometries, the
+#' result will be an empty linestring.
 #'
-#' @details Boundary nodes differ from boundary points in the sense that
-#' boundary points are retrieved by taking the boundary points of the
-#' \code{LINESTRING} geometries of edges, while boundary nodes are retrieved
-#' by querying the nodes table of a network with the `to` and `from` columns
-#' in the edges table. In a valid network structure, boundary nodes should be
-#' equal to boundary points.
+#' @return An object of class \code{\link[sf]{sfc}} with a single
+#' \code{LINESTRING} or \code{MULTILINESTRING} geometry.
 #'
-#' @importFrom igraph E ends
-#' @importFrom sf st_as_sf st_geometry
+#' @importFrom sf st_crs st_linestring st_line_merge st_sfc
 #' @noRd
-edge_boundary_nodes = function(x) {
-  nodes = pull_node_geom(x)
-  id_mat = ends(x, E(x), names = FALSE)
-  id_vct = as.vector(t(id_mat))
-  nodes[id_vct]
-}
-
-#' Get the indices of the boundary nodes of edges in an sfnetwork
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @param matrix Should te result be returned as a two-column matrix? Defaults
-#' to \code{FALSE}.
-#'
-#' @return If matrix is \code{FALSE}, a numeric vector of length equal to twice
-#' the number of edges in x, and ordered as
-#' [start of edge 1, end of edge 1, start of edge 2, end of edge 2, ...]. If
-#' matrix is \code{TRUE}, a two-column matrix, with the number of rows equal to
-#' the number of edges in the network. The first column contains the indices of
-#' the start nodes of the edges, the seconds column contains the indices of the
-#' end nodes of the edges.
-#'
-#' @importFrom igraph E ends
-#' @noRd
-edge_boundary_node_indices = function(x, matrix = FALSE) {
-  ends = ends(x, E(x), names = FALSE)
-  if (matrix) ends else as.vector(t(ends))
-}
-
-#' Get the geometries of the boundary points of edges in an sfnetwork
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
-#' geometries, of length equal to twice the number of edges in x, and ordered
-#' as [start of edge 1, end of edge 1, start of edge 2, end of edge 2, ...].
-#'
-#' @details Boundary points differ from boundary nodes in the sense that
-#' boundary points are retrieved by taking the boundary points of the
-#' \code{LINESTRING} geometries of edges, while boundary nodes are retrieved
-#' by querying the nodes table of a network with the `to` and `from` columns
-#' in the edges table. In a valid network structure, boundary nodes should be
-#' equal to boundary points.
-#'
-#' @importFrom sf st_as_sf
-#' @noRd
-edge_boundary_points = function(x) {
-  edges = pull_edge_geom(x)
-  linestring_boundary_points(edges)
-}
-
-#' Get the node indices of the boundary points of edges in an sfnetwork
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @param matrix Should te result be returned as a two-column matrix? Defaults
-#' to \code{FALSE}.
-#'
-#' @return If matrix is \code{FALSE}, a numeric vector of length equal to twice
-#' the number of edges in x, and ordered as
-#' [start of edge 1, end of edge 1, start of edge 2, end of edge 2, ...]. If
-#' matrix is \code{TRUE}, a two-column matrix, with the number of rows equal to
-#' the number of edges in the network. The first column contains the node
-#' indices of the start points of the edges, the seconds column contains the
-#' node indices of the end points of the edges.
-#'
-#' @importFrom igraph ecount
-#' @importFrom sf st_equals
-#' @noRd
-edge_boundary_point_indices = function(x, matrix = FALSE) {
-    nodes = pull_node_geom(x)
-    edges = edges_as_sf(x)
-    idxs_lst = st_equals(linestring_boundary_points(edges), nodes)
-    idxs_vct = do.call("c", idxs_lst)
-    # In most networks the location of a node will be unique.
-    # However, this is not a requirement.
-    # There may be cases where multiple nodes share the same geometry.
-    # Then some more processing is needed to find the correct indices.
-    if (length(idxs_vct) != ecount(x) * 2) {
-      n = length(idxs_lst)
-      from = idxs_lst[seq(1, n - 1, 2)]
-      to = idxs_lst[seq(2, n, 2)]
-      p_idxs = mapply(c, from, to, SIMPLIFY = FALSE)
-      n_idxs = mapply(c, edges$from, edges$to, SIMPLIFY = FALSE)
-      find_indices = function(a, b) {
-        idxs = a[a %in% b]
-        if (length(idxs) > 2) b else idxs
-      }
-      idxs_lst = mapply(find_indices, p_idxs, n_idxs, SIMPLIFY = FALSE)
-      idxs_vct = do.call("c", idxs_lst)
-    }
-    if (matrix) t(matrix(idxs_vct, nrow = 2)) else idxs_vct
-}
-
-#' Make edges spatially explicit
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @return An object of class \code{\link{sfnetwork}} with spatially explicit
-#' edges.
-#'
-#' @importFrom rlang !! :=
-#' @importFrom sf st_geometry
-#' @importFrom tidygraph mutate
-#' @noRd
-explicitize_edges = function(x) {
-  if (has_explicit_edges(x)) {
-    x
+merge_lines = function(x) {
+  if (length(x) == 0) {
+    st_sfc(st_linestring(), crs = st_crs(x))
   } else {
-    # Extract the node geometries from the network.
-    nodes = pull_node_geom(x)
-    # Get the indices of the boundary nodes of each edge.
-    # Returns a matrix with source ids in column 1 and target ids in column 2.
-    ids = edge_boundary_node_indices(x, matrix = TRUE)
-    # Get the boundary node geometries of each edge.
-    from = nodes[ids[, 1]]
-    to = nodes[ids[, 2]]
-    # Draw linestring geometries between the boundary nodes of each edge.
-    mutate_edge_geom(x, draw_lines(from, to))
+    st_line_merge(st_combine(x))
   }
 }
 
-#' Get the nearest nodes to given features
+#' Merge two spatial bounding box objects
 #'
-#' @param x An object of class \code{\link{sfnetwork}}.
+#' @param a An object of class \code{\link[sf:st_bbox]{bbox}}.
 #'
-#' @param y Spatial features as object of class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}.
+#' @param b An object of class \code{\link[sf:st_bbox]{bbox}}.
 #'
-#' @return An object of class \code{\link[sf]{sf}} containing \code{POINT}
-#' geometry. The number of rows will be equal to the amount of features in
-#' \code{y}.
+#' @note This function assumes that \code{a} and \code{b} have equal coordinate
+#' reference systems.
 #'
-#' @importFrom sf st_geometry st_nearest_feature
+#' @return An object of class \code{\link[sf:st_bbox]{bbox}} containing the
+#' most extreme coordinates of \code{a} and \code{b}.
+#'
 #' @noRd
-get_nearest_node = function(x, y) {
-  nodes = nodes_as_sf(x)
-  nodes[st_nearest_feature(st_geometry(y), nodes), ]
+merge_bboxes = function(a, b) {
+  ab = a
+  ab["xmin"] = min(a["xmin"], b["xmin"])
+  ab["ymin"] = min(a["ymin"], b["ymin"])
+  ab["xmax"] = max(a["xmax"], b["xmax"])
+  ab["ymax"] = max(a["ymax"], b["ymax"])
+  ab
 }
 
-#' Get the index of the nearest nodes to given features
+#' Merge two spatial z range objects
 #'
-#' @param x An object of class \code{\link{sfnetwork}}.
+#' @param a An object of class \code{\link[sf:st_z_range]{z_range}}.
 #'
-#' @param y Spatial features as object of class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}.
+#' @param b An object of class \code{\link[sf:st_z_range]{z_range}}.
 #'
-#' @return An vector integers. The length of the vector will be equal to the
-#' amount of features in \code{y}.
+#' @note This function assumes that \code{a} and \code{b} have equal coordinate
+#' reference systems.
 #'
-#' @importFrom sf st_geometry st_nearest_feature
+#' @return An object of class \code{\link[sf:st_z_range]{z_range}} containing
+#' the most extreme coordinates of \code{a} and \code{b}.
+#'
 #' @noRd
-get_nearest_node_index = function(x, y) {
-  st_nearest_feature(st_geometry(y), nodes_as_sf(x))
+merge_zranges = function(a, b) {
+  ab = a
+  ab["zmin"] = min(a["zmin"], b["zmin"])
+  ab["zmax"] = max(a["zmax"], b["zmax"])
+  ab
 }
 
-#' Make edges spatially implicit
+#' Merge two spatial m range objects
 #'
-#' @param x An object of class \code{\link{sfnetwork}}.
-
-#' @return An object of class \code{\link{sfnetwork}} with spatially implicit
-#' edges.
+#' @param a An object of class \code{\link[sf:st_m_range]{m_range}}.
+#'
+#' @param b An object of class \code{\link[sf:st_m_range]{m_range}}.
+#'
+#' @note This function assumes that \code{a} and \code{b} have equal coordinate
+#' reference systems.
+#'
+#' @return An object of class \code{\link[sf:st_m_range]{m_range}} containing
+#' the most extreme coordinates of \code{a} and \code{b}.
 #'
 #' @noRd
-implicitize_edges = function(x) {
-  if (has_explicit_edges(x)) {
-    drop_edge_geom(x)
-  } else {
-    x
-  }
+merge_mranges = function(a, b) {
+  ab = a
+  ab["mmin"] = min(a["mmin"], b["mmin"])
+  ab["mmax"] = max(a["mmax"], b["mmax"])
+  ab
 }
 
-#' Get the boundary points of linestring geometries
+#' Infer the number of decimal places from a fixed precision scale factor
 #'
-#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
-#' with \code{LINESTRING} geometries.
+#' @param x A fixed precision scale factor.
 #'
-#' @return An object of class \code{\link[sf]{sfc}} with \code{POINT}
-#' geometries, of length equal to twice the number of lines in x, and ordered
-#' as [start of line 1, end of line 1, start of line 2, end of line 2, ...].
+#' @details For more information on fixed precision scale factors see
+#' \code{\link[sf]{st_as_binary}}. When the precision scale factor is 0
+#' or not defined, sfnetworks defaults to 12 decimal places.
 #'
-#' @details With boundary points we mean the points at the start and end of
-#' a linestring.
+#' @return A numeric value specifying the number of decimal places.
 #'
-#' @importFrom sf st_crs st_crs<- st_geometry st_precision st_precision<-
-#' @importFrom sfheaders sfc_point sfc_to_df
+#' @importFrom cli cli_abort
 #' @noRd
-linestring_boundary_points = function(x) {
-  # Extract coordinates.
-  coords = sfc_to_df(st_geometry(x))
-  # Find row-indices of the first and last coordinate pair of each linestring.
-  # These are the boundary points.
-  first_pair = !duplicated(coords[["sfg_id"]])
-  last_pair = !duplicated(coords[["sfg_id"]], fromLast = TRUE)
-  idxs = first_pair | last_pair
-  # Extract boundary point coordinates.
-  pairs = coords[idxs, names(coords) %in% c("x", "y", "z", "m")]
-  # Rebuild sf structure.
-  points = sfc_point(pairs)
-  st_crs(points) = st_crs(x)
-  st_precision(points) = st_precision(x)
-  points
+precision_digits = function(x) {
+  if (is.null(x) || x == 0) return (12)
+  if (x > 0) return (log(x, 10))
+  cli_abort("Currently sfnetworks does not support negative precision")
 }
 
-#' Get the segments of linestring geometries
+#' List-column friendly version of bind_rows
 #'
-#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
-#' with \code{LINESTRING} geometries.
+#' @param ... Tables to be row-binded.
 #'
-#' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
-#' geometries.
+#' @details Behaviour of this function should be similar to rbindlist from the
+#' data.table package.
 #'
-#' @details With a line segment we mean a linestring geometry that has no
-#' interior points.
-#'
-#' @importFrom sf st_crs st_crs<- st_geometry st_precision st_precision<-
-#' @importFrom sfheaders sfc_linestring sfc_to_df
+#' @importFrom dplyr across bind_rows mutate
 #' @noRd
-linestring_segments = function(x) {
-  # Decompose lines into the points that shape them.
-  pts = sfc_to_df(st_geometry(x))
-  # Define which of the points are a startpoint of a line.
-  # Define which of the points are an endpoint of a line.
-  is_startpoint = !duplicated(pts[["linestring_id"]])
-  is_endpoint = !duplicated(pts[["linestring_id"]], fromLast = TRUE)
-  # Extract the coordinates from the points.
-  coords = pts[names(pts) %in% c("x", "y", "z", "m")]
-  # Extract coordinates of the point that are a startpoint of a segment.
-  # Extract coordinates of the point that are an endpoint of a segment.
-  src_coords = coords[!is_endpoint, ]
-  trg_coords = coords[!is_startpoint, ]
-  src_coords$segment_id = seq_len(nrow(src_coords))
-  trg_coords$segment_id = seq_len(nrow(trg_coords))
-  # Construct the segments.
-  segment_pts = rbind(src_coords, trg_coords)
-  segment_pts = segment_pts[order(segment_pts$segment_id), ]
-  segments = sfc_linestring(segment_pts, linestring_id = "segment_id")
-  st_crs(segments) = st_crs(x)
-  st_precision(segments) = st_precision(x)
-  segments
-}
-
-#' Cast multilinestrings to single linestrings.
-#'
-#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}
-#' with \code{MULTILINESTRING} geometries or a combination of
-#' \code{LINESTRING} geometries and \code{MULTILINESTRING} geometries.
-#'
-#' @return An object of class \code{\link[sf]{sfc}} with \code{LINESTRING}
-#' geometries.
-#'
-#' @details This may create invalid linestrings according to the simple feature
-#' standard, e.g. linestrings may cross themselves.
-#'
-#' @importFrom sf st_crs st_crs<- st_geometry st_precision st_precision<-
-#' @importFrom sfheaders sfc_linestring sfc_to_df
-#' @noRd
-multilinestrings_to_linestrings = function(x) {
-  # Decompose lines into the points that shape them.
-  pts = sfc_to_df(st_geometry(x))
-  # Add a linestring ID to each of these points.
-  # Points of a multilinestring should all have the same ID.
-  is_in_multi = !is.na(pts$multilinestring_id)
-  pts$linestring_id[is_in_multi] = pts$multilinestring_id[is_in_multi]
-  # Select only coordinate and ID columns.
-  pts = pts[, names(pts) %in% c("x", "y", "z", "m", "linestring_id")]
-  # (Re)create linestring geometries.
-  lines = sfc_linestring(pts, linestring_id = "linestring_id")
-  st_crs(lines) = st_crs(x)
-  st_precision(lines) = st_precision(x)
-  lines
-}
-
-#' Determine duplicated geometries
-#'
-#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
-#'
-#' @return A logical vector of the same length as \code{x}.
-#'
-#' @importFrom sf st_equals
-#' @noRd
-st_duplicated = function(x) {
-  dup = rep(FALSE, length(x))
-  dup[unique(do.call("c", lapply(st_equals(x), `[`, - 1)))] = TRUE
-  dup
-}
-
-#' Geometry matching
-#'
-#' @param x An object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.
-#'
-#' @return A numeric vector giving for each feature in x the row number of the
-#' first feature in x that has equal coordinates.
-#'
-#' @importFrom sf st_equals
-#' @noRd
-st_match = function(x) {
-  idxs = do.call("c", lapply(st_equals(x), `[`, 1))
-  match(idxs, unique(idxs))
+bind_rows_list = function(...) {
+  cols_as_list = function(x) list2DF(lapply(x, function(y) unname(as.list(y))))
+  ins = lapply(list(...), cols_as_list)
+  out = bind_rows(ins)
+  is_listcol = vapply(out, function(x) any(lengths(x) > 1), logical(1))
+  mutate(out, across(which(!is_listcol), unlist))
 }

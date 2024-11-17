@@ -1,11 +1,11 @@
-#' Blend geospatial points into a spatial network
+#' Blend spatial points into a spatial network
 #'
-#' Blending a point into a network is the combined process of first snapping
-#' the given point to its nearest point on its nearest edge in the network,
-#' subsequently splitting that edge at the location of the snapped point, and
-#' finally adding the snapped point as node to the network. If the location
-#' of the snapped point is already a node in the network, the attributes of the
-#' point (if any) will be joined to that node.
+#' Blending a point into a network is the combined process of first projecting
+#' the point onto its nearest point on its nearest edge in the network, then
+#' subdividing that edge at the location of the projected point, and finally
+#' adding the projected point as node to the network. If the location of the
+#' projected point is equal an existing node in the network, the attributes of
+#' the point will be joined to that node, instead of adding a new node.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
@@ -19,355 +19,386 @@
 #' meters. If set to \code{Inf} all features will be blended. Defaults to
 #' \code{Inf}.
 #'
+#' @param ignore_duplicates If there are multiple points in \code{y} that have
+#' the same projected location, only the first one of them is blended into
+#' the network. But what should happen with the others? If this argument is set
+#' to \code{TRUE}, they will be ignored. If this argument is set to
+#' \code{FALSE}, they will be added as isolated nodes to the returned network.
+#' Nodes at equal locations can then be merged using the spatial morpher
+#' \code{\link{to_spatial_unique}}. Defaults to \code{TRUE}.
+#'
 #' @return The blended network as an object of class \code{\link{sfnetwork}}.
 #'
-#' @details There are two important details to be aware of. Firstly: when the
-#' snap locations of multiple points are equal, only the first of these points
-#' is blended into the network. By arranging \code{y} before blending you can
-#' influence which (type of) point is given priority in such cases.
-#' Secondly: when the snap location of a point intersects with multiple edges,
-#' it is only blended into the first of these edges. You might want to run the
-#' \code{\link{to_spatial_subdivision}} morpher after blending, such that
-#' intersecting but unconnected edges get connected.
+#' @details When the projected location of a given point intersects with more
+#' than one edge, it is only blended into the first of these edges. Edges are
+#' not connected at blending locations. Use the spatial morpher
+#' \code{\link{to_spatial_subdivision}} for that.
+#'
+#' To determine if a projected point is equal to an existing node, and to
+#' determine if multiple projected points are equal to each other, sfnetworks
+#' by default rounds coordinates to 12 decimal places. You can influence this
+#' behavior by explicitly setting the precision of the network using
+#' \code{\link[sf]{st_set_precision}}.
 #'
 #' @note Due to internal rounding of rational numbers, it may occur that the
 #' intersection point between a line and a point is not evaluated as
 #' actually intersecting that line by the designated algorithm. Instead, the
 #' intersection point lies a tiny-bit away from the edge. Therefore, it is
 #' recommended to set the tolerance to a very small number (for example 1e-5)
-#' even if you only want to blend points that intersect the line.
+#' even if you only want to blend points that intersect an edge.
 #'
 #' @examples
 #' library(sf, quietly = TRUE)
 #'
-#' # Create a network and a set of points to blend.
-#' n11 = st_point(c(0,0))
-#' n12 = st_point(c(1,1))
-#' e1 = st_sfc(st_linestring(c(n11, n12)), crs = 3857)
+#' oldpar = par(no.readonly = TRUE)
+#' par(mar = c(1,1,1,1), mfrow = c(1,2))
 #'
-#' n21 = n12
-#' n22 = st_point(c(0,2))
-#' e2 = st_sfc(st_linestring(c(n21, n22)), crs = 3857)
+#' # Create a spatial network.
+#' n1 = st_point(c(0, 0))
+#' n2 = st_point(c(1, 0))
+#' n3 = st_point(c(2, 0))
 #'
-#' n31 = n22
-#' n32 = st_point(c(-1,1))
-#' e3 = st_sfc(st_linestring(c(n31, n32)), crs = 3857)
+#' e1 = st_sfc(st_linestring(c(n1, n2)), crs = 3857)
+#' e2 = st_sfc(st_linestring(c(n2, n3)), crs = 3857)
 #'
-#' net = as_sfnetwork(c(e1,e2,e3))
+#' net = as_sfnetwork(c(e1, e2))
 #'
-#' pts = net %>%
-#'   st_bbox() %>%
-#'   st_as_sfc() %>%
-#'   st_sample(10, type = "random") %>%
-#'   st_set_crs(3857) %>%
-#'   st_cast('POINT')
+#' # Create spatial points to blend in.
+#' p1 = st_sfc(st_point(c(0.5, 0.1)))
+#' p2 = st_sfc(st_point(c(0.5, -0.2)))
+#' p3 = st_sfc(st_point(c(1, 0.2)))
+#' p4 = st_sfc(st_point(c(1.75, 0.2)))
+#' p5 = st_sfc(st_point(c(1.25, 0.1)))
 #'
-#' # Blend points into the network.
-#' # --> By default tolerance is set to Inf
-#' # --> Meaning that all points get blended
+#' pts = st_sf(foo = letters[1:5], geometry = c(p1, p2, p3, p4, p5), crs = 3857)
+#'
+#' # Blend all points into the network.
 #' b1 = st_network_blend(net, pts)
 #' b1
 #'
-#' # Blend points with a tolerance.
-#' tol = units::set_units(0.2, "m")
+#' plot(net)
+#' plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
+#' plot(b1)
+#' plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
+#'
+#' # Blend points within a tolerance distance.
+#' tol = units::set_units(0.1, "m")
 #' b2 = st_network_blend(net, pts, tolerance = tol)
 #' b2
 #'
-#' ## Plot results.
-#' # Initial network and points.
-#' oldpar = par(no.readonly = TRUE)
-#' par(mar = c(1,1,1,1), mfrow = c(1,3))
-#' plot(net, cex = 2, main = "Network + set of points")
-#' plot(pts, cex = 2, col = "red", pch = 20, add = TRUE)
+#' plot(net)
+#' plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
+#' plot(b2)
+#' plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
 #'
-#' # Blend with no tolerance
-#' plot(b1, cex = 2, main = "Blend with tolerance = Inf")
-#' plot(pts, cex = 2, col = "red", pch = 20, add = TRUE)
+#' # Add points with duplicated projected location as isolated nodes.
+#' b3 = st_network_blend(net, pts, ignore_duplicates = FALSE)
+#' b3
 #'
-#' # Blend with tolerance.
-#' within = st_is_within_distance(pts, st_geometry(net, "edges"), tol)
-#' pts_within = pts[lengths(within) > 0]
-#' plot(b2, cex = 2, main = "Blend with tolerance = 0.2 m")
-#' plot(pts, cex = 2, col = "grey", pch = 20, add = TRUE)
-#' plot(pts_within, cex = 2, col = "red", pch = 20, add = TRUE)
 #' par(oldpar)
 #'
 #' @export
-st_network_blend = function(x, y, tolerance = Inf) {
+st_network_blend = function(x, y, tolerance = Inf, ignore_duplicates = TRUE) {
   UseMethod("st_network_blend")
 }
 
+#' @importFrom cli cli_abort
+#' @importFrom tidygraph unfocus
 #' @export
-st_network_blend.sfnetwork = function(x, y, tolerance = Inf) {
-  require_explicit_edges(x, hard = TRUE)
-  stopifnot(has_single_geom_type(y, "POINT"))
-  stopifnot(have_equal_crs(x, y))
-  stopifnot(as.numeric(tolerance) >= 0)
-  if (will_assume_planar(x)) raise_assume_planar("st_network_blend")
-  blend_(x, y, tolerance)
+st_network_blend.sfnetwork = function(x, y, tolerance = Inf,
+                                      ignore_duplicates = TRUE) {
+  x = unfocus(x)
+  if (! has_explicit_edges(x)) {
+    cli_abort(c(
+      "{.arg x} should have spatially explicit edges.",
+      "i" = "Call {.fn sfnetworks::to_spatial_explicit} to explicitize edges."
+    ))
+  }
+  if (! are_points(y)) {
+    cli_abort("All features in {.arg y} should have {.cls POINT} geometries.")
+  }
+  if (! have_equal_crs(x, y)) {
+    cli_abort(c(
+      "{.arg x} and {.arg y} should have the same CRS.",
+      "i" = "Call {.fn sf::st_transform} to transform to a different CRS."
+    ))
+  }
+  if (! as.numeric(tolerance) >= 0) {
+    cli_abort("{.arg tolerance} should be positive.")
+  }
+  if (will_assume_projected(x)) {
+    raise_assume_projected("st_network_blend")
+  }
+  blend(x, y, tolerance = tolerance, ignore_duplicates = ignore_duplicates)
 }
 
-#' @importFrom dplyr bind_rows full_join
-#' @importFrom igraph is_directed vcount
-#' @importFrom sf st_as_sf st_cast st_crs st_crs<- st_distance st_equals
-#' st_geometry st_geometry<- st_intersects st_is_within_distance
-#' st_nearest_feature st_nearest_points st_precision st_precision<-
-#' @importFrom sfheaders sfc_linestring sfc_to_df
+#' @importFrom cli cli_warn
+#' @importFrom dplyr bind_rows left_join
+#' @importFrom igraph is_directed
+#' @importFrom sf st_distance st_drop_geometry st_geometry st_geometry<-
+#' st_is_within_distance st_nearest_feature st_nearest_points st_precision
+#' @importFrom sfheaders sfc_cast sfc_to_df
 #' @importFrom units set_units
-blend_ = function(x, y, tolerance) {
+blend = function(x, y, tolerance, ignore_duplicates = TRUE) {
   # Extract the following:
   # --> The node data of x and its geometries.
   # --> The edge data of x and its geometries.
   # --> The geometries of the features to be blended.
   nodes = nodes_as_sf(x)
   edges = edges_as_sf(x)
-  N = st_geometry(nodes)
-  E = st_geometry(edges)
   Y = st_geometry(y)
   # For later use:
-  # --> Check wheter x is directed.
-  # --> Count the number of nodes in x.
   # --> Retrieve the name of the geometry column of the nodes in x.
-  directed = is_directed(x)
-  ncount = vcount(x)
-  geom_colname = attr(nodes, "sf_column")
+  # --> Retrieve the precision of x and y.
+  node_colname = attr(nodes, "sf_column")
+  xp = network_precision(x)
+  yp = st_precision(y)
   ## ===========================
-  # STEP I: PARSE THE TOLERANCE
-  # If tolerance is not a units object:
-  # --> Convert into units object assuming a units of meters.
-  # --> Unless tolerance is infinite.
+  # STEP I: DECOMPOSE THE EDGES
+  # Decompose the edges linestring geometries into the points that shape them.
   ## ===========================
-  if (! (is.infinite(tolerance) || inherits(tolerance, "units"))) {
-    tolerance = set_units(tolerance, "m")
-  }
+  # Decompose edge linestrings into points.
+  edge_pts = sf_to_df(edges)
+  # Define the total number of edge points.
+  n = nrow(edge_pts)
+  # Store additional information for each edge point.
+  edge_pts$pid = seq_len(n) # Unique id for each edge point.
+  edge_pts$eid = edge_pts$linestring_id # Edge index for each edge point.
+  # Define which edge points are boundaries.
+  is_startpoint = !duplicated(edge_pts$eid)
+  is_endpoint = !duplicated(edge_pts$eid, fromLast = TRUE)
+  is_boundary = is_startpoint | is_endpoint
+  # Store for each edge point the node index, if it is a boundary.
+  edge_nids = rep(NA, n)
+  edge_nids[is_boundary] = edge_incident_ids(x)
+  edge_pts$nid = edge_nids
+  # Store for each edge point a segment index.
+  # The edge point gets the index of the segment it is the start of.
+  edge_pts$sid = NA
+  edge_pts$sid[!is_endpoint] = seq_len(n - nrow(edges))
+  # Store for each edge point a feature index.
+  # This will store the index of the feature in y it is the projection of.
+  # This will be filled later, for now only store a placeholder.
+  edge_pts$fid = NA
+  # Clean up.
+  edge_pts$sfg_id = NULL
+  edge_pts$linestring_id = NULL
   ## ================================
-  # STEP II: DEFINE SPATIAL RELATIONS
-  # Relate each feature in y to the edges of x by checking if:
-  # --> The feature in y is located *on* an edge in x.
-  # --> The feature in y is located *close* to an edge in x.
-  # With *on* being defined as:
-  # --> Intersecting with the edge.
-  # With *close* being defined as:
-  # --> Within the tolerance distance from an edge.
-  # --> But not intersecting with that edge.
+  # STEP II: CONSTRUCT EDGE SEGMENTS
+  # Create geometries for each individual edge segment.
   ## ================================
-  # Find indices of features in y that are located:
-  # --> *on* an edge in x.
-  intersects = suppressMessages(st_intersects(Y, E))
-  is_on = lengths(intersects) > 0
-  # Find indices of features in y that are located:
-  # --> *close* to an edge in x.
-  # We define a feature yi being *close* to an edge xj when:
-  # --> yi is located within a given tolerance distance from xj.
-  # --> yi is not located on xj.
-  if (as.numeric(tolerance) == 0 | all(is_on)) {
-    # If tolerance is 0.
-    # --> By definition no feature is *close*.
-    # If all features are already *on* an edge.
-    # --> By definition no feature is *close*.
-    is_close = rep(FALSE, length(is_on))
-  } else if (is.infinite(tolerance)) {
-    # If tolerance was set to infinite:
-    # --> That implies there is no upper bound for what to define as *close*.
-    # --> Hence, all features that are not *on* are *close*.
-    is_close = !is_on
+  # Subset the start points and end points of each segment.
+  segment_src = edge_pts[!is_endpoint, ]
+  segment_trg = edge_pts[!is_startpoint, ]
+  segment_src$sid = seq_len(nrow(segment_src))
+  segment_trg$sid = seq_len(nrow(segment_trg))
+  # Construct the segment geometries.
+  segment_pts = rbind(segment_src, segment_trg)
+  segment_pts = segment_pts[order(segment_pts$sid), ]
+  S = df_to_lines(segment_pts, x, id_col = "sid")
+  # Store for each feature the index of its nearest segment.
+  # This will be filled later, for now only store a placeholder.
+  nearest = rep(NA, length(Y))
+  ## ========================================
+  # STEP III: SELECT FEATURES TO BE BLENDED.
+  # This depends on the provided tolerance.
+  ## ========================================
+  # Define which features to blend.
+  if (is.infinite(tolerance)) {
+    # Infinite tolerance means:
+    # --> All given features should be blended.
+    do_blend = rep(TRUE, length(Y))
   } else {
-    # If a non-infinite tolerance was set:
-    # --> Features are *close* if within tolerance distance from an edge.
-    # --> But not *on* an edge.
-    is_within = st_is_within_distance(Y[!is_on], E, tolerance)
-    is_close = !is_on
-    is_close[is_close] = lengths(is_within) > 0
+    # Parse the tolerance.
+    # If units are not explicitly specified we assume its in meters.
+    if (! inherits(tolerance, "units")) {
+      tolerance = set_units(tolerance, "m")
+    }
+    # Finite tolerance means:
+    # --> Only features within tolerance distance should be blended.
+    do_blend = lengths(st_is_within_distance(Y, S, tolerance)) > 0
   }
-  ## =======================
-  # STEP III: SNAP FEATURES
-  # We need to "project" the features in y onto the edges of the network.
-  # This is also called "snapping".
-  # The geometries of the *on* features in y do not have to be changed.
-  # Since they already are located on an edge geometry.
-  # The geometries of the *close* features in y should be replaced by:
-  # --> Their nearest point on their nearest edge.
-  ## =======================
-  if (any(is_close)) {
-    # Find the nearest edge to each close feature.
-    A = suppressMessages(st_nearest_feature(Y[is_close], E))
-    # Find the nearest point on the nearest edge to each close feature.
-    # st_nearest_points returns a straight line between two features.
-    # Hence, the endpoint of that line is the location we are looking for.
-    B = suppressMessages(st_nearest_points(Y[is_close], E[A], pairwise = TRUE))
-    B = linestring_boundary_points(B)
-    B = B[seq(2, length(B), 2)]
-    # Replace the geometries of the *close* features.
-    Y[is_close] = B
-  }
-  ## ========================
-  # STEP IV: SUBSET FEATURES
-  # Subset the features in y by removing those that:
-  # --> Are neither *on* nor *close* to an edge in x.
-  # --> Are duplicated.
-  ## ========================
-  # Keep only features that are *on* or *close*.
-  Y = Y[is_on | is_close]
-  # Return x when there are no features left to be blended.
+  # Subset the features.
+  Y = Y[do_blend]
+  # Return the network unmodified when there are no features to be blended.
   if (length(Y) == 0) {
-    warning(
-      "No points were blended. Increase the tolerance distance?",
-      call. = FALSE
-    )
+    cli_warn(c(
+      "{.fn st_network_blend} did not blend any points into the network.",
+      "i" = "Increase {.arg tolerance} for a higher tolerance distance."
+    ))
     return (x)
   } else {
     if (will_assume_constant(x)) raise_assume_constant("st_network_blend")
   }
-  # Remove duplicated features in y.
-  # These features will have the same blending location.
-  # Only one point can be blended per location.
-  is_duplicated = st_duplicated(Y)
-  Y = Y[!is_duplicated]
-  ## ==========================================
-  # STEP V: INCLUDE FEATURES IN EDGE GEOMETRIES
-  # The snapped features in y should be included in the edge geometries.
-  # Only then we can start to split the edges.
-  # There are two options:
-  # --> The feature already matches an interior or endpoint of an edge.
-  # --> The feature does not match any interior or endpoint of an edge.
-  # In the first case we need to map the feature to the edge point.
-  # In the second case we also need to include a new point in the edge.
-  ## ==========================================
-  # Decompose the edge geometries into their points.
-  # Map each of these points to the index of its "parent edge".
-  edge_pts = st_cast(E, "POINT")
-  pts_idxs = rep(seq_along(E), lengths(E) / 2)
-  # Define for each snapped feature in y which edge point it equals.
-  # If it equals more than one edge point, only the first match is taken.
-  # Since blending only blends a feature into a single edge.
-  matches = do.call("c", lapply(st_equals(Y, edge_pts), `[`, 1))
-  # Define which snapped features in y:
-  # --> Are actually equal to an edge point.
-  # --> Are not equal to any edge point.
-  real_matches = which(!is.na(matches))
-  na_matches = which(is.na(matches))
-  # Convert the edge points object into a dataframe.
-  # As additional information, we will store for each edge point:
-  # --> The index of its edge.
-  # --> The index of the snapped feature in y that equals it, if any.
-  # --> The row index.
-  edge_pts = data.frame(
-    geom = edge_pts,
-    edge_id = pts_idxs,
-    feat_id = NA,
-    row_id = seq_along(edge_pts)
-  )
-  # Add the indices of the snapped features in y that equal an edge point.
-  if (length(real_matches) > 0) {
-    edge_pts$feat_id[matches[real_matches]] = real_matches
-  }
-  # Include the locations of the other snapped features as an edge point.
-  if (length(na_matches) > 0) {
-    # First we need to define where to include the feature geometries.
-    # For that we need to subdivide the edge geometries into their segments.
-    # A segment is the part of an edge between two edge points.
-    # Hence: decompose the edge geometries into their segments.
-    edge_sgs = linestring_segments(E)
-    # Map each of these segments to the index of its "parent edge".
-    sgs_idxs = rep(seq_along(E), lengths(E) / 2 - 1)
-    # Define for each segment its position within its "parent edge".
-    # Hence, the first segment within an edge gets a 1, etc.
-    sgs_psns = do.call("c", lapply(rle(sgs_idxs)$lengths, seq_len))
-    # Now we find for each feature its nearest segment.
-    # Then we know exactly where to include the feature geometry.
-    nearest = suppressMessages(st_nearest_feature(Y[na_matches], edge_sgs))
-    # Include the features by looping over the identified nearest segments.
-    # If only a single feature needs to be included in that segment:
-    # --> Add that feature at the right position in the edge points table.
-    # If multiple features need to be included in a single segment:
-    # --> Order these features by distance to the startpoint of the segment.
-    # --> Add them at the right position in the edge points table.
-    include = function(i) {
-      # Retrieve the following with respect to the current segment:
-      # --> The index of the edge of which the segment is part.
-      # --> The index of the edge point at the start of the segment.
-      # --> The indices of the features for which this segment is nearest.
-      edge_id = sgs_idxs[i]
-      src_id = which(pts_idxs == edge_id)[sgs_psns[i]]
-      feat_idxs = na_matches[which(nearest == i)]
-      # If there are multiple features for which this segment is nearest:
-      # --> Order them by distance to the startpoint of the segment.
-      n = length(feat_idxs)
-      if (n > 1) {
-        feats = Y[feat_idxs]
-        point = edge_pts$geom[src_id]
-        dists = st_distance(point, feats)
-        feat_idxs = feat_idxs[order(dists)]
-      }
-      # Define where to insert the features in the edge points table.
-      # This is directly after the startpoint of the segment.
-      # The row indices of the features should be a value between:
-      # --> The row index of the startpoint of the segment.
-      # --> The row index of the endpoint of the segment.
-      # Recall that the latter is the startpoint index plus 1.
-      # Hence, for the features to be inserted we need:
-      # --> A value between 0 and 1 added to the segment startpoint index.
-      # If there are multiple features, their order should be preserved.
-      stepsize = 1 / (n + 1)
-      values = seq(stepsize, stepsize * n, stepsize)
-      row_idxs = values + src_id
-      # Return in the same format as the edge points table.
-      data.frame(
-        geom = Y[feat_idxs],
-        edge_id = rep(edge_id, n),
-        feat_id = feat_idxs,
-        row_id = row_idxs
-      )
+  ## ============================================
+  # STEP IV: PROJECT FEATURES ONTO THE NETWORK.
+  # This means finding the nearest point on the nearest edge to each feature.
+  ## ============================================
+  # Find the nearest edge segment to each feature.
+  nearest = suppressMessages(st_nearest_feature(Y, S))
+  # Find the nearest point on the nearest edge to each close feature.
+  # For this we can use sf::sf_nearest_points, which returns:
+  # --> A straight line between feature and point if they are different.
+  # --> A multipoint of feature and point if they are equal.
+  # To make it easier for ourselves we cast all outputs to lines.
+  # Then, the endpoint of that line is the location we are looking for.
+  L = suppressMessages(st_nearest_points(Y, S[nearest], pairwise = TRUE))
+  L = sfc_cast(L, "LINESTRING")
+  P = linestring_end_points(L)
+  # Determine if multiple features have the same projected location.
+  # This features will not be blended into the network.
+  # They may be added as isolated nodes afterwards, if ignore_duplicates = FALSE.
+  is_duplicated = st_duplicated_points(P)
+  if (any(is_duplicated)) {
+    P = P[!is_duplicated]
+    nearest = nearest[!is_duplicated]
+    if (ignore_duplicates) {
+      cli_warn(c(
+        "{.fn st_network_blend} did not blend in all requested features.",
+        "!" = paste(
+          "Some projected features have duplicated locations, of which all",
+          "but the first one are ignored."
+        ),
+        "i" = paste(
+          "If you want to add duplicated projection locations as isolated",
+          "nodes instead, set {.arg ignore_duplicates} to {.code FALSE}."
+        )
+      ))
+    } else {
+      cli_warn(c(
+        "{.fn st_network_blend} created isolated nodes.",
+        "!" = paste(
+          "Some projected features have duplicated locations, of which all",
+          "but the first one are added as isolated nodes to the network."
+        ),
+        "i" = paste(
+          "If you want to ignore duplicated projection locations instead,",
+          "set {.arg ignore_duplicates} to {.code TRUE}."
+        )
+      ))
+      P_dups = P[is_duplicated]
     }
-    new_pts = do.call("rbind", lapply(unique(nearest), include))
-    edge_pts = bind_rows(edge_pts, new_pts)
-    edge_pts = edge_pts[order(edge_pts$row_id), ]
   }
-  ## =============================
-  # STEP V: SPLIT EDGE GEOMETRIES
-  # New nodes should be added for snapped features of y whenever:
-  # --> There is not an existing node yet at that location.
-  # The edges should be splitted at the locations of these new nodes.
-  ## =============================
-  # First, we define where to split the edges. This is at edge points that:
-  # --> Are equal to a snapped feature in y.
-  # --> Are *not* already an edge boundary.
-  is_startpoint = !duplicated(edge_pts$edge_id)
-  is_endpoint = !duplicated(edge_pts$edge_id, fromLast = TRUE)
-  is_boundary = is_startpoint | is_endpoint
-  is_split = !is.na(edge_pts$feat_id) & !is_boundary
-  # Create a repetition vector:
-  # --> This defines for each edge point if it should be duplicated.
-  # --> A value of '1' means 'store once', i.e. don't duplicate.
-  # --> A value of '2' means 'store twice', i.e. duplicate.
-  # --> Split points will be part of two new edges and should be duplicated.
-  reps = rep(1L, nrow(edge_pts))
-  reps[is_split] = 2L
-  # Extract a coordinate data frame from the edge points.
-  # Apply the repitition vector to this data frame.
-  # This gives us the coordinates of the new edge points.
-  edge_coords = sfc_to_df(edge_pts$geom)
-  edge_coords = edge_coords[names(edge_coords) %in% c("x", "y", "z", "m")]
-  new_edge_coords = data.frame(lapply(edge_coords, rep, reps))
-  # Apply the repetition vector also to the edge indices of the edge points.
-  # This gives us the *original* edge index of the new edge points.
-  orig_edge_idxs = rep(edge_pts$edge_id, reps)
-  # Update these original edge indices according to the splits.
-  # Remember that edges are splitted at each split point.
-  # That is: a new edge originates from each split point.
-  # Hence, to get the new edge indices:
-  # --> Increment each original edge index by 1 at each split point.
-  incs = integer(nrow(new_edge_coords)) # By default don't increment.
-  incs[which(is_split) + seq_len(sum(is_split))] = 1L # Add 1 after each split.
-  new_edge_idxs = orig_edge_idxs + cumsum(incs)
-  new_edge_coords$edge_id = new_edge_idxs
-  # Build the new edge geometries.
-  new_edge_geoms = sfc_linestring(new_edge_coords, linestring_id = "edge_id")
-  st_crs(new_edge_geoms) = st_crs(edges)
-  st_precision(new_edge_geoms) = st_precision(edges)
-  new_edge_coords$edge_id = NULL
-  ## ================================
-  # STEP VI: RESTORE EDGE ATTRIBUTES
+  ## =====================================================
+  # STEP V: INCLUDE PROJECTED FEATURES IN EDGE GEOMETRIES
+  # The projected features should be included in the edge geometries.
+  # Only then we can start to subdivide the edges.
+  # There are two options:
+  # --> The projection already matches an interior or endpoint of an edge.
+  # --> The projection does not match any interior or endpoint of an edge.
+  # In case 1 we need to map the projection to the existing edge point.
+  # In case 2 we need to include a new point in the edge geometry.
+  ## =====================================================
+  # Convert projection points into the same structure as the decomposed edges.
+  p_pts = sfc_to_df(P)
+  p_pts$pid = NA
+  p_pts$eid = NA
+  p_pts$nid = NA
+  p_pts$sid = NA
+  p_pts$fid = p_pts$point_id
+  p_pts$sfg_id = NULL
+  p_pts$point_id = NULL
+  # Define a function to:
+  # --> Include one or more projected features in an edge segment.
+  include_in_segment = function(i) {
+    # Extract the features to be included in segment i.
+    fts = p_pts[which(nearest == i), ]
+    fts_coords = df_to_coords(fts, yp)
+    # Extract the source edge point of segment i.
+    src_pid = which(edge_pts$sid == i)
+    src = edge_pts[src_pid, ]
+    # Extract the target edge point of segment i.
+    trg_pid = src_pid + 1
+    trg = edge_pts[trg_pid, ]
+    # Define the position of the feature in the segment.
+    if (nrow(fts) == 1) {
+      # There is only one feature to be included in segment i.
+      # First check if the feature matches the source.
+      src_coords = df_to_coords(src, xp)
+      if (fts_coords == src_coords) {
+        src$fid = fts$fid
+        fts = src
+      } else {
+        # Then check if the feature matches the target.
+        trg_coords = df_to_coords(trg, xp)
+        if (fts_coords == trg_coords) {
+          trg$fid = fts$fid
+          fts = trg
+        } else {
+          # Otherwise add the feature between the source and target.
+          fts$pid = src_pid + 0.5
+        }
+      }
+    } else {
+      # There are multiple features to be included in segment i.
+      # First check which of them equal source or target.
+      # And which should be added as new points to the segment.
+      src_coords = df_to_coords(src, xp)
+      trg_coords = df_to_coords(trg, xp)
+      equal_to_src = fts_coords == src_coords
+      equal_to_trg = fts_coords == trg_coords
+      not_equal = !(equal_to_src | equal_to_trg)
+      # Match feature to source.
+      if (any(equal_to_src)) {
+        src$fid = fts$fid[equal_to_src]
+        fts[equal_to_src, ] = src
+      }
+      # Match feature to target.
+      if (any(equal_to_trg)) {
+        trg$fid = fts$fid[equal_to_trg]
+        fts[equal_to_trg, ] = trg
+      }
+      # Add feature(s) as new point(s).
+      if (any(not_equal)) {
+        n = sum(not_equal)
+        if (n > 1) {
+          # If there are multiple features to be added.
+          # Determine their order based on distance to the source point.
+          src_geom = df_to_points(src, edges) # Convert to sfc.
+          fts_geom = df_to_points(fts[not_equal, ], y) # Convert to sfc.
+          dists = st_distance(src_geom, fts_geom)
+          d = 1 / (n + 1) # How much the pid should increment per feature.
+          fts$pid[not_equal][order(dists)] = seq(d, d * n, d) + src_pid
+        } else {
+          # If there is one feature to be added.
+          # Add it between the source and target points.
+          fts$pid[not_equal] = src_pid + 0.5
+        }
+      }
+    }
+    # Fill the other columns.
+    fts$eid = src$eid
+    fts$sid = NA
+    # Return the updated edge points for segment i.
+    fts
+  }
+  # Apply the function to each segment that is nearest to a projected feature.
+  new_pts = do.call("rbind", lapply(unique(nearest), include_in_segment))
+  # Update the edge points data frame by integrating the updates.
+  edge_pts = rbind(edge_pts, new_pts)
+  edge_pts = edge_pts[!duplicated(edge_pts$pid, fromLast = TRUE), ]
+  edge_pts = edge_pts[order(edge_pts$pid), ]
+  # Clean up.
+  rownames(edge_pts) = NULL
+  edge_pts$pid = seq_len(nrow(edge_pts))
+  ## ==========================================
+  # STEP VI: SUBDIVIDE EDGE GEOMETRIES
+  # Now we can subdivide edge geometries at each projected feature.
+  # Then we need to build a linestring geometry for each new edge.
+  ## ==========================================
+  # Define where to subdivide.
+  # This is at edge points that:
+  # --> Match a projected feature location.
+  # --> Are not already an endpoint of an edge.
+  is_split = !is.na(edge_pts$fid) & is.na(edge_pts$nid)
+  # Create the new set of edge points by duplicating split points.
+  new_edge_pts = create_new_edge_df(edge_pts, is_split)
+  # Define the new edge index of each new edge point.
+  new_edge_ids = create_new_edge_ids(new_edge_pts, is_split)
+  # Construct the new edge linestring geometries.
+  new_edge_geoms = create_new_edge_geoms(new_edge_pts, new_edge_ids, edges)
+  ## =====================================
+  # STEP VII: CONSTRUCT THE NEW EDGE DATA
   # We now have the geometries of the new edges.
   # However, the original edge attributes got lost.
   # We will restore them by:
@@ -375,133 +406,75 @@ blend_ = function(x, y, tolerance) {
   # --> Duplicating original attributes within splitted edges.
   # Beware that from and to columns will remain unchanged at this stage.
   # We will update them later.
-  ## ================================
-  # First, we find which *original* edge belongs to which *new* edge:
-  # --> Use the lists of edge indices mapped to the new edge points.
-  # --> There we already mapped each new edge point to its original edge.
-  # --> First define which new edge points are startpoints of new edges.
-  # --> Then retrieve the original edge index from these new startpoints.
-  # --> This gives us a single original edge index for each new edge.
-  is_new_startpoint = !duplicated(new_edge_idxs)
-  orig_edge_idxs = orig_edge_idxs[is_new_startpoint]
-  # Duplicate original edge data whenever needed.
-  new_edges = edges[orig_edge_idxs, ]
-  # Set the new edge geometries as geometries of these new edges.
+  ## =====================================
+  # Define at which new edge points a new edge starts and ends.
+  is_new_startpoint = !duplicated(new_edge_ids)
+  is_new_endpoint = !duplicated(new_edge_ids, fromLast = TRUE)
+  # Use the original edge ids of the startpoints to copy original attributes.
+  new_edges = edges[new_edge_pts$eid[is_new_startpoint], ]
+  # Insert the newly constructed edge geometries.
   st_geometry(new_edges) = new_edge_geoms
-  ## =================================================
-  # STEP VII: UPDATE FROM AND TO INDICES OF NEW EDGES
-  # Now we have:
-  # --> Constructed new edge geometries.
-  # --> Duplicated edge attributes wherever needed.
-  # Still left to do is updating the from and to indices of the new edges.
-  # They should match with the indices of the new nodes in the network.
-  # The new nodes are a combination of:
-  # --> Already existing nodes.
-  # --> New nodes that are going to be added at split points.
-  ## =================================================
-  # Map each of the original edge points to the index of an original node.
-  # Edge points that do no equal an original node get assigned NA.
-  edge_pts$node_id = rep(NA, nrow(edge_pts))
-  if (directed) {
-    edge_pts[is_boundary, ]$node_id = edge_boundary_node_indices(x)
-  } else {
-    edge_pts[is_boundary, ]$node_id = edge_boundary_point_indices(x)
-  }
-  # Update this vector of original node indices by:
-  # --> Adding a new, unique node index to each of the split points.
-  # --> Applying the repetition vector to map them to the new edge points.
-  new_node_idxs = edge_pts$node_id
-  added_node_idxs = c((ncount + 1):(ncount + sum(is_split)))
-  new_node_idxs[is_split] = added_node_idxs
-  new_node_idxs = rep(new_node_idxs, reps)
-  # Drop NA values from this vector of new node indices.
-  # Recall that NA values belong to edge points that do not equal a node.
-  # After dropping them we are left with an index vector of the form:
-  # --> [source node edge 1, target node edge 1, source node edge 2, ...]
-  new_node_idxs = new_node_idxs[!is.na(new_node_idxs)]
-  # Define for each of the indices if it belongs to a source node.
-  is_source = rep(c(TRUE, FALSE), length(new_node_idxs) / 2)
-  # Update the from and to columns of the new edges accordingly.
-  new_edges$from = new_node_idxs[is_source]
-  new_edges$to = new_node_idxs[!is_source]
-  ## ==================================================
-  # STEP VIII: JOIN THE NODES WITH THE BLENDED FEATURES
-  # The blended features of y are either:
-  # --> Matched to an already existing node.
-  # --> A new node in the network.
-  # In the first case:
-  # --> Their attributes (if any) should be joined with the existing nodes.
-  # In the second case:
-  # --> They should be binded to the already existing nodes.
-  ## ==================================================
-  # When a snapped feature in y matched a original node of x:
-  # --> Get the index of both the feature and the node.
-  is_match = is_boundary & !is.na(edge_pts$feat_id)
-  matched_node_idxs = edge_pts$node_id[is_match]
-  matched_feat_idxs = edge_pts$feat_id[is_match]
-  # When a snapped feature in y is a new node of x:
-  # --> Get the index of that feature.
-  is_new = is_split
-  new_feat_idxs = edge_pts$feat_id[is_new]
-  # Join the orignal node data and the blended features.
-  # Different scenarios require a different approach.
-  if (is.sf(y) && ncol(y) > 1) {
-    # Scenario I: the features in y have attributes.
-    # This requires:
-    # --> A full join between the original node data and the features.
-    # First, subset y to keep only those features that were blended.
-    y = y[is_on | is_close, ]
-    y = y[!is_duplicated, ]
-    # Add an index column matching the features in y to their new node index.
-    y$.sfnetwork_index = NA_integer_
-    y[matched_feat_idxs, ]$.sfnetwork_index = matched_node_idxs
-    y[new_feat_idxs, ]$.sfnetwork_index = added_node_idxs
-    # Add an index column matching the orginal nodes to their new node index.
-    nodes$.sfnetwork_index = seq_len(ncount)
-    # Remove the geometry columns.
-    # Since the full join is an attribute join.
-    # We will re-add geometries later on.
-    st_geometry(y) = NULL
-    st_geometry(nodes) = NULL
-    # Perform a full join between the attributes of the nodes and features.
-    # Base the join on the created index column.
-    # Remove that index column afterwards.
-    new_nodes = full_join(nodes, y, by = ".sfnetwork_index")
-    new_nodes = new_nodes[order(new_nodes$.sfnetwork_index), ]
+  ## ======================================
+  # STEP VIII: CONSTRUCT THE NEW NODE DATA
+  # New nodes are added at the subdivision locations.
+  ## ======================================
+  # Identify and select the edge points that become a node in the new network.
+  is_new_node = is_new_startpoint | is_new_endpoint
+  new_node_pts = new_edge_pts[is_new_node, ]
+  # Define the node indices of those nodes that are added to the network.
+  is_add = is.na(new_node_pts$nid)
+  add_node_pids = new_node_pts$pid[is_add]
+  add_node_ids = match(add_node_pids, unique(add_node_pids)) + nrow(nodes)
+  new_node_pts[is_add, ]$nid = add_node_ids
+  # Construct the geometries of those nodes.
+  add_node_pts = new_node_pts[is_add, ][!duplicated(add_node_ids), ]
+  add_node_geoms = df_to_points(add_node_pts, nodes)
+  # Construct the new node data.
+  # This is done by simply binding original node data with added geometries.
+  add_nodes = sfc_to_sf(add_node_geoms, colname = node_colname)
+  new_nodes = bind_rows(nodes, add_nodes)
+  # Join the attributes of the blended features into the new nodes.
+  # This is of course only needed if the given features have attributes.
+  if (is_sf(y) && ncol(y) > 1) {
+    # Subset y to contain only attributes (not geometries) of blended features.
+    y_blend = st_drop_geometry(y)
+    y_blend = y_blend[do_blend, , drop = FALSE][!is_duplicated, , drop = FALSE]
+    # Subset the node points data frame to contain each node only once.
+    new_nodes_df = new_node_pts[!duplicated(new_node_pts$nid), ]
+    # Add an index column to match nodes to features.
+    if (".sfnetwork_index" %in% c(names(nodes), names(y))) {
+      raise_reserved_attr(".sfnetwork_index")
+    }
+    y_blend$.sfnetwork_index = seq_len(nrow(y_blend))
+    new_nodes$.sfnetwork_index = new_nodes_df$fid[order(new_nodes_df$nid)]
+    # Join attributes of blended features with the new nodes table.
+    new_nodes = left_join(new_nodes, y_blend, by = ".sfnetwork_index")
     new_nodes$.sfnetwork_index = NULL
-    # Add the new node geometries.
-    new_node_geoms = c(N, Y[new_feat_idxs])
-    new_nodes[geom_colname] = list(new_node_geoms)
-    new_nodes = st_as_sf(new_nodes, sf_column_name = geom_colname)
-  } else if (ncol(nodes) > 1) {
-    # Scenario II: the features in y don't have attributes but the nodes do.
-    # This requires:
-    # --> The geometries of the new nodes binded to the original nodes.
-    # --> The attribute values of these new nodes being filled with NA.
-    # First, we select only those blended features that became a new node.
-    y_new = st_as_sf(Y[new_feat_idxs])
-    # Align the name of the geometry columns.
-    names(y_new)[1] = geom_colname
-    st_geometry(y_new) = geom_colname
-    # Bind the new nodes with original nodes.
-    # The dplyr::bind_rows function will take care of the NA filling.
-    new_nodes = bind_rows(nodes, y_new)
+    # Add features with duplicated projection locations if requested.
+    if (!ignore_duplicates && any(is_duplicated)) {
+      y_dups = y[do_blend, , drop = FALSE][is_duplicated, , drop = FALSE]
+      st_geometry(y_dups) = P_dups
+      st_geometry(y_dups) = node_colname # Use correct name.
+      new_nodes = bind_rows(new_nodes, y_dups)
+    }
   } else {
-    # Scenario III: neither the features in y nor the nodes have attributes.
-    # This requires:
-    # --> The geometries of the new nodes binded to the original nodes.
-    # First, we select only those blended features that became a new node.
-    y_new = Y[new_feat_idxs]
-    # Bind these geometries to the original node geometries.
-    new_nodes = st_as_sf(c(N, y_new))
-    # Set the geometry column name equal to the one in the original network.
-    names(new_nodes)[1] = geom_colname
-    st_geometry(new_nodes) = geom_colname
+    # Add features with duplicated projection locations if requested.
+    if (!ignore_duplicates && any(is_duplicated)) {
+      y_dups = sfc_to_sf(P_dups, colname = node_colname)
+      new_nodes = bind_rows(new_nodes, y_dups)
+    }
   }
+  ## ==================================================
+  # STEP IX: UPDATE FROM AND TO INDICES OF NEW EDGES
+  # Now we constructed the new node data with updated node indices.
+  # Therefore we need to update the from and to columns of the edges as well.
+  ## ==================================================
+  new_edges$from = new_node_pts$nid[is_new_startpoint[is_new_node]]
+  new_edges$to = new_node_pts$nid[is_new_endpoint[is_new_node]]
   ## ============================
-  # STEP IX: RECREATE THE NETWORK
+  # STEP X: RECREATE THE NETWORK
   # Use the new nodes data and the new edges data to create the new network.
   ## ============================
-  x_new = sfnetwork_(new_nodes, new_edges, directed = directed)
+  x_new = sfnetwork_(new_nodes, new_edges, directed = is_directed(x))
   x_new %preserve_network_attrs% x
 }

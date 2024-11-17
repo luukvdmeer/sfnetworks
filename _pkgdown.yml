@@ -1,62 +1,125 @@
+url: https://luukvdmeer.github.io/sfnetworks/
+
 destination: docs
 
+template:
+  bootstrap: 5
+  light-switch: true
+
 reference:
-  - title: Construction
+  - title: Construction & conversion
     desc: >
-      The core of the package is a data structure that can be provided as
-      input to both graph analytical functions of `tidygraph` and to spatial
-      analytical functions of `sf`, without the need for conversion.
+      At the core of the package lies the `sfnetwork` class to represent
+      spatial networks. There are several ways to construct instances of this
+      class, and to convert them to other classes.
     contents:
       - sfnetwork
       - as_sfnetwork
-      - is.sfnetwork
-  - title: Extensions
+      - create_from_spatial_lines
+      - create_from_spatial_points
+      - play_spatial
+      - sfnetwork_to_dodgr
+      - nb
+      - as.linnet
+  - title: Analysis
     desc: >
-      The package extends the existing functionalities of `tidygraph` and `sf`
-      with a set of functions specific for spatial network analysis.
+      The package enables an integrated analysis workflow that combines
+      `tidygraph` and `sf`. On top of this, it extends the functionalities of
+      those two packages with a set of analytical functions specific for
+      spatial network analysis.
     contents:
-      - st_network_paths
-      - st_network_cost
-      - st_network_join
-      - st_network_blend
       - st_network_bbox
+      - st_network_blend
+      - st_network_cost
+      - st_network_faces
+      - st_network_iso
+      - st_network_join
+      - st_network_paths
+      - st_network_travel
+      - st_project_on_network
+      - spatial_centrality
+      - spatial_node_types
       - spatial_node_predicates
       - node_coordinates
-      - spatial_edge_predicates
       - spatial_edge_measures
+      - spatial_edge_predicates
+      - group_spatial
       - spatial_morphers
-  - title: Integration with sf
+      - bind_spatial
+  - title: Utilities
     desc: >
-      The package enables smooth integration with `sf` by implementing several
-      sfnetwork methods for sf functions.
+      The package exports different kind of utility and internal functions that
+      are meant to make spatial network analysis smoother, and fitting both
+      into tidyverse and non-tidyverse workflows.
+  - subtitle: Data extraction
+    desc: >
+      These functions are about the extraction of data from a network.
     contents:
-      - sf
+      - data
+      - ids
+      - nearest
+      - nearest_ids
+      - 'n'
+  - subtitle: Edge geometries
+    desc: >
+      These functions allow to modify edge geometries.
+    contents:
+      - make_edges_directed
+      - make_edges_mixed
+      - make_edges_explicit
+      - make_edges_implicit
+      - make_edges_follow_indices
+      - make_edges_valid
+  - subtitle: Network cleaning
+    desc: >
+      These functions are the internal workers behind the spatial morphers that
+      are dedicted to network cleaning. They are exported to make it possible
+      to do network cleaning outside of tidyverse workflows.
+    contents:
+      - contract_nodes
+      - simplify_network
+      - smooth_pseudo_nodes
+      - subdivide_edges
+  - subtitle: Internals
+    desc: >
+      These are internal functions that are not meant to be called directly by
+      users. They are exported such that developers aiming to extend the
+      package can use them.
+    contents:
+      - evaluate_weight_spec
+      - evaluate_node_query
+      - evaluate_edge_query
+  - subtitle: Other
+    desc: >
+      These are other utility functions that do not fit in the categories above.
+    contents:
+      - dual_weights
+      - is_sfnetwork
       - sf_attr
-      - as_tibble.sfnetwork
-  - title: Integration with other packages
-    desc: >
-      The packages implements basic functions to coerce sfnetwork objects into
-      other formats.
-    contents:
-      - as.linnet
-      - s2
-  - title: Visualization
-    desc: >
-      The package offers basic plot methods. For more advanced plotting, the
-      use of specific plotting and mapping libraries is recommended.
-    contents:
-      - plot.sfnetwork
-      - autoplot.sfnetwork
-  - title: Demo data
+      - st_duplicated
+      - st_match
+      - st_round
+      - validate_network
+      - wrap_igraph
+  - title: Data
     contents:
       - roxel
+      - mozart
+  - title: internal
+    contents:
+      - as_s2_geography
+      - as_tibble
+      - autoplot
+      - plot.sfnetwork
+      - sf_methods
+      - tidygraph_methods
 
 articles:
 - title: Vignettes
   navbar: ~
   contents:
-      - sfn01_structure
-      - sfn02_preprocess_clean
-      - sfn03_join_filter
-      - sfn04_routing
-      - sfn05_morphers
+      - sfn01_intro
+      - sfn02_create_represent
+      - sfn03_cleaning
+      - sfn04_join_filter
+      - sfn05_routing

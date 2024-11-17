@@ -29,22 +29,22 @@ l7 = st_sfc(st_linestring(c(p10, p12, p13, p10)))
 set.seed(124)
 
 # Points in Roxel bbox
-A = st_sfc(st_point(c(7.5371, 51.9514)), crs = 4326) %>% st_transform(3035)
-B = st_sfc(st_point(c(7.5276, 51.9501)), crs = 4326) %>% st_transform(3035)
+A = st_sfc(st_point(c(7.5371, 51.9514)), crs = 4326) |> st_transform(3035)
+B = st_sfc(st_point(c(7.5276, 51.9501)), crs = 4326) |> st_transform(3035)
 rect = st_buffer(A, dist = 300, endCapStyle = "SQUARE")
 
 # Create network from lines
 lines = c(l1, l2, l3, l4, l5, l6, l7)
-net_l = as_sfnetwork(lines) %>%
+net_l = as_sfnetwork(lines) |>
   mutate(rdm = sample(1:3, 8, replace = T))
-net_i = as_sfnetwork(lines, edges_as_lines = F)
+net_i = as_sfnetwork(lines) |> make_edges_implicit()
 
 # Create directed Roxel network
-net_d = as_sfnetwork(roxel) %>%
+net_d = as_sfnetwork(roxel) |>
   st_transform(3035)
 
 # Create undirected Roxel network
-net_u = as_sfnetwork(roxel, directed = FALSE) %>%
+net_u = as_sfnetwork(roxel, directed = FALSE) |>
   st_transform(3035)
 
 # Perform spatial contraction
@@ -66,25 +66,22 @@ sube_d = convert(net_d, to_spatial_subset, rect, subset_by = "edges")
 
 # Extract spatial neighborhood
 neigf_d = convert(net_d, to_spatial_neighborhood, A,
-                    from = TRUE, threshold = 500)
+                    threshold = 500)
 neigt_d = convert(net_d, to_spatial_neighborhood, A,
-                    from = FALSE, threshold = 500)
+                    threshold = 500, direction = "in")
 neigf_u = convert(net_u, to_spatial_neighborhood, A,
-                    from = TRUE, threshold = 500)
+                    threshold = 500)
 neigt_u = convert(net_u, to_spatial_neighborhood, A,
-                    from = FALSE, threshold = 500)
+                    threshold = 500, direction = "in")
 
 # Extract shortest path
 shpt_d = convert(net_d, to_spatial_shortest_paths, B, A)
 shpt_u = convert(net_u, to_spatial_shortest_paths, B, A)
 
 # Perform network subdivision
-## Warnings are suppressed on purpose
-suppressWarnings({
-  subd_l <- convert(net_l, to_spatial_subdivision)
-  subd_d <- convert(net_d, to_spatial_subdivision)
-  subd_u <- convert(net_u, to_spatial_subdivision)
-})
+subd_l = convert(net_l, to_spatial_subdivision)
+subd_d = convert(net_d, to_spatial_subdivision)
+subd_u = convert(net_u, to_spatial_subdivision)
 
 # Perform spatial smoothing of pseudo nodes
 smoo_l = convert(net_l, to_spatial_smooth)
@@ -98,15 +95,15 @@ simp_u = convert(net_u, to_spatial_simple)
 
 test_that("the created toy network from lines for morpher testing has
           the expected number of nodes, edges and components", {
-  expect_equal(vcount(net_l), 8)
-  expect_equal(ecount(net_l), 7)
+  expect_equal(n_nodes(net_l), 8)
+  expect_equal(n_edges(net_l), 7)
   expect_equal(count_components(net_l), 3)
-  expect_equal(vcount(net_d), 701)
-  expect_equal(ecount(net_d), 851)
-  expect_equal(count_components(net_d), 14)
-  expect_equal(vcount(net_u), 701)
-  expect_equal(ecount(net_u), 851)
-  expect_equal(count_components(net_u), 14)
+  expect_equal(n_nodes(net_d), 987)
+  expect_equal(n_edges(net_d), 1215)
+  expect_equal(count_components(net_d), 9)
+  expect_equal(n_nodes(net_u), 987)
+  expect_equal(n_edges(net_u), 1215)
+  expect_equal(count_components(net_u), 9)
 })
 
 test_that("to_spatial_directed morphs an undirected sfnetwork into directed
@@ -133,123 +130,123 @@ test_that("to_spatial_explicit morphs an sfnetwork with spatially implicit
 
 test_that("to_spatial_contracted morphs the sfnetwork into a new network
           with the expected number of nodes, edges and components", {
-  expect_equal(vcount(cont_l), 3)
-  expect_equal(ecount(cont_l), 7)
+  expect_equal(n_nodes(cont_l), 3)
+  expect_equal(n_edges(cont_l), 5)
   expect_equal(count_components(cont_l), 1)
 })
 
 test_that("to_spatial_subset morphs the sfnetwork into a new network
           with the expected number of nodes, edges and components", {
-  expect_equal(vcount(subn_d), 151)
-  expect_equal(ecount(subn_d), 163)
-  expect_equal(count_components(subn_d), 10)
-  expect_equal(vcount(sube_d), 701)
-  expect_equal(ecount(sube_d), 195)
-  expect_equal(count_components(sube_d), 529)
+  expect_equal(n_nodes(subn_d), 168)
+  expect_equal(n_edges(subn_d), 183)
+  expect_equal(count_components(subn_d), 4)
+  expect_equal(n_nodes(sube_d), 987)
+  expect_equal(n_edges(sube_d), 215)
+  expect_equal(count_components(sube_d), 792)
 })
 
 test_that("to_spatial_neighborhood morphs the sfnetwork into a new network
           with the expected number of nodes, edges and components", {
-  expect_equal(vcount(neigf_d), 45)
-  expect_equal(ecount(neigf_d), 48)
+  expect_equal(n_nodes(neigf_d), 56)
+  expect_equal(n_edges(neigf_d), 61)
   expect_equal(count_components(neigf_d), 1)
-  expect_equal(vcount(neigt_d), 76)
-  expect_equal(ecount(neigt_d), 81)
+  expect_equal(n_nodes(neigt_d), 95)
+  expect_equal(n_edges(neigt_d), 101)
   expect_equal(count_components(neigt_d), 1)
-  expect_equal(vcount(neigf_u), 179)
-  expect_equal(ecount(neigf_u), 205)
+  expect_equal(n_nodes(neigf_u), 238)
+  expect_equal(n_edges(neigf_u), 271)
   expect_equal(count_components(neigf_u), 1)
-  expect_equal(vcount(neigt_u), 179)
-  expect_equal(ecount(neigt_u), 205)
+  expect_equal(n_nodes(neigt_u), 238)
+  expect_equal(n_edges(neigt_u), 271)
   expect_equal(count_components(neigt_u), 1)
 })
 
 test_that("to_spatial_shortest_paths morphs the sfnetwork into a new network
           with the expected number of nodes, edges and components", {
-  expect_equal(vcount(shpt_d), 22)
-  expect_equal(ecount(shpt_d), 21)
+  expect_equal(n_nodes(shpt_d), 25)
+  expect_equal(n_edges(shpt_d), 24)
   expect_equal(count_components(shpt_d), 1)
-  expect_equal(vcount(shpt_u), 17)
-  expect_equal(ecount(shpt_u), 16)
+  expect_equal(n_nodes(shpt_u), 28)
+  expect_equal(n_edges(shpt_u), 27)
   expect_equal(count_components(shpt_u), 1)
 })
 
 test_that("to_spatial_subdivision morphs the sfnetwork into a new network
           with the expected number of nodes, edges and components", {
-  expect_equal(vcount(subd_l), 9)
-  expect_equal(ecount(subd_l), 10)
+  expect_equal(n_nodes(subd_l), 9)
+  expect_equal(n_edges(subd_l), 10)
   expect_equal(count_components(subd_l), 1)
-  expect_equal(vcount(subd_d), 701)
-  expect_equal(ecount(subd_d), 876)
-  expect_equal(count_components(subd_d), 1)
-  expect_equal(vcount(subd_u), 701)
-  expect_equal(ecount(subd_u), 876)
-  expect_equal(count_components(subd_u), 1)
+  expect_equal(n_nodes(subd_d), 987)
+  expect_equal(n_edges(subd_d), 1215)
+  expect_equal(count_components(subd_d), 9)
+  expect_equal(n_nodes(subd_u), 987)
+  expect_equal(n_edges(subd_u), 1215)
+  expect_equal(count_components(subd_u), 9)
 })
 
 test_that("to_spatial_smooth morphs the sfnetwork into a new network
           with the expected number of nodes, edges and components", {
-  expect_equal(vcount(smoo_l), 7)
-  expect_equal(ecount(smoo_l), 6)
+  expect_equal(n_nodes(smoo_l), 7)
+  expect_equal(n_edges(smoo_l), 6)
   expect_equal(count_components(smoo_l), 3)
-  expect_equal(vcount(smoo_d), 652)
-  expect_equal(ecount(smoo_d), 802)
-  expect_equal(count_components(smoo_d), 14)
-  expect_equal(vcount(smoo_u), 634)
-  expect_equal(ecount(smoo_u), 784)
-  expect_equal(count_components(smoo_u), 14)
+  expect_equal(n_nodes(smoo_d), 987)
+  expect_equal(n_edges(smoo_d), 1215)
+  expect_equal(count_components(smoo_d), 9)
+  expect_equal(n_nodes(smoo_u), 965)
+  expect_equal(n_edges(smoo_u), 1193)
+  expect_equal(count_components(smoo_u), 9)
 })
 
 test_that("to_spatial_simple morphs the sfnetwork into a new network
           with the expected number of nodes, edges and components", {
-  expect_equal(vcount(simp_l), 8)
-  expect_equal(ecount(simp_l), 5)
+  expect_equal(n_nodes(simp_l), 8)
+  expect_equal(n_edges(simp_l), 5)
   expect_equal(count_components(simp_l), 3)
-  expect_equal(vcount(simp_d), 701)
-  expect_equal(ecount(simp_d), 848)
-  expect_equal(count_components(simp_d), 14)
-  expect_equal(vcount(simp_u), 701)
-  expect_equal(ecount(simp_u), 844)
-  expect_equal(count_components(simp_u), 14)
+  expect_equal(n_nodes(simp_d), 987)
+  expect_equal(n_edges(simp_d), 1211)
+  expect_equal(count_components(simp_d), 9)
+  expect_equal(n_nodes(simp_u), 987)
+  expect_equal(n_edges(simp_u), 1207)
+  expect_equal(count_components(simp_u), 9)
 })
 
 test_that("morphers return same network when there is no morphing
           necessary", {
-  expect_equal(vcount(smoo_d), vcount(convert(smoo_d, to_spatial_smooth)))
-  expect_equal(ecount(smoo_d), ecount(convert(smoo_d, to_spatial_smooth)))
-  expect_equal(vcount(smoo_l), vcount(convert(smoo_l, to_spatial_smooth)))
-  expect_equal(ecount(smoo_l), ecount(convert(smoo_l, to_spatial_smooth)))
-  expect_equal(vcount(smoo_u), vcount(convert(smoo_u, to_spatial_smooth)))
-  expect_equal(ecount(smoo_u), ecount(convert(smoo_u, to_spatial_smooth)))
-  expect_equal(vcount(simp_d), vcount(convert(simp_d, to_spatial_simple)))
-  expect_equal(ecount(simp_d), ecount(convert(simp_d, to_spatial_simple)))
-  expect_equal(vcount(simp_l), vcount(convert(simp_l, to_spatial_simple)))
-  expect_equal(ecount(simp_l), ecount(convert(simp_l, to_spatial_simple)))
-  expect_equal(vcount(simp_u), vcount(convert(simp_u, to_spatial_simple)))
-  expect_equal(ecount(simp_u), ecount(convert(simp_u, to_spatial_simple)))
+  expect_equal(n_nodes(smoo_d), n_nodes(convert(smoo_d, to_spatial_smooth)))
+  expect_equal(n_edges(smoo_d), n_edges(convert(smoo_d, to_spatial_smooth)))
+  expect_equal(n_nodes(smoo_l), n_nodes(convert(smoo_l, to_spatial_smooth)))
+  expect_equal(n_edges(smoo_l), n_edges(convert(smoo_l, to_spatial_smooth)))
+  expect_equal(n_nodes(smoo_u), n_nodes(convert(smoo_u, to_spatial_smooth)))
+  expect_equal(n_edges(smoo_u), n_edges(convert(smoo_u, to_spatial_smooth)))
+  expect_equal(n_nodes(simp_d), n_nodes(convert(simp_d, to_spatial_simple)))
+  expect_equal(n_edges(simp_d), n_edges(convert(simp_d, to_spatial_simple)))
+  expect_equal(n_nodes(simp_l), n_nodes(convert(simp_l, to_spatial_simple)))
+  expect_equal(n_edges(simp_l), n_edges(convert(simp_l, to_spatial_simple)))
+  expect_equal(n_nodes(simp_u), n_nodes(convert(simp_u, to_spatial_simple)))
+  expect_equal(n_edges(simp_u), n_edges(convert(simp_u, to_spatial_simple)))
   expect_equal(
-    vcount(subd_d),
-    suppressWarnings(vcount(convert(subd_d, to_spatial_subdivision)))
+    n_nodes(subd_d),
+    suppressWarnings(n_nodes(convert(subd_d, to_spatial_subdivision)))
   )
   expect_equal(
-    ecount(subd_d),
-    suppressWarnings(ecount(convert(subd_d, to_spatial_subdivision)))
+    n_edges(subd_d),
+    suppressWarnings(n_edges(convert(subd_d, to_spatial_subdivision)))
   )
   expect_equal(
-    vcount(subd_l),
-    suppressWarnings(vcount(convert(subd_l, to_spatial_subdivision)))
+    n_nodes(subd_l),
+    suppressWarnings(n_nodes(convert(subd_l, to_spatial_subdivision)))
   )
   expect_equal(
-    ecount(subd_l),
-    suppressWarnings(ecount(convert(subd_l, to_spatial_subdivision)))
+    n_edges(subd_l),
+    suppressWarnings(n_edges(convert(subd_l, to_spatial_subdivision)))
   )
   expect_equal(
-    vcount(subd_u),
-    suppressWarnings(vcount(convert(subd_u, to_spatial_subdivision)))
+    n_nodes(subd_u),
+    suppressWarnings(n_nodes(convert(subd_u, to_spatial_subdivision)))
   )
   expect_equal(
-    ecount(subd_u),
-    suppressWarnings(ecount(convert(subd_u, to_spatial_subdivision)))
+    n_edges(subd_u),
+    suppressWarnings(n_edges(convert(subd_u, to_spatial_subdivision)))
   )
   expect_equal(
     is_directed(net_d),
@@ -261,26 +258,27 @@ test_that("morphers return same network when there is no morphing
   )
 })
 
+mess = "Spatial network structure is valid"
 test_that("morphers return a valid sfnetwork", {
-  expect_null(sfnetworks:::require_valid_network_structure(dire_u))
-  expect_null(sfnetworks:::require_valid_network_structure(expl_i))
-  expect_null(sfnetworks:::require_valid_network_structure(tran_u))
-  expect_null(sfnetworks:::require_valid_network_structure(cont_l))
-  expect_null(sfnetworks:::require_valid_network_structure(subn_d))
-  expect_null(sfnetworks:::require_valid_network_structure(sube_d))
-  expect_null(sfnetworks:::require_valid_network_structure(neigf_d))
-  expect_null(sfnetworks:::require_valid_network_structure(neigt_d))
-  expect_null(sfnetworks:::require_valid_network_structure(neigf_u))
-  expect_null(sfnetworks:::require_valid_network_structure(neigt_u))
-  expect_null(sfnetworks:::require_valid_network_structure(shpt_d))
-  expect_null(sfnetworks:::require_valid_network_structure(shpt_u))
-  expect_null(sfnetworks:::require_valid_network_structure(subd_l))
-  expect_null(sfnetworks:::require_valid_network_structure(subd_d))
-  expect_null(sfnetworks:::require_valid_network_structure(subd_u))
-  expect_null(sfnetworks:::require_valid_network_structure(smoo_l))
-  expect_null(sfnetworks:::require_valid_network_structure(smoo_d))
-  expect_null(sfnetworks:::require_valid_network_structure(smoo_u))
-  expect_null(sfnetworks:::require_valid_network_structure(simp_l))
-  expect_null(sfnetworks:::require_valid_network_structure(simp_d))
-  expect_null(sfnetworks:::require_valid_network_structure(simp_u))
+  expect_message(validate_network(dire_u), mess)
+  expect_message(validate_network(expl_i), mess)
+  expect_message(validate_network(tran_u), mess)
+  expect_message(validate_network(cont_l), mess)
+  expect_message(validate_network(subn_d), mess)
+  expect_message(validate_network(sube_d), mess)
+  expect_message(validate_network(neigf_d), mess)
+  expect_message(validate_network(neigt_d), mess)
+  expect_message(validate_network(neigf_u), mess)
+  expect_message(validate_network(neigt_u), mess)
+  expect_message(validate_network(shpt_d), mess)
+  expect_message(validate_network(shpt_u), mess)
+  expect_message(validate_network(subd_l), mess)
+  expect_message(validate_network(subd_d), mess)
+  expect_message(validate_network(subd_u), mess)
+  expect_message(validate_network(smoo_l), mess)
+  expect_message(validate_network(smoo_d), mess)
+  expect_message(validate_network(smoo_u), mess)
+  expect_message(validate_network(simp_l), mess)
+  expect_message(validate_network(simp_d), mess)
+  expect_message(validate_network(simp_u), mess)
 })

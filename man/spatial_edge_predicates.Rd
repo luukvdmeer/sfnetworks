@@ -14,6 +14,7 @@
 \alias{edge_covers}
 \alias{edge_is_covered_by}
 \alias{edge_is_within_distance}
+\alias{edge_is_nearest}
 \title{Query edges with spatial predicates}
 \usage{
 edge_intersects(y, ...)
@@ -39,13 +40,16 @@ edge_covers(y, ...)
 edge_is_covered_by(y, ...)
 
 edge_is_within_distance(y, ...)
+
+edge_is_nearest(y)
 }
 \arguments{
 \item{y}{The geospatial features to test the edges against, either as an
 object of class \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}.}
 
 \item{...}{Arguments passed on to the corresponding spatial predicate
-function of sf. See \code{\link[sf]{geos_binary_pred}}.}
+function of sf. See \code{\link[sf]{geos_binary_pred}}. The argument
+\code{sparse} should not be set.}
 }
 \value{
 A logical vector of the same length as the number of edges in the
@@ -56,20 +60,23 @@ These functions allow to interpret spatial relations between edges and
 other geospatial features directly inside \code{\link[tidygraph]{filter}}
 and \code{\link[tidygraph]{mutate}} calls. All functions return a logical
 vector of the same length as the number of edges in the network. Element i
-in that vector is \code{TRUE} whenever \code{any(predicate(x[i], y[j]))} is
-\code{TRUE}. Hence, in the case of using \code{edge_intersects}, element i
-in the returned vector is \code{TRUE} when edge i intersects with any of
-the features given in y.
+in that vector is \code{TRUE} whenever the chosen spatial predicate applies
+to the spatial relation between the i-th edge and any of the features in
+\code{y}.
 }
 \details{
 See \code{\link[sf]{geos_binary_pred}} for details on each spatial
-predicate. Just as with all query functions in tidygraph, these functions
-are meant to be called inside tidygraph verbs such as
-\code{\link[tidygraph]{mutate}} or \code{\link[tidygraph]{filter}}, where
-the network that is currently being worked on is known and thus not needed
-as an argument to the function. If you want to use an algorithm outside of
-the tidygraph framework you can use \code{\link[tidygraph]{with_graph}} to
-set the context temporarily while the algorithm is being evaluated.
+predicate. The function \code{edge_is_nearest} instead wraps around
+\code{\link[sf]{st_nearest_feature}} and returns \code{TRUE} for element i
+if the i-th edge is the nearest edge to any of the features in \code{y}.
+
+Just as with all query functions in tidygraph, these functions are meant to
+be called inside tidygraph verbs such as \code{\link[tidygraph]{mutate}} or
+\code{\link[tidygraph]{filter}}, where the network that is currently being
+worked on is known and thus not needed as an argument to the function. If
+you want to use an algorithm outside of the tidygraph framework you can use
+\code{\link[tidygraph]{with_graph}} to set the context temporarily while the
+algorithm is being evaluated.
 }
 \note{
 Note that \code{edge_is_within_distance} is a wrapper around the
@@ -81,7 +88,7 @@ library(sf, quietly = TRUE)
 library(tidygraph, quietly = TRUE)
 
 # Create a network.
-net = as_sfnetwork(roxel) \%>\%
+net = as_sfnetwork(roxel) |>
   st_transform(3035)
 
 # Create a geometry to test against.
@@ -90,13 +97,13 @@ p2 = st_point(c(4151340, 3207520))
 p3 = st_point(c(4151756, 3207506))
 p4 = st_point(c(4151774, 3208031))
 
-poly = st_multipoint(c(p1, p2, p3, p4)) \%>\%
-  st_cast('POLYGON') \%>\%
+poly = st_multipoint(c(p1, p2, p3, p4)) |>
+  st_cast('POLYGON') |>
   st_sfc(crs = 3035)
 
 # Use predicate query function in a filter call.
-intersects = net \%>\%
-  activate(edges) \%>\%
+intersects = net |>
+  activate(edges) |>
   filter(edge_intersects(poly))
 
 oldpar = par(no.readonly = TRUE)
@@ -106,9 +113,13 @@ plot(st_geometry(intersects, "edges"), col = "red", lwd = 2, add = TRUE)
 par(oldpar)
 
 # Use predicate query function in a mutate call.
-net \%>\%
-  activate(edges) \%>\%
-  mutate(disjoint = edge_is_disjoint(poly)) \%>\%
+net |>
+  activate(edges) |>
+  mutate(disjoint = edge_is_disjoint(poly)) |>
   select(disjoint)
+
+# Use predicate query function directly.
+intersects = with_graph(net, edge_intersects(poly))
+head(intersects)
 
 }

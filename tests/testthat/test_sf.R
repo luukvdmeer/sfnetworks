@@ -1,18 +1,20 @@
 library(sf)
 library(dplyr)
 
-rect = roxel %>%
-  st_union() %>%
-  st_transform(3857) %>%
-  st_centroid() %>%
-  st_buffer(dist = 500, endCapStyle = "SQUARE") %>%
-  st_transform(4326) %>%
+rect = roxel |>
+  st_union() |>
+  st_transform(3857) |>
+  st_centroid() |>
+  st_buffer(dist = 500, endCapStyle = "SQUARE") |>
+  st_transform(4326) |>
   st_as_sf(foo = "bar")
 
 test_that("sf functions for sfnetworks with spatially implicit edges,
          give an error", {
   message = "This call requires spatially explicit edges"
-  net = as_sfnetwork(roxel, edges_as_lines = F) %>% activate("edges")
+  net = as_sfnetwork(roxel) |>
+    make_edges_implicit() |>
+    activate("edges")
   # Geometries
   expect_error(st_coordinates(net), message)
   expect_error(st_is(net, "LINESTRING"), message)
@@ -38,13 +40,13 @@ test_that("sf functions for sfnetworks with spatially implicit edges,
 ### crs
 
 test_that("st_set_crs sets the crs for edges and nodes", {
-  net = as_sfnetwork(roxel) %>%
+  net = as_sfnetwork(roxel) |>
     st_set_crs(NA)
   expect_equal(st_crs(activate(net, "nodes")), st_crs(activate(net, "edges")))
 })
 
 test_that("st_transform changes crs for edges and nodes", {
-  net = as_sfnetwork(roxel) %>%
+  net = as_sfnetwork(roxel) |>
     st_transform(3857)
   expect_equal(st_crs(activate(net, "nodes")), st_crs(activate(net, "edges")))
 })
@@ -52,7 +54,7 @@ test_that("st_transform changes crs for edges and nodes", {
 ### precision
 
 test_that("st_set_precision sets the precision for edges and nodes", {
-  net = as_sfnetwork(roxel) %>%
+  net = as_sfnetwork(roxel) |>
     st_set_precision(1)
   expect_equal(
     st_precision(activate(net, "nodes")),
@@ -67,7 +69,7 @@ test_that("st_crop gives a warning and returns a valid network", {
     crop <- st_crop(net, rect),
     "assumed to be spatially constant"
   )
-  expect_null(sfnetworks:::require_valid_network_structure(crop))
+  expect_null(validate_network(crop, message = FALSE))
 })
 
 test_that("st_intersection gives a warning and returns a valid network", {
@@ -76,7 +78,7 @@ test_that("st_intersection gives a warning and returns a valid network", {
     intersection <- st_intersection(net, rect),
     "assumed to be spatially constant"
   )
-  expect_null(sfnetworks:::require_valid_network_structure(intersection))
+  expect_null(validate_network(intersection, message = FALSE))
 })
 
 test_that("st_difference gives a warning and returns a valid network", {
@@ -85,7 +87,7 @@ test_that("st_difference gives a warning and returns a valid network", {
     difference <- st_difference(net, rect),
     "assumed to be spatially constant"
   )
-  expect_null(sfnetworks:::require_valid_network_structure(difference))
+  expect_null(validate_network(difference, message = FALSE))
 })
 
 ### st_reverse
@@ -103,8 +105,8 @@ test_that("st_reverse returns valid networks", {
   skip_if_not(current_geos >= required_geos)
   reversed_D <- suppressWarnings(st_reverse(activate(dirnet, "edges")))
   reversed_U <- st_reverse(activate(undirnet, "edges"))
-  expect_null(sfnetworks:::require_valid_network_structure(reversed_D))
-  expect_null(sfnetworks:::require_valid_network_structure(reversed_U))
+  expect_null(validate_network(reversed_D, message = FALSE))
+  expect_null(validate_network(reversed_U, message = FALSE))
 })
 
 test_that("st_reverse gives a warning when nodes are active, keeping the same
@@ -129,9 +131,8 @@ test_that("st_reverse gives a warning when nodes are active, keeping the same
 test_that("st_reverse reverses the order of the to/from columns and the
           order of the coordinates for directed networks", {
   skip_if_not(current_geos >= required_geos)
-  expect_warning(
-    reversed <- st_reverse(activate(dirnet, "edges")),
-    "st_reverse swaps columns"
+  expect_silent(
+    reversed <- st_reverse(activate(dirnet, "edges"))
   )
   expect_equal(
     st_coordinates(reversed)[1, ],
@@ -178,37 +179,38 @@ test_that("st_reverse reverses the order of the coordinates for
 
 test_that("dropping geometry for activated nodes changes the class to
           tbl_graph", {
-  net = roxel %>% as_sfnetwork()
-  expect_s3_class(net %>% sf::st_drop_geometry(), "tbl_graph")
-  expect_s3_class(net %>% sf::st_set_geometry(NULL), "tbl_graph")
+  net = roxel |> as_sfnetwork()
+  expect_s3_class(net |> sf::st_drop_geometry(), "tbl_graph")
+  expect_s3_class(net |> sf::st_set_geometry(NULL), "tbl_graph")
 })
 
 test_that("dropping geometry for activated edges remains an sfnetwork", {
-  net = roxel %>% as_sfnetwork() %>% activate("edges")
-  expect_s3_class(net %>% sf::st_drop_geometry(), "sfnetwork")
-  expect_s3_class(net %>% sf::st_set_geometry(NULL), "sfnetwork")
+  net = roxel |> as_sfnetwork() |> activate("edges")
+  expect_s3_class(net |> sf::st_drop_geometry(), "sfnetwork")
+  expect_s3_class(net |> sf::st_set_geometry(NULL), "sfnetwork")
 })
 
 test_that("st_set_geometry gives an error when replacing edges geometry
           type", {
-  net = roxel %>% as_sfnetwork()
+  net = roxel |> as_sfnetwork()
   # warnings are suppressed since they relate to the sf package
   # warning: st_centroid assumes attributes are constant over geometries of x
   centroids = suppressWarnings(sf::st_centroid(roxel))
   new_geom = st_geometry(centroids)
-  expect_error(activate(net, "edges") %>% sf::st_set_geometry(new_geom))
+  expect_error(activate(net, "edges") |> sf::st_set_geometry(new_geom))
 })
 
 test_that("st_set_geometry gives an error when replacing edges geometry CRS", {
-  net = roxel %>% as_sfnetwork()
+  net = roxel |> as_sfnetwork()
   new_geom = st_geometry(st_transform(roxel, 3035))
-  expect_error(activate(net, "edges") %>% sf::st_set_geometry(new_geom))
+  expect_error(activate(net, "edges") |> sf::st_set_geometry(new_geom))
 })
-
-test_that("st_set_geometry gives an error when replacing edges geometry
-          endpoints", {
-  skip_if_not(current_geos >= required_geos)
-  net = roxel %>% as_sfnetwork()
-  new_geom = sf::st_geometry(sf::st_reverse(roxel))
-  expect_error(activate(net, "edges") %>% sf::st_set_geometry(new_geom))
-})
+# st_set_geometry does not give an error anymore but update the edges,
+# create new test #FIXME
+# test_that("st_set_geometry gives an error when replacing edges geometry
+#           endpoints", {
+#   skip_if_not(current_geos >= required_geos)
+#   net = roxel |> as_sfnetwork()
+#   new_geom = sf::st_geometry(sf::st_reverse(roxel))
+#   expect_error(activate(net, "edges") |> sf::st_set_geometry(new_geom))
+# })

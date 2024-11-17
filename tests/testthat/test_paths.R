@@ -4,27 +4,28 @@ library(igraph)
 library(tidygraph)
 
 # Call some data for testing
-net = as_sfnetwork(roxel, directed = FALSE) %>%
+net = as_sfnetwork(roxel, directed = FALSE) |>
   st_transform(3035)
-net_dir = as_sfnetwork(roxel, directed = TRUE) %>%
+net_dir = as_sfnetwork(roxel, directed = TRUE) |>
   st_transform(3035)
-sub1 = net %>%
-  convert(to_spatial_neighborhood, 15, 150) %>%
-  activate("edges") %>%
+sub1 = net |>
+  convert(to_spatial_neighborhood, 15, 100) |>
+  activate("edges") |>
   st_set_geometry(NULL)
 
-sub2 = net %>%
+sub2 = net |>
   slice(1:5)
 
 # Create random points inside network bbox
-rdm = net %>%
-  st_bbox() %>%
-  st_as_sfc() %>%
+rdm = net |>
+  st_bbox() |>
+  st_as_sfc() |>
   st_sample(4, type = "random")
 
 # Calculate some cost matrices and set non outputs
-sub1_c1 = c(0, 2, 3, 1, 2, 2, 0, 1, 1, 2, 3, 1, 0, 2, 3, 1, 1, 2, 0, 1,
-            2, 2, 3, 1, 0)
+sub1_c1 = c(0, 1, 1, 2, 3, 2, 1, 1, 0, 2, 3, 4, 3, 2, 1, 2, 0, 3, 4, 3, 2,
+            2, 3, 3, 0, 1, 2, 1, 3, 4, 4, 1, 0, 3, 2, 2, 3, 3, 2, 3, 0, 1,
+            1, 2, 2, 1, 2, 1, 0)
 sub2_c1 = c(0, 1, Inf, Inf, Inf, 1, 0, Inf, Inf, Inf, Inf, Inf, 0, 1, Inf,
             Inf, Inf, 1, 0, Inf, Inf, Inf, Inf, Inf, 0)
 sub2_c2 = c(0, 1, NaN, NaN, NaN, 1, 0, NaN, NaN, NaN, NaN, NaN, 0, 1, NaN,
@@ -42,10 +43,10 @@ test_that("Only the first from argument
     net,
     from = from_indices,
     to = rdm,
-    type = "all_shortest"), "only the first element is used")
-  resulting_from_nodes = paths %>%
-    rowwise() %>%
-    mutate(node_from = first(node_paths)) %>%
+    all = TRUE), "Only the first `from` node is considered")
+  resulting_from_nodes = paths |>
+    rowwise() |>
+    mutate(node_from = first(node_path)) |>
     pull(node_from)
   expect_setequal(resulting_from_nodes, first(from_indices))
 })
@@ -55,44 +56,44 @@ test_that("NA indices for in from and/or to arguments give an error", {
     net,
     from = as.numeric(NA),
     to = c(3, 28, 98)
-  ), "NA values present")
+  ), "should not contain NA values")
   expect_error(st_network_cost(
     net,
     from = 2,
     to = as.numeric(c(NA, 3, NA))
-  ), "NA values present")
+  ), "should not contain NA values")
   expect_error(st_network_paths(
     net,
     from = rdm[1],
     to = c(rdm, st_sfc(st_point(), crs = 3035))
-  ), "NA values present")
+  ), "should not contain NA values")
 })
 
 test_that("st_network_paths weights argument is passed implicitly,
           explicitly and automatically", {
   # Set weights to a named column
   expect_silent(
-    nodepaths_exp <- net %>%
-      activate("edges") %>%
-      mutate(length = edge_length()) %>%
-      st_network_paths(8, 3, weights = "length") %>%
-      pull(node_paths) %>%
+    nodepaths_exp <- net |>
+      activate("edges") |>
+      mutate(length = edge_length()) |>
+      st_network_paths(8, 3, weights = length) |>
+      pull(node_path) |>
       unlist()
   )
   # Set weights to a column called weight
   expect_silent(
-    nodepaths_imp <- net %>%
-      activate("edges") %>%
-      mutate(weight = edge_length()) %>%
-      st_network_paths(8, 3) %>%
-      pull(node_paths) %>%
+    nodepaths_imp <- net |>
+      activate("edges") |>
+      mutate(weight = edge_length()) |>
+      st_network_paths(8, 3) |>
+      pull(node_path) |>
       unlist()
   )
   # Do not set weight but expect it is computed internally
   expect_silent(
-    nodepaths_aut <- net %>%
-      st_network_paths(8, 3) %>%
-      pull(node_paths) %>%
+    nodepaths_aut <- net |>
+      st_network_paths(8, 3) |>
+      pull(node_path) |>
       unlist()
   )
   expect_setequal(
@@ -109,44 +110,45 @@ test_that("st_network_paths weights argument is passed implicitly,
 test_that("Unexisting 'weights' column passed to st_network_paths
           gives an error", {
   expect_error(
-    st_network_paths(net, 1, 12, weights = "invented_column"),
+    st_network_paths(net, 1, 12, weights = invented_column),
     "not found"
   )
 })
 
-test_that("node_paths without set weight is equal or shorter than
-          node_paths with set weight", {
-  nodepaths_weight <- net %>%
-    activate("edges") %>%
-    mutate(weight = edge_length()) %>%
-    st_network_paths(8, 3) %>%
-    pull(node_paths) %>%
+test_that("node_path without set weight is equal or shorter than
+          node_path with set weight", {
+  nodepaths_weight <- net |>
+    activate("edges") |>
+    mutate(weight = edge_length()) |>
+    st_network_paths(8, 3) |>
+    pull(node_path) |>
     unlist()
 
-  nodepaths_noweight <- net %>%
-    st_network_paths(8, 3, weights = NA) %>%
-    pull(node_paths) %>%
+  nodepaths_noweight <- net |>
+    st_network_paths(8, 3, weights = NA) |>
+    pull(node_path) |>
     unlist()
 
   expect_true(length(nodepaths_noweight) <= length(nodepaths_weight))
 })
 
-test_that("All simple paths wrapper gives a known number of paths", {
-  expect_equal(
-    net %>%
-      convert(to_spatial_directed) %>%
-      st_network_paths(1, 12, type = "all_simple") %>%
-      nrow(),
-    6
-  )
-})
+## Unsupported, change to k shortest paths? #FIXME
+# test_that("All simple paths wrapper gives a known number of paths", {
+#   expect_equal(
+#     net |>
+#       convert(to_spatial_directed) |>
+#       st_network_paths(1, 12, type = "all_simple") |>
+#       nrow(),
+#     6
+#   )
+# })
 
 # Tests for st_networks_cost()
 test_that("st_network_cost outputs matrix with known values", {
   expect_setequal(as.vector(cost1.1), sub1_c1)
   expect_setequal(as.vector(cost2.1), sub2_c1)
   expect_setequal(as.vector(cost2.2), sub2_c2)
-  expect_equal(sum(cost1.1, na.rm = T), 36)
+  expect_equal(sum(cost1.1, na.rm = T), 92)
   expect_equal(sum(cost2.1, na.rm = T), Inf)
   expect_equal(sum(cost2.2, na.rm = T), 4)
 })
@@ -179,14 +181,14 @@ test_that("st_network_cost calculates distance matrix
 test_that("st_network_cost passes the direction argument to the
           mode argument in igraph::distances for directed networks
           and ignores it for undirected", {
-  dist_out = st_network_cost(net_dir, from = 1, to = 10, direction = "out")
-  dist_out2 = st_network_cost(net_dir, from = 1, to = 10)
-  dist_in = st_network_cost(net_dir, from = 1, to = 10, direction = "in")
-  dist_all = st_network_cost(net_dir, from = 1, to = 10, direction = "all")
-  dist_all_undir1 = st_network_cost(net, from = 1, to = 10)
-  dist_all_undir2 = st_network_cost(net, from = 1, to = 10, direction = "out")
-  dist_all_undir3 = st_network_cost(net, from = 1, to = 10, direction = "in")
-  dist_all_undir4 = st_network_cost(net, from = 1, to = 10, direction = "all")
+  dist_out = st_network_cost(net_dir, from = 1, to = 6, direction = "out")
+  dist_out2 = st_network_cost(net_dir, from = 1, to = 6)
+  dist_in = st_network_cost(net_dir, from = 1, to = 6, direction = "in")
+  dist_all = st_network_cost(net_dir, from = 1, to = 6, direction = "all")
+  dist_all_undir1 = st_network_cost(net, from = 1, to = 6)
+  dist_all_undir2 = st_network_cost(net, from = 1, to = 6, direction = "out")
+  dist_all_undir3 = st_network_cost(net, from = 1, to = 6, direction = "in")
+  dist_all_undir4 = st_network_cost(net, from = 1, to = 6, direction = "all")
   expect_false(isTRUE(all.equal(dist_out, dist_in)))
   expect_false(isTRUE(all.equal(dist_out, dist_all)))
   expect_false(isTRUE(all.equal(dist_in, dist_all)))
@@ -200,8 +202,8 @@ test_that("st_network_cost passes the direction argument to the
 test_that("st_network_cost handles Inf_as_Nan correctly", {
   costmat1 = st_network_cost(net, Inf_as_NaN = FALSE)
   costmat2 = st_network_cost(net, Inf_as_NaN = TRUE)
-  costmat3 = st_network_cost(net, 1, c(377,378,377), Inf_as_NaN = FALSE)
-  costmat4 = st_network_cost(net, 1, c(377,378,377), Inf_as_NaN = TRUE)
+  costmat3 = st_network_cost(net, 1, c(412,378,412), Inf_as_NaN = FALSE)
+  costmat4 = st_network_cost(net, 1, c(412,378,412), Inf_as_NaN = TRUE)
   # Test that matrix contains Inf values instead of NaN
   expect_gt(length(costmat1[is.infinite(costmat1)]), 0)
   expect_equal(length(costmat1[is.nan(costmat1)]), 0)
@@ -222,22 +224,22 @@ test_that("st_network_cost handles Inf_as_Nan correctly", {
     length(costmat4[is.nan(costmat4)])
   )
 })
-
-test_that("... ignores mode argument with a warning", {
-  expect_warning(
-    st_network_cost(net, from = 1, to = 10, mode = "in"),
-    "Argument 'mode' is ignored"
-  )
-  expect_warning(
-    st_network_cost(net_dir, from = 1, to = 10, mode = "out"),
-    "Argument 'mode' is ignored"
-  )
-})
+# mode argument not supported instead of ignores #FIXME
+# test_that("... ignores mode argument with a warning", {
+#   expect_warning(
+#     st_network_cost(net, from = 1, to = 10, mode = "in"),
+#     "Argument 'mode' is ignored"
+#   )
+#   expect_warning(
+#     st_network_cost(net_dir, from = 1, to = 10, mode = "out"),
+#     "Argument 'mode' is ignored"
+#   )
+# })
 
 test_that("... is passed correcly onto igraph::distances", {
-  expect_silent(cost_dijkstra <- st_network_cost(net_dir, from = 1, to = 10,
+  expect_silent(cost_dijkstra <- st_network_cost(net_dir, from = 1, to = 6,
                                   direction = "out", algorithm = "dijkstra"))
-  expect_warning(cost_unweighted <- st_network_cost(net_dir, from = 1, to = 10,
+  expect_warning(cost_unweighted <- st_network_cost(net_dir, from = 1, to = 6,
                                   direction = "out", algorithm = "unweighted"))
   expect_false(isTRUE(all.equal(cost_dijkstra, cost_unweighted)))
 })

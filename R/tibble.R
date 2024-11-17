@@ -16,6 +16,10 @@
 #' extracting. If \code{NULL}, it will be set to the current active element of
 #' the given network. Defaults to \code{NULL}.
 #'
+#' @param focused Should only features that are in focus be extracted? Defaults
+#' to \code{TRUE}. See \code{\link[tidygraph]{focus}} for more information on
+#' focused networks.
+#'
 #' @param spatial Should the extracted tibble be a 'spatial tibble', i.e. an
 #' object of class \code{c('sf', 'tbl_df')}, if it contains a geometry list
 #' column. Defaults to \code{TRUE}.
@@ -23,7 +27,9 @@
 #' @param ... Arguments passed on to \code{\link[tibble]{as_tibble}}.
 #'
 #' @return The active element of the network as an object of class
-#' \code{\link[tibble]{tibble}}.
+#' \code{\link[sf]{sf}} if a geometry list column is present and
+#' \code{spatial = TRUE}, and object of class \code{\link[tibble]{tibble}}
+#' otherwise.
 #'
 #' @name as_tibble
 #'
@@ -44,33 +50,58 @@
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph
 #' @export
-as_tibble.sfnetwork = function(x, active = NULL, spatial = TRUE, ...) {
+as_tibble.sfnetwork = function(x, active = NULL, focused = TRUE,
+                               spatial = TRUE, ...) {
   if (is.null(active)) {
     active = attr(x, "active")
   }
   if (spatial) {
     switch(
       active,
-      nodes = nodes_as_sf(x),
-      edges = edges_as_table(x),
-      raise_unknown_input(active)
+      nodes = nodes_as_spatial_tibble(x, focused = focused, ...),
+      edges = edges_as_spatial_tibble(x, focused = focused, ...),
+      raise_invalid_active(active)
     )
   } else {
     switch(
       active,
-      nodes = as_tibble(as_tbl_graph(x), "nodes"),
-      edges = as_tibble(as_tbl_graph(x), "edges"),
-      raise_unknown_input(active)
+      nodes = nodes_as_regular_tibble(x, focused = focused, ...),
+      edges = edges_as_regular_tibble(x, focused = focused, ...),
+      raise_invalid_active(active)
     )
+  }
+}
+
+#' @importFrom sf st_as_sf
+nodes_as_spatial_tibble = function(x, focused = FALSE, ...) {
+  st_as_sf(
+    nodes_as_regular_tibble(x, focused = focused, ...),
+    agr = node_agr(x),
+    sf_column_name = node_geom_colname(x)
+  )
+}
+
+#' @importFrom sf st_as_sf
+edges_as_spatial_tibble = function(x, focused = FALSE, ...) {
+  if (has_explicit_edges(x)) {
+    st_as_sf(
+      edges_as_regular_tibble(x, focused = focused, ...),
+      agr = edge_agr(x),
+      sf_column_name = edge_geom_colname(x)
+    )
+  } else {
+    edges_as_regular_tibble(x, ...)
   }
 }
 
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph
-edges_as_table = function(x) {
-  if (has_explicit_edges(x)) {
-    edges_as_sf(x)
-  } else {
-    as_tibble(as_tbl_graph(x), "edges")
-  }
+nodes_as_regular_tibble = function(x, focused = FALSE, ...) {
+  as_tibble(as_tbl_graph(x), active = "nodes", focused = focused, ...)
+}
+
+#' @importFrom tibble as_tibble
+#' @importFrom tidygraph as_tbl_graph
+edges_as_regular_tibble = function(x, focused = FALSE, ...) {
+  as_tibble(as_tbl_graph(x), active = "edges", focused = focused, ...)
 }

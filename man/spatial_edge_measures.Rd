@@ -6,6 +6,7 @@
 \alias{edge_circuity}
 \alias{edge_length}
 \alias{edge_displacement}
+\alias{edge_segment_count}
 \title{Query spatial edge measures}
 \usage{
 edge_azimuth(degrees = FALSE)
@@ -15,6 +16,8 @@ edge_circuity(Inf_as_NaN = FALSE)
 edge_length()
 
 edge_displacement()
+
+edge_segment_count()
 }
 \arguments{
 \item{degrees}{Should the angle be returned in degrees instead of radians?
@@ -28,9 +31,7 @@ A numeric vector of the same length as the number of edges in the
 graph.
 }
 \description{
-These functions are a collection of specific spatial edge measures, that
-form a spatial extension to edge measures in
-\code{\link[tidygraph:tidygraph-package]{tidygraph}}.
+These functions are a collection of edge measures in spatial networks.
 }
 \details{
 Just as with all query functions in tidygraph, spatial edge
@@ -54,10 +55,16 @@ nodes, as described in Giacomin &
 Levinson, 2015. DOI: 10.1068/b130131p.
 
 \item \code{edge_length()}: The length of an edge linestring geometry
-as calculated by \code{\link[sf]{st_length}}.
+as calculated by \code{\link[sf]{st_length}}. If edges are spatially
+implicit, the straight-line distance between its boundary nodes is computed
+instead, using \code{\link[sf]{st_distance}}.
 
 \item \code{edge_displacement()}: The straight-line distance between the two
 boundary nodes of an edge, as calculated by \code{\link[sf]{st_distance}}.
+
+\item \code{edge_segment_count()}: The number of segments contained in the
+linestring geometry of an edge. Segments are those parts of a linestring
+geometry that do not contain any interior points.
 
 }}
 \examples{
@@ -66,24 +73,28 @@ library(tidygraph, quietly = TRUE)
 
 net = as_sfnetwork(roxel)
 
-net \%>\%
-  activate("edges") \%>\%
+net |>
+  activate(edges) |>
   mutate(azimuth = edge_azimuth())
 
-net \%>\%
-  activate("edges") \%>\%
+net |>
+  activate(edges) |>
   mutate(azimuth = edge_azimuth(degrees = TRUE))
 
-net \%>\%
-  activate("edges") \%>\%
+net |>
+  activate(edges) |>
   mutate(circuity = edge_circuity())
 
-net \%>\%
-  activate("edges") \%>\%
+net |>
+  activate(edges) |>
   mutate(length = edge_length())
 
-net \%>\%
-  activate("edges") \%>\%
+net |>
+  activate(edges) |>
   mutate(displacement = edge_displacement())
+
+net |>
+  activate(edges) |>
+  mutate(n_segs = edge_segment_count())
 
 }

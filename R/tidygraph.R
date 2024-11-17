@@ -6,10 +6,73 @@ tidygraph::activate
 #' @export
 tidygraph::active
 
+#' @importFrom tidygraph morph
+#' @export
+tidygraph::morph
+
+#' @importFrom tidygraph unmorph
+#' @export
+tidygraph::unmorph
+
+#' @importFrom tidygraph convert
+#' @export
+tidygraph::convert
+
+#' @importFrom tidygraph crystallize
+#' @export
+tidygraph::crystallize
+
+#' @importFrom tidygraph crystallise
+#' @export
+tidygraph::crystallise
+
+#' @importFrom tidygraph with_graph
+#' @export
+tidygraph::with_graph
+
 #' @importFrom tidygraph %>%
 #' @export
 tidygraph::`%>%`
 
+#' tidygraph methods for sfnetworks
+#'
+#' Normally tidygraph functions should work out of the box on
+#' \code{\link{sfnetwork}} objects, but in some cases special treatment is
+#' needed especially for the geometry column, requiring a specific method.
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param .data An object of class \code{\link{sfnetwork}}.
+#'
+#' @param ... Arguments passed on the corresponding \code{tidygraph} function.
+#'
+#' @return The method for \code{\link[tidygraph]{as_tbl_graph}} returns an
+#' object of class \code{\link[tidygraph]{tbl_graph}}. The method for
+#' \code{\link[tidygraph]{morph}} returns a \code{morphed_sfnetwork} if the
+#' morphed network is still spatial, and a \code{morphed_tbl_graph} otherwise.
+#' All other methods return an object of class \code{\link{sfnetwork}}.
+#'
+#' @details See the \code{\link[tidygraph]{tidygraph}} documentation. The
+#' following methods have a special behavior:
+#'
+#' \itemize{
+#'   \item \code{reroute}: To preserve the valid spatial network structure,
+#'   this method will replace the boundaries of edge geometries by the location
+#'   of the node those edges are rerouted to or from. Note that when the goal
+#'   is to reverse edges in a spatial network, reroute will not simply reverse
+#'   the edge geometries. In that case it is recommended to use the sfnetwork
+#'   method for \code{\link[sf]{st_reverse}} instead.
+#'   \item \code{morph}: This method checks if the morphed network still has
+#'   spatially embedded nodes. In that case a \code{morphed_sfnetwork} is
+#'   returned. If not, a \code{morphed_tbl_graph} is returned instead.
+#'   \item \code{unmorph}: This method makes sure the geometry list column is
+#'   correctly handled during the unmorphing process.
+#' }
+#'
+#' @name tidygraph_methods
+NULL
+
+#' @name tidygraph_methods
 #' @importFrom tidygraph as_tbl_graph
 #' @export
 as_tbl_graph.sfnetwork = function(x, ...) {
@@ -17,141 +80,72 @@ as_tbl_graph.sfnetwork = function(x, ...) {
   x
 }
 
-#' @importFrom tidygraph as_tbl_graph morph
+#' @name tidygraph_methods
+#' @importFrom igraph is_directed
+#' @importFrom tidygraph reroute
+#' @export
+reroute.sfnetwork = function(.data, ...) {
+  if (is_directed(.data)) .data = make_edges_follow_indices(.data)
+  rerouted = NextMethod()
+  make_edges_valid(rerouted)
+}
+
+#' @name tidygraph_methods
+#' @importFrom tidygraph morph
 #' @export
 morph.sfnetwork = function(.data, ...) {
-  # Morph using tidygraphs morphing functionality:
-  # --> First try to morph the sfnetwork object directly.
-  # --> If this gives errors, convert to tbl_graph and then morph.
-  # --> If that also gives errors, return the first error found.
-  morphed_data = tryCatch(
-    NextMethod(),
-    error = function(e1) {
-      tryCatch(
-        morph(as_tbl_graph(.data), ...),
-        error = function(e2) stop(e1)
-      )
-    }
-  )
+  # Morph using tidygraphs morphing functionality.
+  morphed = NextMethod()
   # If morphed data still consist of valid sfnetworks:
   # --> Convert the morphed_tbl_graph into a morphed_sfnetwork.
   # --> Otherwise, just return the morphed_tbl_graph.
-  if (is.sfnetwork(morphed_data[[1]])) {
+  if (is_sfnetwork(morphed[[1]])) {
     structure(
-      morphed_data,
-      class = c("morphed_sfnetwork", class(morphed_data))
+      morphed,
+      class = c("morphed_sfnetwork", class(morphed))
     )
-  } else if (has_spatial_nodes(morphed_data[[1]])) {
-    attrs = attributes(morphed_data)
-    morphed_data = lapply(morphed_data, tbg_to_sfn)
-    attributes(morphed_data) = attrs
+  } else if (has_spatial_nodes(morphed[[1]])) {
+    morphed[] = lapply(morphed, tbg_to_sfn)
     structure(
-      morphed_data,
-      class = c("morphed_sfnetwork", class(morphed_data))
+      morphed,
+      class = c("morphed_sfnetwork", class(morphed))
     )
   } else {
-    morphed_data
+    morphed
   }
 }
 
-#' @importFrom igraph delete_edge_attr delete_vertex_attr edge_attr vertex_attr
-#' edge_attr_names vertex_attr_names
+#' @name tidygraph_methods
+#' @importFrom igraph edge_attr vertex_attr
+#' @importFrom tibble as_tibble
 #' @importFrom tidygraph unmorph
 #' @export
 unmorph.morphed_sfnetwork = function(.data, ...) {
-  # Unmorphing needs special treatment for morphed sfnetworks when:
+  # Unmorphing needs additional preparation for morphed sfnetworks when:
   # --> Features were merged and original data stored in a .orig_data column.
-  # --> A new geometry column exists next to this .orig_data column.
-  # This new geometry is a geometry describing the merged features.
-  # When unmorphing the merged features get unmerged again.
-  # Hence, the geometry column for the merged features should not be preserved.
-  x_first = .data[[1]] # Extract the first element to run checks on.
-  # If nodes were merged:
-  # --> Remove the geometry column of the merged features before proceeding.
-  n_idxs = vertex_attr(x_first, ".tidygraph_node_index")
-  e_idxs = vertex_attr(x_first, ".tidygraph_edge_index")
-  if (is.list(n_idxs) || is.list(e_idxs)) {
-    geom_colname = node_geom_colname(attr(.data, ".orig_graph"))
-    if (geom_colname %in% vertex_attr_names(x_first)) {
-      attrs = attributes(.data)
-      .data = lapply(.data, delete_vertex_attr, geom_colname)
-      attributes(.data) = attrs
+  # --> In this case tidygraph attempts to bind columns of two tibbles.
+  # --> The sticky geometry of sf creates problems in that process.
+  # --> We can work around this by making sure .orig_data has no sf objects.
+  if (! is.null(vertex_attr(.data[[1]], ".orig_data"))) {
+    orig_data_to_tibble = function(x) {
+      vertex_attr(x, ".orig_data") = as_tibble(vertex_attr(x, ".orig_data"))
+      x
     }
+    .data[] = lapply(.data, orig_data_to_tibble)
   }
-  # If edges were merged:
-  # --> Remove the geometry column of the merged features before proceeding.
-  n_idxs = edge_attr(x_first, ".tidygraph_node_index")
-  e_idxs = edge_attr(x_first, ".tidygraph_edge_index")
-  if (is.list(e_idxs) || is.list(n_idxs)) {
-    geom_colname = edge_geom_colname(attr(.data, ".orig_graph"))
-    if (!is.null(geom_colname) && geom_colname %in% edge_attr_names(x_first)) {
-      attrs = attributes(.data)
-      .data = lapply(.data, delete_edge_attr, geom_colname)
-      attributes(.data) = attrs
+  if (! is.null(edge_attr(.data[[1]], ".orig_data"))) {
+    orig_data_to_tibble = function(x) {
+      edge_attr(x, ".orig_data") = as_tibble(edge_attr(x, ".orig_data"))
+      x
     }
+    .data[] = lapply(.data, orig_data_to_tibble)
   }
   # Call tidygraphs unmorph.
   NextMethod(.data, ...)
 }
 
-# nocov start
-
-#' Describe graph function for print method
-#' From: https://github.com/thomasp85/tidygraph/blob/master/R/tbl_graph.R
-#' November 5, 2020
-#'
-#' @importFrom igraph is_simple is_directed is_bipartite is_connected is_dag
-#' gorder
-#' @noRd
-describe_graph = function(x) {
-  if (gorder(x) == 0) return("An empty graph")
-  prop = list(
-    simple = is_simple(x),
-    directed = is_directed(x),
-    bipartite = is_bipartite(x),
-    connected = is_connected(x),
-    tree = is_tree(x),
-    forest = is_forest(x),
-    DAG = is_dag(x))
-  desc = c()
-  if (prop$tree || prop$forest) {
-    desc[1] = if (prop$directed) "A rooted"
-              else "An unrooted"
-    desc[2] = if (prop$tree) "tree"
-              else paste0(
-                "forest with ",
-                count_components(x),
-                " trees"
-              )
-  } else {
-    desc[1] = if (prop$DAG) "A directed acyclic"
-              else if (prop$bipartite) "A bipartite"
-              else if (prop$directed) "A directed"
-              else "An undirected"
-    desc[2] = if (prop$simple) "simple graph"
-              else "multigraph"
-    n_comp = count_components(x)
-    desc[3] = paste0(
-      "with ", n_comp, " component",
-      if (n_comp > 1) "s" else ""
-    )
-  }
-  paste(desc, collapse = " ")
+#' @importFrom tidygraph unfocus
+#' @export
+unfocus.sfnetwork = function(.data, ...) {
+  .data
 }
-
-#' @importFrom igraph is_connected is_simple gorder gsize is_directed
-is_tree = function(x) {
-  is_connected(x) &&
-    is_simple(x) &&
-    (gorder(x) - gsize(x) == 1)
-}
-
-#' @importFrom igraph is_connected is_simple gorder gsize count_components
-#' is_directed
-is_forest = function(x) {
-  !is_connected(x) &&
-    is_simple(x) &&
-    (gorder(x) - gsize(x) - count_components(x) == 0)
-}
-
-# nocov end

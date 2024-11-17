@@ -1,64 +1,65 @@
-#' Spatial morphers for sfnetworks
+#' Morph spatial networks into a different structure
 #'
 #' Spatial morphers form spatial add-ons to the set of
 #' \code{\link[tidygraph]{morphers}} provided by \code{tidygraph}. These
-#' functions are not meant to be called directly. They should either be passed
-#' into \code{\link[tidygraph]{morph}} to create a temporary alternative
-#' representation of the input network. Such an alternative representation is a
-#' list of one or more network objects. Single elements of that list can be
-#' extracted directly as a new network by passing the morpher to
-#' \code{\link[tidygraph]{convert}} instead, to make the changes lasting rather
-#' than temporary. Alternatively, if the morphed state contains multiple
-#' elements, all of them can be extracted together inside a
-#' \code{\link[tibble]{tbl_df}} by passing the morpher to
-#' \code{\link[tidygraph]{crystallise}}.
+#' functions change the existing structure of the network.
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
 #'
+#' @param protect Nodes or edges to be protected from being changed in
+#' structure. Evaluated by \code{\link{evaluate_node_query}} in the case of
+#' nodes and by \code{\link{evaluate_edge_query}} in the case of edges.
+#' Defaults to \code{NULL}, meaning that no features are protected.
+#'
+#' @param attribute_summary Whenever groups of nodes or edges are merged
+#' into a single feature during morphing, how should their attributes be
+#' summarized? There are several options, see
+#' \code{\link[igraph]{igraph-attribute-combination}} for details.
+#'
+#' @param summarise_attributes Deprecated, use \code{attribute_summary} instead.
+#'
+#' @param store_original_data Whenever groups of nodes or edges are merged
+#' into a single feature during morphing, should the data of the original
+#' features be stored as an attribute of the new feature, in a column named
+#' \code{.orig_data}. This is in line with the design principles of
+#' \code{tidygraph}. Defaults to \code{FALSE}.
+#'
 #' @param ... Arguments to be passed on to other functions. See the description
 #' of each morpher for details.
-#'
-#' @param store_original_data Whenever multiple features (i.e. nodes and/or
-#' edges) are merged into a single feature during morphing, should the data of
-#' the original features be stored as an attribute of the new feature, in a
-#' column named \code{.orig_data}. This is in line with the design principles
-#' of \code{tidygraph}. Defaults to \code{FALSE}.
-#'
-#' @param summarise_attributes Whenever multiple features (i.e. nodes and/or
-#' edges) are merged into a single feature during morphing, how should their
-#' attributes be combined? Several options are possible, see
-#' \code{\link[igraph]{igraph-attribute-combination}} for details.
 #'
 #' @return Either a \code{morphed_sfnetwork}, which is a list of one or more
 #' \code{\link{sfnetwork}} objects, or a \code{morphed_tbl_graph}, which is a
 #' list of one or more \code{\link[tidygraph]{tbl_graph}} objects. See the
 #' description of each morpher for details.
 #'
-#' @details It also possible to create your own morphers. See the documentation
-#' of \code{\link[tidygraph]{morph}} for the requirements for custom morphers.
+#' @details Morphers are not meant to be called directly. Instead, they should
+#' be called inside the \code{\link[tidygraph]{morph}} verb to change the
+#' network structure temporarily. Depending on the chosen morpher, this results
+#' in a list of one or more network objects. Single elements of that list can
+#' be extracted directly as a new network by calling the morpher inside the
+#' \code{\link[tidygraph]{convert}} verb instead, to make the changes lasting
+#' rather than temporary.
 #'
-#' @seealso The vignette on
-#' \href{https://luukvdmeer.github.io/sfnetworks/articles/sfn05_morphers.html}{spatial morphers}.
+#' It also possible to create your own morphers. See the documentation of
+#' \code{\link[tidygraph]{morph}} for the requirements for custom morphers.
 #'
 #' @examples
 #' library(sf, quietly = TRUE)
 #' library(tidygraph, quietly = TRUE)
 #'
-#' net = as_sfnetwork(roxel, directed = FALSE) %>%
+#' net = as_sfnetwork(roxel, directed = FALSE) |>
 #'   st_transform(3035)
 #'
 #' # Temporary changes with morph and unmorph.
-#' net %>%
-#'  activate("edges") %>%
-#'  mutate(weight = edge_length()) %>%
-#'  morph(to_spatial_shortest_paths, from = 1, to = 10) %>%
-#'  mutate(in_paths = TRUE) %>%
+#' net |>
+#'  activate(edges) |>
+#'  morph(to_spatial_shortest_paths, from = 1, to = 10) |>
+#'  mutate(in_paths = TRUE) |>
 #'  unmorph()
 #'
 #' # Lasting changes with convert.
-#' net %>%
-#'  activate("edges") %>%
-#'  mutate(weight = edge_length()) %>%
+#' net |>
+#'  activate(edges) |>
 #'  convert(to_spatial_shortest_paths, from = 1, to = 10)
 #'
 #' @name spatial_morphers
@@ -66,261 +67,52 @@ NULL
 
 #' @describeIn spatial_morphers Combine groups of nodes into a single node per
 #' group. \code{...} is forwarded to \code{\link[dplyr]{group_by}} to
-#' create the groups. The centroid of the group of nodes will be used as
-#' geometry of the contracted node. If edge are spatially explicit, edge
+#' create the groups. The centroid of such a group will be used by default as
+#' geometry of the contracted node. If edges are spatially explicit, edge
 #' geometries are updated accordingly such that the valid spatial network
 #' structure is preserved. Returns a \code{morphed_sfnetwork} containing a
 #' single element of class \code{\link{sfnetwork}}.
 #'
-#' @param simplify Should the network be simplified after contraction? This
-#' means that multiple edges and loop edges will be removed. Multiple edges
-#' are introduced by contraction when there are several connections between
-#' the same groups of nodes. Loop edges are introduced by contraction when
-#' there are connections within a group. Note however that setting this to
-#' \code{TRUE} also removes multiple edges and loop edges that already
-#' existed before contraction. Defaults to \code{FALSE}.
+#' @param simplify Should the network be simplified after contraction? Defaults
+#' to \code{TRUE}. This means that multiple edges and loop edges will be
+#' removed. Multiple edges are introduced by contraction when there are several
+#' connections between the same groups of nodes. Loop edges are introduced by
+#' contraction when there are connections within a group. Note however that
+#' setting this to \code{TRUE} also removes multiple edges and loop edges that
+#' already existed before contraction.
 #'
-#' @importFrom dplyr group_by group_indices group_size group_split
-#' @importFrom igraph contract delete_edges delete_vertex_attr which_loop
-#' which_multiple
-#' @importFrom sf st_as_sf st_cast st_centroid st_combine st_geometry
-#' st_geometry<- st_intersects
-#' @importFrom tibble as_tibble
-#' @importFrom tidygraph as_tbl_graph
+#' @param compute_centroids Should the new geometry of each contracted group of
+#' nodes be the centroid of all group members? Defaults to \code{TRUE}. If set
+#' to \code{FALSE}, the geometry of the first node in each group will be used
+#' instead, which requires considerably less computing time.
+#'
+#' @importFrom lifecycle deprecated is_present
+#' @importFrom dplyr group_by group_indices
+#' @importFrom sf st_drop_geometry
 #' @export
-to_spatial_contracted = function(x, ..., simplify = FALSE,
-                                 summarise_attributes = "ignore",
+to_spatial_contracted = function(x, ..., simplify = TRUE,
+                                 compute_centroids = TRUE,
+                                 attribute_summary = "ignore",
+                                 summarise_attributes = deprecated(),
                                  store_original_data = FALSE) {
-  if (will_assume_planar(x)) raise_assume_planar("to_spatial_contracted")
-  # Retrieve nodes from the network.
-  nodes = nodes_as_sf(x)
-  geom_colname = attr(nodes, "sf_column")
-  ## =======================
-  # STEP I: GROUP THE NODES
-  # Group the nodes table by forwarding ... to dplyr::group_by.
-  # Each group of nodes will later be contracted into a single node.
-  ## =======================
-  nodes = group_by(nodes, ...)
-  # If no group contains more than one node simply return x.
-  if (all(group_size(nodes) == 1)) return(list(contracted = x))
-  ## =======================
-  # STEP II: EXTRACT GROUPS
-  # Split the nodes table into the created groups.
-  # Store the indices that map each node to their respective group.
-  # Subset the groups that contain more than one node.
-  # --> These are the groups that are going to be contracted.
-  ## =======================
-  all_group_idxs = group_indices(nodes)
-  all_groups = group_split(nodes)
-  cnt_group_idxs = which(as.numeric(table(all_group_idxs)) > 1)
-  cnt_groups = all_groups[cnt_group_idxs]
-  ## ===========================
-  # STEP III: CONTRACT THE NODES
-  # Contract the nodes in the network using igraph::contract.
-  # Use the extracted group indices as mapping.
-  # Attributes will be summarised as defined by argument summarise_attributes.
-  # Igraph does not know the geometry column is not an attribute:
-  # --> We should temporarily remove the geometry column before contracting.
-  ## ===========================
-  # Remove the geometry list column for the time being.
-  x_tmp = delete_vertex_attr(x, geom_colname)
-  # Update the attribute summary instructions.
-  # During morphing tidygraph add the tidygraph node index column.
-  # Since it is added internally it is not referenced in summarise_attributes.
-  # We need to include it manually.
-  # They should be concatenated into a vector.
-  if (! inherits(summarise_attributes, "list")) {
-    summarise_attributes = list(summarise_attributes)
-  }
-  summarise_attributes[".tidygraph_node_index"] = "concat"
-  # Contract with igraph::contract.
-  x_new = as_tbl_graph(contract(x_tmp, all_group_idxs, summarise_attributes))
-  ## ======================================================
-  # STEP IV: UPDATE THE NODE DATA OF THE CONTRACTED NETWORK
-  # Add the following information to the nodes table:
-  # --> The geometries of the new nodes.
-  # --> If requested the original node data in tibble format.
-  ## ======================================================
-  # Extract the nodes from the contracted network.
-  new_nodes = as_tibble(x_new, "nodes")
-  # Add geometries to the new nodes.
-  # For each node that was not contracted:
-  # --> Use its original geometry.
-  # For each node that was contracted:
-  # --> Use the centroid of the geometries of the group members.
-  new_node_geoms = st_geometry(nodes)[!duplicated(all_group_idxs)]
-  get_centroid = function(i) {
-    comb = st_combine(st_geometry(i))
-    suppressWarnings(st_centroid(comb))
-  }
-  cnt_node_geoms = do.call("c", lapply(cnt_groups, get_centroid))
-  new_node_geoms[cnt_group_idxs] = cnt_node_geoms
-  new_nodes[geom_colname] = list(new_node_geoms)
-  # If requested, store original node data in a .orig_data column.
-  if (store_original_data) {
-    drop_index = function(i) { i$.tidygraph_node_index = NULL; i }
-    new_nodes$.orig_data = lapply(cnt_groups, drop_index)
-  }
-  # Update the nodes table of the contracted network.
-  new_nodes = st_as_sf(new_nodes, sf_column_name = geom_colname)
-  node_attribute_values(x_new) = new_nodes
-  # Convert in a sfnetwork.
-  x_new = tbg_to_sfn(x_new)
-  ## ===============================================================
-  # STEP V: RECONNECT THE EDGE GEOMETRIES OF THE CONTRACTED NETWORK
-  # The geometries of the contracted nodes are updated.
-  # This means the edge geometries of their incidents also need an update.
-  # Otherwise the valid spatial network structure is not preserved.
-  ## ===============================================================
-  # First we will remove multiple edges and loop edges if this was requested.
-  # Multiple edges occur when there are several connections between groups.
-  # Loop edges occur when there are connections within groups.
-  # Note however that original multiple and loop edges are also removed.
-  if (simplify) {
-    x_new = delete_edges(x_new, which(which_multiple(x_new)))
-    x_new = delete_edges(x_new, which(which_loop(x_new)))
-    x_new = x_new %preserve_all_attrs% x_new
-  }
-  # Secondly we will update the geometries of the remaining affected edges.
-  if (has_explicit_edges(x)) {
-    # Extract the edges and their geometries from the contracted network.
-    new_edges = edges_as_sf(x_new)
-    new_edge_geoms = st_geometry(new_edges)
-    # Define functions to:
-    # --> Append a point at the start of an edge linestring.
-    # --> Append a point at the end of an edge linestring.
-    # --> Append the same point at both ends of an edge linestring.
-    append_source = function(i, j) {
-      l = new_edge_geoms[i]
-      p = new_node_geoms[j]
-      l_pts = st_cast(l, "POINT")
-      st_cast(st_combine(c(p, l_pts)), "LINESTRING")
-    }
-    append_target = function(i, j) {
-      l = new_edge_geoms[i]
-      p = new_node_geoms[j]
-      l_pts = st_cast(l, "POINT")
-      st_cast(st_combine(c(l_pts, p)), "LINESTRING")
-    }
-    append_boundaries = function(j, i) {
-      l = new_edge_geoms[j]
-      p = new_node_geoms[i]
-      l_pts = st_cast(l, "POINT")
-      st_cast(st_combine(c(p, l_pts, p)), "LINESTRING")
-    }
-    # Find the indices of the nodes at the boundaries of each edge.
-    bounds = edge_boundary_node_indices(x_new, matrix = TRUE)
-    # Mask out those indices of nodes that were not contracted.
-    # Only edge boundaries at contracted nodes have to be updated.
-    bounds[!(bounds %in% cnt_group_idxs)] = NA
-    from = bounds[, 1]
-    to = bounds[, 2]
-    # Define for each edge if it:
-    # --> Starts and ends at the same contracted node, i.e. is a loop.
-    # --> Comes from a contracted node.
-    # --> Goes to a contracted node.
-    is_loop = (!is.na(from) & !is.na(to)) & (from == to)
-    is_from = !is_loop & !is.na(from)
-    is_to = !is_loop & !is.na(to)
-    # First handle loop edges (if not removed yet through simplification).
-    # Find the indices of:
-    # --> Each loop edge.
-    # --> The node at the start and end of each loop edge.
-    # For each detected loop edge:
-    # --> Append the node geometry at each end of the edge geometry.
-    if (any(is_loop)) {
-      E1 = which(is_loop)
-      N1 = from[is_loop]
-      geoms = do.call("c", mapply(append_boundaries, E1, N1, SIMPLIFY = FALSE))
-      new_edge_geoms[E1] = geoms
-    }
-    # For from and to edges directed and undirected networks are different.
-    # In directed networks:
-    # --> The from node geometry is always the start of the edge linestring.
-    # --> The to node geometry is always at the end of the edge linestring.
-    # In undirected networks, this is not always the case.
-    # We first need to define which node is at the start and end of the edge.
-    if (is_directed(x_new)) {
-      # Find the indices of:
-      # --> Each from edge.
-      # --> The node at the start of each from edge.
-      # For each detected from edge:
-      # --> Append the node geometry at the start of the edge geometry.
-      if (any(is_from)) {
-        E2 = which(is_from)
-        N2 = from[is_from]
-        geoms = do.call("c", mapply(append_source, E2, N2, SIMPLIFY = FALSE))
-        new_edge_geoms[E2] = geoms
-      }
-      # Find the indices of:
-      # --> Each to edge.
-      # --> The node at the end of each to edge.
-      # For each detected to edge:
-      # --> Append the node geometry at the end of the edge geometry.
-      if (any(is_to)) {
-        E3 = which(is_to)
-        N3 = to[is_to]
-        geoms = do.call("c", mapply(append_target, E3, N3, SIMPLIFY = FALSE))
-        new_edge_geoms[E3] = geoms
-      }
-    } else {
-      # The edges defined before as from/to are incident to contracted nodes.
-      # However, we don't know yet if the come from or go to it.
-      is_incident = is_from | is_to
-      if (any(is_incident)) {
-        # Combine the original node geometries for each group.
-        # This gives us a set of all original node geometries in each group.
-        combine_geoms = function(i) st_combine(st_geometry(i))
-        all_group_geoms = do.call("c", lapply(all_groups, combine_geoms))
-        # For each indicent edge, find:
-        # --> The geometries of its startpoint.
-        # --> The group index corresponding to that startpoint geometry.
-        # --> The index of the contracted node at its boundary.
-        bnd_geoms = linestring_boundary_points(new_edge_geoms[is_incident])
-        src_geoms = bnd_geoms[seq(1, length(bnd_geoms) - 1, 2)]
-        src_idxs = suppressMessages(st_intersects(src_geoms, all_group_geoms))
-        bnd_idxs = bounds[is_incident, ]
-        bnd_idxs = lapply(seq_len(nrow(bnd_idxs)), function(i) bnd_idxs[i, ])
-        # Initially, assume that:
-        # --> All incident edges are 'to' edges.
-        is_to = matrix(c(is_from, is_to), ncol = 2)
-        is_from = matrix(rep(FALSE, length(bounds)), nrow = nrow(bounds))
-        # Update the initial phase such that edges are changed to 'from' if:
-        # --> The contracted node index equals the startpoint group index.
-        is_from[is_incident, ] = t(mapply(`%in%`, bnd_idxs, src_idxs))
-        is_to[is_from] = FALSE
-        # Now we have updated the 'from' and 'to' information.
-        # Find the indices of:
-        # --> Each from edge.
-        # --> The node at the start of each from edge.
-        # For each detected from edge:
-        # --> Append the node geometry at the start of the edge geometry.
-        if (any(is_from)) {
-          E2 = which(apply(is_from, 1, any))
-          N2 = t(bounds)[t(is_from)]
-          geoms = do.call("c", mapply(append_source, E2, N2, SIMPLIFY = FALSE))
-          new_edge_geoms[E2] = geoms
-        }
-        # Find the indices of:
-        # --> Each to edge.
-        # --> The node at the end of each to edge.
-        # For each detected to edge:
-        # --> Append the node geometry at the end of the edge geometry.
-        if (any(is_to)) {
-          E3 = which(apply(is_to, 1, any))
-          N3 = t(bounds)[t(is_to)]
-          geoms = do.call("c", mapply(append_target, E3, N3, SIMPLIFY = FALSE))
-          new_edge_geoms[E3] = geoms
-        }
-      }
-    }
-    # Update the edges table of the contracted network.
-    st_geometry(new_edges) = new_edge_geoms
-    edge_attribute_values(x_new) = new_edges
-  }
+  if (is_present(summarise_attributes)) deprecate_sa("to_spatial_contracted")
+  # Create groups.
+  groups = group_by(st_drop_geometry(nodes_as_sf(x)), ...)
+  group_ids = group_indices(groups)
+  # Contract.
+  x_new = contract_nodes(
+    x = x,
+    groups = group_ids,
+    simplify = simplify,
+    compute_centroids = compute_centroids,
+    reconnect_edges = TRUE,
+    attribute_summary = attribute_summary,
+    store_original_ids = TRUE,
+    store_original_data = store_original_data
+  )
   # Return in a list.
   list(
-    contracted = x_new %preserve_network_attrs% x
+    contracted = x_new
   )
 }
 
@@ -332,28 +124,10 @@ to_spatial_contracted = function(x, ..., simplify = FALSE,
 #' the linestring geometries. Returns a \code{morphed_sfnetwork} containing a
 #' single element of class \code{\link{sfnetwork}}. This morpher requires edges
 #' to be spatially explicit. If not, use \code{\link[tidygraph]{to_directed}}.
-#' @importFrom igraph is_directed
 #' @export
 to_spatial_directed = function(x) {
-  require_explicit_edges(x)
-  if (is_directed(x)) return (x)
-  # Retrieve the nodes and edges from the network.
-  nodes = nodes_as_sf(x)
-  edges = edges_as_sf(x)
-  # Get the node indices that correspond to the geometries of the edge bounds.
-  idxs = edge_boundary_point_indices(x, matrix = TRUE)
-  from = idxs[, 1]
-  to = idxs[, 2]
-  # Update the from and to columns of the edges such that:
-  # --> The from node matches the startpoint of the edge.
-  # --> The to node matches the endpoint of the edge.
-  edges$from = from
-  edges$to = to
-  # Recreate the network as a directed one.
-  x_new = sfnetwork_(nodes, edges, directed = TRUE)
-  # Return in a list.
   list(
-    directed = x_new %preserve_network_attrs% x
+    directed = make_edges_directed(x)
   )
 }
 
@@ -365,185 +139,212 @@ to_spatial_directed = function(x) {
 #' drawn between the source and target node of each edge. Returns a
 #' \code{morphed_sfnetwork} containing a single element of class
 #' \code{\link{sfnetwork}}.
-#' @importFrom sf st_as_sf
 #' @export
 to_spatial_explicit = function(x, ...) {
-  # Workflow:
-  # --> If ... is given, convert edges to sf by forwarding ... to st_as_sf.
-  # --> If ... is not given, draw straight lines from source to target nodes.
-  args = list(...)
-  if (length(args) > 0) {
-    edges = edges_as_table(x)
-    new_edges = st_as_sf(edges, ...)
-    x_new = x
-    edge_attribute_values(x_new) = new_edges
-  } else {
-    x_new = explicitize_edges(x)
-  }
-  # Return in a list.
   list(
-    explicit = x_new
+    explicit = make_edges_explicit(x, ...)
+  )
+}
+
+#' @describeIn spatial_morphers Drop edge geometries from the network. Returns
+#' a \code{morphed_sfnetwork} containing a single element of class
+#' \code{\link{sfnetwork}}.
+#' @export
+to_spatial_implicit = function(x) {
+  list(
+    implict = make_edges_implicit(x)
+  )
+}
+
+#' @describeIn spatial_morphers Construct a mixed network in which some edges
+#' are directed, and some are undirected. In practice this is implemented as a
+#' directed network in which those edges that are meant to be undirected are
+#' duplicated and reversed. Returns a \code{morphed_sfnetwork} containing a
+#' single element of class \code{\link{sfnetwork}}.
+#'
+#' @param directed Which edges should be directed? Evaluated by
+#' \code{\link{evaluate_edge_query}}.
+#'
+#' @importFrom rlang enquo
+#' @export
+to_spatial_mixed = function(x, directed) {
+  directed = evaluate_edge_query(x, enquo(directed))
+  list(
+    mixed = make_edges_mixed(x, directed)
   )
 }
 
 #' @describeIn spatial_morphers Limit a network to the spatial neighborhood of
-#' a specific node. \code{...} is forwarded to
-#' \code{\link[tidygraph]{node_distance_from}} (if \code{from} is \code{TRUE})
-#' or \code{\link[tidygraph]{node_distance_to}} (if \code{from} is
-#' \code{FALSE}). Returns a \code{morphed_sfnetwork} containing a single
-#' element of class \code{\link{sfnetwork}}.
+#' a specific node. \code{...} is forwarded to \code{\link{st_network_cost}} to
+#' compute the travel cost from the specified node to all other nodes in the
+#' network. Returns a \code{morphed_sfnetwork} that may contain multiple
+#' elements of class \code{\link{sfnetwork}}, depending on the number of given
+#' thresholds. When unmorphing only the first instance of both the node and
+#' edge data will be used, as the the same node and/or edge can be present in
+#' multiple neighborhoods.
 #'
-#' @param node The geospatial point for which the neighborhood will be
-#' calculated. Can be an integer, referring to the index of the node for which
-#' the neighborhood will be calculated. Can also be an object of class
-#' \code{\link[sf]{sf}} or \code{\link[sf]{sfc}}, containing a single feature.
-#' In that case, this point will be snapped to its nearest node before
-#' calculating the neighborhood. When multiple indices or features are given,
-#' only the first one is taken.
+#' @param node The node for which the neighborhood will be calculated.
+#' Evaluated by \code{\link{evaluate_node_query}}. When multiple nodes are
+#' given, only the first one is used.
 #'
-#' @param threshold The threshold distance to be used. Only nodes within the
-#' threshold distance from the reference node will be included in the
-#' neighborhood. Should be a numeric value in the same units as the weight
-#' values used for distance calculation.
+#' @param threshold The threshold cost to be used. Only nodes reachable within
+#' this threshold cost from the reference node will be included in the
+#' neighborhood. Should be a numeric value in the same units as the given edge
+#' weights. Alternatively, units can be specified explicitly by providing a
+#' \code{\link[units]{units}} object. Multiple threshold values may be given,
+#' which will result in mutliple neigborhoods being returned.
 #'
-#' @param weights The edge weights used to calculate distances on the network.
-#' Can be a numeric vector giving edge weights, or a column name referring to
-#' an attribute column in the edges table containing those weights. If set to
-#' \code{NULL}, the values of a column named \code{weight} in the edges table
-#' will be used automatically, as long as this column is present. If not, the
-#' geographic edge lengths will be calculated internally and used as weights.
-#'
-#' @param from Should distances be calculated from the reference node towards
-#' the other nodes? Defaults to \code{TRUE}. If set to \code{FALSE}, distances
-#' will be calculated from the other nodes towards the reference node instead.
+#' @param weights The edge weights to be used for travel cost computation.
+#' Evaluated by \code{\link{evaluate_weight_spec}}. The default is
+#' \code{\link{edge_length}}, which computes the geographic lengths of the
+#' edges.
 #'
 #' @importFrom igraph induced_subgraph
-#' @importFrom tidygraph node_distance_from node_distance_to with_graph
+#' @importFrom methods hasArg
+#' @importFrom rlang enquo
+#' @importFrom units as_units deparse_unit
 #' @export
-to_spatial_neighborhood = function(x, node, threshold, weights = NULL,
-                                   from = TRUE, ...) {
-  # Parse node argument.
-  # If 'node' is given as a geometry, find the index of the nearest node.
-  # When multiple nodes are given only the first one is taken.
-  if (is.sf(node) | is.sfc(node)) node = get_nearest_node_index(x, node)
-  if (length(node) > 1) raise_multiple_elements("node")
-  # Parse weights argument.
-  # This can be done equal to setting weights for path calculations.
-  weights = set_path_weights(x, weights)
-  # Calculate the distances from/to the reference node to/from all other nodes.
-  # Use the provided weights as edge weights in the distance calculation.
-  if (from) {
-    dist = with_graph(x, node_distance_from(node, weights = weights, ...))
+to_spatial_neighborhood = function(x, node, threshold, weights = edge_length(),
+                                   ...) {
+  # Evaluate the given node query.
+  # Always only the first node is used.
+  node = evaluate_node_query(x, enquo(node))
+  if (length(node) > 1) raise_multiple_elements("node"); node = node[1]
+  # Evaluate the given weights specification.
+  weights = evaluate_weight_spec(x, enquo(weights))
+  # If the "to" nodes are also given this query has to be evaluated as well.
+  # Otherwise it defaults to all nodes in the network.
+  if (hasArg("to")) {
+    to = evaluate_node_query(x, enquo(to))
   } else {
-    dist = with_graph(x, node_distance_to(node, weights = weights, ...))
+    to = node_ids(x, focused = FALSE)
   }
-  # Use the given threshold to define which nodes are in the neighborhood.
-  in_neighborhood = dist <= threshold
-  # Subset the network to keep only the nodes in the neighborhood.
-  x_new = induced_subgraph(x, in_neighborhood)
+  # Compute the cost matrix from the source node.
+  # By calling st_network_cost with the given arguments.
+  if (hasArg("from")) {
+    # Deprecate the former "from" argument specifying routing direction.
+    deprecate_from()
+    if (isFALSE(list(...)$from)) {
+      costs = compute_costs(x, node, to, weights, direction = "in", ...)
+    } else {
+      costs = compute_costs(x, node, to, weights, ...)
+    }
+  } else {
+    costs = compute_costs(x, node, to, weights, ...)
+  }
+  # Parse the given threshold values.
+  if (inherits(costs, "units") && ! inherits(threshold, "units")) {
+    threshold = as_units(threshold, deparse_unit(costs))
+  }
+  # For each given threshold:
+  # --> Define which nodes are in the neighborhood.
+  # --> Subset the network to keep only the nodes in the neighborhood.
+  get_single_neighborhood = function(k) {
+    in_neighborhood = costs[1, ] <= k
+    induced_subgraph(x, in_neighborhood) %preserve_all_attrs% x
+  }
+  lapply(threshold, get_single_neighborhood)
+}
+
+#' @describeIn spatial_morphers Reverse the direction of edges. Returns a
+#' \code{morphed_sfnetwork} containing a single element of class
+#' \code{\link{sfnetwork}}.
+#' @importFrom igraph is_directed reverse_edges
+#' @importFrom rlang enquo try_fetch
+#' @importFrom sf st_reverse
+#' @export
+to_spatial_reversed = function(x, protect = NULL) {
+  # Define which edges should be reversed.
+  if (try_fetch(is.null(protect), error = \(e) FALSE)) {
+    reverse = edge_ids(x, focused = FALSE)
+  } else {
+    protect = evaluate_edge_query(x, enquo(protect))
+    reverse = setdiff(edge_ids(x, focused = FALSE), protect)
+  }
+  # Reverse the from and to indices of those edges.
+  # This will have no effect on undirected networks.
+  x_new = reverse_edges(x, eids = reverse) %preserve_all_attrs% x
+  # Reverse the geometries of those edges.
+  if (has_explicit_edges(x)) {
+    edge_geom = pull_edge_geom(x)
+    edge_geom[reverse] = st_reverse(edge_geom)[reverse]
+    x_new = mutate_edge_geom(x_new, edge_geom)
+  }
   # Return in a list.
   list(
-    neighborhood = x_new %preserve_all_attrs% x
+    reversed = x_new
   )
 }
 
 #' @describeIn spatial_morphers Limit a network to those nodes and edges that
 #' are part of the shortest path between two nodes. \code{...} is evaluated in
-#' the same manner as \code{\link{st_network_paths}} with
-#' \code{type = 'shortest'}. Returns a \code{morphed_sfnetwork} that may
-#' contain multiple elements of class \code{\link{sfnetwork}}, depending on
-#' the number of requested paths. When unmorphing only the first instance of
-#' both the node and edge data will be used, as the the same node and/or edge
-#' can be present in multiple paths.
-#' @importFrom igraph delete_edges delete_vertices edge_attr vertex_attr
+#' the same manner as \code{\link{st_network_paths}}. Returns a
+#' \code{morphed_sfnetwork} that may contain multiple elements of class
+#' \code{\link{sfnetwork}}, depending on the number of requested paths. When
+#' unmorphing only the first instance of both the node and edge data will be
+#' used, as the the same node and/or edge can be present in multiple paths.
+#' @importFrom igraph is_directed
 #' @export
 to_spatial_shortest_paths = function(x, ...) {
-  args = list(...)
-  args$x = x
-  args$type = "shortest"
   # Call st_network_paths with the given arguments.
-  paths = do.call("st_network_paths", args)
+  paths = st_network_paths(
+    x,
+    ...,
+    use_names = FALSE,
+    return_cost = FALSE,
+    return_geometry = FALSE
+  )
   # Retrieve original node and edge indices from the network.
-  orig_node_idxs = vertex_attr(x, ".tidygraph_node_index")
-  orig_edge_idxs = edge_attr(x, ".tidygraph_edge_index")
+  nodes = nodes_as_sf(x)
+  edges = edge_data(x, focused = FALSE)
   # Subset the network for each computed shortest path.
   get_single_path = function(i) {
-    edge_idxs = as.integer(paths$edge_paths[[i]])
-    node_idxs = as.integer(paths$node_paths[[i]])
-    x_new = delete_edges(x, orig_edge_idxs[-edge_idxs])
-    x_new = delete_vertices(x_new, orig_node_idxs[-node_idxs])
-    x_new %preserve_all_attrs% x
+    if (paths[i, ]$path_found) {
+      node_ids = paths$node_path[[i]]
+      edge_ids = paths$edge_path[[i]]
+      N = nodes[node_ids, ]
+      E = edges[edge_ids, ]
+      E$from = c(1:(length(node_ids) - 1))
+      E$to = c(2:length(node_ids))
+    } else {
+      N = nodes[0, ]
+      E = edges[0, ]
+    }
+    sfnetwork_(N, E, directed = is_directed(x))
   }
   lapply(seq_len(nrow(paths)), get_single_path)
 }
 
-#' @describeIn spatial_morphers Remove loop edges and/or merges multiple edges
-#' into a single edge. Multiple edges are edges that have the same source and
-#' target nodes (in directed networks) or edges that are incident to the same
-#' nodes (in undirected networks). When merging them into a single edge, the
-#' geometry of the first edge is preserved. The order of the edges can be
-#' influenced by calling \code{\link[dplyr]{arrange}} before simplifying.
-#' Returns a \code{morphed_sfnetwork} containing a single element of class
-#' \code{\link{sfnetwork}}.
+#' @describeIn spatial_morphers Construct a simple version of the network. A
+#' simple network is defined as a network without loop edges and multiple
+#' edges. A loop edge is an edge that starts and ends at the same node.
+#' Multiple edges are different edges between the same node pair. When merging
+#' them into a single edge, the geometry of the first edge is preserved. The
+#' order of the edges can be influenced by calling \code{\link[dplyr]{arrange}}
+#' before simplifying. Returns a \code{morphed_sfnetwork} containing a single
+#' element of class \code{\link{sfnetwork}}.
 #'
 #' @param remove_multiple Should multiple edges be merged into one. Defaults
 #' to \code{TRUE}.
 #'
 #' @param remove_loops Should loop edges be removed. Defaults to \code{TRUE}.
 #'
-#' @importFrom igraph simplify
-#' @importFrom sf st_as_sf st_crs st_crs<- st_precision st_precision<- st_sfc
-#' @importFrom tibble as_tibble
-#' @importFrom tidygraph as_tbl_graph
+#' @importFrom lifecycle deprecated is_present
 #' @export
 to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
-                             summarise_attributes = "first",
+                             attribute_summary = "first",
+                             summarise_attributes = deprecated(),
                              store_original_data = FALSE) {
-  # Define if the network has spatially explicit edges.
-  # This influences some of the processes to come.
-  spatial = if (has_explicit_edges(x)) TRUE else FALSE
-  # Update the attribute summary instructions.
-  # In the summarise attributes only real attribute columns were referenced.
-  # On top of those, we need to include:
-  # --> The geometry column, if present.
-  # --> The tidygraph edge index column added by tidygraph::morph.
-  if (! inherits(summarise_attributes, "list")) {
-    summarise_attributes = list(summarise_attributes)
-  }
-  if (spatial) {
-    # We always take the first geometry.
-    geom_colname = edge_geom_colname(x)
-    summarise_attributes[geom_colname] = "first"
-  }
-  # The edge indices should be concatenated into a vector.
-  summarise_attributes[".tidygraph_edge_index"] = "concat"
-  # Simplify the network.
-  x_new = simplify(
-    x,
-    remove.multiple = remove_multiple,
-    remove.loops = remove_loops,
-    edge.attr.comb = summarise_attributes
-  ) %preserve_network_attrs% x
-  # Igraph does not know about geometry list columns.
-  # Summarizing them results in a list of sfg objects.
-  # We should reconstruct the sfc geometry list column out of that.
-  if (spatial) {
-    new_edges = as_tibble(as_tbl_graph(x_new), "edges")
-    new_edges[geom_colname] = list(st_sfc(new_edges[[geom_colname]]))
-    new_edges = st_as_sf(new_edges, sf_column_name = geom_colname)
-    st_crs(new_edges) = st_crs(x)
-    st_precision(new_edges) = st_precision(x)
-    edge_attribute_values(x_new) = new_edges
-  }
-  # If requested, original edge data should be stored in a .orig_data column.
-  if (store_original_data) {
-    edges = edges_as_table(x)
-    edges$.tidygraph_edge_index = NULL
-    new_edges = edges_as_table(x_new)
-    copy_data = function(i) edges[i, , drop = FALSE]
-    new_edges$.orig_data = lapply(new_edges$.tidygraph_edge_index, copy_data)
-    edge_attribute_values(x_new) = new_edges
-  }
+  if (is_present(summarise_attributes)) deprecate_sa("to_spatial_simple")
+  # Simplify.
+  x_new = simplify_network(
+    x = x,
+    remove_loops = remove_loops,
+    remove_multiple = remove_multiple,
+    attribute_summary = attribute_summary,
+    store_original_ids = TRUE,
+    store_original_data = store_original_data
+  )
   # Return in a list.
   list(
     simple = x_new
@@ -561,407 +362,36 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' pseudo node. Returns a \code{morphed_sfnetwork} containing a single element
 #' of class \code{\link{sfnetwork}}.
 #'
-#' @param protect Nodes to be protected from being removed, no matter if they
-#' are a pseudo node or not. Can be given as a numeric vector containing node
-#' indices or a character vector containing node names. Can also be a set of
-#' geospatial features as object of class \code{\link[sf]{sf}} or
-#' \code{\link[sf]{sfc}}. In that case, for each of these features its nearest
-#' node in the network will be protected. Defaults to \code{NULL}, meaning that
-#' none of the nodes is protected.
+#' @param require_equal Which attributes of its incident edges should be equal
+#' in order for a pseudo node to be removed? Evaluated as a
+#' \code{\link[dplyr]{dplyr_tidy_select}} argument. Defaults to \code{NULL},
+#' meaning that attribute equality is not considered for pseudo node removal.
 #'
-#' @param require_equal Should nodes only be removed when the attribute values
-#' of their incident edges are equal? Defaults to \code{FALSE}. If \code{TRUE},
-#' only pseudo nodes that have incident edges with equal attribute values are
-#' removed. May also be given as a vector of attribute names. In that case only
-#' those attributes are checked for equality. Equality tests are evaluated
-#' using the \code{==} operator.
-#'
-#' @importFrom igraph adjacent_vertices decompose degree delete_vertices
-#' edge_attr edge.attributes get.edge.ids igraph_opt igraph_options
-#' incident_edges induced_subgraph is_directed vertex_attr
-#' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_is
-#' st_line_merge
+#' @importFrom lifecycle deprecated is_present
+#' @importFrom rlang enquo try_fetch
 #' @export
-to_spatial_smooth = function(x,
-                             protect = NULL,
-                             summarise_attributes = "ignore",
-                             require_equal = FALSE,
+to_spatial_smooth = function(x, protect = NULL, require_equal = NULL,
+                             attribute_summary = "ignore",
+                             summarise_attributes = deprecated(),
                              store_original_data = FALSE) {
-  # Change default igraph options.
-  # This prevents igraph returns node or edge indices as formatted sequences.
-  # We only need the "raw" integer indices.
-  # Changing this option can lead to quiet a performance improvement.
-  default_igraph_opt = igraph_opt("return.vs.es")
-  igraph_options(return.vs.es = FALSE)
-  on.exit(igraph_options(return.vs.es = default_igraph_opt))
-  # Retrieve nodes and edges from the network.
-  nodes = nodes_as_sf(x)
-  edges = edges_as_table(x)
-  # For later use:
-  # --> Check if x is directed.
-  # --> Check if x has spatially explicit edges.
-  # --> Retrieve the name of the geometry column of the edges in x.
-  directed = is_directed(x)
-  spatial = is.sf(edges)
-  geom_colname = attr(edges, "sf_column")
-  ## ==========================
-  # STEP I: DETECT PSEUDO NODES
-  # The first step is to detect which nodes in x are pseudo nodes.
-  # In directed networks, we define a pseudo node as follows:
-  # --> A node with only one incoming and one outgoing edge.
-  # In undirected networks, we define a pseudo node as follows:
-  # --> A node with only two connections.
-  ## ==========================
-  if (directed) {
-    pseudo = degree(x, mode = "in") == 1 & degree(x, mode = "out") == 1
-  } else {
-    pseudo = degree(x) == 2
+  if (is_present(summarise_attributes)) deprecate_sa("to_spatial_smooth")
+  # Evaluate the node query of the protect argument.
+  if (! try_fetch(is.null(protect), error = \(e) FALSE)) {
+    protect = evaluate_node_query(x, enquo(protect))
   }
-  if (! any(pseudo)) return (x)
-  ## ===========================
-  # STEP II: FILTER PSEUDO NODES
-  # Users can define additional requirements for a node to be smoothed:
-  # --> It should not be listed in the provided set of protected nodes.
-  # --> Its incident edges should have equal values for some attributes.
-  # In these cases we need to filter the set of detected pseudo nodes.
-  ## ===========================
-  # Detected pseudo nodes that are protected should be filtered out.
-  if (! is.null(protect)) {
-    # Parse the protect parameter values.
-    # If protect is given as character vector:
-    # --> Find the node indices belonging to these node names.
-    # If protect is given as geospatial features:
-    # --> First find the nearest node to each of these features.
-    if (is.character(protect)) {
-      # Obtain node names.
-      # They should be stored in a node attribute column named "name".
-      node_names = vertex_attr(x, "name")
-      if (is.null(node_names)) {
-        stop(
-          "Node names should be stored in an attribute column called ",
-          sQuote("name"),
-          call. = FALSE
-        )
-      }
-      # Match node names to node indices.
-      matched_names = match(protect, node_names)
-      if (any(is.na(matched_names))) {
-        stop(
-          "Unknown node names: ",
-          paste(sQuote(protect[is.na(matched_names)]), collapse = " and "),
-          ". Make sure node names are stored in an attribute column called ",
-          sQuote("name"),
-          call. = FALSE
-        )
-      }
-      protect = matched_names
-    } else if (is.sf(protect) | is.sfc(protect)) {
-      protect = get_nearest_node_index(x, protect)
-    }
-    # Mark all protected nodes as not being a pseudo node.
-    pseudo[protect] = FALSE
-    if (! any(pseudo)) return (x)
+  # Evaluate the edge attribute column query of the require equal argument.
+  if (! try_fetch(is.null(require_equal), error = \(e) FALSE)) {
+    require_equal = evaluate_edge_attribute_query(x, enquo(require_equal))
   }
-  # Check for equality of certain attributes between incident edges.
-  # Detected pseudo nodes that fail this check should be filtered out.
-  if (! isFALSE(require_equal)) {
-    # If require_equal is TRUE all attributes will be checked for equality.
-    # In other cases only a subset of attributes will be checked.
-    if (isTRUE(require_equal)) {
-      require_equal = edge_attribute_names(x)
-    } else {
-      # Check if all given attributes exist in the edges table of x.
-      attr_exists = require_equal %in% edge_attribute_names(x)
-      if (! all(attr_exists)) {
-        stop(
-          "Unknown edge attributes: ",
-          paste(sQuote(require_equal[!attr_exists]), collapse = " and "),
-          call. = FALSE
-        )
-      }
-    }
-    # Get the node indices of the detected pseudo nodes.
-    pseudo_idxs = which(pseudo)
-    # Get the edge indices of the incident edges of each pseudo node.
-    # Combine them into a single numerical vector.
-    # Note the + 1 since incident_edges returns indices starting from 0.
-    incident_idxs = incident_edges(x, pseudo_idxs, mode = "all")
-    incident_idxs = do.call("c", incident_idxs) + 1
-    # Define for each of the incident edges if they are incoming or outgoing.
-    # In undirected networks this can be read instead as "first or second".
-    is_in = seq(1, 2 * length(pseudo_idxs), by = 2)
-    is_out = seq(2, 2 * length(pseudo_idxs), by = 2)
-    # Obtain the attributes to be checked for each of the incident edges.
-    incident_attrs = edge.attributes(x, incident_idxs)[require_equal]
-    # For each of these attributes:
-    # --> Check if its value is equal for both incident edges of a pseudo node.
-    check_equality = function(A) {
-      # Check equality for each pseudo node.
-      # NOTE:
-      # --> Operator == is used because element-wise comparisons are needed.
-      # --> Not sure if this approach works with identical() or all.equal().
-      are_equal = A[is_in] == A[is_out]
-      # If one of the two values is NA or NaN:
-      # --> The result of the element-wise comparison is always NA.
-      # --> This means the two elements are certainly not equal.
-      # --> Hence the result of this comparison can be set to FALSE.
-      are_equal[is.na(are_equal)] = FALSE
-      are_equal
-    }
-    tests = lapply(incident_attrs, check_equality)
-    # If one or more equality tests failed for a detected pseudo node:
-    # --> Mark this pseudo node as FALSE, i.e. not being a pseudo node.
-    failed = rowSums(do.call("cbind", tests)) != length(require_equal)
-    pseudo[pseudo_idxs[failed]] = FALSE
-    if (! any(pseudo)) return (x)
-  }
-  ## ====================================
-  # STEP II: INITIALIZE REPLACEMENT EDGES
-  # When removing pseudo nodes their incident edges get removed to.
-  # To preserve the network connectivity we need to:
-  # --> Find the two adjacent nodes of a pseudo node.
-  # --> Connect these by merging the incident edges of the pseudo node.
-  # An adjacent node of a pseudo node can also be another pseudo node.
-  # Instead of processing each pseudo node on its own, we will:
-  # --> Find connected sets of pseudo nodes.
-  # --> Find the adjacent non-pseudo nodes (junction or pendant) to that set.
-  # --> Connect them by merging the edges in the set plus its incident edges.
-  ## ====================================
-  # Subset x to only contain pseudo nodes and the edges between them.
-  # Decompose this subgraph to find connected sets of pseudo nodes.
-  pseudo_sets = decompose(induced_subgraph(x, pseudo))
-  # For each set of connected pseudo nodes:
-  # --> Find the indices of the adjacent nodes.
-  # --> Find the indices of the edges that need to be merged.
-  # The workflow for this is different for directed and undirected networks.
-  if (directed) {
-    initialize_replacement_edge = function(S) {
-      # Retrieve the original node indices of the pseudo nodes in this set.
-      # Retrieve the original edge indices of the edges that connect them.
-      N = vertex_attr(S, ".tidygraph_node_index")
-      E = edge_attr(S, ".tidygraph_edge_index")
-      # Find the following:
-      # --> The index of the pseudo node where an edge comes into the set.
-      # --> The index of the pseudo node where an edge goes out of the set.
-      n_i = N[degree(S, mode = "in") == 0]
-      n_o = N[degree(S, mode = "out") == 0]
-      # If these nodes do not exists:
-      # --> We are dealing with a loop of connected pseudo nodes.
-      # --> The loop is by definition not connected to the rest of the network.
-      # --> Hence, there is no need to create a new edge.
-      # --> Therefore we should not return a path.
-      if (length(n_i) == 0) return (NULL)
-      # Find the following:
-      # --> The index of the edge that comes in to the pseudo node set.
-      # --> The index of the non-pseudo node at the other end of that edge.
-      # We'll call this the source node and source edge of the set.
-      # Note the + 1 since adjacent_vertices returns indices starting from 0.
-      source_node = adjacent_vertices(x, n_i, mode = "in")[[1]] + 1
-      source_edge = get.edge.ids(x, c(source_node, n_i))
-      # Find the following:
-      # --> The index of the edge that goes out of the pseudo node set.
-      # --> The index of the non-pseudo node at the other end of that edge.
-      # We'll call this the sink node and sink edge of the set.
-      # Note the + 1 since adjacent_vertices returns indices starting from 0.
-      sink_node = adjacent_vertices(x, n_o, mode = "out")[[1]] + 1
-      sink_edge = get.edge.ids(x, c(n_o, sink_node))
-      # List indices of all edges that will be merged into the replacement edge.
-      edge_idxs = c(source_edge, E, sink_edge)
-      # Return all retrieved information in a list.
-      list(
-        from = as.integer(source_node),
-        to = as.integer(sink_node),
-        .tidygraph_edge_index = as.integer(edge_idxs)
-      )
-    }
-  } else {
-    initialize_replacement_edge = function(S) {
-      # Retrieve the original node indices of the pseudo nodes in this set.
-      # Retrieve the original edge indices of the edges that connect them.
-      N = vertex_attr(S, ".tidygraph_node_index")
-      E = edge_attr(S, ".tidygraph_edge_index")
-      # Find the following:
-      # --> The two adjacent non-pseudo nodes to the set.
-      # --> The edges that connect these nodes to the set.
-      # We'll call these the adjacent nodes and incident edges of the set.
-      # --> The adjacent node with the lowest index will be the source node.
-      # --> The adjacent node with the higest index will be the sink node.
-      if (length(N) == 1) {
-        # When we have a single pseudo node that forms a set:
-        # --> It will be adjacent to both adjacent nodes of the set.
-        # Note the + 1 since adjacent_vertices returns indices starting from 0.
-        adjacent = adjacent_vertices(x, N)[[1]] + 1
-        if (length(adjacent) == 1) {
-          # If there is only one adjacent node to the pseudo node:
-          # --> The two adjacent nodes of the set are the same node.
-          # --> We only have to query for incident edges of the set once.
-          incident = get.edge.ids(x, c(adjacent, N))
-          source_node = adjacent
-          source_edge = incident[1]
-          sink_node = adjacent
-          sink_edge = incident[2]
-        } else {
-          # If there are two adjacent nodes to the pseudo node:
-          # --> The one with the lowest index will be source node.
-          # --> The one with the highest index will be sink node.
-          source_node = min(adjacent)
-          source_edge = get.edge.ids(x, c(source_node, N))
-          sink_node = max(adjacent)
-          sink_edge = get.edge.ids(x, c(N, sink_node))
-        }
-      } else {
-        # When we have a set of multiple pseudo nodes:
-        # --> There are two pseudo nodes that form the boundary of the set.
-        # --> These are the ones connected to only one other pseudo node.
-        N_b = N[degree(S) == 1]
-        # If these boundaries do not exist:
-        # --> We are dealing with a loop of connected pseudo nodes.
-        # --> The loop is by definition not connected to the rest of the network.
-        # --> Hence, there is no need to create a new edge.
-        # --> Therefore we should not return a path.
-        if (length(N_b) == 0) return (NULL)
-        # Find the adjacent nodes of the set.
-        # These are the adjacent non-pseudo nodes to the boundaries of the set.
-        # We find them iteratively for the two boundary nodes of the set:
-        # --> A boundary connects to one pseudo node and one non-pseudo node.
-        # --> The non-pseudo node is the one not present in the pseudo set.
-        # Note the + 1 since adjacent_vertices returns indices starting from 0.
-        get_set_neighbour = function(n) {
-          all = adjacent_vertices(x, n)[[1]] + 1
-          all[!(all %in% N)]
-        }
-        adjacent = do.call("c", lapply(N_b, get_set_neighbour))
-        # The adjacent node with the lowest index will be source node.
-        # The adjacent node with the highest index will be sink node.
-        N_b = N_b[order(adjacent)]
-        source_node = min(adjacent)
-        source_edge = get.edge.ids(x, c(source_node, N_b[1]))
-        sink_node = max(adjacent)
-        sink_edge = get.edge.ids(x, c(N_b[2], sink_node))
-      }
-      # List indices of all edges that will be merged into the replacement edge.
-      edge_idxs = c(source_edge, E, sink_edge)
-      # Return all retrieved information in a list.
-      list(
-        from = as.integer(source_node),
-        to = as.integer(sink_node),
-        .tidygraph_edge_index = as.integer(edge_idxs)
-      )
-    }
-  }
-  new_idxs = lapply(pseudo_sets, initialize_replacement_edge)
-  new_idxs = new_idxs[lengths(new_idxs) != 0] # Remove NULLs.
-  ## ===================================
-  # STEP III: SUMMARISE EDGE ATTRIBUTES
-  # Each replacement edge replaces multiple original edges.
-  # Their attributes should all be summarised in a single value.
-  # The summary techniques to be used are given as summarise_attributes.
-  ## ===================================
-  # Obtain the attribute values of all original edges in the network.
-  # These should not include the geometries and original edge indices.
-  exclude = c(".tidygraph_edge_index", geom_colname)
-  edge_attrs = edge.attributes(x)
-  edge_attrs = edge_attrs[!(names(edge_attrs) %in% exclude)]
-  # For each replacement edge:
-  # --> Summarise the attributes of the edges it replaces into single values.
-  merge_attrs = function(E) {
-    orig_edges = E$.tidygraph_edge_index
-    orig_attrs = lapply(edge_attrs, `[`, orig_edges)
-    apply_summary_function = function(i) {
-      # Store return value in a list.
-      # This prevents automatic type promotion when rowbinding later on.
-      list(get_summary_function(i, summarise_attributes)(orig_attrs[[i]]))
-    }
-    new_attrs = lapply(names(orig_attrs), apply_summary_function)
-    names(new_attrs) = names(orig_attrs)
-    new_attrs
-  }
-  new_attrs = lapply(new_idxs, merge_attrs)
-  ## ===================================
-  # STEP VI: CONCATENATE EDGE GEOMETRIES
-  # If the edges to be replaced have geometries:
-  # --> These geometries have to be concatenated into a single new geometry.
-  # --> The new geometry should go from the defined source to sink node.
-  ## ===================================
-  if (spatial) {
-    # Obtain geometries of all original edges and nodes in the network.
-    edge_geoms = st_geometry(edges)
-    node_geoms = st_geometry(nodes)
-    # For each replacement edge:
-    # --> Merge geometries of the edges it replaces into a single geometry.
-    merge_geoms = function(E) {
-      orig_edges = E$.tidygraph_edge_index
-      orig_geoms = edge_geoms[orig_edges]
-      new_geom = st_line_merge(st_combine(orig_geoms))
-      # There are two situations where merging lines like this is problematic.
-      # 1. When the source and sink node of the new edge are the same.
-      # --> In this case the original edges to be replaced form a closed loop.
-      # --> Any original endpoint can then be the startpoint of the new edge.
-      # --> st_line_merge chooses the point with the lowest x coordinate.
-      # --> This is not necessarily the source node we defined.
-      # --> This behaviour comes from third partly libs and can not be tuned.
-      # --> Hence, we manually need to reorder the points in the merged line.
-      if (E$from == E$to && length(orig_edges) > 1) {
-        pts = st_cast(new_geom, "POINT")
-        from_idx = st_equals(node_geoms[E$from], pts)[[1]]
-        if (length(from_idx) == 1) {
-          n = length(pts)
-          ordered_pts = c(pts[c(from_idx:n)], pts[c(2:from_idx)])
-          new_geom = st_cast(st_combine(ordered_pts), "LINESTRING")
-        }
-      }
-      # 2. When the new edge crosses itself.
-      # --> In this case st_line_merge creates a multilinestring geometry.
-      # --> We just want a regular linestring (even if this is invalid).
-      if (any(st_is(new_geom, "MULTILINESTRING"))) {
-        new_geom = multilinestrings_to_linestrings(new_geom)
-      }
-      new_geom
-    }
-    new_geoms = do.call("c", lapply(new_idxs, merge_geoms))
-  }
-  ## ============================================
-  # STEP V: ADD REPLACEMENT EDGES TO THE NETWORK
-  # The newly created edges should be added to the original network.
-  # This must happen before removing the pseudo nodes.
-  # Otherwise their from and to values do not match the correct node indices.
-  ## ============================================
-  # Create the data frame for the new edges.
-  new_edges = cbind(
-    data.frame(do.call("rbind", new_idxs)),
-    data.frame(do.call("rbind", new_attrs))
+  # Smooth.
+  x_new = smooth_pseudo_nodes(
+    x = x,
+    protect = protect,
+    require_equal = require_equal,
+    attribute_summary = attribute_summary,
+    store_original_ids = TRUE,
+    store_original_data = store_original_data
   )
-  new_edges[geom_colname] = list(new_geoms)
-  # Bind together with the original edges.
-  # Merged edges may have list-columns for some attributes.
-  # This requires a bit more complicated rowbinding.
-  all_edges = bind_rows_list(edges, new_edges)
-  if (spatial) all_edges = st_as_sf(all_edges, sf_column_name = geom_colname)
-  # Recreate an sfnetwork.
-  x_new = sfnetwork_(nodes, all_edges, directed = directed)
-  ## ============================================
-  # STEP VI: REMOVE PSEUDO NODES FROM THE NETWORK
-  # Remove all the detected pseudo nodes from the original network.
-  # This will automatically also remove their incident edges.
-  # Remember that their replacement edges have already been added in step IV.
-  # From and to indices will be updated automatically.
-  ## ============================================
-  x_new = delete_vertices(x_new, pseudo) %preserve_all_attrs% x
-  ## ==============================================
-  # STEP VII: STORE ORIGINAL EDGE DATA IF REQUESTED
-  # Users can request to store the data of original edges in a special column.
-  # This column will - by tidygraph design - be named .orig_data.
-  # The value in this column is for each edge a tibble containing:
-  # --> The data of the original edges that were merged into the new edge.
-  ## ==============================================
-  if (store_original_data) {
-    # Store the original edge data in a .orig_data column.
-    new_edges = edges_as_sf(x_new)
-    edges$.tidygraph_edge_index = NULL
-    copy_data = function(i) edges[i, , drop = FALSE]
-    new_edges$.orig_data = lapply(new_edges$.tidygraph_edge_index, copy_data)
-    edge_attribute_values(x_new) = new_edges
-  }
   # Return in a list.
   list(
     smooth = x_new
@@ -969,185 +399,48 @@ to_spatial_smooth = function(x,
 }
 
 #' @describeIn spatial_morphers Construct a subdivision of the network by
-#' subdividing edges at each interior point that is equal to any
-#' other interior or boundary point in the edges table. Interior points in this
-#' sense are those points that are included in their linestring geometry
-#' feature but are not endpoints of it, while boundary points are the endpoints
-#' of the linestrings. The network is reconstructed after subdivision such that
-#' edges are connected at the points of subdivision. Returns a
-#' \code{morphed_sfnetwork} containing a single element of class
-#' \code{\link{sfnetwork}}. This morpher requires edges to be spatially
-#' explicit and nodes to be spatially unique (i.e. not more than one node at
-#' the same spatial location).
-#' @importFrom igraph is_directed
-#' @importFrom sf st_crs st_crs<- st_geometry st_geometry<- st_precision
-#' st_precision<-
-#' @importFrom sfheaders sf_to_df sfc_linestring sfc_point
+#' subdividing edges at interior points. Subdividing means that a new node is
+#' added on an edge, and the edge is split in two at that location. Interior
+#' points are those points that shape a linestring geometry feature but are not
+#' endpoints of it. Returns a \code{morphed_sfnetwork} containing a single
+#' element of class \code{\link{sfnetwork}}. This morpher requires edges to be
+#' spatially explicit.
+#'
+#' @param all Should edges be subdivided at all their interior points? If set
+#' to \code{FALSE}, edges are only subdivided at those interior points that
+#' share their location with any other interior or boundary point (a node) in
+#' the edges table. Defaults to \code{FALSE}. By default sfnetworks rounds
+#' coordinates to 12 decimal places to determine spatial equality. You can
+#' influence this behavior by explicitly setting the precision of the network
+#' using \code{\link[sf]{st_set_precision}}.
+#'
+#' @param merge Should multiple subdivision points at the same location be
+#' merged into a single node, and should subdivision points at the same
+#' location as an existing node be merged into that node? Defaults to
+#' \code{TRUE}. If set to \code{FALSE}, each subdivision point is added
+#' separately as a new node to the network. By default sfnetworks rounds
+#' coordinates to 12 decimal places to determine spatial equality. You can
+#' influence this behavior by explicitly setting the precision of the network
+#' using \code{\link[sf]{st_set_precision}}.
+#'
+#' @importFrom rlang enquo try_fetch
 #' @export
-to_spatial_subdivision = function(x) {
-  require_explicit_edges(x)
-  if (will_assume_constant(x)) raise_assume_constant("to_spatial_subdivision")
-  # Retrieve nodes and edges from the network.
-  nodes = nodes_as_sf(x)
-  edges = edges_as_sf(x)
-  # For later use:
-  # --> Check wheter x is directed.
-  directed = is_directed(x)
-  ## ===========================
-  # STEP I: DECOMPOSE THE EDGES
-  # Decompose the edges linestring geometries into the points that shape them.
-  ## ===========================
-  # Extract all points from the linestring geometries of the edges.
-  edge_pts = sf_to_df(edges)
-  # Extract two subsets of information:
-  # --> One with only the coordinates of the points
-  # --> Another with indices describing to which edge a point belonged.
-  edge_coords = edge_pts[names(edge_pts) %in% c("x", "y", "z", "m")]
-  edge_idxs = edge_pts$linestring_id
-  ## =======================================
-  # STEP II: DEFINE WHERE TO SUBDIVIDE EDGES
-  # Edges should be split at locations where:
-  # --> An edge interior point is equal to a boundary point in another edge.
-  # --> An edge interior point is equal to an interior point in another edge.
-  # Hence, we need to split edges at point that:
-  # --> Are interior points.
-  # --> Have at least one duplicate among the other edge points.
-  ## =======================================
-  # Find which of the edge points is a boundary point.
-  is_startpoint = !duplicated(edge_idxs)
-  is_endpoint = !duplicated(edge_idxs, fromLast = TRUE)
-  is_boundary = is_startpoint | is_endpoint
-  # Find which of the edge points occur more than once.
-  is_duplicate_desc = duplicated(edge_coords)
-  is_duplicate_asc = duplicated(edge_coords, fromLast = TRUE)
-  has_duplicate = is_duplicate_desc | is_duplicate_asc
-  # Split points are those edge points satisfying both of the following rules:
-  # --> 1) They have at least one duplicate among the other edge points.
-  # --> 2) They are not edge boundary points themselves.
-  is_split = has_duplicate & !is_boundary
-  if (! any(is_split)) return (x)
-  ## ================================
-  # STEP III: DUPLICATE SPLIT POINTS
-  # The split points are currently a single interior point in an edge.
-  # They will become the endpoint of one edge *and* the startpoint of another.
-  # Hence, each split point needs to be duplicated.
-  ## ================================
-  # Create the repetition vector:
-  # --> This defines for each edge point if it should be duplicated.
-  # --> A value of '1' means 'store once', i.e. don't duplicate.
-  # --> A value of '2' means 'store twice', i.e. duplicate.
-  # --> Split points will be part of two new edges and should be duplicated.
-  reps = rep(1L, nrow(edge_coords))
-  reps[is_split] = 2L
-  # Create the new coordinate data frame by duplicating split points.
-  new_edge_coords = data.frame(lapply(edge_coords, function(i) rep(i, reps)))
-  ## ==========================================
-  # STEP IV: CONSTRUCT THE NEW EDGES GEOMETRIES
-  # With the new coords of the edge points we need to recreate linestrings.
-  # First we need to know which edge points belong to which *new* edge.
-  # Then we need to build a linestring geometry for each new edge.
-  ## ==========================================
-  # First assign each new edge point coordinate its *original* edge index.
-  # --> Then increment those accordingly at each split point.
-  orig_edge_idxs = rep(edge_idxs, reps)
-  # Original edges are subdivided at each split point.
-  # Therefore, a new edge originates from each split point.
-  # Hence, to get the new edge indices:
-  # --> Increment each original edge index by 1 at each split point.
-  incs = integer(nrow(new_edge_coords)) # By default don't increment.
-  incs[which(is_split) + 1:sum(is_split)] = 1L # Add 1 after each split.
-  new_edge_idxs = orig_edge_idxs + cumsum(incs)
-  new_edge_coords$edge_id = new_edge_idxs
-  # Build the new edge geometries.
-  new_edge_geoms = sfc_linestring(new_edge_coords, linestring_id = "edge_id")
-  st_crs(new_edge_geoms) = st_crs(edges)
-  st_precision(new_edge_geoms) = st_precision(edges)
-  new_edge_coords$edge_id = NULL
-  ## ===================================
-  # STEP V: CONSTRUCT THE NEW EDGE DATA
-  # We now have the geometries of the new edges.
-  # However, the original edge attributes got lost.
-  # We will restore them by:
-  # --> Adding back the attributes to edges that were not split.
-  # --> Duplicating original attributes within splitted edges.
-  # Beware that from and to columns will remain unchanged at this stage.
-  # We will update them later.
-  ## ===================================
-  # Find which *original* edge belongs to which *new* edge:
-  # --> Use the lists of edge indices mapped to the new edge points.
-  # --> There we already mapped each new edge point to its original edge.
-  # --> First define which new edge points are startpoints of new edges.
-  # --> Then retrieve the original edge index from these new startpoints.
-  # --> This gives us a single original edge index for each new edge.
-  is_new_startpoint = !duplicated(new_edge_idxs)
-  orig_edge_idxs = orig_edge_idxs[is_new_startpoint]
-  # Duplicate original edge data whenever needed.
-  new_edges = edges[orig_edge_idxs, ]
-  # Set the new edge geometries as geometries of these new edges.
-  st_geometry(new_edges) = new_edge_geoms
-  ## ==========================================
-  # STEP VI: CONSTRUCT THE NEW NODE GEOMETRIES
-  # All split points are now boundary points of new edges.
-  # All edge boundaries become nodes in the network.
-  ## ==========================================
-  is_new_boundary = rep(is_split | is_boundary, reps)
-  new_node_geoms = sfc_point(new_edge_coords[is_new_boundary, ])
-  st_crs(new_node_geoms) = st_crs(nodes)
-  st_precision(new_node_geoms) = st_precision(nodes)
-  ## =====================================
-  # STEP VII: CONSTRUCT THE NEW NODE DATA
-  # We now have the geometries of the new nodes.
-  # However, the original node attributes got lost.
-  # We will restore them by:
-  # --> Adding back the attributes to nodes that were already a node before.
-  # --> Filling attribute values of newly added nodes with NA.
-  # Beware at this stage the nodes are recreated from scratch.
-  # That means each boundary point of the new edges is stored as separate node.
-  # Boundaries with equal geometries will be merged into a single node later.
-  ## =====================================
-  # Find which of the *original* edge points equaled which *original* node.
-  # If an edge point did not equal a node, store NA instead.
-  node_idxs = rep(NA, nrow(edge_pts))
-  if (directed) {
-    node_idxs[is_boundary] = edge_boundary_node_indices(x)
-  } else {
-    node_idxs[is_boundary] = edge_boundary_point_indices(x)
+to_spatial_subdivision = function(x, protect = NULL, all = FALSE,
+                                  merge = TRUE) {
+  # Evaluate the edge query of the protect argument.
+  if (! try_fetch(is.null(protect), error = \(e) FALSE)) {
+    protect = evaluate_edge_query(x, enquo(protect))
   }
-  # Find which of the *original* nodes belong to which *new* edge boundary.
-  # If a new edge boundary does not equal an original node, store NA instead.
-  orig_node_idxs = rep(node_idxs, reps)[is_new_boundary]
-  # Retrieve original node data for each new edge boundary.
-  # Rows of newly added nodes will be NA.
-  new_nodes = nodes[orig_node_idxs, ]
-  # Set the new node geometries as geometries of these new nodes.
-  st_geometry(new_nodes) = new_node_geoms
-  ## ==================================================
-  # STEP VIII: UPDATE FROM AND TO INDICES OF NEW EDGES
-  # Now we updated the node data, the node indices changes.
-  # Therefore we need to update the from and to columns of the edges as well.
-  ## ==================================================
-  # Define the indices of the new nodes.
-  # Equal geometries should get the same index.
-  new_node_idxs = st_match(new_node_geoms)
-  # Map node indices to edges.
-  is_source = rep(c(TRUE, FALSE), length(new_node_geoms) / 2)
-  new_edges$from = new_node_idxs[is_source]
-  new_edges$to = new_node_idxs[!is_source]
-  ## =============================
-  # STEP IX: UPDATE THE NEW NODES
-  # We can now remove the duplicated node geometries from the new nodes data.
-  # Then, each location is represented by a single node.
-  ## =============================
-  new_nodes = new_nodes[!duplicated(new_node_idxs), ]
-  ## ============================
-  # STEP X: RECREATE THE NETWORK
-  # Use the new nodes data and the new edges data to create the new network.
-  ## ============================
-  # Create new network.
-  x_new = sfnetwork_(new_nodes, new_edges, directed = directed)
+  # Subdivide.
+  x_new = subdivide_edges(
+    x = x,
+    protect = protect,
+    all = all,
+    merge = merge
+  )
   # Return in a list.
   list(
-    subdivision = x_new %preserve_network_attrs% x
+    subdivision = x_new
   )
 }
 
@@ -1160,18 +453,21 @@ to_spatial_subdivision = function(x) {
 #'
 #' @param subset_by Whether to create subgraphs based on nodes or edges.
 #'
+#' @importFrom cli cli_alert
 #' @export
 to_spatial_subset = function(x, ..., subset_by = NULL) {
+  # Subset.
   if (is.null(subset_by)) {
     subset_by = attr(x, "active")
-    message("Subsetting by ", subset_by)
+    cli_alert("Subsetting by {subset_by}")
   }
   x_new = switch(
     subset_by,
     nodes = spatial_filter_nodes(x, ...),
     edges = spatial_filter_edges(x, ...),
-    raise_unknown_input(subset_by)
+    raise_unknown_input("subset_by", subset_by, c("nodes", "edges"))
   )
+  # Return in a list.
   list(
     subset = x_new
   )
@@ -1187,5 +483,34 @@ to_spatial_subset = function(x, ..., subset_by = NULL) {
 to_spatial_transformed = function(x, ...) {
   list(
     transformed = st_transform(x, ...)
+  )
+}
+
+#' @describeIn spatial_morphers Merge nodes with equal geometries into a single
+#' node. Returns a \code{morphed_sfnetwork} containing a single element of
+#' class \code{\link{sfnetwork}}. By default sfnetworks rounds coordinates to
+#' 12 decimal places to determine spatial equality. You can influence this
+#' behavior by explicitly setting the precision of the network using
+#' \code{\link[sf]{st_set_precision}}.
+#'
+#' @export
+to_spatial_unique = function(x, attribute_summary = "ignore",
+                             store_original_data = FALSE) {
+  # Create groups.
+  group_ids = st_match_points(pull_node_geom(x))
+  # Contract.
+  x_new = contract_nodes(
+    x = x,
+    groups = group_ids,
+    simplify = FALSE,
+    compute_centroids = FALSE,
+    reconnect_edges = FALSE,
+    attribute_summary = attribute_summary,
+    store_original_ids = TRUE,
+    store_original_data = store_original_data
+  )
+  # Return in a list.
+  list(
+    unique = x_new
   )
 }

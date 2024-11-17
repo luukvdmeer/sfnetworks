@@ -2,131 +2,163 @@
 % Please edit documentation in R/paths.R
 \name{st_network_paths}
 \alias{st_network_paths}
-\title{Paths between points in geographical space}
+\title{Find shortest paths between nodes in a spatial network}
 \usage{
 st_network_paths(
   x,
   from,
-  to = igraph::V(x),
-  weights = NULL,
-  type = "shortest",
-  use_names = TRUE,
+  to = node_ids(x),
+  weights = edge_length(),
+  all = FALSE,
+  k = 1,
+  direction = "out",
+  router = getOption("sfn_default_router", "igraph"),
+  use_names = FALSE,
+  return_cost = TRUE,
+  return_geometry = TRUE,
   ...
 )
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
 
-\item{from}{The geospatial point from which the paths will be
-calculated. Can be an object an object of class \code{\link[sf]{sf}} or
-\code{\link[sf]{sfc}}, containing a single feature. When multiple features
-are given, only the first one is used.
-Alternatively, it can be an integer, referring to the index of the
-node from which the paths will be calculated, or a character,
-referring to the name of the node from which the paths will be
-calculated.}
+\item{from}{The node where the paths should start. Evaluated by
+\code{\link{evaluate_node_query}}.}
 
-\item{to}{The (set of) geospatial point(s) to which the paths will be
-calculated. Can be an object of  class \code{\link[sf]{sf}} or
-\code{\link[sf]{sfc}}.
-Alternatively it can be a numeric vector containing the indices of the nodes
-to which the paths will be calculated, or a character vector
-containing the names of the nodes to which the paths will be
-calculated. By default, all nodes in the network are included.}
+\item{to}{The nodes where the paths should end. Evaluated by
+\code{\link{evaluate_node_query}}. By default, all nodes in the network are
+included.}
 
 \item{weights}{The edge weights to be used in the shortest path calculation.
-Can be a numeric vector giving edge weights, or a column name referring to
-an attribute column in the edges table containing those weights. If set to
-\code{NULL}, the values of a column named \code{weight} in the edges table
-will be used automatically, as long as this column is present. If not, the
-geographic edge lengths will be calculated internally and used as weights.
-If set to \code{NA}, no weights are used, even if the edges have a
-\code{weight} column. Ignored when \code{type = 'all_simple'}.}
+Evaluated by \code{\link{evaluate_weight_spec}}. The default is
+\code{\link{edge_length}}, which computes the geographic lengths of the
+edges.}
 
-\item{type}{Character defining which type of path calculation should be
-performed. If set to \code{'shortest'} paths are calculated using
-\code{\link[igraph]{shortest_paths}}, if set to
-\code{'all_shortest'} paths are calculated using
-\code{\link[igraph]{all_shortest_paths}}, if set to
-\code{'all_simple'} paths are calculated using
-\code{\link[igraph]{all_simple_paths}}. Defaults to \code{'shortest'}.}
+\item{all}{Should all shortest paths be returned for each pair of nodes? If
+set to \code{FALSE}, only one shortest path is returned for each pair of
+nodes, even if multiple shortest paths exist. Defaults to \code{FALSE}.}
+
+\item{k}{The number of paths to find. Setting this to any integer higher
+than 1 returns not only the shortest path, but also the next k - 1 loopless
+shortest paths, which may be longer than the shortest path. Currently, this
+is only supported for one-to-one routing, meaning that both the from and to
+argument should be of length 1. This argument is ignored if \code{all} is
+set to \code{TRUE}.}
+
+\item{direction}{The direction of travel. Defaults to \code{'out'}, meaning
+that the direction given by the network is followed and paths are found from
+the node given as argument \code{from}. May be set to \code{'in'}, meaning
+that the opposite direction is followed an paths are found towards the node
+given as argument \code{from}. May also be set to \code{'all'}, meaning that
+the network is considered to be undirected. This argument is ignored for
+undirected networks.}
+
+\item{router}{The routing backend to use for the shortest path computation.
+Currently supported options are \code{'igraph'} and \code{'dodgr'}. See
+Details.}
 
 \item{use_names}{If a column named \code{name} is present in the nodes
 table, should these names be used to encode the nodes in a path, instead of
-the node indices? Defaults to \code{TRUE}. Ignored when the nodes table does
+the node indices? Defaults to \code{FALSE}. Ignored when the nodes table does
 not have a column named \code{name}.}
 
-\item{...}{Arguments passed on to the corresponding
-\code{\link[igraph:shortest_paths]{igraph}} or
-\code{\link[igraph:all_simple_paths]{igraph}} function. Arguments
-\code{predecessors} and \code{inbound.edges} are ignored.}
+\item{return_cost}{Should the total cost of each path be computed? Defaults
+to \code{TRUE}.}
+
+\item{return_geometry}{Should a linestring geometry be constructed for each
+path? Defaults to \code{TRUE}. The geometries are constructed by calling
+\code{\link[sf]{st_line_merge}} on the linestring geometries of the edges in
+the path. Ignored for networks with spatially implicit edges.}
+
+\item{...}{Additional arguments passed on to the underlying function of the
+chosen routing backend. See Details.}
 }
 \value{
-An object of class \code{\link[tibble]{tbl_df}} with one row per
-returned path. Depending on the setting of the \code{type} argument,
-columns can be \code{node_paths} (a list column with for each path the
-ordered indices of nodes present in that path) and \code{edge_paths}
-(a list column with for each path the ordered indices of edges present in
-that path). \code{'all_shortest'} and \code{'all_simple'} return only
-\code{node_paths}, while \code{'shortest'} returns both.
+An object of class \code{\link[sf]{sf}} with one row per requested
+path. If \code{return_geometry = FALSE} or edges are spatially implicit, a
+\code{\link[tibble]{tbl_df}} is returned instead. If a requested path could
+not be found, it is included in the output as an empty path.
+
+Depending on the argument settings, the output may include the following
+columns:
+
+\itemize{
+  \item \code{from}: The index of the node at the start of the path.
+  \item \code{to}: The index of the node at the end of the path.
+  \item \code{node_path}: A vector containing the indices of all nodes on
+  the path, in order of visit.
+  \item \code{edge_path}: A vector containing the indices of all edges on
+  the path, in order of visit.
+  \item \code{path_found}: A boolean describing if the requested path exists.
+  \item \code{cost}: The total cost of the path, obtained by summing the
+  weights of all visited edges. Included if \code{return_cost = TRUE}.
+  \item \code{geometry}: The geometry of the path, obtained by merging the
+  geometries of all visited edges. Included if \code{return_geometry = TRUE}
+  and the network has spatially explicit edges.
+}
 }
 \description{
-Combined wrapper around \code{\link[igraph]{shortest_paths}},
-\code{\link[igraph]{all_shortest_paths}} and
-\code{\link[igraph]{all_simple_paths}} from \code{\link[igraph]{igraph}},
-allowing to provide any geospatial point as \code{from} argument and any
-set of geospatial points as \code{to} argument. If such a geospatial point
-is not equal to a node in the network, it will be snapped to its nearest
-node before calculating the shortest or simple paths.
+Find shortest paths between nodes in a spatial network
 }
 \details{
-Spatial features provided to the \code{from} and/or
-\code{to} argument don't necessarily have to be points. Internally, the
-nearest node to each feature is found by calling
-\code{\link[sf]{st_nearest_feature}}, so any feature with a geometry type
-that is accepted by that function can be provided as \code{from} and/or
-\code{to} argument.
+The sfnetworks package does not implement its own routing algorithms
+to find shortest paths. Instead, it relies on "routing backends", i.e. other
+R packages that have implemented such algorithms. Currently two different
+routing backends are supported.
 
-When directly providing integer node indices or character node names to the
-\code{from} and/or \code{to} argument, keep the following in mind. A node
-index should correspond to a row-number of the nodes table of the network.
-A node name should correspond to a value of a column in the nodes table
-named \code{name}. This column should contain character values without
-duplicates.
+The default is \code{\link[igraph]{igraph}}. This package supports
+one-to-many shortest path calculation with the
+\code{\link[igraph]{shortest_paths}} function. Note that multiple from nodes
+are not supported. If multiple from nodes are given, only the first one is
+taken. The igraph router also supports the computation of all shortest path
+(see the \code{all} argument) through the
+\code{\link[igraph]{all_shortest_paths}} function and of k shortest paths
+(see the \code{k} argument) through the
+\code{\link[igraph]{k_shortest_paths}} function. In the latter case, only
+one-to-one routing is supported, meaning that also only one to node should
+be provided. The igraph router does not support dual-weighted routing.
 
-For more details on the wrapped functions from \code{\link[igraph]{igraph}}
-see the \code{\link[igraph]{shortest_paths}} or
-\code{\link[igraph]{all_simple_paths}} documentation pages.
+The second supported routing backend is \code{\link[dodgr]{dodgr}}. This
+package supports many-to-many shortest path calculation with the
+\code{\link[dodgr]{dodgr_paths}} function. It also supports dual-weighted
+routing. The computation of all shortest paths and k shortest paths is
+currently not supported by the dodgr router. The dodgr package is a
+conditional dependency of sfnetworks. Using the dodgr router requires the
+dodgr package to be installed.
+
+The default router can be changed by setting the \code{sfn_default_router}
+option.
 }
 \examples{
 library(sf, quietly = TRUE)
 library(tidygraph, quietly = TRUE)
 
-# Create a network with edge lengths as weights.
-# These weights will be used automatically in shortest paths calculation.
-net = as_sfnetwork(roxel, directed = FALSE) \%>\%
-  st_transform(3035) \%>\%
-  activate("edges") \%>\%
-  mutate(weight = edge_length())
+oldpar = par(no.readonly = TRUE)
+par(mar = c(1,1,1,1))
 
-# Providing node indices.
+net = as_sfnetwork(roxel, directed = FALSE) |>
+  st_transform(3035)
+
+# Compute the shortest path between two nodes.
+# Note that geographic edge length is used as edge weights by default.
 paths = st_network_paths(net, from = 495, to = 121)
 paths
 
-node_path = paths \%>\%
-  slice(1) \%>\%
-  pull(node_paths) \%>\%
-  unlist()
-node_path
-
-oldpar = par(no.readonly = TRUE)
-par(mar = c(1,1,1,1))
 plot(net, col = "grey")
-plot(slice(activate(net, "nodes"), node_path), col = "red", add = TRUE)
-par(oldpar)
+plot(st_geometry(net)[paths$from], pch = 20, cex = 2, add = TRUE)
+plot(st_geometry(paths), col = "orange", lwd = 3, add = TRUE)
 
-# Providing nodes as spatial points.
-# Points that don't equal a node will be snapped to their nearest node.
+# Compute the shortest paths from one to multiple nodes.
+# This will return a tibble with one row per path.
+paths = st_network_paths(net, from = 495, to = c(121, 131, 141))
+paths
+
+plot(net, col = "grey")
+plot(st_geometry(net)[paths$from], pch = 20, cex = 2, add = TRUE)
+plot(st_geometry(paths), col = "orange", lwd = 3, add = TRUE)
+
+# Compute the shortest path between two spatial point features.
+# These are snapped to their nearest node before finding the path.
 p1 = st_geometry(net, "nodes")[495] + st_sfc(st_point(c(50, -50)))
 st_crs(p1) = st_crs(net)
 p2 = st_geometry(net, "nodes")[121] + st_sfc(st_point(c(-10, 100)))
@@ -135,38 +167,47 @@ st_crs(p2) = st_crs(net)
 paths = st_network_paths(net, from = p1, to = p2)
 paths
 
-node_path = paths \%>\%
-  slice(1) \%>\%
-  pull(node_paths) \%>\%
-  unlist()
-node_path
-
-oldpar = par(no.readonly = TRUE)
-par(mar = c(1,1,1,1))
 plot(net, col = "grey")
-plot(c(p1, p2), col = "black", pch = 8, add = TRUE)
-plot(slice(activate(net, "nodes"), node_path), col = "red", add = TRUE)
+plot(c(p1, p2), pch = 20, cex = 2, add = TRUE)
+plot(st_geometry(net)[paths$from], pch = 4, cex = 2, add = TRUE)
+plot(st_geometry(paths), col = "orange", lwd = 3, add = TRUE)
+
+# Use a node type query function to specify destinations.
+st_network_paths(net, 1, node_is_adjacent(1))
+
+# Use a spatial edge measure to specify edge weights.
+# By default edge_length() is used.
+st_network_paths(net, p1, p2, weights = edge_displacement())
+
+# Use a column in the edges table to specify edge weights.
+# This uses tidy evaluation.
+net |>
+  activate("edges") |>
+  mutate(foo = runif(n(), min = 0, max = 1)) |>
+  st_network_paths(p1, p2, weights = foo)
+
+# Compute the shortest paths without edge weights.
+# This is the path with the fewest number of edges, ignoring space.
+st_network_paths(net, p1, p2, weights = NA)
+
+# Use the dodgr router for many-to-many routing.
+paths = st_network_paths(net,
+  from = c(1, 2),
+  to = c(10, 11),
+  router = "dodgr"
+)
+
+# Use the dodgr router for dual-weighted routing.
+paths = st_network_paths(net,
+  from = c(1, 2),
+  to = c(10, 11),
+  weights = dual_weights(edge_segment_count(), edge_length()),
+  router = "dodgr"
+)
+
 par(oldpar)
-
-# Using another column for weights.
-net \%>\%
-  activate("edges") \%>\%
-  mutate(foo = runif(n(), min = 0, max = 1)) \%>\%
-  st_network_paths(p1, p2, weights = "foo")
-
-# Obtaining all simple paths between two nodes.
-# Beware, this function can take long when:
-# --> Providing a lot of 'to' nodes.
-# --> The network is large and dense.
-net = as_sfnetwork(roxel, directed = TRUE)
-st_network_paths(net, from = 1, to = 12, type = "all_simple")
-
-# Obtaining all shortest paths between two nodes.
-# Not using edge weights.
-# Hence, a shortest path is the paths with the least number of edges.
-st_network_paths(net, from = 5, to = 1, weights = NA, type = "all_shortest")
 
 }
 \seealso{
-\code{\link{st_network_cost}}
+\code{\link{st_network_cost}}, \code{\link{st_network_travel}}
 }

@@ -1,6 +1,5 @@
 library(sf)
 library(dplyr)
-library(igraph)
 
 # toynet
 p1 = st_point(c(0, 1))
@@ -32,30 +31,31 @@ point = st_sfc(st_point(c(2, 0)))
 net = as_sfnetwork(lines)
 
 ## Edge measures
-circuity_with_nan = net %>%
-  activate("edges") %>%
-  mutate(circuity = edge_circuity(Inf_as_NaN = TRUE)) %>%
+circuity_with_nan = net |>
+  activate("edges") |>
+  mutate(circuity = edge_circuity(Inf_as_NaN = TRUE)) |>
   pull(circuity)
 
-circuity_with_inf = net %>%
-  activate("edges") %>%
-  mutate(circuity = edge_circuity(Inf_as_NaN = FALSE)) %>%
+circuity_with_inf = net |>
+  activate("edges") |>
+  mutate(circuity = edge_circuity(Inf_as_NaN = FALSE)) |>
   pull(circuity)
 
-length = net %>%
-  activate("edges") %>%
-  mutate(length = edge_length()) %>%
+length = net |>
+  activate("edges") |>
+  mutate(length = edge_length()) |>
   pull(length)
 
-displacement = net %>%
-  activate("edges") %>%
-  mutate(disp = edge_displacement()) %>%
+displacement = net |>
+  activate("edges") |>
+  mutate(disp = edge_displacement()) |>
   pull(disp)
 
-implicit_length = lines %>%
-  as_sfnetwork(edges_as_lines = F) %>%
-  activate("edges") %>%
-  mutate(length = edge_length()) %>%
+implicit_length = lines |>
+  as_sfnetwork() |>
+  make_edges_implicit() |>
+  activate("edges") |>
+  mutate(length = edge_length()) |>
   pull(length)
 
 test_that("spatial_edge_measures return correct (known) values", {
@@ -87,140 +87,140 @@ test_that("edge_length returns same output as edge_displacement with
 
 ## spatial predicates
 # Edge predicates
-net = net %>%
+net = net |>
   activate("edges")
-edgeint = net %>%
+edgeint = net |>
   filter(edge_intersects(square))
-edgecross = net %>%
+edgecross = net |>
   filter(edge_crosses(square))
-edgecov = net %>%
+edgecov = net |>
   filter(edge_is_covered_by(square))
-edgedisj = net %>%
+edgedisj = net |>
   filter(edge_is_disjoint(square))
-edgetouch = net %>%
+edgetouch = net |>
   filter(edge_touches(square))
-edgewithin = net %>%
+edgewithin = net |>
   filter(edge_is_within(square))
-edgewithindist = net %>%
+edgewithindist = net |>
   filter(edge_is_within_distance(point, 1))
 
 test_that("spatial edge predicates return correct edges", {
   expect_true(
     all(diag(
-      st_geometry(st_as_sf(edgeint, "edges")) %>%
+      st_geometry(st_as_sf(edgeint, "edges")) |>
         st_equals(c(l2, l3, l4, l5, l6, l7), sparse = FALSE)
     ))
   )
   expect_true(
-    st_geometry(st_as_sf(edgecross, "edges")) %>%
+    st_geometry(st_as_sf(edgecross, "edges")) |>
       st_equals(l2, sparse = FALSE)
   )
   expect_true(
     all(diag(
-      st_geometry(st_as_sf(edgecov, "edges")) %>%
+      st_geometry(st_as_sf(edgecov, "edges")) |>
         st_equals(c(l3, l5), sparse = FALSE)
     ))
   )
   expect_true(
-    st_geometry(st_as_sf(edgedisj, "edges")) %>%
+    st_geometry(st_as_sf(edgedisj, "edges")) |>
       st_equals(l1, sparse = FALSE)
   )
   expect_true(
     all(diag(
-      st_geometry(st_as_sf(edgetouch, "edges")) %>%
+      st_geometry(st_as_sf(edgetouch, "edges")) |>
         st_equals(c(l3, l4, l6, l7), sparse = FALSE)
     ))
   )
   expect_true(
-    st_geometry(st_as_sf(edgewithin, "edges")) %>%
+    st_geometry(st_as_sf(edgewithin, "edges")) |>
       st_equals(l5, sparse = FALSE)
   )
   expect_true(
     all(diag(
-      st_geometry(st_as_sf(edgewithindist, "edges")) %>%
+      st_geometry(st_as_sf(edgewithindist, "edges")) |>
         st_equals(c(l1, l2, l3), sparse = FALSE)
     ))
   )
 })
 
 test_that("spatial edge predicates always return the total number of nodes", {
-  expect_equal(vcount(edgeint), vcount(net))
-  expect_equal(vcount(edgecross), vcount(net))
-  expect_equal(vcount(edgecov), vcount(net))
-  expect_equal(vcount(edgedisj), vcount(net))
-  expect_equal(vcount(edgetouch), vcount(net))
+  expect_equal(n_nodes(edgeint), n_nodes(net))
+  expect_equal(n_nodes(edgecross), n_nodes(net))
+  expect_equal(n_nodes(edgecov), n_nodes(net))
+  expect_equal(n_nodes(edgedisj), n_nodes(net))
+  expect_equal(n_nodes(edgetouch), n_nodes(net))
 })
 
 # Node predicates
-net = net %>%
+net = net |>
   activate("nodes")
-nodeint = net %>%
+nodeint = net |>
   filter(node_intersects(square))
-nodewithin = net %>%
+nodewithin = net |>
   filter(node_is_within(square))
-nodecov = net %>%
+nodecov = net |>
   filter(node_is_covered_by(square))
-nodedisj = net %>%
+nodedisj = net |>
   filter(node_is_disjoint(square))
-nodetouch = net %>%
+nodetouch = net |>
   filter(node_touches(square))
-nodewithindist = net %>%
+nodewithindist = net |>
   filter(node_is_within_distance(point, 1))
 
 test_that("spatial node predicates return correct nodes and edges", {
   expect_true(
     all(diag(
-      st_geometry(st_as_sf(nodeint, "nodes")) %>%
+      st_geometry(st_as_sf(nodeint, "nodes")) |>
         st_equals(st_sfc(p5, p6, p7, p9, p10), sparse = FALSE)
     ))
   )
   expect_true(
     all(diag(
-      st_geometry(st_as_sf(nodeint, "edges")) %>%
+      st_geometry(st_as_sf(nodeint, "edges")) |>
         st_equals(c(l3, l5, l7), sparse = FALSE)
     ))
   )
   expect_true(
-    st_geometry(st_as_sf(nodewithin, "nodes")) %>%
+    st_geometry(st_as_sf(nodewithin, "nodes")) |>
       st_equals(p5, sparse = FALSE)
   )
   expect_true(
     all(diag(
-      st_geometry(st_as_sf(nodecov, "nodes")) %>%
+      st_geometry(st_as_sf(nodecov, "nodes")) |>
         st_equals(st_sfc(p5, p6, p7, p9, p10), sparse = FALSE)
     ))
   )
   expect_true(
     all(diag(
-      st_geometry(st_as_sf(nodecov, "edges")) %>%
+      st_geometry(st_as_sf(nodecov, "edges")) |>
         st_equals(c(l3, l5, l7), sparse = FALSE)
     ))
   )
   expect_true(
     all(diag(
-      st_geometry(st_as_sf(nodedisj, "nodes")) %>%
+      st_geometry(st_as_sf(nodedisj, "nodes")) |>
         st_equals(st_sfc(p1, p3, p8), sparse = FALSE)
     ))
   )
   expect_true(
-    st_geometry(st_as_sf(nodedisj, "edges")) %>%
+    st_geometry(st_as_sf(nodedisj, "edges")) |>
       st_equals(l1, sparse = FALSE)
   )
   expect_true(
     all(diag(
-      st_geometry(st_as_sf(nodetouch, "nodes")) %>%
+      st_geometry(st_as_sf(nodetouch, "nodes")) |>
         st_equals(st_sfc(p6, p7, p9, p10), sparse = FALSE)
     ))
   )
   expect_true(
     all(diag(
-      st_geometry(st_as_sf(nodetouch, "edges")) %>%
+      st_geometry(st_as_sf(nodetouch, "edges")) |>
         st_equals(c(l3, l5, l7), sparse = FALSE)
     ))
   )
   expect_true(
     all(diag(
-      st_geometry(st_as_sf(nodewithindist, "nodes")) %>%
+      st_geometry(st_as_sf(nodewithindist, "nodes")) |>
         st_equals(st_sfc(p3, p7), sparse = FALSE)
     ))
   )

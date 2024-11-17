@@ -5,7 +5,7 @@
 \alias{as_tibble.sfnetwork}
 \title{Extract the active element of a sfnetwork as spatial tibble}
 \usage{
-\method{as_tibble}{sfnetwork}(x, active = NULL, spatial = TRUE, ...)
+\method{as_tibble}{sfnetwork}(x, active = NULL, focused = TRUE, spatial = TRUE, ...)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
@@ -13,6 +13,10 @@
 \item{active}{Which network element (i.e. nodes or edges) to activate before
 extracting. If \code{NULL}, it will be set to the current active element of
 the given network. Defaults to \code{NULL}.}
+
+\item{focused}{Should only features that are in focus be extracted? Defaults
+to \code{TRUE}. See \code{\link[tidygraph]{focus}} for more information on
+focused networks.}
 
 \item{spatial}{Should the extracted tibble be a 'spatial tibble', i.e. an
 object of class \code{c('sf', 'tbl_df')}, if it contains a geometry list
@@ -22,7 +26,9 @@ column. Defaults to \code{TRUE}.}
 }
 \value{
 The active element of the network as an object of class
-\code{\link[tibble]{tibble}}.
+\code{\link[sf]{sf}} if a geometry list column is present and
+\code{spatial = TRUE}, and object of class \code{\link[tibble]{tibble}}
+otherwise.
 }
 \description{
 The sfnetwork method for \code{\link[tibble]{as_tibble}} is conceptually

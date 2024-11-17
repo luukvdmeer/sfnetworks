@@ -2,9 +2,9 @@
 % Please edit documentation in R/blend.R
 \name{st_network_blend}
 \alias{st_network_blend}
-\title{Blend geospatial points into a spatial network}
+\title{Blend spatial points into a spatial network}
 \usage{
-st_network_blend(x, y, tolerance = Inf)
+st_network_blend(x, y, tolerance = Inf, ignore_duplicates = TRUE)
 }
 \arguments{
 \item{x}{An object of class \code{\link{sfnetwork}}.}
@@ -18,27 +18,37 @@ Should be a non-negative number preferably given as an object of class
 \code{\link[units]{units}}. Otherwise, it will be assumed that the unit is
 meters. If set to \code{Inf} all features will be blended. Defaults to
 \code{Inf}.}
+
+\item{ignore_duplicates}{If there are multiple points in \code{y} that have
+the same projected location, only the first one of them is blended into
+the network. But what should happen with the others? If this argument is set
+to \code{TRUE}, they will be ignored. If this argument is set to
+\code{FALSE}, they will be added as isolated nodes to the returned network.
+Nodes at equal locations can then be merged using the spatial morpher
+\code{\link{to_spatial_unique}}. Defaults to \code{TRUE}.}
 }
 \value{
 The blended network as an object of class \code{\link{sfnetwork}}.
 }
 \description{
-Blending a point into a network is the combined process of first snapping
-the given point to its nearest point on its nearest edge in the network,
-subsequently splitting that edge at the location of the snapped point, and
-finally adding the snapped point as node to the network. If the location
-of the snapped point is already a node in the network, the attributes of the
-point (if any) will be joined to that node.
+Blending a point into a network is the combined process of first projecting
+the point onto its nearest point on its nearest edge in the network, then
+subdividing that edge at the location of the projected point, and finally
+adding the projected point as node to the network. If the location of the
+projected point is equal an existing node in the network, the attributes of
+the point will be joined to that node, instead of adding a new node.
 }
 \details{
-There are two important details to be aware of. Firstly: when the
-snap locations of multiple points are equal, only the first of these points
-is blended into the network. By arranging \code{y} before blending you can
-influence which (type of) point is given priority in such cases.
-Secondly: when the snap location of a point intersects with multiple edges,
-it is only blended into the first of these edges. You might want to run the
-\code{\link{to_spatial_subdivision}} morpher after blending, such that
-intersecting but unconnected edges get connected.
+When the projected location of a given point intersects with more
+than one edge, it is only blended into the first of these edges. Edges are
+not connected at blending locations. Use the spatial morpher
+\code{\link{to_spatial_subdivision}} for that.
+
+To determine if a projected point is equal to an existing node, and to
+determine if multiple projected points are equal to each other, sfnetworks
+by default rounds coordinates to 12 decimal places. You can influence this
+behavior by explicitly setting the precision of the network using
+\code{\link[sf]{st_set_precision}}.
 }
 \note{
 Due to internal rounding of rational numbers, it may occur that the
@@ -46,61 +56,56 @@ intersection point between a line and a point is not evaluated as
 actually intersecting that line by the designated algorithm. Instead, the
 intersection point lies a tiny-bit away from the edge. Therefore, it is
 recommended to set the tolerance to a very small number (for example 1e-5)
-even if you only want to blend points that intersect the line.
+even if you only want to blend points that intersect an edge.
 }
 \examples{
 library(sf, quietly = TRUE)
 
-# Create a network and a set of points to blend.
-n11 = st_point(c(0,0))
-n12 = st_point(c(1,1))
-e1 = st_sfc(st_linestring(c(n11, n12)), crs = 3857)
+oldpar = par(no.readonly = TRUE)
+par(mar = c(1,1,1,1), mfrow = c(1,2))
 
-n21 = n12
-n22 = st_point(c(0,2))
-e2 = st_sfc(st_linestring(c(n21, n22)), crs = 3857)
+# Create a spatial network.
+n1 = st_point(c(0, 0))
+n2 = st_point(c(1, 0))
+n3 = st_point(c(2, 0))
 
-n31 = n22
-n32 = st_point(c(-1,1))
-e3 = st_sfc(st_linestring(c(n31, n32)), crs = 3857)
+e1 = st_sfc(st_linestring(c(n1, n2)), crs = 3857)
+e2 = st_sfc(st_linestring(c(n2, n3)), crs = 3857)
 
-net = as_sfnetwork(c(e1,e2,e3))
+net = as_sfnetwork(c(e1, e2))
 
-pts = net \%>\%
-  st_bbox() \%>\%
-  st_as_sfc() \%>\%
-  st_sample(10, type = "random") \%>\%
-  st_set_crs(3857) \%>\%
-  st_cast('POINT')
+# Create spatial points to blend in.
+p1 = st_sfc(st_point(c(0.5, 0.1)))
+p2 = st_sfc(st_point(c(0.5, -0.2)))
+p3 = st_sfc(st_point(c(1, 0.2)))
+p4 = st_sfc(st_point(c(1.75, 0.2)))
+p5 = st_sfc(st_point(c(1.25, 0.1)))
 
-# Blend points into the network.
-# --> By default tolerance is set to Inf
-# --> Meaning that all points get blended
+pts = st_sf(foo = letters[1:5], geometry = c(p1, p2, p3, p4, p5), crs = 3857)
+
+# Blend all points into the network.
 b1 = st_network_blend(net, pts)
 b1
 
-# Blend points with a tolerance.
-tol = units::set_units(0.2, "m")
+plot(net)
+plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
+plot(b1)
+plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
+
+# Blend points within a tolerance distance.
+tol = units::set_units(0.1, "m")
 b2 = st_network_blend(net, pts, tolerance = tol)
 b2
 
-## Plot results.
-# Initial network and points.
-oldpar = par(no.readonly = TRUE)
-par(mar = c(1,1,1,1), mfrow = c(1,3))
-plot(net, cex = 2, main = "Network + set of points")
-plot(pts, cex = 2, col = "red", pch = 20, add = TRUE)
+plot(net)
+plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
+plot(b2)
+plot(st_geometry(pts), pch = 20, col = "orange", add = TRUE)
 
-# Blend with no tolerance
-plot(b1, cex = 2, main = "Blend with tolerance = Inf")
-plot(pts, cex = 2, col = "red", pch = 20, add = TRUE)
+# Add points with duplicated projected location as isolated nodes.
+b3 = st_network_blend(net, pts, ignore_duplicates = FALSE)
+b3
 
-# Blend with tolerance.
-within = st_is_within_distance(pts, st_geometry(net, "edges"), tol)
-pts_within = pts[lengths(within) > 0]
-plot(b2, cex = 2, main = "Blend with tolerance = 0.2 m")
-plot(pts, cex = 2, col = "grey", pch = 20, add = TRUE)
-plot(pts_within, cex = 2, col = "red", pch = 20, add = TRUE)
 par(oldpar)
 
 }
