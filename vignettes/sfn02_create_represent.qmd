@@ -3,8 +3,8 @@ title: "Creating and representing spatial networks"
 date: "`r Sys.Date()`"
 vignette: >
   %\VignetteIndexEntry{2. Creating and representing spatial networks}
-  %\VignetteEngine{quarto:html}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{quarto::html}
 format:
   html:
     toc: true

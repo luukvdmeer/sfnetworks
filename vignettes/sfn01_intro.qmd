@@ -3,8 +3,8 @@ title: "Introduction to sfnetworks"
 date: "`r Sys.Date()`"
 vignette: >
   %\VignetteIndexEntry{1. Introduction to sfnetworks}
-  %\VignetteEngine{quarto:html}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{quarto::html}
 format:
   html:
     toc: true

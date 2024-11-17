@@ -4,7 +4,7 @@ date: "`r Sys.Date()`"
 vignette: >
   %\VignetteIndexEntry{3. Cleaning spatial networks}
   %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{quarto:html}
+  %\VignetteEngine{quarto::html}
 format:
   html:
     toc: true
