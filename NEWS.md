@@ -105,6 +105,7 @@
 
 ### Other utilities
 
+- Added `is_sfnetwork()` as an alias of `is.sfnetwork()`.
 - The new function `validate_network()` allows to validate the spatial network structure of a `sfnetwork` object.
 - The new function `wrap_igraph()` allows to wrap any function from `{igraph}` that returns a network, and make it return a `sfnetwork` object instead of a `igraph` object.
 - The functions `st_duplicated()`, `st_match()` and `st_round()` are added as spatial variations to common base R functions, respectively for determining spatial duplicates, geometry matching, and coordinate rounding.
