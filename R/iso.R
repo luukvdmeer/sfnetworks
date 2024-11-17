@@ -35,7 +35,8 @@
 #'
 #' @param ratio The ratio of the concave hull. Defaults to \code{1}, meaning
 #' that the convex hull is computed. See \code{\link[sf]{st_concave_hull}} for
-#' details. Ignored if \code{delineate = FALSE}.
+#' details. Ignored if \code{delineate = FALSE}. Setting this to a value
+#' smaller than 1 requires a GEOS version of at least 3.11.
 #'
 #' @param allow_holes May the concave hull have holes? Defaults to \code{FALSE}.
 #' Ignored if \code{delineate = FALSE}.
@@ -56,12 +57,21 @@
 #' oldpar = par(no.readonly = TRUE)
 #' par(mar = c(1,1,1,1))
 #'
-#' # Note that this function requires GEOS >= 3.11!
+#' center = st_centroid(st_combine(st_geometry(roxel)))
+#'
+#' net = as_sfnetwork(roxel, directed = FALSE)
+#'
+#' iso = net |>
+#'   st_network_iso(node_is_nearest(center), c(1000, 500, 250))
+#'
+#' colors = c("#fee6ce90", "#fdae6b90", "#e6550d90")
+#'
+#' plot(net)
+#' plot(st_geometry(iso), col = colors, add = TRUE)
+#'
+#' # The level of detail can be increased with the ratio argument.
+#' # This requires GEOS >= 3.11.
 #' if (compareVersion(sf_extSoftVersion()[["GEOS"]], "3.11.0") > -1) {
-#'
-#'   center = st_centroid(st_combine(st_geometry(roxel)))
-#'
-#'   net = as_sfnetwork(roxel, directed = FALSE)
 #'
 #'   iso = net |>
 #'     st_network_iso(node_is_nearest(center), c(1000, 500, 250), ratio = 0.3)
@@ -82,7 +92,7 @@ st_network_iso = function(x, node, cost, weights = edge_length(), ...,
 
 #' @importFrom methods hasArg
 #' @importFrom rlang enquo
-#' @importFrom sf st_combine st_concave_hull st_sf
+#' @importFrom sf st_combine st_concave_hull st_convex_hull st_sf
 #' @importFrom units as_units deparse_unit
 #' @export
 st_network_iso.sfnetwork = function(x, node, cost, weights = edge_length(),
@@ -115,7 +125,11 @@ st_network_iso.sfnetwork = function(x, node, cost, weights = edge_length(),
     in_iso = matrix[1, ] <= k
     iso = st_combine(node_geom[in_iso])
     if (delineate) {
-      iso = st_concave_hull(iso, ratio = ratio, allow_holes = allow_holes)
+      if (ratio == 1) {
+        iso = st_convex_hull(iso)
+      } else {
+        iso = st_concave_hull(iso, ratio = ratio, allow_holes = allow_holes)
+      }
     }
     iso
   }

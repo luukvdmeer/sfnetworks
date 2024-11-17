@@ -402,11 +402,13 @@ ggraph(net, "sf") +
   theme_void()
 ```
 
-<!-- ### Isodistance polygons
+### Isodistance polygons
 
 With respect to a given point $p$ and a given distance $d$, an isodistance is the line for which it holds that the distance from any point on the line from $p$ is equal to $d$. In spatial network analysis, it is common to find all nodes that fall within an isodistance line computed for a given source node $p$. By enclosing this nodes with a concave hull, we obtain a *isodistance polygon*. 
 
 This workflow is implemented in the function `st_network_iso()`. It will first compute the distance matrix from a given source node $p$ (which can be specified as explained [here](#specifying-origins-and-destinations)) to all other nodes in the network using `st_network_cost()`, and then filter those nodes that are within a given distance $d$. Using `sf::st_concave_hull()`, it will compute the concave hull around those nodes to obtain an isodistance polygon. Multiple distance thresholds can be given, resulting in multiple isodistance polygons being drawn. The output of the function is an `sf` object with one row per requested polygon.
+
+By setting the `ratio` argument (a value between 0 and 1, with 1 being the convex hull), we can increase or decrease the level of detail of the polygons. By default, no holes are allowed in the polygons, but this can be changed setting `allow_holes = TRUE`. Do note that changing the ratio requires a GEOS version of at least 3.11. GEOS is a C/C++ library for computational geometry used by `{sf}`.
 
 ```{r}
 # Define the source.
@@ -415,25 +417,6 @@ pt = st_centroid(st_transform(st_as_sfc(st_bbox(roxel)), 3035))
 
 # Compute isodistance polygons for four different thresholds.
 polys = st_network_iso(net, pt, rev(c(100, 250, 500, 1000)))
-polys
-```
-
-```{r}
-ggraph(net, "sf") +
-  geom_edge_sf(color = "darkgrey") +
-  geom_node_sf(color = "darkgrey") +
-  geom_sf(data = polys, aes(fill = drop_units(cost)), alpha = 0.5) +
-  scale_fill_continuous("distance [m]") +
-  theme_void()
-```
-
-By setting the `ratio` argument (a value between 0 and 1, with 1 being the convex hull), we can increase or decrease the level of detail of the polygons. By default, no holes are allowed in the polygons, but this can be changed setting `allow_holes = TRUE`.
-
-```{r}
-polys = st_network_iso(
-  net, pt, rev(c(100, 250, 500, 1000)),
-  ratio = 0.3, allow_holes = TRUE
-)
 polys
 ```
 
@@ -457,7 +440,7 @@ plot(net, col = "darkgrey")
 plot(sub_net, col = "orange", lwd = 2, cex = 1, add = TRUE)
 ```
 
-Both `st_network_iso()` and `to_spatial_neighborhood()` allow to specify other edge weights than geographic distance. This can be done through the `weights` argument, as explained [here](#specifying-edge-weights). When using time as edge weight, we talk about *isochrones* instead of *isodistances*. -->
+Both `st_network_iso()` and `to_spatial_neighborhood()` allow to specify other edge weights than geographic distance. This can be done through the `weights` argument, as explained [here](#specifying-edge-weights). When using time as edge weight, we talk about *isochrones* instead of *isodistances*.
 
 ### Custom routing
 
