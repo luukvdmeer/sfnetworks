@@ -42,7 +42,7 @@ old_hooks = fansi::set_knit_hooks(
 )
 ```
 
-The integration with `{sf}` and addition of several spatial network specific functions in `sfnetworks` allow to easily filter information from a network based on spatial relationships, and to join new information into a network based on spatial relationships. This vignette presents several ways to do that.
+The integration with `{sf}` and addition of several spatial network specific functions in `{sfnetworks}` allow to easily filter information from a network based on spatial relationships, and to join new information into a network based on spatial relationships. This vignette presents several ways to do that.
 
 Both spatial filters and spatial joins use spatial predicate functions to examine spatial relationships. Spatial predicates are mathematically defined binary spatial relations between two simple feature geometries. Often used examples include the predicate *equals* (geometry x is equal to geometry y) and the predicate *intersects* (geometry x has at least one point in common with geometry y). For an overview of all available spatial predicate functions in `{sf}` and links to detailed explanations of the underlying algorithms, see [here](https://r-spatial.github.io/sf/reference/geos_binary_pred.html).
 

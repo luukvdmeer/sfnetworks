@@ -42,7 +42,7 @@ old_hooks = fansi::set_knit_hooks(
 )
 ```
 
-The `{sfnetworks}` contains the `sfnetwork` class to represent spatial networks in R. There are several ways in which you can create instances of this class. This vignette describes these ways, and provides more detail on the ins and outs of the data structure.
+The `{sfnetworks}` package contains the `sfnetwork` class to represent spatial networks in R. There are several ways in which you can create instances of this class. This vignette describes these ways, and provides more detail on the ins and outs of the data structure.
 
 ```{r}
 #| message: false
