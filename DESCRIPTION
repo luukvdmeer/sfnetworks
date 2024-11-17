@@ -59,6 +59,7 @@ Suggests:
     ggplot2 (>= 3.0.0),
     ggraph (>= 2.2.0),
     knitr,
+    osmdata,
     purrr,
     quarto,
     rmarkdown,
