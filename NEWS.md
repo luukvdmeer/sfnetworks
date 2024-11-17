@@ -1,4 +1,4 @@
-# sfnetworks v1.0.0 (in progress)
+# sfnetworks v1.0.0 "Itzling" (in progress)
 
 ### Network creation
 
