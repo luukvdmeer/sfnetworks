@@ -19,3 +19,4 @@
 ^\.todo$
 ^vignettes/.*\.html$
 ^vignettes/*_files$
+^man/figures-raw$
