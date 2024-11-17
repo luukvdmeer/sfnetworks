@@ -402,7 +402,7 @@ ggraph(net, "sf") +
   theme_void()
 ```
 
-### Isodistance polygons
+<!-- ### Isodistance polygons
 
 With respect to a given point $p$ and a given distance $d$, an isodistance is the line for which it holds that the distance from any point on the line from $p$ is equal to $d$. In spatial network analysis, it is common to find all nodes that fall within an isodistance line computed for a given source node $p$. By enclosing this nodes with a concave hull, we obtain a *isodistance polygon*. 
 
@@ -457,7 +457,7 @@ plot(net, col = "darkgrey")
 plot(sub_net, col = "orange", lwd = 2, cex = 1, add = TRUE)
 ```
 
-Both `st_network_iso()` and `to_spatial_neighborhood()` allow to specify other edge weights than geographic distance. This can be done through the `weights` argument, as explained [here](#specifying-edge-weights). When using time as edge weight, we talk about *isochrones* instead of *isodistances*.
+Both `st_network_iso()` and `to_spatial_neighborhood()` allow to specify other edge weights than geographic distance. This can be done through the `weights` argument, as explained [here](#specifying-edge-weights). When using time as edge weight, we talk about *isochrones* instead of *isodistances*. -->
 
 ### Custom routing
 
