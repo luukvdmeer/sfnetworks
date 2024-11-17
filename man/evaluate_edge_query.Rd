@@ -10,7 +10,7 @@ evaluate_edge_query(data, query)
 \item{data}{An object of class \code{\link{sfnetwork}}.}
 
 \item{query}{The query that defines for which edges to extract indices,
-defused into a \code{\link[dplyr:topic-quosure]{quosure}}. See Details for
+defused into a \code{\link[rlang:topic-quosure]{quosure}}. See Details for
 the different ways in which edge queries can be formulated.}
 }
 \value{

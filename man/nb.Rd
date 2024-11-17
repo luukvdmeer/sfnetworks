@@ -59,6 +59,6 @@ the nodes it is adjacent to.
 \description{
 Neighbor lists are sparse adjacency matrices in list format that specify for
 each node to which other nodes it is adjacent. They occur for example in the
-\code{\pkg{sf}} package as \code{\link[sf]{sgbp}} objects, and are also
-frequently used in the \code{\pkg{spdep}} package.
+\pkg{sf} package as \code{\link[sf]{sgbp}} objects, and are also
+frequently used in the \pkg{spdep} package.
 }

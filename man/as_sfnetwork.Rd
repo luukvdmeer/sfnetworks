@@ -50,7 +50,7 @@ into a \code{\link[tidygraph]{tbl_graph}} using
 an \code{\link[sf]{sf}} object through \code{\link[sf]{st_as_sf}}. Arguments
 to \code{\link[sf]{st_as_sf}} can be provided as additional arguments and
 will be forwarded to \code{\link[sf]{st_as_sf}} through the
-code{\link{sfnetwork}} construction function.
+\code{\link{sfnetwork}} construction function.
 
 \item \code{as_sfnetwork(sf)}: Convert spatial features of class
 \code{\link[sf]{sf}} directly into a \code{\link{sfnetwork}}.
@@ -105,7 +105,7 @@ This will work if at least the nodes can be converted to an
 \code{\link[sf]{sf}} object through \code{\link[sf]{st_as_sf}}. Arguments
 to \code{\link[sf]{st_as_sf}} can be provided as additional arguments and
 will be forwarded to \code{\link[sf]{st_as_sf}} through the
-code{\link{sfnetwork}} construction function. The directness of the original
+\code{\link{sfnetwork}} construction function. The directness of the original
 graph is preserved unless specified otherwise through the \code{directed}
 argument.
 

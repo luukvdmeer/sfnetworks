@@ -63,7 +63,7 @@ are first converted into logical matrices using \code{\link{as.logical}},
 whenever possible.
 
 The provided adjacency matrix may also be sparse. This can be an object of
-one of the sparse matrix classes from the \code{\pkg{Matrix}} package, or a
+one of the sparse matrix classes from the \pkg{Matrix} package, or a
 list-formatted sparse matrix. This is a list with one element per node,
 holding the integer indices of the nodes it is adjacent to. An example are
 \code{\link[sf]{sgbp}} objects. If the values are not integers, they are

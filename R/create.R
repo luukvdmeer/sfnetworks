@@ -208,7 +208,7 @@ as_sfnetwork = function(x, ...) {
 #' an \code{\link[sf]{sf}} object through \code{\link[sf]{st_as_sf}}. Arguments
 #' to \code{\link[sf]{st_as_sf}} can be provided as additional arguments and
 #' will be forwarded to \code{\link[sf]{st_as_sf}} through the
-#' code{\link{sfnetwork}} construction function.
+#' \code{\link{sfnetwork}} construction function.
 #'
 #' @importFrom tidygraph as_tbl_graph
 #' @export
@@ -380,7 +380,7 @@ as_sfnetwork.sfNetwork = function(x, ...) {
 #' \code{\link[sf]{sf}} object through \code{\link[sf]{st_as_sf}}. Arguments
 #' to \code{\link[sf]{st_as_sf}} can be provided as additional arguments and
 #' will be forwarded to \code{\link[sf]{st_as_sf}} through the
-#' code{\link{sfnetwork}} construction function. The directness of the original
+#' \code{\link{sfnetwork}} construction function. The directness of the original
 #' graph is preserved unless specified otherwise through the \code{directed}
 #' argument.
 #'
@@ -591,7 +591,7 @@ create_from_spatial_lines = function(x, directed = TRUE, compute_length = FALSE,
 #' whenever possible.
 #'
 #' The provided adjacency matrix may also be sparse. This can be an object of
-#' one of the sparse matrix classes from the \code{\pkg{Matrix}} package, or a
+#' one of the sparse matrix classes from the \pkg{Matrix} package, or a
 #' list-formatted sparse matrix. This is a list with one element per node,
 #' holding the integer indices of the nodes it is adjacent to. An example are
 #' \code{\link[sf]{sgbp}} objects. If the values are not integers, they are

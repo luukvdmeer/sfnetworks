@@ -10,7 +10,7 @@ evaluate_weight_spec(data, spec)
 \item{data}{An object of class \code{\link{sfnetwork}}.}
 
 \item{spec}{The specification that defines how to compute or extract edge
-weights defused into a \code{\link[dplyr:topic-quosure]{quosure}}. See
+weights defused into a \code{\link[rlang:topic-quosure]{quosure}}. See
 Details for the different ways in which edge weights can be specified.}
 }
 \value{

@@ -74,17 +74,21 @@ library(sf, quietly = TRUE)
 oldpar = par(no.readonly = TRUE)
 par(mar = c(1,1,1,1))
 
-center = st_centroid(st_combine(st_geometry(roxel)))
+# Note that this function requires GEOS >= 3.11!
+if (compareVersion(sf_extSoftVersion()[["GEOS"]], "3.11.0") > -1) {
 
-net = as_sfnetwork(roxel, directed = FALSE)
+  center = st_centroid(st_combine(st_geometry(roxel)))
 
-iso = net |>
-  st_network_iso(node_is_nearest(center), c(1000, 500, 250), ratio = 0.3)
+  net = as_sfnetwork(roxel, directed = FALSE)
 
-colors = c("#fee6ce90", "#fdae6b90", "#e6550d90")
+  iso = net |>
+    st_network_iso(node_is_nearest(center), c(1000, 500, 250), ratio = 0.3)
 
-plot(net)
-plot(st_geometry(iso), col = colors, add = TRUE)
+  colors = c("#fee6ce90", "#fdae6b90", "#e6550d90")
+
+  plot(net)
+  plot(st_geometry(iso), col = colors, add = TRUE)
+}
 
 par(oldpar)
 

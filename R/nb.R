@@ -2,8 +2,8 @@
 #'
 #' Neighbor lists are sparse adjacency matrices in list format that specify for
 #' each node to which other nodes it is adjacent. They occur for example in the
-#' \code{\pkg{sf}} package as \code{\link[sf]{sgbp}} objects, and are also
-#' frequently used in the \code{\pkg{spdep}} package.
+#' \pkg{sf} package as \code{\link[sf]{sgbp}} objects, and are also
+#' frequently used in the \pkg{spdep} package.
 #'
 #' @param x For the conversion to sfnetwork: a neighbor list, which is a list
 #  with one element per node that holds the integer indices of the nodes it is
