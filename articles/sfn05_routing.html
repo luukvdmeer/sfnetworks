@@ -293,7 +293,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 </div>
 </section><section class="level2"><h2 id="choosing-a-routing-backend">Choosing a routing backend<a class="anchor" aria-label="anchor" href="#choosing-a-routing-backend"></a>
 </h2>
-<p>As mentioned, <code>{sfnetwork}</code> does not implement the routing algorithms themselves. For that, it relies on other packages, which we call “routing backends” or “routers” for short. The default routing backend is <a href="https://r.igraph.org/" class="external-link">igraph</a>. The <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> function wraps, depending on argument settings, <code><a href="https://r.igraph.org/reference/distances.html" class="external-link">igraph::shortest_paths()</a></code>, <code><a href="https://r.igraph.org/reference/distances.html" class="external-link">igraph::all_shortest_paths()</a></code> and <code><a href="https://r.igraph.org/reference/k_shortest_paths.html" class="external-link">igraph::k_shortest_paths()</a></code>. The <code><a href="../reference/st_network_cost.html">st_network_cost()</a></code> function wraps <code><a href="https://r.igraph.org/reference/distances.html" class="external-link">igraph::distances()</a></code>. The benefits of this routing backend are: 1) it can compute all shortest paths, if there exists more than one; 2) it can compute the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math> shortest paths with Yen’s algorithm; 3) no internal conversion between data structures is needed. However, routing is only supported from a single origin. Hence, many-to-many routing is not possible.</p>
+<p>As mentioned, <a href="https://luukvdmeer.github.io/sfnetworks/">sfnetworks</a> does not implement the routing algorithms themselves. For that, it relies on other packages, which we call “routing backends” or “routers” for short. The default routing backend is <a href="https://r.igraph.org/" class="external-link">igraph</a>. The <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> function wraps, depending on argument settings, <code><a href="https://r.igraph.org/reference/distances.html" class="external-link">igraph::shortest_paths()</a></code>, <code><a href="https://r.igraph.org/reference/distances.html" class="external-link">igraph::all_shortest_paths()</a></code> and <code><a href="https://r.igraph.org/reference/k_shortest_paths.html" class="external-link">igraph::k_shortest_paths()</a></code>. The <code><a href="../reference/st_network_cost.html">st_network_cost()</a></code> function wraps <code><a href="https://r.igraph.org/reference/distances.html" class="external-link">igraph::distances()</a></code>. The benefits of this routing backend are: 1) it can compute all shortest paths, if there exists more than one; 2) it can compute the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math> shortest paths with Yen’s algorithm; 3) no internal conversion between data structures is needed. However, routing is only supported from a single origin. Hence, many-to-many routing is not possible.</p>
 <p>The second routing backend that is currently supported is <a href="https://github.com/UrbanAnalyst/dodgr" class="external-link">dodgr</a>. This package implements a very fast routing algorithm in C++. This is exposed in <a href="https://luukvdmeer.github.io/sfnetworks/">sfnetworks</a> by wrapping <code><a href="https://UrbanAnalyst.github.io/dodgr/reference/dodgr_paths.html" class="external-link">dodgr::dodgr_paths()</a></code> in <code><a href="../reference/st_network_paths.html">st_network_paths()</a></code> and <code><a href="https://UrbanAnalyst.github.io/dodgr/reference/dodgr_dists.html" class="external-link">dodgr::dodgr_dists()</a></code> in <code><a href="../reference/st_network_cost.html">st_network_cost()</a></code>. The benefits of this routing backend are: 1) it can route from multiple origins to multiple destinations, i.e. many-to-many routing; 2) it supports dual-weighted routing (see <a href="#dual-weighted-routing">here</a>); 3) it is very fast also on large networks. However, there is currently no support for <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math> shortest paths routing, and some internal conversions are needed to bridge between the different data structures.</p>
 <p>You can specify which routing backend to use through the <code>router</code> argument. If you want to change the default routing backend, update the global options: <code>options(sfn_default_router = "dodgr")</code>.</p>
 </section><section class="level2"><h2 id="specifying-origins-and-destinations">Specifying origins and destinations<a class="anchor" aria-label="anchor" href="#specifying-origins-and-destinations"></a>
@@ -561,10 +561,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="co">#&gt; # A tibble: 4 × 7</span></span>
 <span><span class="co">#&gt;    from    to node_path  edge_path  path_found  cost                    geometry</span></span>
 <span><span class="co">#&gt; * &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;     &lt;list&gt;     &lt;lgl&gt;        [m]       &lt;MULTILINESTRING [m]&gt;</span></span>
-<span><span class="co">#&gt; 1   633  1003 &lt;dbl [28]&gt; &lt;dbl [27]&gt; TRUE       1074. ((4151039 3206662, 4151063…</span></span>
-<span><span class="co">#&gt; 2  1003   869 &lt;dbl [12]&gt; &lt;dbl [11]&gt; TRUE        602. ((4151793 3207244, 4151805…</span></span>
-<span><span class="co">#&gt; 3   869   999 &lt;dbl [39]&gt; &lt;dbl [38]&gt; TRUE       1178. ((4151073 3207744, 4151097…</span></span>
-<span><span class="co">#&gt; 4   999   633 &lt;dbl [24]&gt; &lt;dbl [23]&gt; TRUE       1385. ((4151138 3207734, 4151160…</span></span></code></pre>
+<span><span class="co">#&gt; 1   869  1003 &lt;dbl [12]&gt; &lt;dbl [11]&gt; TRUE        602. ((4151793 3207244, 4151805…</span></span>
+<span><span class="co">#&gt; 2  1003   633 &lt;dbl [28]&gt; &lt;dbl [27]&gt; TRUE       1074. ((4151039 3206662, 4151063…</span></span>
+<span><span class="co">#&gt; 3   633  1001 &lt;dbl [22]&gt; &lt;dbl [21]&gt; TRUE       1385. ((4151138 3207734, 4151160…</span></span>
+<span><span class="co">#&gt; 4  1001   869 &lt;dbl [39]&gt; &lt;dbl [38]&gt; TRUE       1178. ((4151073 3207744, 4151097…</span></span></code></pre>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="downlit sourceCode r">
@@ -598,7 +598,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="co">#&gt; Simple feature collection with 4 features and 1 field</span></span>
 <span><span class="co">#&gt; Geometry type: POLYGON</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
-<span><span class="co">#&gt; Bounding box:  xmin: 4150754 ymin: 3206653 xmax: 4152337 ymax: 3208212</span></span>
+<span><span class="co">#&gt; Bounding box:  xmin: 4150754 ymin: 3206653 xmax: 4152274 ymax: 3208212</span></span>
 <span><span class="co">#&gt; Projected CRS: ETRS89-extended / LAEA Europe</span></span>
 <span><span class="co">#&gt;       cost                       geometry</span></span>
 <span><span class="co">#&gt; 1 1000 [m] POLYGON ((4151598 3206653, ...</span></span>
@@ -747,10 +747,10 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span>  router <span class="op">=</span> <span class="st">"dodgr"</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt;        1  151  301  451  601  751  901</span></span>
-<span><span class="co">#&gt; 1      0 2953  374 1644 1445  863 5485</span></span>
+<span><span class="co">#&gt; 1      0 2953  374 1599 1445  863 5485</span></span>
 <span><span class="co">#&gt; 151 2953    0 2579 3721 2371 3816 7772</span></span>
 <span><span class="co">#&gt; 301  374 2579    0 1244 1071 1237 5567</span></span>
-<span><span class="co">#&gt; 451 1971 3721 1244    0 2213 1349 5310</span></span>
+<span><span class="co">#&gt; 451 1599 3721 1244    0 2213 1349 5971</span></span>
 <span><span class="co">#&gt; 601 1445 2371 1071 2213    0 2308 6437</span></span>
 <span><span class="co">#&gt; 751  863 3816 1237 1349 2308    0 4811</span></span>
 <span><span class="co">#&gt; 901 5485 8385 5806 5559 6876 4811    0</span></span></code></pre></div>

@@ -216,24 +216,24 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">label</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>, <span class="fu"><a href="../reference/n.html">n</a></span><span class="op">(</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre class="fansi fansi-output"><code><span><span class="co">#&gt; # A sfnetwork: 17 nodes and 13 edges</span></span>
+<pre class="fansi fansi-output"><code><span><span class="co">#&gt; # A sfnetwork: 17 nodes and 9 edges</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # An unrooted forest with 4 trees and spatially explicit edges</span></span>
+<span><span class="co">#&gt; # An unrooted forest with 8 trees and spatially explicit edges</span></span>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # Dimension: XY</span></span>
 <span><span class="co">#&gt; # Bounding box: xmin: 4548664 ymin: 2747309 xmax: 4549589 ymax: 2748537</span></span>
 <span><span class="co">#&gt; # Projected CRS: ETRS89-extended / LAEA Europe</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Edge data: 13 × 3 (active)</span></span>
+<span><span class="co">#&gt; # Edge data: 9 × 3 (active)</span></span>
 <span><span class="co">#&gt;    from    to                           geometry</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;                   &lt;LINESTRING [m]&gt;</span></span>
-<span><span class="co">#&gt; 1     1     4 (4549504 2747309, 4549387 2747514)</span></span>
-<span><span class="co">#&gt; 2     3     5 (4549589 2747507, 4549491 2747551)</span></span>
+<span><span class="co">#&gt; 1     1     3 (4549504 2747309, 4549589 2747507)</span></span>
+<span><span class="co">#&gt; 2     2     7 (4549003 2747376, 4549064 2747619)</span></span>
 <span><span class="co">#&gt; 3     4     5 (4549387 2747514, 4549491 2747551)</span></span>
-<span><span class="co">#&gt; 4     4     9 (4549387 2747514, 4549120 2747654)</span></span>
-<span><span class="co">#&gt; 5     6    10 (4549473 2747624, 4549418 2747723)</span></span>
-<span><span class="co">#&gt; 6     7     9 (4549064 2747619, 4549120 2747654)</span></span>
-<span><span class="co">#&gt; # ℹ 7 more rows</span></span>
+<span><span class="co">#&gt; 4     8    12 (4548994 2747632, 4548664 2747868)</span></span>
+<span><span class="co">#&gt; 5     9    10 (4549120 2747654, 4549418 2747723)</span></span>
+<span><span class="co">#&gt; 6    10    11 (4549418 2747723, 4549119 2747790)</span></span>
+<span><span class="co">#&gt; # ℹ 3 more rows</span></span>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # Node data: 17 × 3</span></span>
 <span><span class="co">#&gt;   name                  label          geometry</span></span>
@@ -901,41 +901,41 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="va">new_net</span> <span class="op">=</span> <span class="fu"><a href="https://r.igraph.org/reference/delete_edges.html" class="external-link">delete_edges</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">drop</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">new_net</span></span>
-<span><span class="co">#&gt; IGRAPH f481e4e UN-B 17 12 -- </span></span>
+<span><span class="co">#&gt; IGRAPH 66e2aa1 UN-B 17 14 -- </span></span>
 <span><span class="co">#&gt; + attr: name (v/c), type (v/c), website (v/c), geometry (v/x), label</span></span>
 <span><span class="co">#&gt; | (v/c), geometry (e/x), length (e/n)</span></span>
-<span><span class="co">#&gt; + edges from f481e4e (vertex names):</span></span>
-<span><span class="co">#&gt;  [1] Mozartkino             --Mozartsteg/Rudolfskai  </span></span>
-<span><span class="co">#&gt;  [2] Haus für Mozart        --Café Mozart            </span></span>
-<span><span class="co">#&gt;  [3] Mozart Denkmal         --Mozartsteg/Rudolfskai  </span></span>
-<span><span class="co">#&gt;  [4] Mozarts Geburtshaus    --Café Mozart            </span></span>
-<span><span class="co">#&gt;  [5] Mozartkugel            --Mozartsteg/Imbergstraße</span></span>
-<span><span class="co">#&gt;  [6] Mozartkugel            --Spirit of Mozart       </span></span>
-<span><span class="co">#&gt;  [7] Mozartsteg/Imbergstraße--Spirit of Mozart       </span></span>
+<span><span class="co">#&gt; + edges from 66e2aa1 (vertex names):</span></span>
+<span><span class="co">#&gt;  [1] Mozartkino             --Mozartsteg/Rudolfskai</span></span>
+<span><span class="co">#&gt;  [2] Haus für Mozart        --Mozart Denkmal       </span></span>
+<span><span class="co">#&gt;  [3] Haus für Mozart        --Mozarts Geburtshaus  </span></span>
+<span><span class="co">#&gt;  [4] Mozartsteg/Rudolfskai  --Mozartsteg/Rudolfskai</span></span>
+<span><span class="co">#&gt;  [5] Mozart Denkmal         --Mozartsteg/Rudolfskai</span></span>
+<span><span class="co">#&gt;  [6] Mozart Denkmal         --Mozartkugel          </span></span>
+<span><span class="co">#&gt;  [7] Mozarts Geburtshaus    --Café Mozart          </span></span>
 <span><span class="co">#&gt; + ... omitted several edges</span></span></code></pre></div>
 </div>
 <p>As you can see, this returns a <code>igraph</code> object instead of a <code>sfnetwork</code> object. To preserve the class, you can use the <code><a href="../reference/wrap_igraph.html">wrap_igraph()</a></code> function of <a href="https://luukvdmeer.github.io/sfnetworks/">sfnetworks</a> for each <a href="https://r.igraph.org/" class="external-link">igraph</a> function that accepts a network as first input and returns another network. This function will check if the returned network is still spatial.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/wrap_igraph.html">wrap_igraph</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">delete_edges</span>, <span class="va">drop</span><span class="op">)</span></span></code></pre></div>
-<pre class="fansi fansi-output"><code><span><span class="co">#&gt; # A sfnetwork: 17 nodes and 12 edges</span></span>
+<pre class="fansi fansi-output"><code><span><span class="co">#&gt; # A sfnetwork: 17 nodes and 14 edges</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # A bipartite simple graph with 6 components and spatially explicit edges</span></span>
+<span><span class="co">#&gt; # An unrooted forest with 3 trees and spatially explicit edges</span></span>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # Dimension: XY</span></span>
 <span><span class="co">#&gt; # Bounding box: xmin: 4548664 ymin: 2747309 xmax: 4549589 ymax: 2748537</span></span>
 <span><span class="co">#&gt; # Projected CRS: ETRS89-extended / LAEA Europe</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Edge data: 12 × 4 (active)</span></span>
+<span><span class="co">#&gt; # Edge data: 14 × 4 (active)</span></span>
 <span><span class="co">#&gt;    from    to                           geometry length</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;                   &lt;LINESTRING [m]&gt;    [m]</span></span>
-<span><span class="co">#&gt; 1     1     3 (4549504 2747309, 4549589 2747507)  216.</span></span>
-<span><span class="co">#&gt; 2     2     8 (4549003 2747376, 4548994 2747632)  256.</span></span>
-<span><span class="co">#&gt; 3     4     5 (4549387 2747514, 4549491 2747551)  110.</span></span>
-<span><span class="co">#&gt; 4     7     8 (4549064 2747619, 4548994 2747632)   71.1</span></span>
-<span><span class="co">#&gt; 5     9    10 (4549120 2747654, 4549418 2747723)  305.</span></span>
-<span><span class="co">#&gt; 6     9    11 (4549120 2747654, 4549119 2747790)  136.</span></span>
-<span><span class="co">#&gt; # ℹ 6 more rows</span></span>
+<span><span class="co">#&gt; 1     1     3 (4549504 2747309, 4549589 2747507)   216.</span></span>
+<span><span class="co">#&gt; 2     2     4 (4549003 2747376, 4549387 2747514)   409.</span></span>
+<span><span class="co">#&gt; 3     2     7 (4549003 2747376, 4549064 2747619)   250.</span></span>
+<span><span class="co">#&gt; 4     3     5 (4549589 2747507, 4549491 2747551)   107.</span></span>
+<span><span class="co">#&gt; 5     4     5 (4549387 2747514, 4549491 2747551)   110.</span></span>
+<span><span class="co">#&gt; 6     4     9 (4549387 2747514, 4549120 2747654)   301.</span></span>
+<span><span class="co">#&gt; # ℹ 8 more rows</span></span>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # Node data: 17 × 5</span></span>
 <span><span class="co">#&gt;   name                  type     website                  geometry label</span></span>

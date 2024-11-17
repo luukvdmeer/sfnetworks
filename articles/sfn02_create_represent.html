@@ -83,7 +83,7 @@
     <style type="text/css" scoped="">
 PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 </style>
-<p>The <a href="https://luukvdmeer.github.io/sfnetworks/">sfnetworks</a> contains the <code>sfnetwork</code> class to represent spatial networks in R. There are several ways in which you can create instances of this class. This vignette describes these ways, and provides more detail on the ins and outs of the data structure.</p>
+<p>The <a href="https://luukvdmeer.github.io/sfnetworks/">sfnetworks</a> package contains the <code>sfnetwork</code> class to represent spatial networks in R. There are several ways in which you can create instances of this class. This vignette describes these ways, and provides more detail on the ins and outs of the data structure.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://luukvdmeer.github.io/sfnetworks/">sfnetworks</a></span><span class="op">)</span></span>
@@ -273,8 +273,8 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <pre class="fansi fansi-output"><code><span><span class="co">#&gt; # A tibble: 2 × 2</span></span>
 <span><span class="co">#&gt;   oneway     n</span></span>
 <span><span class="co">#&gt;   &lt;lgl&gt;  &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1 FALSE    240</span></span>
-<span><span class="co">#&gt; 2 TRUE     975</span></span></code></pre>
+<span><span class="co">#&gt; 1 FALSE    236</span></span>
+<span><span class="co">#&gt; 2 TRUE     979</span></span></code></pre>
 <div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create a directed network.</span></span>
 <span><span class="va">dnet</span> <span class="op">=</span> <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">streets</span><span class="op">)</span></span>
@@ -294,7 +294,7 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <span><span class="co"># This equals the number of oneway streets ...</span></span>
 <span><span class="co"># ... plus twice the number of twoway streets.</span></span>
 <span><span class="fu"><a href="../reference/n.html">n_edges</a></span><span class="op">(</span><span class="va">mnet</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 1455</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 1451</span></span></code></pre></div>
 </div>
 </section></section><section class="level3"><h3 id="geometries">Geometries<a class="anchor" aria-label="anchor" href="#geometries"></a>
 </h3>
@@ -978,39 +978,38 @@ PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 <code class="sourceCode R"><span><span class="co"># igraph object.</span></span>
 <span><span class="va">inet</span> <span class="op">=</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/sample_grg.html" class="external-link">sample_grg</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">0.5</span>, coords <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">inet</span></span>
-<span><span class="co">#&gt; IGRAPH c92c8b1 U--- 5 3 -- Geometric random graph</span></span>
+<span><span class="co">#&gt; IGRAPH 037109b U--- 5 2 -- Geometric random graph</span></span>
 <span><span class="co">#&gt; + attr: name (g/c), radius (g/n), torus (g/l), x (v/n), y (v/n)</span></span>
-<span><span class="co">#&gt; + edges from c92c8b1:</span></span>
-<span><span class="co">#&gt; [1] 2--3 2--4 3--4</span></span></code></pre></div>
+<span><span class="co">#&gt; + edges from 037109b:</span></span>
+<span><span class="co">#&gt; [1] 2--3 4--5</span></span></code></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># sfnetwork object.</span></span>
 <span><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">inet</span>, coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">net</span></span></code></pre></div>
-<pre class="fansi fansi-output"><code><span><span class="co">#&gt; # A sfnetwork: 5 nodes and 3 edges</span></span>
+<pre class="fansi fansi-output"><code><span><span class="co">#&gt; # A sfnetwork: 5 nodes and 2 edges</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # An undirected simple graph with 3 components and spatially implicit edges</span></span>
+<span><span class="co">#&gt; # An unrooted forest with 3 trees and spatially implicit edges</span></span>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # Dimension: XY</span></span>
-<span><span class="co">#&gt; # Bounding box: xmin: 0.261492 ymin: 0.1013638 xmax: 0.9185794 ymax: 0.97436</span></span>
+<span><span class="co">#&gt; # Bounding box: xmin: 0.111582 ymin: 0.3144644 xmax: 0.9832471 ymax: 0.9943113</span></span>
 <span><span class="co">#&gt; # CRS: NA</span></span>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # Node data: 5 × 1 (active)</span></span>
 <span><span class="co">#&gt;                geometry</span></span>
 <span><span class="co">#&gt;                 &lt;POINT&gt;</span></span>
-<span><span class="co">#&gt; 1  (0.261492 0.1091643)</span></span>
-<span><span class="co">#&gt; 2  (0.592074 0.5755864)</span></span>
-<span><span class="co">#&gt; 3  (0.7117123 0.877187)</span></span>
-<span><span class="co">#&gt; 4   (0.7776058 0.97436)</span></span>
-<span><span class="co">#&gt; 5 (0.9185794 0.1013638)</span></span>
+<span><span class="co">#&gt; 1   (0.111582 0.968579)</span></span>
+<span><span class="co">#&gt; 2 (0.3840216 0.4292271)</span></span>
+<span><span class="co">#&gt; 3 (0.8146119 0.3144644)</span></span>
+<span><span class="co">#&gt; 4 (0.8447424 0.9943113)</span></span>
+<span><span class="co">#&gt; 5 (0.9832471 0.9893714)</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # Edge data: 3 × 2</span></span>
+<span><span class="co">#&gt; # Edge data: 2 × 2</span></span>
 <span><span class="co">#&gt;    from    to</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;</span></span>
 <span><span class="co">#&gt; 1     2     3</span></span>
-<span><span class="co">#&gt; 2     2     4</span></span>
-<span><span class="co">#&gt; 3     3     4</span></span></code></pre>
+<span><span class="co">#&gt; 2     4     5</span></span></code></pre>
 </div>
 </section><section class="level3"><h3 id="from-files">From files<a class="anchor" aria-label="anchor" href="#from-files"></a>
 </h3>
