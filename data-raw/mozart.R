@@ -60,6 +60,7 @@ mozart = bind_rows(pts, pls) |>
   st_transform(3035) |>
   mutate(across(where(is.character), .fns = function(x){return(`Encoding<-`(x, "UTF-8"))}))
 
+st_crs(mozart)$wkt <- gsub("ü", "\\\u00fc", st_crs(mozart)$wkt)
 
 # save as lazy data
 usethis::use_data(mozart, overwrite = TRUE)
