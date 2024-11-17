@@ -57,6 +57,7 @@ Suggests:
     fansi,
     geodist,
     ggplot2 (>= 3.0.0),
+    ggraph (>= 2.2.0),
     knitr,
     purrr,
     quarto,
