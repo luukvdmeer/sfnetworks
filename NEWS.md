@@ -23,7 +23,7 @@
 - The `use_names` argument is now also added to `st_network_cost()`, letting you specify if you want node names to be used for column and rownames in the returned matrix. Also here, it defaults to `FALSE`.
 - The new function `st_network_distance()` is added as a synonym for `st_network_cost()` where the edge weights are fixed to be geographic distance. This is done to provide an intuitive network-specific alternative to `sf::st_distance()`.
 - The new function `st_network_travel()` now provides an interface to the `TSP` package to solve traveling salesman problems. This requires `TSP` to be installed. See [here](https://luukvdmeer.github.io/sfnetworks/articles/sfn05_routing#traveling-salesman-problem) for an example.
-- The new function `st_network_iso()` now implements the computation of isodistance/isochrone polygons around a given source node. It first computes the neighborhood of the node, and then draws a concave hull around it. See [here](https://luukvdmeer.github.io/sfnetworks/articles/sfn05_routing#isodistance-polygons) for an example.
+- The new function `st_network_iso()` now implements the computation of isodistance/isochrone polygons around a given source node. It first computes the neighborhood of the node, and then draws a concave hull around it. See [here](https://luukvdmeer.github.io/sfnetworks/articles/sfn05_routing#isodistance-polygons) for an example. *Note*: drawing the concave hull requires a GEOS version >= 3.11.
 
 ### Morphers
 - The new morpher `to_spatial_unique()` allows to contract nodes at equal spatial locations, while specifying how their attributes should be combined.
