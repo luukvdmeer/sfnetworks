@@ -18,9 +18,9 @@ Geospatial networks are graphs embedded in geographical space. That means that b
 We created {sfnetworks} to facilitate such an integrated workflow. It combines the forces of two popular R packages: {[sf](https://r-spatial.github.io/sf/)} for spatial data science and {[tidygraph](https://tidygraph.data-imaginist.com/index.html)} for standard graph analysis. The core of the package is a dedicated data structure for geospatial networks, that can be provided as input to both the graph analytical functions of {tidygraph} as well as the spatial analytical functions of {sf}, without the need for conversion. Additionally, we implemented a set of geospatial network specific functions, such as routines for shortest path calculation, network cleaning and topology modification. {sfnetworks} is designed as a general-purpose package suitable for usage across different application domains, and can be seamlessly integrated in [tidyverse](https://www.tidyverse.org/) workflows.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/luukvdmeer/sfnetworks/refs/heads/v1.0/vignettes/figures/dependencies-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/luukvdmeer/sfnetworks/refs/heads/v1.0/vignettes/figures/dependencies.png">
-  <img alt="sfnetworks dependencies and building blocks." src="https://github.com/luukvdmeer/sfnetworks/blob/v1.0/vignettes/figures/dependencies.png">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/luukvdmeer/sfnetworks/refs/heads/main/vignettes/figures/dependencies-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/luukvdmeer/sfnetworks/refs/heads/main/vignettes/figures/dependencies.png">
+  <img alt="sfnetworks dependencies and building blocks." src="https://raw.githubusercontent.com/luukvdmeer/sfnetworks/refs/heads/main/vignettes/figures/dependencies.png">
 </picture>
 
 ## Installation
