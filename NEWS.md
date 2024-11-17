@@ -1,3 +1,134 @@
+# sfnetworks v1.0.0 (in progress)
+
+### Network creation
+
+- Creating networks directly from linestring geometries is now implemented in the new function `create_from_spatial_lines()`. The `as_sfnetwork()` method for `sf` objects will call this function when geometries are linestrings, and forward the `...` arguments to it. This now also allows to already subdivide the edges at locations where interior points are shared, setting `subdivide = TRUE`.
+- Creating networks directly from point geometries is now implemented in the new function `create_from_spatial_points()`. The `as_sfnetwork()` method for `sf` objects will call this function when geometries are points, and forward the `...` arguments to it.
+- There are now many more options to create spatial networks directly from spatial point data. How nodes should be connected can be specified by providing a logical adjacency matrix in addition to the point data. This adjacency matrix can also be sparse, e.g. the output of a spatial predicate function in `{sf}`. Furthermore, `{sfnetworks}` can create the adjacency matrix for you according to a specified method. In that case, you only need to specify the name of the method. Supported options are: a complete graph, a sequence, a minimum spanning tree, a delaunay triangulation, a Gabriel graph, a relative nearest neighbor graph, an a k nearest neighbor graph. See [here](https://luukvdmeer.github.io/sfnetworks/articles/sfn02_create_represent.html#from-spatial-points) for a detailed explanation with examples.
+- The new function `play_geometric()` can create random geometric networks.
+- There is a new method for `as_sfnetwork()` to create `dodgr_streetnet` objects from the {dodgr} package directly into a `sfnetwork`. This internally calls `dodgr_to_sfnetwork()`. For the conversion in the other direction, use `sfnetwork_to_dodgr()`.
+- It is now also possible to convert between `sfnetwork` objects and neighbor lists, using the new functions `nb_to_sfnetwork()` and `sfnetwork_to_nb()`. Neighbor lists are sparse adjacency matrices that can be found e.g. in the `{spdep}` package and the `{sf}` package (as the output of spatial predicate functions).
+- Since the interpretation of the weights argument when `weights = NULL` changed (see below), the argument `length_as_weight` of the `sfnetwork()` construction function has been deprecated. Instead, you can now set `compute_length = TRUE` to store edge lengths in a attribute named *length*. However, this attribute will not anymore automatically be recognized as edge weights in routing functions.
+
+### Routing
+
+- As mentioned above, the interpretation of the setting `weights = NULL` has changed for all routing functions. Before, an edge attribute named *weight* would be automatically recognized as edge weights, just like in `{igraph}`. Although convenient, it proved to be very confusing since in `{tidygraph}`, the setting `weights = NULL` does not have the same meaning. There is always means that no edge weights are used, no matter if a *weight* attribute is present. We now decided that (since we are primarily integrating `{tidygraph}` and `{sf}`) to follow the `{tidygraph}` design choice, meaning that `weights = NULL` always means that no edge weights are used. However, in the routing functions of `{sfnetworks}` the default is no longer `weights = NULL`, but `weights = edge_length()`. Hence, geographic length is the default edge weight in all routing functions of `{sfnetworks}`
+- The way in which edge weights can be specified in routing functions has been updated to better fit in tidy data analysis workflows. You can now directly provide edge measure functions as value to the `weight` argument. This also allows to provide custom edge measure functions, for example ones that are time-dependent. Furthermore, to reference a column in the edges table, you can now do this using tidy evaluation, i.e. unquoted column names rather than quoted ones. For dual weighted routing, the new `dual_weights()` function can be used. See [here](https://luukvdmeer.github.io/sfnetworks/articles/sfn05_routing#specifying-edge-weights) for a full overview of possible specification formats.
+- The way in which *from* and *to* nodes in routing functions can be specified has been updated to better fit in tidy data analysis workflows. You can now directly provide node query or node measure functions as value to the `from` and `to` arguments. Furthermore, to reference a column in the nodes table, you can now do this using tidy evaluation, i.e. unquoted column names rather than quoted ones. See [here](https://luukvdmeer.github.io/sfnetworks/articles/sfn05_routing#specifying-origins-and-destinations) for a full overview of possible specification formats.
+- It is now possible to choose between different "routing backends" through the `router` argument in all routing functions. The default routing backend is *igraph*, meaning that routing functions from the `{igraph}` package will be called internally. The second supported routing backend now is *dodgr*, which will call routing functions from the `{dodgr}` package instead. All conversion happens internally, such that as a user you can use the same functions and arguments independent from which routing engine you choose. See [here](https://luukvdmeer.github.io/sfnetworks/articles/sfn05_routing#choosing-a-routing-backend) for more details.
+- The output returned by `st_network_paths()` is restructured. Instead of `tbl_df`, the function will now return a `sf` object, with the course of each path stored as a linestring geometry. It will also return the total cost of each path in a column named *cost*. Columns *node_paths* and *edge_paths* are renamed to *node_path* and *edge_path*, respectively. The boolean column *path_found* specifies if the requested path was found. If not, the path will be assigned an infinite cost and empty geometry. New boolean arguments `return_cost` and `return_geometry` can be set to `FALSE` if you do not want the cost and/or geometry columns to be returned.
+- The `type` argument of `st_network_paths()` is deprecated. To compute *all* shortest paths instead of a single shortest path, set `all = TRUE` instead. Support for computing all simple paths is dropped.
+- The `st_network_paths()` function now supports one-to-one k shortest paths routing. This is implemented through the new `k` argument, which you can set to an integer higher than 1.
+- The `use_names` argument of `st_network_paths()` now has a default value of `FALSE`. This means that even if the nodes have a *name* column, they will be encoded by their integer indices in the output object.
+- The `use_names` argument is now also added to `st_network_cost()`, letting you specify if you want node names to be used for column and rownames in the returned matrix. Also here, it defaults to `FALSE`.
+- The new function `st_network_distance()` is added as a synonym for `st_network_cost()` where the edge weights are fixed to be geographic distance. This is done to provide an intuitive network-specific alternative to `sf::st_distance()`.
+- The new function `st_network_travel()` now provides an interface to the `TSP` package to solve traveling salesman problems. This requires `TSP` to be installed. See [here](https://luukvdmeer.github.io/sfnetworks/articles/sfn05_routing#traveling-salesman-problem) for an example.
+- The new function `st_network_iso()` now implements the computation of isodistance/isochrone polygons around a given source node. It first computes the neighborhood of the node, and then draws a concave hull around it. See [here](https://luukvdmeer.github.io/sfnetworks/articles/sfn05_routing#isodistance-polygons) for an example.
+
+### Morphers
+- The new morpher `to_spatial_unique()` allows to contract nodes at equal spatial locations, while specifying how their attributes should be combined.
+- The new morpher `to_spatial_mixed()` allows to mimic a mixed network representation (i.e. a network with both directed and undirected edges) by duplicating and reversing those edges that should be undirected.
+- The new morpher `to_spatial_reversed()` reverses edges, including their linestring geometries. Selected edges can be protected from reversion using the `protect` argument.
+- The new morpher `to_spatial_implicit()` drops edge geometries.
+- The `summarise_attributes` argument that appears in several morphers is renamed to `attribute_summary`, to avoid differences between UK and US spelling. For now, `summarise_attributes` will be automatically converted to `attribute_summary`, while giving a soft deprecation warning.
+- The `to_spatial_subdivision()` morpher now has the argument `all`. If set to `TRUE`, edges will be subdivided at each interior point (i.e. creating one edge per segment), instead of only at interior points that are shared between multiple edges.
+- The `to_spatial_subdivision()` morpher now has the argument `merge_equal`. If set to `TRUE`, edges will only be subvidived, but subdivision points that are shared between multiple edges will not be merged into a single node.
+- The `to_spatial_subdivision()` moprher now has the argument `protect`, which allows to protect specified edges from being subdivided. The edges to be protected can be specified in several ways, e.g. by their integer index, by using edge query functions, or by referencing a column using tidy evaluation.
+- The `protect` argument of the `to_spatial_smooth()` morpher is now updated to fit better in tidy data analysis workflows. Nodes to be protected from being smoothed can be specified in the same way as origins and destination nodes in routing functions, see above.
+- The `require_equal` argument of the `to_spatial_smooth()` morpher is now updated to fit better in tidy data analysis workflows. Attributes to check for equality can now be specified using tidy selection. This means you can also use tidy selection helpers from `{dplyr}`.
+- The `to_spatial_contracted()` morpher now has the argument `compute_centroid`. If set to `FALSE`, contracted groups of nodes will not have their centroid as new geometry, but simply the geometry of the first node in the group. This can improve performance significantly on large networks.
+- The `simplify` argument of the `to_spatial_contracted()` morpher now has `TRUE` as the default value. This means that by default the contracted network will be simplified.
+- The `to_spatial_shortest_paths()` morpher now automatically orders the nodes and edges in each returned network to match the order in which they are visited by the path.
+- The `from` argument of `to_spatial_neighborhood()` is renamed to `node`. For now, `from` will be automatically converted to `node`, while giving a soft deprecation warning.
+- The `to_spatial_neighborhood()` morpher now internally calls `st_network_cost()`, and forwards `...` arguments to it.
+- The `to_spatial_neighborhood()` morpher now accepts multiple threshold values, returning one network per specified threshold.
+- The internal workers of the morphers dedicated to network cleaning are now exported as well, to make it possibe to perform data cleaning outside of the tidygraph framework. These are `simplify_network()` for `to_spatial_simple()`, `subdivide_edges()` for `to_spatial_subdivision()`, `smooth_pseudo_nodes()` for `to_spatial_smooth()`, and contract nodes for `to_spatial_contracted()`.
+
+### Spatial grouping
+
+- The new function `group_spatial_dbscan()` provides a tidy interface to the `{dbscan}` package to group nodes spatially using the DBSCAN spatial clustering algorithm, based on network distances between nodes.
+
+### Blending
+
+- `st_network_blend()` now allows to blend points that have the same projected location on the network, by setting `ignore_duplicates = FALSE`. All but the first one of those will be added as isolated nodes, which can then be merged using the new morpher `to_spatial_unique()`.
+
+### Node specific functions
+
+- The new centrality function `centrality_straightness()` allows to compute the straightness centrality of nodes.
+- The new node query function `node_is_pseudo()` and `node_is_dangling()` allow to easily query pseudo (nodes with one incoming and one outgoing edges) and dangling (nodes with a degree centrality of 1) nodes.
+- The new node predicate function `node_is_nearest()` defines if a node is the nearest node to any feature in a given set of spatial features.
+
+### Edge specific functions
+
+- The new edge measure function `edge_segment_count()` returns the number of segments in each edge.
+- The new edge predicate function `edge_is_nearest()` defines if a edge is the nearest edge to any feature in a given set of spatial features.
+- Several internal functions to modify edge geometries are now exported:
+  - `make_edges_valid()` makes edge geometries fit in the spatial network structure by either replacing their endpoints with the nodes that are referenced in the *from* and *to* columns (if `preserve_geometries = FALSE`), or by adding unmatched endpoints as new nodes to the network and updating the *from* and *to* columns (if `preserve_geometries = TRUE`).
+  - `make_edges_directed()` turns a undirected network into a directed network by updating the *from* and *to* columns according to the direction given by the linestring geometries. This is the internal worker of the morpher `to_spatial_directed()`.
+  - `make_edges_mixed()` duplicates and reverses edges in a directed network that should be undirected. This is the internal worker of the morpher `to_spatial_mixed()`.
+  - `make_edges_explicit()` adds a geometry column to spatially implicit edges. This is the internal worker of the morpher `to_spatial_explicit()`.
+  - `make_edges_implicit()` drops the geometry column of spatially explicit edges. This is the internal worker of the morpher `to_spatial_implicit()`.
+  - `make_edges_follow_indices()` updates edge geometries in undirected networks to match the node indices specified in the *from* and *to* columns, in case they are swapped.
+
+### Other new functions
+
+- The new function `st_network_faces()` allows to extract the faces of a spatial network as a `sf` object with polygons geometries.
+- The new function `st_project_on_network()` replaces geometries of `sf` objects with their projection on a spatial network.
+- The new functions `bind_spatial_nodes()` and `bind_spatial_edges()` allow to bind additional nodes or edges to the network. These are the spatial alternatives to `tidygraph::bind_nodes()` and `tidygraph::bind_edges()`, which cannot handle geometry list columns.
+
+### Methods for sf
+
+- There is now a `sfnetwork` method for `sf::st_segmentize()`, allowing you to add interior points to edge geometries at fixed intervals.
+- The `sfnetwork` methods for `sf::st_intersection()`,  `sf::st_difference()`, and `sf::st_crop()` now also work as expected on undirected networks.
+- The `st_geometry<-` method for `sfnetwork` objects now allows to replace node geometries with any set of points, and edge geometries with any set of lines. Internally, the network structure will be kept valid by replacing endpoints of edge geometries (when replacing nodes), or by adding unmatched edge endpoints as new nodes to the network (when replacing edges).
+- The `sf::st_join()` method for `sfnetwork` objects now allows multiple matches for the same node. In these case, the node will be duplicated once per additional match, and duplicates are added as isolated nodes to the resulting network.
+
+### Upkeep with tidygraph
+
+- Functions in `{sfnetworks}` now work well with the new concept of *focused graphs*, as recently implemented in `{tidygraph}`. See [here](https://www.data-imaginist.com/posts/2023-12-18-a-new-focus-on-tidygraph/index.html#let-us-focus-on-the-news) for details.
+- There is now a `sfnetwork` method for `tidygraph::reroute()`. However, if you only want to reverse edges, we recommend to use the morpher `to_spatial_reversed()` instead, as `reroute` will only replace endpoints of edge geometries, and not reverse complete linestring geometries.
+- The tidygraph verbs `morph()`, `unmorph()`, `crystallize()`, and `convert()` are now re-exported by `{sfnetworks}`, such that it is not needed anymore to load `{tidygraph}` explicitly in order to use the spatial morphers. Furthermore, the utility function `tidygraph::with_graph()` is now re-exported.
+
+### Plotting
+
+- The `plot()` method for `sfnetwork` objects now allows different style settings for nodes and edges, using the new `node_args` and `edge_args` arguments.
+- The `plot()` method for `sfnetwork` objects now allows to plot multiple networks on top of each other.
+
+### Data extraction utilities
+
+- Several utility functions to extract data from a `sfnetwork` object are now exported:
+  - The functions `node_data()` and `edge_data()` extract the node and edge table, respectively. Nodes are always extracted as a `sf` object. Edges are extracted as `sf` object if they are spatially explicit, and as regular `tbl_df` if they are spatially implicit.
+  - The functions `node_ids()` and `edge_ids()` extract the indices of the nodes and edges, respectively. The indices correspond to rownumbers in the node and edge tables.
+  - The functions `nearest_nodes()` and `nearest_edges()` return respectively the nearest nodes and nearest edges to a set of spatial features.
+  - The functions `nearest_node_ids()` and `nearest_edge_ids()` return respectively the indices of the nearest nodes and nearest edges to a set of spatial features. The indices correspond to rownumbers in the node and edge tables.
+  - The functions `n_nodes()` and `n_edges()` return the respectively the number of nodes and edges in the network.
+
+### Other utilities
+
+- The new function `validate_network()` allows to validate the spatial network structure of a `sfnetwork` object.
+- The new function `wrap_igraph()` allows to wrap any function from `{igraph}` that returns a network, and make it return a `sfnetwork` object instead of a `igraph` object.
+- The functions `st_duplicated()`, `st_match()` and `st_round()` are added as spatial variations to common base R functions, respectively for determining spatial duplicates, geometry matching, and coordinate rounding.
+
+### Other updates
+
+- When determining spatial equality of nodes, `{sfnetworks}` now by default uses a 12-digit precision. This gives a considerable performance improvement especially on large networks. Precision can be changed by explicitly setting coordinate precision using `sf::st_set_precision()`.
+- All messages, warnings and errors in `{sfnetworks}` are now raised using the `{cli}` and `{rlang}` packages.
+
+### Bug fixes
+
+- The print method now works correctly again after aligning with updates in `{tidygraph}`.
+- The morpher `to_spatial_contracted()` now correctly handles group indices that are not ordered.
+- The `plot()` method for `sfnetwork` objects now correctly plots networks with spatially implicit edges that are active.
+- `st_network_bbox()` now also computes bounding boxes for networks with spatially implicit edges.
+
+### Dependencies
+- The minimum required version for `{sf}` is now 1.0-11
+- The minimum required version for `{tidygraph}` is now 1.3.0
+- The minimum required version for `{igraph}` is now 2.1.0
+- The `{crayon}` package is not a dependency anymore.
+- Base R packages `{methods}` and `{stats}` are added as new dependencies.
+- Additional packages `{cli}`, `{lifecycle}`, `{pillar}` and `{tidyselect}` are added as new dependencies.
+
 # sfnetworks v0.6.4
 
 ### New features
