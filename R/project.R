@@ -76,13 +76,14 @@ st_project_on_network.sfc = function(x, network, on = "edges") {
   )
 }
 
+#' @importFrom sf st_set_geometry
 #' @export
 st_project_on_network.sf = function(x, network, on = "edges") {
   P = st_project_on_network(st_geometry(x), network, on)
   st_set_geometry(x, P)
 }
 
-#' @importFrom sf st_geometry<- st_nearest_feature st_nearest_points
+#' @importFrom sf st_nearest_feature st_nearest_points
 #' @importFrom sfheaders sfc_cast
 project_on_edges = function(x, y) {
   E = pull_edge_geom(y)
@@ -99,7 +100,7 @@ project_on_edges = function(x, y) {
   linestring_end_points(L)
 }
 
-#' @importFrom sf st_geometry<- st_nearest_feature
+#' @importFrom sf st_nearest_feature
 project_on_nodes = function(x, y) {
   N = pull_node_geom(y)
   # Find the nearest node to each feature.
