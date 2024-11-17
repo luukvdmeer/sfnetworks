@@ -356,7 +356,7 @@ as_sfnetwork.psp = function(x, ...) {
 }
 
 #' @describeIn as_sfnetwork Convert spatial networks of class
-#' \code{\link[stplanr:sfNetwork-class]{sfNetwork}} directly into a
+#' \code{sfNetwork} from the \pkg{stplanr} package directly into a
 #' \code{\link{sfnetwork}}. This will extract the edges as an
 #' \code{\link[sf]{sf}} object and re-create the network structure. Additional
 #' arguments are forwarded to \code{\link{create_from_spatial_lines}}.The
