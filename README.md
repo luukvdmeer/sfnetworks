@@ -4,7 +4,7 @@
 
 [![R build status](https://github.com/luukvdmeer/sfnetworks/workflows/R-CMD-check/badge.svg)](https://github.com/luukvdmeer/sfnetworks/actions)
 [![Codecov test coverage](https://codecov.io/gh/luukvdmeer/sfnetworks/branch/master/graph/badge.svg)](https://app.codecov.io/gh/luukvdmeer/sfnetworks)
-[![CRAN](http://www.r-pkg.org/badges/version/sfnetworks)](https://cran.r-project.org/package=sfnetworks)
+[![CRAN](https://www.r-pkg.org/badges/version/sfnetworks)](https://cran.r-project.org/package=sfnetworks)
 [![Downloads](https://cranlogs.r-pkg.org/badges/sfnetworks)](https://cran.r-project.org/package=sfnetworks)
 <!-- badges: end -->
 
