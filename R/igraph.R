@@ -74,6 +74,7 @@ node_incidents = function(x, nodes) {
 #' given nodes.
 #'
 #' @importFrom igraph igraph_opt igraph_options
+#' @importFrom utils packageVersion
 #' @noRd
 node_connectors = function(x, nodes) {
   # Change default igraph options.
@@ -88,7 +89,11 @@ node_connectors = function(x, nodes) {
   # Get the correct igraph function to call.
   # This used to be get.edge.ids.
   # But since igraph 2.1.0 that one is deprecated in favor of get_edge_ids.
-  f = tryCatch(igraph::get_edge_ids, error = function(e) igraph::get.edge.ids)
+  if (packageVersion("igraph") >= "2.1.0") {
+    f = igraph::get_edge_ids
+  } else {
+    f = igraph::get.edge.ids
+  }
   f(x, nodes, error = TRUE)
 }
 
