@@ -1,3 +1,16 @@
+# sfnetworks v0.6.5
+
+### Bug fixes
+
+* The `print()` method for sfnetwork objects now correctly prints networks with active edges that are spatially implicit. Refs [#256](https://github.com/luukvdmeer/sfnetworks/issues/256).
+* The `print()` method for sfnetwork objects no longer uses the deprecated function `tibble::trunc_mat()`. Refs [#247](https://github.com/luukvdmeer/sfnetworks/issues/247).
+* `to_spatial_contracted()` now correctly handles group indices that are not ordered. Refs [#243](https://github.com/luukvdmeer/sfnetworks/issues/243). Thanks @MattArran.
+
+### Maintenance
+
+* The usage of `igraph::adjacent_vertices()` and `igraph::incident_edges()` inside `to_spatial_smooth()` is now aligned to updates in igraph v2.1.1 that changed the zero-based indexing of the return to one-based indexing. This alignment is done dynamically, without forcing the most recent igraph version as required dependency. Refs [#282](https://github.com/luukvdmeer/sfnetworks/issues/282). Thanks @krlmlr.
+* Whenever the installed igraph version is >= 2.1.0, `igraph::get_edge_ids()` is used instead of the deprecated `igraph::get.edge.ids()` inside `to_spatial_smooth()`.
+
 # sfnetworks v0.6.4
 
 ### New features

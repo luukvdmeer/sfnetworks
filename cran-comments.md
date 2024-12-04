@@ -1,10 +1,10 @@
 In this release we have made the following changes:
 
-* To address CRAN error on Fedora, the package version is now specified as a character instead of numeric.
-
-* The `sfnetwork()` construction function now has an argument `message` which can be set to `FALSE` when the network validity checks should not print informational messages to the console. Refs [#261](https://github.com/luukvdmeer/sfnetworks/issues/261).
-
-* Code and documentation was updated where needed to align with changes in base R and/or package dependencies. No changes to program logic or behavior.
+* The `print()` method for sfnetwork objects now correctly prints networks with active edges that are spatially implicit.
+* The `print()` method for sfnetwork objects no longer uses the deprecated function `tibble::trunc_mat()`.
+* `to_spatial_contracted()` now correctly handles group indices that are not ordered.
+* The usage of `igraph::adjacent_vertices()` and `igraph::incident_edges()` inside `to_spatial_smooth()` is now aligned to updates in igraph v2.1.1 that changed the zero-based indexing of the return to one-based indexing. This alignment is done dynamically, without forcing the most recent igraph version as required dependency.
+* Whenever the installed igraph version is >= 2.1.0, `igraph::get_edge_ids()` is used instead of the deprecated `igraph::get.edge.ids()` inside `to_spatial_smooth()`.
 
 ## R CMD check results
 
