@@ -384,11 +384,13 @@ print.sfnetwork = function(x, ...,
   # Count number of nodes and edges in the network.
   nN = vcount(x) # Number of nodes in network.
   nE = ecount(x) # Number of edges in network.
+  # Fetch node geometries.
+  Ng = pull_node_geom(x)
   # Print header.
   cat_subtle(c("# A sfnetwork with", nN, "nodes and", nE, "edges\n"))
   cat_subtle("#\n")
-  cat_subtle(c("# CRS: ", st_crs(x)$input, "\n"))
-  precision = st_precision(x)
+  cat_subtle(c("# CRS: ", st_crs(Ng)$input, "\n"))
+  precision = st_precision(Ng)
   if (precision != 0.0) {
     cat_subtle(c("# Precision: ", precision, "\n"))
   }
