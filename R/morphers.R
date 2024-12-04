@@ -755,15 +755,15 @@ to_spatial_smooth = function(x,
       # --> The index of the edge that comes in to the pseudo node set.
       # --> The index of the non-pseudo node at the other end of that edge.
       # We'll call this the source node and source edge of the set.
-      # Note the + 1 since adjacent_vertices returns indices starting from 0.
-      source_node = adjacent_vertices(x, n_i, mode = "in")[[1]] + 1
+      source_node = adjacent_vertices(x, n_i, mode = "in")[[1]] +
+        get_igraph_adjacent_vertices_offset()
       source_edge = get.edge.ids(x, c(source_node, n_i))
       # Find the following:
       # --> The index of the edge that goes out of the pseudo node set.
       # --> The index of the non-pseudo node at the other end of that edge.
       # We'll call this the sink node and sink edge of the set.
-      # Note the + 1 since adjacent_vertices returns indices starting from 0.
-      sink_node = adjacent_vertices(x, n_o, mode = "out")[[1]] + 1
+      sink_node = adjacent_vertices(x, n_o, mode = "out")[[1]] +
+        get_igraph_adjacent_vertices_offset()
       sink_edge = get.edge.ids(x, c(n_o, sink_node))
       # List indices of all edges that will be merged into the replacement edge.
       edge_idxs = c(source_edge, E, sink_edge)
@@ -789,8 +789,8 @@ to_spatial_smooth = function(x,
       if (length(N) == 1) {
         # When we have a single pseudo node that forms a set:
         # --> It will be adjacent to both adjacent nodes of the set.
-        # Note the + 1 since adjacent_vertices returns indices starting from 0.
-        adjacent = adjacent_vertices(x, N)[[1]] + 1
+        adjacent = adjacent_vertices(x, N)[[1]] +
+          get_igraph_adjacent_vertices_offset()
         if (length(adjacent) == 1) {
           # If there is only one adjacent node to the pseudo node:
           # --> The two adjacent nodes of the set are the same node.
@@ -825,9 +825,9 @@ to_spatial_smooth = function(x,
         # We find them iteratively for the two boundary nodes of the set:
         # --> A boundary connects to one pseudo node and one non-pseudo node.
         # --> The non-pseudo node is the one not present in the pseudo set.
-        # Note the + 1 since adjacent_vertices returns indices starting from 0.
         get_set_neighbour = function(n) {
-          all = adjacent_vertices(x, n)[[1]] + 1
+          all = adjacent_vertices(x, n)[[1]] +
+            get_igraph_adjacent_vertices_offset()
           all[!(all %in% N)]
         }
         adjacent = do.call("c", lapply(N_b, get_set_neighbour))
