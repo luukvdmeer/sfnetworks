@@ -59,6 +59,39 @@ node_incidents = function(x, nodes) {
   ids
 }
 
+#' Get the indices of the edges between a pair of nodes
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param nodes A vector of two integer indices specifying the node pair
+#' between which edges should be found.
+#'
+#' @note If the network is directed, this function will only return the
+#' edges that go from the first node of the given pair to the second node
+#' of the given pair.
+#'
+#' @returns A vector of integer indices specifying the edges between the
+#' given nodes.
+#'
+#' @importFrom igraph igraph_opt igraph_options
+#' @noRd
+node_connectors = function(x, nodes) {
+  # Change default igraph options.
+  # This prevents igraph returns node or edge indices as formatted sequences.
+  # We only need the "raw" integer indices.
+  # Changing this option can lead to quite a performance improvement.
+  default_igraph_opt = igraph_opt("return.vs.es")
+  if (default_igraph_opt) {
+    igraph_options(return.vs.es = FALSE)
+    on.exit(igraph_options(return.vs.es = default_igraph_opt))
+  }
+  # Get the correct igraph function to call.
+  # This used to be get.edge.ids.
+  # But since igraph 2.1.0 that one is deprecated in favor of get_edge_ids.
+  f = tryCatch(igraph::get_edge_ids, error = function(e) igraph::get.edge.ids)
+  f(x, nodes, error = TRUE)
+}
+
 #' Get the offset of node and edge indices returned by igraph
 #'
 #' The functions \code{\link[igraph]{adjacent_vertices}} and

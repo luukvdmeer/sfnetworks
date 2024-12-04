@@ -576,9 +576,8 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' those attributes are checked for equality. Equality tests are evaluated
 #' using the \code{==} operator.
 #'
-#' @importFrom igraph decompose degree delete_vertices edge_attr
-#' edge.attributes get.edge.ids igraph_opt igraph_options induced_subgraph
-#' is_directed vertex_attr
+#' @importFrom igraph decompose degree delete_vertices edge_attr edge.attributes
+#' igraph_opt igraph_options induced_subgraph is_directed vertex_attr
 #' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_is
 #' st_line_merge
 #' @export
@@ -755,13 +754,13 @@ to_spatial_smooth = function(x,
       # --> The index of the non-pseudo node at the other end of that edge.
       # We'll call this the source node and source edge of the set.
       source_node = node_adjacencies(x, n_i, direction = "in")
-      source_edge = get.edge.ids(x, c(source_node, n_i))
+      source_edge = node_connectors(x, c(source_node, n_i))
       # Find the following:
       # --> The index of the edge that goes out of the pseudo node set.
       # --> The index of the non-pseudo node at the other end of that edge.
       # We'll call this the sink node and sink edge of the set.
       sink_node = node_adjacencies(x, n_o, direction = "out")
-      sink_edge = get.edge.ids(x, c(n_o, sink_node))
+      sink_edge = node_connectors(x, c(n_o, sink_node))
       # List indices of all edges that will be merged into the replacement edge.
       edge_idxs = c(source_edge, E, sink_edge)
       # Return all retrieved information in a list.
@@ -791,7 +790,7 @@ to_spatial_smooth = function(x,
           # If there is only one adjacent node to the pseudo node:
           # --> The two adjacent nodes of the set are the same node.
           # --> We only have to query for incident edges of the set once.
-          incident = get.edge.ids(x, c(adjacent, N))
+          incident = node_connectors(x, c(adjacent, N))
           source_node = adjacent
           source_edge = incident[1]
           sink_node = adjacent
@@ -801,9 +800,9 @@ to_spatial_smooth = function(x,
           # --> The one with the lowest index will be source node.
           # --> The one with the highest index will be sink node.
           source_node = min(adjacent)
-          source_edge = get.edge.ids(x, c(source_node, N))
+          source_edge = node_connectors(x, c(source_node, N))
           sink_node = max(adjacent)
-          sink_edge = get.edge.ids(x, c(N, sink_node))
+          sink_edge = node_connectors(x, c(N, sink_node))
         }
       } else {
         # When we have a set of multiple pseudo nodes:
@@ -830,9 +829,9 @@ to_spatial_smooth = function(x,
         # The adjacent node with the highest index will be sink node.
         N_b = N_b[order(adjacent)]
         source_node = min(adjacent)
-        source_edge = get.edge.ids(x, c(source_node, N_b[1]))
+        source_edge = node_connectors(x, c(source_node, N_b[1]))
         sink_node = max(adjacent)
-        sink_edge = get.edge.ids(x, c(N_b[2], sink_node))
+        sink_edge = node_connectors(x, c(N_b[2], sink_node))
       }
       # List indices of all edges that will be merged into the replacement edge.
       edge_idxs = c(source_edge, E, sink_edge)
