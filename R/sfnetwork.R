@@ -376,10 +376,11 @@ as_sfnetwork.tbl_graph = function(x, ...) {
 #' @importFrom tibble as_tibble
 #' @importFrom tidygraph as_tbl_graph
 #' @export
-print.sfnetwork = function(x, ...) {
+print.sfnetwork = function(x, ...,
+                           n = getOption("sfn_max_print_active", 6),
+                           n_non_active = getOption("sfn_max_print_inactive", 3)) {
   # Define active and inactive component.
-  active = attr(x, "active")
-  inactive = if (active == "nodes") "edges" else "nodes"
+  nodes_are_active = attr(x, "active") == "nodes"
   # Count number of nodes and edges in the network.
   nN = vcount(x) # Number of nodes in network.
   nE = ecount(x) # Number of edges in network.
@@ -399,57 +400,30 @@ print.sfnetwork = function(x, ...) {
     cat_subtle(" with spatially implicit edges\n")
   }
   cat_subtle("#\n")
-  # Print active data summary.
-  active_data = summarise_network_element(
-    data = as_tibble(x, active),
-    name = substr(active, 1, 4),
-    active = TRUE,
-    ...
-  )
-  print(active_data)
-  cat_subtle("#\n")
-  # Print inactive data summary.
-  inactive_data = summarise_network_element(
-    data = as_tibble(x, inactive),
-    name = substr(inactive, 1, 4),
-    active = FALSE,
-    ...
-  )
-  print(inactive_data)
+  # Print data.
+  if (nodes_are_active) {
+    active_data = as_tibble(x, "nodes")
+    active_name = "Node data"
+    inactive_data = as_tibble(x, "edges")
+    inactive_name = "Edge data"
+  } else {
+    active_data = as_tibble(x, "edges")
+    active_name = "Edge data"
+    inactive_data = as_tibble(x, "nodes")
+    inactive_name = "Node data"
+  }
+  print(as_named_tbl(active_data, active_name, " (active)"), n = n, ...)
+  cat_subtle('#\n')
+  print(as_named_tbl(inactive_data, inactive_name), n = n_non_active)
   invisible(x)
 }
 
-#' @importFrom sf st_geometry
-#' @importFrom tibble trunc_mat
-#' @importFrom tools toTitleCase
-#' @importFrom utils modifyList
-summarise_network_element = function(data, name, active = TRUE,
-                                     n_active = getOption("sfn_max_print_active",     6L),
-                                     n_inactive = getOption("sfn_max_print_inactive", 3L),
-                                     ...
-                                     ) {
-  # Capture ... arguments.
-  args = list(...)
-  # Truncate data.
-  n = if (active) n_active else n_inactive
-  x = do.call(trunc_mat, modifyList(args, list(x = data, n = n)))
-  # Write summary.
-  x$summary[1] = paste(x$summary[1], if (active) "(active)" else "")
-  if (!has_sfc(data) || nrow(data) == 0) {
-    names(x$summary)[1] = toTitleCase(paste(name, "data"))
-  } else {
-    geom = st_geometry(data)
-    x$summary[2] = substr(class(geom)[1], 5, nchar(class(geom)[1]))
-    x$summary[3] = class(geom[[1]])[1]
-    bb = signif(attr(geom, "bbox"), options("digits")$digits)
-    x$summary[4] = paste(paste(names(bb), bb[], sep = ": "), collapse = " ")
-    names(x$summary) = c(
-      toTitleCase(paste(name, "data")),
-      "Geometry type",
-      "Dimension",
-      "Bounding box"
-    )
-  }
+#' @importFrom tibble as_tibble
+as_named_tbl = function(x, name = "A tibble", suffix = "") {
+  x = as_tibble(x)
+  attr(x, "name") = name
+  attr(x, "suffix") = suffix
+  class(x) = c("named_tbl", class(x))
   x
 }
 
