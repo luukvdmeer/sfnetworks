@@ -576,9 +576,9 @@ to_spatial_simple = function(x, remove_multiple = TRUE, remove_loops = TRUE,
 #' those attributes are checked for equality. Equality tests are evaluated
 #' using the \code{==} operator.
 #'
-#' @importFrom igraph adjacent_vertices decompose degree delete_vertices
-#' edge_attr edge.attributes get.edge.ids igraph_opt igraph_options
-#' incident_edges induced_subgraph is_directed vertex_attr
+#' @importFrom igraph decompose degree delete_vertices edge_attr
+#' edge.attributes get.edge.ids igraph_opt igraph_options induced_subgraph
+#' is_directed vertex_attr
 #' @importFrom sf st_as_sf st_cast st_combine st_crs st_equals st_is
 #' st_line_merge
 #' @export
@@ -590,7 +590,7 @@ to_spatial_smooth = function(x,
   # Change default igraph options.
   # This prevents igraph returns node or edge indices as formatted sequences.
   # We only need the "raw" integer indices.
-  # Changing this option can lead to quiet a performance improvement.
+  # Changing this option can lead to quite a performance improvement.
   default_igraph_opt = igraph_opt("return.vs.es")
   igraph_options(return.vs.es = FALSE)
   on.exit(igraph_options(return.vs.es = default_igraph_opt))
@@ -684,9 +684,8 @@ to_spatial_smooth = function(x,
     pseudo_idxs = which(pseudo)
     # Get the edge indices of the incident edges of each pseudo node.
     # Combine them into a single numerical vector.
-    # Note the + 1 since incident_edges returns indices starting from 0.
-    incident_idxs = incident_edges(x, pseudo_idxs, mode = "all")
-    incident_idxs = do.call("c", incident_idxs) + 1
+    incident_idxs = node_incidents(x, pseudo_idxs)
+    incident_idxs = do.call("c", incident_idxs)
     # Define for each of the incident edges if they are incoming or outgoing.
     # In undirected networks this can be read instead as "first or second".
     is_in = seq(1, 2 * length(pseudo_idxs), by = 2)
@@ -755,15 +754,13 @@ to_spatial_smooth = function(x,
       # --> The index of the edge that comes in to the pseudo node set.
       # --> The index of the non-pseudo node at the other end of that edge.
       # We'll call this the source node and source edge of the set.
-      # Note the + 1 since adjacent_vertices returns indices starting from 0.
-      source_node = adjacent_vertices(x, n_i, mode = "in")[[1]] + 1
+      source_node = node_adjacencies(x, n_i, direction = "in")
       source_edge = get.edge.ids(x, c(source_node, n_i))
       # Find the following:
       # --> The index of the edge that goes out of the pseudo node set.
       # --> The index of the non-pseudo node at the other end of that edge.
       # We'll call this the sink node and sink edge of the set.
-      # Note the + 1 since adjacent_vertices returns indices starting from 0.
-      sink_node = adjacent_vertices(x, n_o, mode = "out")[[1]] + 1
+      sink_node = node_adjacencies(x, n_o, direction = "out")
       sink_edge = get.edge.ids(x, c(n_o, sink_node))
       # List indices of all edges that will be merged into the replacement edge.
       edge_idxs = c(source_edge, E, sink_edge)
@@ -789,8 +786,7 @@ to_spatial_smooth = function(x,
       if (length(N) == 1) {
         # When we have a single pseudo node that forms a set:
         # --> It will be adjacent to both adjacent nodes of the set.
-        # Note the + 1 since adjacent_vertices returns indices starting from 0.
-        adjacent = adjacent_vertices(x, N)[[1]] + 1
+        adjacent = node_adjacencies(x, N)
         if (length(adjacent) == 1) {
           # If there is only one adjacent node to the pseudo node:
           # --> The two adjacent nodes of the set are the same node.
@@ -825,9 +821,8 @@ to_spatial_smooth = function(x,
         # We find them iteratively for the two boundary nodes of the set:
         # --> A boundary connects to one pseudo node and one non-pseudo node.
         # --> The non-pseudo node is the one not present in the pseudo set.
-        # Note the + 1 since adjacent_vertices returns indices starting from 0.
         get_set_neighbour = function(n) {
-          all = adjacent_vertices(x, n)[[1]] + 1
+          all = node_adjacencies(x, n)
           all[!(all %in% N)]
         }
         adjacent = do.call("c", lapply(N_b, get_set_neighbour))
