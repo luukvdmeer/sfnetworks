@@ -6,27 +6,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2. Network pre-processing and cleaning • sfnetworks</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="2. Network pre-processing and cleaning">
-<meta property="og:description" content="sfnetworks">
-<meta property="og:image" content="/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -40,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.5</span>
       </span>
     </div>
 
@@ -52,7 +44,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -81,7 +73,7 @@
 <li>
   <a href="https://github.com/luukvdmeer/sfnetworks/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -92,16 +84,16 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>2. Network pre-processing and cleaning</h1>
             
-            <h4 data-toc-skip class="date">2024-04-10</h4>
+            <h4 data-toc-skip class="date">2024-12-09</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/HEAD/vignettes/sfn02_preprocess_clean.Rmd" class="external-link"><code>vignettes/sfn02_preprocess_clean.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/v0.6.5/vignettes/sfn02_preprocess_clean.Rmd" class="external-link"><code>vignettes/sfn02_preprocess_clean.Rmd</code></a></small>
       <div class="hidden name"><code>sfn02_preprocess_clean.Rmd</code></div>
 
     </div>
@@ -155,7 +147,7 @@ example:</p>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A rooted forest with 2 trees with spatially explicit edges</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # A tibble: 4 × 1</span></span>
+<span><span class="co">#&gt; # Node data: 4 × 1 (active)</span></span>
 <span><span class="co">#&gt;               x</span></span>
 <span><span class="co">#&gt;     &lt;POINT [°]&gt;</span></span>
 <span><span class="co">#&gt; 1        (7 51)</span></span>
@@ -163,7 +155,7 @@ example:</p>
 <span><span class="co">#&gt; 3 (8.000001 52)</span></span>
 <span><span class="co">#&gt; 4        (7 52)</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # A tibble: 2 × 3</span></span>
+<span><span class="co">#&gt; # Edge data: 2 × 3</span></span>
 <span><span class="co">#&gt;    from    to                   x</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;    &lt;LINESTRING [°]&gt;</span></span>
 <span><span class="co">#&gt; 1     1     2        (7 51, 8 52)</span></span>
@@ -182,14 +174,14 @@ example:</p>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A rooted tree with spatially explicit edges</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # A tibble: 3 × 1</span></span>
+<span><span class="co">#&gt; # Node data: 3 × 1 (active)</span></span>
 <span><span class="co">#&gt;             x</span></span>
 <span><span class="co">#&gt;   &lt;POINT [°]&gt;</span></span>
 <span><span class="co">#&gt; 1      (7 51)</span></span>
 <span><span class="co">#&gt; 2      (8 52)</span></span>
 <span><span class="co">#&gt; 3      (7 52)</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # A tibble: 2 × 3</span></span>
+<span><span class="co">#&gt; # Edge data: 2 × 3</span></span>
 <span><span class="co">#&gt;    from    to                x</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;LINESTRING [°]&gt;</span></span>
 <span><span class="co">#&gt; 1     1     2     (7 51, 8 52)</span></span>
@@ -254,7 +246,7 @@ to a GEOS version of at least 3.7.0.</p>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A directed simple graph with 1 component with spatially explicit edges</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # A tibble: 5 × 4</span></span>
+<span><span class="co">#&gt; # Edge data: 5 × 4 (active)</span></span>
 <span><span class="co">#&gt;    from    to oneway                x</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;lgl&gt;  &lt;LINESTRING [°]&gt;</span></span>
 <span><span class="co">#&gt; 1     1     2 TRUE       (7 51, 7 52)</span></span>
@@ -263,7 +255,7 @@ to a GEOS version of at least 3.7.0.</p>
 <span><span class="co">#&gt; 4     3     1 FALSE      (8 52, 7 51)</span></span>
 <span><span class="co">#&gt; 5     2     3 FALSE      (7 52, 8 52)</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # A tibble: 3 × 1</span></span>
+<span><span class="co">#&gt; # Node data: 3 × 1</span></span>
 <span><span class="co">#&gt;             x</span></span>
 <span><span class="co">#&gt;   &lt;POINT [°]&gt;</span></span>
 <span><span class="co">#&gt; 1      (7 51)</span></span>
@@ -437,18 +429,18 @@ different combination techniques when simplifying the network.</p>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A directed multigraph with 3 components with spatially explicit edges</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # A tibble: 15 × 7</span></span>
+<span><span class="co">#&gt; # Edge data: 15 × 7 (active)</span></span>
 <span><span class="co">#&gt;    from    to              x  flow type    foo bar  </span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;   &lt;LINESTRING&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt; &lt;chr&gt;</span></span>
-<span><span class="co">#&gt; 1    10     9 (6 1.2, 5.8 1)     3 path     12 m    </span></span>
-<span><span class="co">#&gt; 2    11    10 (6.2 1, 6 1.2)     5 path     10 s    </span></span>
-<span><span class="co">#&gt; 3     9    12 (5.8 1, 6 0.8)     7 path      5 c    </span></span>
-<span><span class="co">#&gt; 4    12    11 (6 0.8, 6.2 1)    10 path      1 o    </span></span>
-<span><span class="co">#&gt; 5    11    15   (6.2 1, 7 1)     2 path      2 d    </span></span>
-<span><span class="co">#&gt; 6    10    13   (6 1.2, 6 2)     1 path     14 u    </span></span>
+<span><span class="co">#&gt; 1    10     9 (6 1.2, 5.8 1)     7 path     15 u    </span></span>
+<span><span class="co">#&gt; 2    11    10 (6.2 1, 6 1.2)     5 path      4 b    </span></span>
+<span><span class="co">#&gt; 3     9    12 (5.8 1, 6 0.8)     6 path      2 q    </span></span>
+<span><span class="co">#&gt; 4    12    11 (6 0.8, 6.2 1)     4 path      3 t    </span></span>
+<span><span class="co">#&gt; 5    11    15   (6.2 1, 7 1)     6 path      9 v    </span></span>
+<span><span class="co">#&gt; 6    10    13   (6 1.2, 6 2)     9 path      6 a    </span></span>
 <span><span class="co">#&gt; # ℹ 9 more rows</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # A tibble: 15 × 1</span></span>
+<span><span class="co">#&gt; # Node data: 15 × 1</span></span>
 <span><span class="co">#&gt;         x</span></span>
 <span><span class="co">#&gt;   &lt;POINT&gt;</span></span>
 <span><span class="co">#&gt; 1   (0 1)</span></span>
@@ -470,8 +462,8 @@ different combination techniques when simplifying the network.</p>
 <span><span class="co">#&gt; # A tibble: 2 × 7</span></span>
 <span><span class="co">#&gt;    from    to               x  flow type    foo bar  </span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;    &lt;LINESTRING&gt; &lt;int&gt; &lt;chr&gt; &lt;int&gt; &lt;chr&gt;</span></span>
-<span><span class="co">#&gt; 1     6     7      (4 3, 4 2)     4 path      4 t    </span></span>
-<span><span class="co">#&gt; 2     6     7 (4 3, 5 2, 4 2)     8 road      9 l</span></span></code></pre>
+<span><span class="co">#&gt; 1     6     7      (4 3, 4 2)     5 path      7 f    </span></span>
+<span><span class="co">#&gt; 2     6     7 (4 3, 5 2, 4 2)     2 road     14 e</span></span></code></pre>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define how we want to combine the attributes.</span></span>
 <span><span class="co"># For the flows:</span></span>
@@ -502,7 +494,7 @@ different combination techniques when simplifying the network.</p>
 <span><span class="co">#&gt; # A tibble: 1 × 6</span></span>
 <span><span class="co">#&gt;    from    to            x  flow type    .tidygraph_edge_index</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;LINESTRING&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;list&gt;               </span></span>
-<span><span class="co">#&gt; 1     6     7   (4 3, 4 2)    12 unknown &lt;int [2]&gt;</span></span></code></pre>
+<span><span class="co">#&gt; 1     6     7   (4 3, 4 2)     7 unknown &lt;int [2]&gt;</span></span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu">edge_colors</span><span class="op">(</span><span class="va">net</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">1.5</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -528,38 +520,104 @@ not connected, because they don’t share <em>endpoints</em>. If this is
 unwanted, we need to split these two edges at their shared point and
 connect them accordingly.</p>
 <p>In graph theory terms the process of splitting and edge is called
-<em>subdivision</em>: the subdivision of an edge <span class="math inline">\(o = \{a, b\}\)</span> (i.e. an edge from node
-<span class="math inline">\(a\)</span> to node <span class="math inline">\(b\)</span>) is the addition of a new node <span class="math inline">\(c\)</span> and the replacement of <span class="math inline">\(o\)</span> by two new edges <span class="math inline">\(p = \{a, c\}\)</span> and <span class="math inline">\(q = \{c, b\}\)</span>.</p>
+<em>subdivision</em>: the subdivision of an edge
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>o</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">o = \{a, b\}</annotation></semantics></math>
+(i.e. an edge from node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
+to node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>)
+is the addition of a new node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math>
+and the replacement of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>o</mi><annotation encoding="application/x-tex">o</annotation></semantics></math>
+by two new edges
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mi>a</mi><mo>,</mo><mi>c</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">p = \{a, c\}</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mi>c</mi><mo>,</mo><mi>b</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">q = \{c, b\}</annotation></semantics></math>.</p>
 <p>The function <code><a href="../reference/spatial_morphers.html">to_spatial_subdivision()</a></code> subdivides edges
 at interior points whenever these interior points are equal to one or
 more interior points or endpoints of other edges, and recalculates
 network connectivity afterwards.</p>
 <p>To illustrate the workflow, lets consider a situation where an
-interior point <span class="math inline">\(p_{x}\)</span> in edge <span class="math inline">\(x\)</span> is shared with point <span class="math inline">\(p_{y}\)</span> in edge <span class="math inline">\(y\)</span>. That gives two possible
-situations:</p>
+interior point
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>x</mi></msub><annotation encoding="application/x-tex">p_{x}</annotation></semantics></math>
+in edge
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
+is shared with point
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>y</mi></msub><annotation encoding="application/x-tex">p_{y}</annotation></semantics></math>
+in edge
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math>.
+That gives two possible situations:</p>
 <ul>
 <li>
-<span class="math inline">\(p_{y}\)</span> is an interior point of
-<span class="math inline">\(y\)</span>. Since <span class="math inline">\(p_{x}\)</span> and <span class="math inline">\(p_{y}\)</span> are both interior points, neither
-of them is already a node in the network. Then:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>y</mi></msub><annotation encoding="application/x-tex">p_{y}</annotation></semantics></math>
+is an interior point of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math>.
+Since
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>x</mi></msub><annotation encoding="application/x-tex">p_{x}</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>y</mi></msub><annotation encoding="application/x-tex">p_{y}</annotation></semantics></math>
+are both interior points, neither of them is already a node in the
+network. Then:
 <ul>
 <li>
-<span class="math inline">\(x\)</span> is subdivided at <span class="math inline">\(p_{x}\)</span> into two new edges <span class="math inline">\(x_{1}\)</span> and <span class="math inline">\(x_{2}\)</span> and new node <span class="math inline">\(p_{x}\)</span>.</li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
+is subdivided at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>x</mi></msub><annotation encoding="application/x-tex">p_{x}</annotation></semantics></math>
+into two new edges
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mn>1</mn></msub><annotation encoding="application/x-tex">x_{1}</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mn>2</mn></msub><annotation encoding="application/x-tex">x_{2}</annotation></semantics></math>
+and new node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>x</mi></msub><annotation encoding="application/x-tex">p_{x}</annotation></semantics></math>.</li>
 <li>
-<span class="math inline">\(y\)</span> is subdivided at <span class="math inline">\(p_{y}\)</span> into two new edges <span class="math inline">\(y_{1}\)</span> and <span class="math inline">\(y_{2}\)</span> and new node <span class="math inline">\(p_{y}\)</span>.</li>
-<li>The new nodes <span class="math inline">\(p_{x}\)</span> and <span class="math inline">\(p_{y}\)</span> are merged into a single node <span class="math inline">\(p\)</span> with the edge set <span class="math inline">\(\{x_{1}, x_{2}, y_{1}, y_{2}\}\)</span> as
-incidents.</li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math>
+is subdivided at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>y</mi></msub><annotation encoding="application/x-tex">p_{y}</annotation></semantics></math>
+into two new edges
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mn>1</mn></msub><annotation encoding="application/x-tex">y_{1}</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mn>2</mn></msub><annotation encoding="application/x-tex">y_{2}</annotation></semantics></math>
+and new node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>y</mi></msub><annotation encoding="application/x-tex">p_{y}</annotation></semantics></math>.</li>
+<li>The new nodes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>x</mi></msub><annotation encoding="application/x-tex">p_{x}</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>y</mi></msub><annotation encoding="application/x-tex">p_{y}</annotation></semantics></math>
+are merged into a single node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
+with the edge set
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><msub><mi>x</mi><mn>2</mn></msub><mo>,</mo><msub><mi>y</mi><mn>1</mn></msub><mo>,</mo><msub><mi>y</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{x_{1}, x_{2}, y_{1}, y_{2}\}</annotation></semantics></math>
+as incidents.</li>
 </ul>
 </li>
 <li>
-<span class="math inline">\(p_{y}\)</span> is and endpoint of <span class="math inline">\(y\)</span>. Since <span class="math inline">\(p_{y}\)</span> is an edge endpoint, it is already
-a node in the network. Then:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>y</mi></msub><annotation encoding="application/x-tex">p_{y}</annotation></semantics></math>
+is and endpoint of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math>.
+Since
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>y</mi></msub><annotation encoding="application/x-tex">p_{y}</annotation></semantics></math>
+is an edge endpoint, it is already a node in the network. Then:
 <ul>
 <li>
-<span class="math inline">\(x\)</span> is subdivided at <span class="math inline">\(p_{x}\)</span> into two new edges <span class="math inline">\(x_{1}\)</span> and <span class="math inline">\(x_{2}\)</span> and new node <span class="math inline">\(p_{x}\)</span>.</li>
-<li>The new node <span class="math inline">\(p_{x}\)</span> is merged
-with node <span class="math inline">\(p_{y}\)</span> into a single node
-<span class="math inline">\(p\)</span> with the edge set <span class="math inline">\(\{y, x_{1}, x_{2}\}\)</span> as incidents.</li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
+is subdivided at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>x</mi></msub><annotation encoding="application/x-tex">p_{x}</annotation></semantics></math>
+into two new edges
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mn>1</mn></msub><annotation encoding="application/x-tex">x_{1}</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mn>2</mn></msub><annotation encoding="application/x-tex">x_{2}</annotation></semantics></math>
+and new node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>x</mi></msub><annotation encoding="application/x-tex">p_{x}</annotation></semantics></math>.</li>
+<li>The new node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>x</mi></msub><annotation encoding="application/x-tex">p_{x}</annotation></semantics></math>
+is merged with node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>y</mi></msub><annotation encoding="application/x-tex">p_{y}</annotation></semantics></math>
+into a single node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
+with the edge set
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mi>y</mi><mo>,</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><msub><mi>x</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{y, x_{1}, x_{2}\}</annotation></semantics></math>
+as incidents.</li>
 </ul>
 </li>
 </ul>
@@ -590,9 +648,19 @@ undirected networks is any node with only two incident edges, since
 To reduce complexity of subsequent operations, we might want to get rid
 of these pseudo nodes.</p>
 <p>In graph theory terms this process is the opposite of subdivision and
-also called <em>smoothing</em>: smoothing a node <span class="math inline">\(b\)</span> with incident edges <span class="math inline">\(o = \{a, b\}\)</span> and <span class="math inline">\(p = \{b, c\}\)</span> removes <span class="math inline">\(b\)</span>, <span class="math inline">\(o\)</span>
-and <span class="math inline">\(p\)</span> and creates the new edge
-<span class="math inline">\(q = \{a, c\}\)</span>.</p>
+also called <em>smoothing</em>: smoothing a node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>
+with incident edges
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>o</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">o = \{a, b\}</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mi>b</mi><mo>,</mo><mi>c</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">p = \{b, c\}</annotation></semantics></math>
+removes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>o</mi><annotation encoding="application/x-tex">o</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
+and creates the new edge
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mi>a</mi><mo>,</mo><mi>c</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">q = \{a, c\}</annotation></semantics></math>.</p>
 <p>The function <code><a href="../reference/spatial_morphers.html">to_spatial_smooth()</a></code> iteratively smooths
 pseudo nodes, and after each removal concatenates the linestring
 geometries of the two affected edges together into a new, single
@@ -635,10 +703,10 @@ columns are not attributes!</p>
 <span><span class="co">#&gt; # A tibble: 4 × 6</span></span>
 <span><span class="co">#&gt;    from    to               x  flow type    .tidygraph_edge_index</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt;    &lt;LINESTRING&gt; &lt;dbl&gt; &lt;chr&gt;                   &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1     1     2 (0 1, 1 1, 2 1)     8 road                        1</span></span>
-<span><span class="co">#&gt; 2     2     3      (2 1, 3 1)     5 road                        2</span></span>
-<span><span class="co">#&gt; 3     8     9      (4 3, 4 2)    12 unknown                     5</span></span>
-<span><span class="co">#&gt; 4     9     4      (4 2, 4 1)     3 road                        6</span></span></code></pre>
+<span><span class="co">#&gt; 1     1     2 (0 1, 1 1, 2 1)     2 road                        1</span></span>
+<span><span class="co">#&gt; 2     2     3      (2 1, 3 1)     7 road                        2</span></span>
+<span><span class="co">#&gt; 3     8     9      (4 3, 4 2)     7 unknown                     5</span></span>
+<span><span class="co">#&gt; 4     9     4      (4 2, 4 1)     5 road                        6</span></span></code></pre>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Define how we want to combine the attributes.</span></span>
@@ -668,8 +736,8 @@ columns are not attributes!</p>
 <span><span class="co">#&gt; # A tibble: 2 × 6</span></span>
 <span><span class="co">#&gt;    from    to  flow type    .tidygraph_edge_index                    x</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;list&gt;                        &lt;LINESTRING&gt;</span></span>
-<span><span class="co">#&gt; 1     1     2    13 road    &lt;int [2]&gt;             (0 1, 1 1, 2 1, 3 1)</span></span>
-<span><span class="co">#&gt; 2     7     3    15 unknown &lt;int [2]&gt;                  (4 3, 4 2, 4 1)</span></span></code></pre>
+<span><span class="co">#&gt; 1     1     2     9 road    &lt;int [2]&gt;             (0 1, 1 1, 2 1, 3 1)</span></span>
+<span><span class="co">#&gt; 2     7     3    12 unknown &lt;int [2]&gt;                  (4 3, 4 2, 4 1)</span></span></code></pre>
 <p>Secondly, it is possible to only remove those pseudo nodes for which
 attributes among their incident edges are equal. To do this, set
 <code>require_equal = TRUE</code>. Optionally, you can provide a list of
@@ -716,11 +784,16 @@ network, you might want to reduce such complex intersection structures
 into a single node. Hence, we want to reduce a group of nodes into a
 single node, while maintaining the connectivity of the network.</p>
 <p>In graph theory terms this process is called <em>contraction</em>:
-the contraction of a set of nodes <span class="math inline">\(P =
-\{p_{1}, p_{2}, ..., p_{n}\}\)</span> is the replacement of <span class="math inline">\(S\)</span> and all its incident edges by a
-<em>single</em> node <span class="math inline">\(p^{*}\)</span> and a
-set of edges that connect <span class="math inline">\(p^{*}\)</span> to
-all nodes that were adjacent to any node <span class="math inline">\(p_{i} \in P\)</span>.</p>
+the contraction of a set of nodes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>p</mi><mn>1</mn></msub><mo>,</mo><msub><mi>p</mi><mn>2</mn></msub><mo>,</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo>,</mo><msub><mi>p</mi><mi>n</mi></msub><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">P = \{p_{1}, p_{2}, ..., p_{n}\}</annotation></semantics></math>
+is the replacement of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math>
+and all its incident edges by a <em>single</em> node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>p</mi><mo>*</mo></msup><annotation encoding="application/x-tex">p^{*}</annotation></semantics></math>
+and a set of edges that connect
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>p</mi><mo>*</mo></msup><annotation encoding="application/x-tex">p^{*}</annotation></semantics></math>
+to all nodes that were adjacent to any node
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>i</mi></msub><mo>∈</mo><mi>P</mi></mrow><annotation encoding="application/x-tex">p_{i} \in P</annotation></semantics></math>.</p>
 <p>The function <code><a href="../reference/spatial_morphers.html">to_spatial_contracted()</a></code> contracts groups of
 nodes based on a given grouping variable. The geometry of each
 contracted node is the <em>centroid</em> of the original group members’
@@ -774,7 +847,7 @@ for the sake of completeness, we will still show it:</p>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # A directed simple graph with 1 component with spatially explicit edges</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # A tibble: 14 × 3</span></span>
+<span><span class="co">#&gt; # Node data: 14 × 3 (active)</span></span>
 <span><span class="co">#&gt;     cls   cmp       x</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;POINT&gt;</span></span>
 <span><span class="co">#&gt; 1     1     1   (0 1)</span></span>
@@ -785,12 +858,12 @@ for the sake of completeness, we will still show it:</p>
 <span><span class="co">#&gt; 6     6     1   (3 0)</span></span>
 <span><span class="co">#&gt; # ℹ 8 more rows</span></span>
 <span><span class="co">#&gt; #</span></span>
-<span><span class="co">#&gt; # A tibble: 14 × 6</span></span>
+<span><span class="co">#&gt; # Edge data: 14 × 6</span></span>
 <span><span class="co">#&gt;    from    to  flow type  .tidygraph_edge_index            x</span></span>
 <span><span class="co">#&gt;   &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt; &lt;list&gt;                &lt;LINESTRING&gt;</span></span>
-<span><span class="co">#&gt; 1     2     3     5 road  &lt;int [1]&gt;               (3 1, 4 1)</span></span>
-<span><span class="co">#&gt; 2     3     4    10 path  &lt;int [1]&gt;             (4 1, 5.8 1)</span></span>
-<span><span class="co">#&gt; 3     5     2     4 road  &lt;int [1]&gt;               (3 2, 3 1)</span></span>
+<span><span class="co">#&gt; 1     2     3     7 road  &lt;int [1]&gt;               (3 1, 4 1)</span></span>
+<span><span class="co">#&gt; 2     3     4     5 path  &lt;int [1]&gt;             (4 1, 5.8 1)</span></span>
+<span><span class="co">#&gt; 3     5     2     5 road  &lt;int [1]&gt;               (3 2, 3 1)</span></span>
 <span><span class="co">#&gt; # ℹ 11 more rows</span></span></code></pre>
 <p>The combination of the cluster index and the component index can now
 be used to define the groups of nodes to be contracted. Nodes that form
@@ -859,7 +932,7 @@ columns are not attributes!</p>
 <span><span class="co">#&gt;         x .tidygraph_node_index   cls   cmp is_priority</span></span>
 <span><span class="co">#&gt;   &lt;POINT&gt;                 &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;lgl&gt;      </span></span>
 <span><span class="co">#&gt; 1 (5.8 1)                     5     4     1 TRUE       </span></span>
-<span><span class="co">#&gt; 2 (6 0.8)                    11     4     1 TRUE       </span></span>
+<span><span class="co">#&gt; 2 (6 0.8)                    11     4     1 FALSE      </span></span>
 <span><span class="co">#&gt; 3 (6 1.2)                    12     4     1 TRUE       </span></span>
 <span><span class="co">#&gt; 4 (6.2 1)                    14     4     1 TRUE</span></span></code></pre>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
@@ -914,9 +987,7 @@ previous sections, we have cleaned our original network as follows:</p>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
+      </div>
 
 </div>
 
@@ -929,16 +1000,16 @@ previous sections, we have cleaned our original network as follows:</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>

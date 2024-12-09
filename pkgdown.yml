@@ -2,12 +2,9 @@ pandoc: 3.1.11
 pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
-  sfn01_intro: sfn01_intro.html
-  sfn02_create_represent: sfn02_create_represent.html
-  sfn03_cleaning: sfn03_cleaning.html
-  sfn04_join_filter: sfn04_join_filter.html
-  sfn05_routing: sfn05_routing.html
-last_built: 2024-11-17T20:49Z
-urls:
-  reference: https://luukvdmeer.github.io/sfnetworks/reference
-  article: https://luukvdmeer.github.io/sfnetworks/articles
+  sfn01_structure: sfn01_structure.html
+  sfn02_preprocess_clean: sfn02_preprocess_clean.html
+  sfn03_join_filter: sfn03_join_filter.html
+  sfn04_routing: sfn04_routing.html
+  sfn05_morphers: sfn05_morphers.html
+last_built: 2024-12-09T12:46Z
