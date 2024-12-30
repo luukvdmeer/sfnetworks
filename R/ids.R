@@ -249,36 +249,6 @@ node_incident_ids = function(x, nodes) {
   ids
 }
 
-#' Extract for a node pair in a spatial network the indices of connecting edges
-#'
-#' @param x An object of class \code{\link{sfnetwork}}.
-#'
-#' @param nodes A vector of two integer indices specifying the node pair
-#' between which edges should be found.
-#'
-#' @note If the network is directed, this function will only return the
-#' edges that go from the first node of the given pair to the second node
-#' of the given pair.
-#'
-#' @returns A vector of integer indices specifying the edges between the
-#' given nodes.
-#'
-#' @importFrom igraph get_edge_ids igraph_opt igraph_options
-#' @noRd
-node_connector_ids = function(x, nodes) {
-  # Change default igraph options.
-  # This prevents igraph returns node or edge indices as formatted sequences.
-  # We only need the "raw" integer indices.
-  # Changing this option can lead to quite a performance improvement.
-  default_igraph_opt = igraph_opt("return.vs.es")
-  if (default_igraph_opt) {
-    igraph_options(return.vs.es = FALSE)
-    on.exit(igraph_options(return.vs.es = default_igraph_opt))
-  }
-  # Query edge indices.
-  get_edge_ids(x, nodes, error = TRUE)
-}
-
 #' Extract for each edge in a spatial network the indices of incident nodes
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.
