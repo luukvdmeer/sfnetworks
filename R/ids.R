@@ -188,6 +188,97 @@ evaluate_edge_query = function(data, query) {
   edges
 }
 
+#' Extract for a given node in a spatial network the indices of adjacent nodes
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param node The integer index of the node for which adjacent nodes should be
+#' queried.
+#'
+#' @param direction The direction of travel. Defaults to \code{'out'}, meaning
+#' that the direction given by the network is followed and a node is adjacent
+#' if it can be reached by an outgoing edge. May be set to \code{'in'}, meaning
+#' that the opposite direction is followed. May also be set to \code{'all'},
+#' meaning that the network is considered to be undirected. This argument is
+#' ignored for undirected networks.
+#'
+#' @returns A vector of integer indices specifying the adjacent nodes to the
+#' given node.
+#'
+#' @importFrom igraph adjacent_vertices igraph_opt igraph_options
+#' @noRd
+node_adjacent_ids = function(x, node, direction = "out") {
+  # Change default igraph options.
+  # This prevents igraph returns node or edge indices as formatted sequences.
+  # We only need the "raw" integer indices.
+  # Changing this option can lead to quite a performance improvement.
+  default_igraph_opt = igraph_opt("return.vs.es")
+  if (default_igraph_opt) {
+    igraph_options(return.vs.es = FALSE)
+    on.exit(igraph_options(return.vs.es = default_igraph_opt))
+  }
+  # Query adjacent nodes and correct for zero-based indexing if needed.
+  adjacent_vertices(x, node, mode = direction)[[1]] + get_igraph_offset()
+}
+
+#' Extract for each node in a spatial network the indices of incident edges
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param nodes A vector of integer indices specifying the nodes for which
+#' incident edges should be queried.
+#'
+#' @returns A list in which each element is a vector of integer indices
+#' specifying the incident edges to one of the given nodes.
+#'
+#' @importFrom igraph incident_edges igraph_opt igraph_options
+#' @noRd
+node_incident_ids = function(x, nodes) {
+  # Change default igraph options.
+  # This prevents igraph returns node or edge indices as formatted sequences.
+  # We only need the "raw" integer indices.
+  # Changing this option can lead to quite a performance improvement.
+  default_igraph_opt = igraph_opt("return.vs.es")
+  if (default_igraph_opt) {
+    igraph_options(return.vs.es = FALSE)
+    on.exit(igraph_options(return.vs.es = default_igraph_opt))
+  }
+  # Query incident edges and correct for zero-based indexing if needed.
+  ids = incident_edges(x, nodes, mode = "all")
+  ids = lapply(ids, `+`, get_igraph_offset())
+  ids
+}
+
+#' Extract for a node pair in a spatial network the indices of connecting edges
+#'
+#' @param x An object of class \code{\link{sfnetwork}}.
+#'
+#' @param nodes A vector of two integer indices specifying the node pair
+#' between which edges should be found.
+#'
+#' @note If the network is directed, this function will only return the
+#' edges that go from the first node of the given pair to the second node
+#' of the given pair.
+#'
+#' @returns A vector of integer indices specifying the edges between the
+#' given nodes.
+#'
+#' @importFrom igraph get_edge_ids igraph_opt igraph_options
+#' @noRd
+node_connector_ids = function(x, nodes) {
+  # Change default igraph options.
+  # This prevents igraph returns node or edge indices as formatted sequences.
+  # We only need the "raw" integer indices.
+  # Changing this option can lead to quite a performance improvement.
+  default_igraph_opt = igraph_opt("return.vs.es")
+  if (default_igraph_opt) {
+    igraph_options(return.vs.es = FALSE)
+    on.exit(igraph_options(return.vs.es = default_igraph_opt))
+  }
+  # Query edge indices.
+  get_edge_ids(x, nodes, error = TRUE)
+}
+
 #' Extract for each edge in a spatial network the indices of incident nodes
 #'
 #' @param x An object of class \code{\link{sfnetwork}}.

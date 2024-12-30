@@ -38,9 +38,8 @@
 #'
 #' @importFrom cli cli_abort
 #' @importFrom dplyr distinct slice
-#' @importFrom igraph adjacent_vertices decompose degree delete_vertices
-#' edge_attr get_edge_ids igraph_opt igraph_options incident_edges
-#' induced_subgraph is_directed vertex_attr
+#' @importFrom igraph decompose degree delete_vertices edge_attr get_edge_ids
+#' igraph_opt igraph_options induced_subgraph is_directed vertex_attr
 #' @importFrom sf st_as_sf st_cast st_combine st_crs st_drop_geometry
 #' st_equals st_is st_line_merge
 #' @export
@@ -88,8 +87,8 @@ smooth_pseudo_nodes = function(x, protect = NULL,
     pseudo_ids = which(pseudo)
     edge_attrs = st_drop_geometry(edges)
     edge_attrs = edge_attrs[, names(edge_attrs) %in% require_equal]
-    incident_ids = incident_edges(x, pseudo_ids, mode = "all")
-    check_equality = function(i) nrow(distinct(slice(edge_attrs, i + 1))) < 2
+    incident_ids = node_incident_ids(x, pseudo_ids)
+    check_equality = function(i) nrow(distinct(slice(edge_attrs, i))) < 2
     pass = do.call("c", lapply(incident_ids, check_equality))
     pseudo[pseudo_ids[!pass]] = FALSE
   }
@@ -147,15 +146,13 @@ smooth_pseudo_nodes = function(x, protect = NULL,
       # --> The index of the edge that comes in to the pseudo node set.
       # --> The index of the non-pseudo node at the other end of that edge.
       # We'll call this the source node and source edge of the set.
-      # Note the + 1 since adjacent_vertices returns indices starting from 0.
-      source_node = adjacent_vertices(x, n_i, mode = "in")[[1]] + 1
+      source_node = node_adjacent_ids(x, n_i, direction = "in")
       source_edge = get_edge_ids(x, c(source_node, n_i))
       # Find the following:
       # --> The index of the edge that goes out of the pseudo node set.
       # --> The index of the non-pseudo node at the other end of that edge.
       # We'll call this the sink node and sink edge of the set.
-      # Note the + 1 since adjacent_vertices returns indices starting from 0.
-      sink_node = adjacent_vertices(x, n_o, mode = "out")[[1]] + 1
+      sink_node = node_adjacent_ids(x, n_o, direction = "out")
       sink_edge = get_edge_ids(x, c(n_o, sink_node))
       # List indices of all edges that will be merged into the replacement edge.
       edge_idxs = c(source_edge, E, sink_edge)
@@ -181,8 +178,7 @@ smooth_pseudo_nodes = function(x, protect = NULL,
       if (length(N) == 1) {
         # When we have a single pseudo node that forms a set:
         # --> It will be adjacent to both adjacent nodes of the set.
-        # Note the + 1 since adjacent_vertices returns indices starting from 0.
-        adjacent = adjacent_vertices(x, N)[[1]] + 1
+        adjacent = node_adjacent_ids(x, N)
         if (length(adjacent) == 1) {
           # If there is only one adjacent node to the pseudo node:
           # --> The two adjacent nodes of the set are the same node.
@@ -217,9 +213,8 @@ smooth_pseudo_nodes = function(x, protect = NULL,
         # We find them iteratively for the two boundary nodes of the set:
         # --> A boundary connects to one pseudo node and one non-pseudo node.
         # --> The non-pseudo node is the one not present in the pseudo set.
-        # Note the + 1 since adjacent_vertices returns indices starting from 0.
         get_set_neighbour = function(n) {
-          all = adjacent_vertices(x, n)[[1]] + 1
+          all = node_adjacent_ids(x, n)
           all[!(all %in% N)]
         }
         adjacent = do.call("c", lapply(N_b, get_set_neighbour))
