@@ -11,6 +11,8 @@
 
 {sfnetworks} is an R package for analysis of geospatial networks. It connects and extends the functionalities of the {tidygraph} package for network analysis and the {sf} package for spatial data science.
 
+**NOTE: A new version of {sfnetworks} is currently in active development. The main branch of the GitHub repository contains the code for the development version, which will be soon released as v1.0. The currently released version on CRAN is v0.6.5. See [here](https://github.com/luukvdmeer/sfnetworks/tree/v0.6.5) for the source code of that version. The documentation website https://luukvdmeer.github.io/sfnetworks/ is for the CRAN release. For the documentation of the development version, see [here](https://luukvdmeer.github.io/sfnetworks/dev).**
+
 ## Background
 
 Geospatial networks are graphs embedded in geographical space. That means that both the nodes and edges in the graph can be represented as geographic features: the nodes most commonly as points, and the edges as linestrings. They play an important role in many different domains, ranging from transportation planning and logistics to ecology and epidemiology. The structure and characteristics of geospatial networks go beyond standard graph topology, and therefore it is crucial to explicitly take space into account when analyzing them.
