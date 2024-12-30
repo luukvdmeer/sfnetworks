@@ -1,5 +1,8 @@
 url: https://luukvdmeer.github.io/sfnetworks/
 
+development:
+  mode: auto
+
 destination: docs
 
 template:
