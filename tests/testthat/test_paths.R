@@ -37,6 +37,10 @@ cost2.2 = st_network_cost(sub2, weights = NA, Inf_as_NaN = T)
 # Tests for st_network_paths()
 test_that("Only the first from argument
           is used for shortest paths calculations", {
+  skip_if(
+    packageVersion("igraph") > "2.2.2",
+    "The behaviour was adjusted in igraph > 2.2.2. See #292"
+  )
   from_indices = c(98, 23, 12)
   expect_warning(paths <- st_network_paths(
     net,
