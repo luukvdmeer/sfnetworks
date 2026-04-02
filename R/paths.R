@@ -173,7 +173,7 @@ st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
   # it raises an informative error when length(from) > 1L. Therefore, the
   # following warning is useful only with igraph <= 2.2.2. See also #292 for a
   # discussion.
-  if (length(from) > 1 && packageVersion("igraph") > "2.2.2") {
+  if (length(from) > 1 && packageVersion("igraph") <= "2.2.2") {
     raise_multiple_elements("from")
   }
   # Igraph does not support NA values in 'from' and 'to' nodes.
