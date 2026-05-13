@@ -17,3 +17,5 @@
 ^hexlogo\.R$
 ^\.todo$
 ^vignettes/.*\.html$
+^\.positai$
+^\.claude$

@@ -24,6 +24,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Lucas van der Meer \email{luukvandermeer@live.nl} (\href{https://orcid.org/0000-0001-6336-8628}{ORCID})
   \item Lorena Abad \email{lore.abad6@gmail.com} (\href{https://orcid.org/0000-0003-0554-734X}{ORCID})
   \item Andrea Gilardi \email{andrea.gilardi@unimib.it} (\href{https://orcid.org/0000-0002-9424-7439}{ORCID})
   \item Robin Lovelace \email{r.lovelace@leeds.ac.uk} (\href{https://orcid.org/0000-0001-5679-6536}{ORCID})
