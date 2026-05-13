@@ -170,7 +170,10 @@ st_network_paths.sfnetwork = function(x, from, to = igraph::V(x),
   # --> Convert them to node indices.
   if (is.sf(to) | is.sfc(to)) to = get_nearest_node_index(x, to)
   # Igraph does not support multiple 'from' nodes.
-  if (length(from) > 1) raise_multiple_elements("from")
+  if (length(from) > 1) {
+    raise_multiple_elements("from")
+    from = from[1]
+  }
   # Igraph does not support NA values in 'from' and 'to' nodes.
   if (any(is.na(c(from, to)))) raise_na_values("from and/or to")
   # Call paths calculation function according to type argument.
