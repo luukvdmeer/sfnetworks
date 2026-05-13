@@ -1,3 +1,9 @@
+# sfnetworks v0.6.6
+
+### Bug fixes
+
+* The `st_network_paths()` function is now correctly aligned with the newest release of `igraph`. No changes in user behavior. Refs [#292](https://github.com/luukvdmeer/sfnetworks/issues/292).
+
 # sfnetworks v0.6.5
 
 ### Bug fixes
