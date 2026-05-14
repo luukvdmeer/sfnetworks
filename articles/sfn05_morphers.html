@@ -6,6 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>5. Spatial morphers • sfnetworks</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="48x48" href="../favicon-48x48.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
@@ -32,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.6</span>
       </span>
     </div>
 
@@ -91,9 +96,9 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>5. Spatial morphers</h1>
             
-            <h4 data-toc-skip class="date">2024-12-09</h4>
+            <h4 data-toc-skip class="date">2026-05-14</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/v0.6.5/vignettes/sfn05_morphers.Rmd" class="external-link"><code>vignettes/sfn05_morphers.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/HEAD/vignettes/sfn05_morphers.Rmd" class="external-link"><code>vignettes/sfn05_morphers.Rmd</code></a></small>
       <div class="hidden name"><code>sfn05_morphers.Rmd</code></div>
 
     </div>
@@ -201,7 +206,7 @@ the 34 groups, to keep the plot clear.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span>group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">11</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn05_morphers_files/figure-html/unnamed-chunk-3-1.png" width="480"></p>
+<p><img src="sfn05_morphers_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="" width="480"></p>
 <p>Another application of the <code><a href="https://tidygraph.data-imaginist.com/reference/morphers.html" class="external-link">tidygraph::to_linegraph()</a></code>
 morpher is to find “cut edges” in the network. These are edges that
 break the connectivity of a connected component when they are removed.
@@ -228,7 +233,7 @@ network.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">cut_nodes</span>, col <span class="op">=</span> <span class="st">"red"</span>, pch <span class="op">=</span> <span class="fl">20</span>, cex <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span>, main <span class="op">=</span> <span class="st">"Cut edges"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">cut_edges</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn05_morphers_files/figure-html/unnamed-chunk-4-1.png" width="50%"><img src="sfn05_morphers_files/figure-html/unnamed-chunk-4-2.png" width="50%"></p>
+<p><img src="sfn05_morphers_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="50%"><img src="sfn05_morphers_files/figure-html/unnamed-chunk-4-2.png" class="r-plt" alt="" width="50%"></p>
 <p>Internally, a morphed state of a network is a list, in which each
 element is a network on its own. Some morphers create a list with only a
 single element, like the linegraph example above, while others create a
@@ -405,7 +410,7 @@ attributes that were not referenced in any of the other elements.</p>
 <span>  cex <span class="op">=</span> <span class="fl">2</span>, key.pos <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pch <span class="op">=</span> <span class="fl">20</span>, add <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn05_morphers_files/figure-html/unnamed-chunk-7-1.png" width="50%"><img src="sfn05_morphers_files/figure-html/unnamed-chunk-7-2.png" width="50%"></p>
+<p><img src="sfn05_morphers_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="50%"><img src="sfn05_morphers_files/figure-html/unnamed-chunk-7-2.png" class="r-plt" alt="" width="50%"></p>
 </div>
 <div class="section level3">
 <h3 id="to_spatial_directed">to_spatial_directed<a class="anchor" aria-label="anchor" href="#to_spatial_directed"></a>
@@ -476,7 +481,7 @@ state contains a single sfnetwork.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">implicit_net</span>, draw_lines <span class="op">=</span> <span class="cn">FALSE</span>, main <span class="op">=</span> <span class="st">"Implicit edges"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">explicit_net</span>, main <span class="op">=</span> <span class="st">"Explicit edges"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn05_morphers_files/figure-html/unnamed-chunk-9-1.png" width="50%"><img src="sfn05_morphers_files/figure-html/unnamed-chunk-9-2.png" width="50%"></p>
+<p><img src="sfn05_morphers_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="50%"><img src="sfn05_morphers_files/figure-html/unnamed-chunk-9-2.png" class="r-plt" alt="" width="50%"></p>
 </div>
 <div class="section level3">
 <h3 id="to_spatial_neighborhood">to_spatial_neighborhood<a class="anchor" aria-label="anchor" href="#to_spatial_neighborhood"></a>
@@ -504,7 +509,7 @@ vignette for more details and examples.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">neigh_net</span>, col <span class="op">=</span> <span class="st">"red"</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn05_morphers_files/figure-html/unnamed-chunk-10-1.png" width="480"></p>
+<p><img src="sfn05_morphers_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="480"></p>
 </div>
 <div class="section level3">
 <h3 id="to_spatial_shortest_paths">to_spatial_shortest_paths<a class="anchor" aria-label="anchor" href="#to_spatial_shortest_paths"></a>
@@ -573,7 +578,7 @@ contains multiple sfnetworks, one for each from-to combination.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">in_paths</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn05_morphers_files/figure-html/unnamed-chunk-12-1.png" width="480"></p>
+<p><img src="sfn05_morphers_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="480"></p>
 </div>
 <div class="section level3">
 <h3 id="to_spatial_simple">to_spatial_simple<a class="anchor" aria-label="anchor" href="#to_spatial_simple"></a>
@@ -659,7 +664,7 @@ examples.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, main <span class="op">=</span> <span class="st">"Original network"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"red"</span>, cex <span class="op">=</span> <span class="fl">0.8</span>, lwd <span class="op">=</span> <span class="fl">0.1</span>, main <span class="op">=</span> <span class="st">"Smoothed network"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">smoothed_net</span>, col <span class="op">=</span> <span class="st">"grey"</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn05_morphers_files/figure-html/unnamed-chunk-14-1.png" width="50%"><img src="sfn05_morphers_files/figure-html/unnamed-chunk-14-2.png" width="50%"></p>
+<p><img src="sfn05_morphers_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="" width="50%"><img src="sfn05_morphers_files/figure-html/unnamed-chunk-14-2.png" class="r-plt" alt="" width="50%"></p>
 </div>
 <div class="section level3">
 <h3 id="to_spatial_subdivision">to_spatial_subdivision<a class="anchor" aria-label="anchor" href="#to_spatial_subdivision"></a>
@@ -796,7 +801,7 @@ requires a geographic CRS for that.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>azimuth <span class="op">=</span> <span class="fu"><a href="../reference/spatial_edge_measures.html">edge_azimuth</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre class="fansi fansi-error"><code><span><span class="co">#&gt; Error in `stopifnot()`:</span></span>
 <span><span class="co">#&gt; ℹ In argument: `azimuth = edge_azimuth()`.</span></span>
-<span><span class="co">#&gt; Caused by error in `st_geod_azimuth()`:</span></span>
+<span><span class="co">#&gt; Caused by error in `st_geod_azimuth()` at sfnetworks/R/edge.R:51:3:</span></span>
 <span><span class="co">#&gt; ! st_is_longlat(x) is not TRUE</span></span></code></pre>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># We make it work by temporarily transforming to a different CRS.</span></span>
@@ -848,7 +853,7 @@ requires a geographic CRS for that.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>

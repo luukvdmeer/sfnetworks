@@ -6,6 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>3. Spatial joins and filters • sfnetworks</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="48x48" href="../favicon-48x48.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
@@ -32,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.6</span>
       </span>
     </div>
 
@@ -91,9 +96,9 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>3. Spatial joins and filters</h1>
             
-            <h4 data-toc-skip class="date">2024-12-09</h4>
+            <h4 data-toc-skip class="date">2026-05-14</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/v0.6.5/vignettes/sfn03_join_filter.Rmd" class="external-link"><code>vignettes/sfn03_join_filter.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/HEAD/vignettes/sfn03_join_filter.Rmd" class="external-link"><code>vignettes/sfn03_join_filter.Rmd</code></a></small>
       <div class="hidden name"><code>sfn03_join_filter.Rmd</code></div>
 
     </div>
@@ -170,7 +175,7 @@ can never exist without nodes at their endpoints.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">poly</span>, border <span class="op">=</span> <span class="st">"red"</span>, lty <span class="op">=</span> <span class="fl">4</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">filtered</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-2-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-2-2.png" width="50%"></p>
+<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-2-1.png" class="r-plt" alt="" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-2-2.png" class="r-plt" alt="" width="50%"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">filtered</span> <span class="op">=</span> <span class="va">net</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"edges"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -180,7 +185,7 @@ can never exist without nodes at their endpoints.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">poly</span>, border <span class="op">=</span> <span class="st">"red"</span>, lty <span class="op">=</span> <span class="fl">4</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">filtered</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-3-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-3-2.png" width="50%"></p>
+<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-3-2.png" class="r-plt" alt="" width="50%"></p>
 <p>The isolated nodes that remain after filtering the edges can be
 easily removed using a combination of a regular
 <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code> verb and the
@@ -196,7 +201,7 @@ easily removed using a combination of a regular
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">poly</span>, border <span class="op">=</span> <span class="st">"red"</span>, lty <span class="op">=</span> <span class="fl">4</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">filtered</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-4-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-4-2.png" width="50%"></p>
+<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-4-2.png" class="r-plt" alt="" width="50%"></p>
 <p>Filtering can also be done with other predicates.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">point</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_centroid</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html" class="external-link">st_combine</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span><span class="op">)</span></span>
@@ -209,7 +214,7 @@ easily removed using a combination of a regular
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">point</span>, col <span class="op">=</span> <span class="st">"red"</span>, cex <span class="op">=</span> <span class="fl">3</span>, pch <span class="op">=</span> <span class="fl">20</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">filtered</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-5-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-5-2.png" width="50%"></p>
+<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-5-2.png" class="r-plt" alt="" width="50%"></p>
 <p>For non-spatial filters applied to attribute columns, simply use
 <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code> instead of
 <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_filter()</a></code>.</p>
@@ -237,7 +242,7 @@ for the spatial edge query functions.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">poly</span>, border <span class="op">=</span> <span class="st">"red"</span>, lty <span class="op">=</span> <span class="fl">4</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">filtered</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-6-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-6-2.png" width="50%"></p>
+<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-6-2.png" class="r-plt" alt="" width="50%"></p>
 <p>A nice application of this in road networks is to find underpassing
 and overpassing roads (i.e. edges that cross other edges but are not
 connected at that point). As we can see in the example below, such roads
@@ -262,7 +267,7 @@ whole.</p>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # Edge data: 0 × 5 (active)</span></span>
 <span><span class="co">#&gt; # ℹ 5 variables: from &lt;int&gt;, to &lt;int&gt;, name &lt;chr&gt;, type &lt;fct&gt;,</span></span>
-<span><span class="co">#&gt; #   geometry &lt;GEOMETRY [m]&gt;</span></span>
+<span><span class="co">#&gt; #   geometry &lt;LINESTRING [m]&gt;</span></span>
 <span><span class="co">#&gt; #</span></span>
 <span><span class="co">#&gt; # Node data: 701 × 1</span></span>
 <span><span class="co">#&gt;            geometry</span></span>
@@ -316,7 +321,7 @@ query functions</a> for spatial filters on the nodes. For example:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">l</span>, col <span class="op">=</span> <span class="st">"red"</span>, lty <span class="op">=</span> <span class="fl">4</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">filtered_by_coords</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-9-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-9-2.png" width="50%"></p>
+<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-9-2.png" class="r-plt" alt="" width="50%"></p>
 </div>
 <div class="section level3">
 <h3 id="clipping">Clipping<a class="anchor" aria-label="anchor" href="#clipping"></a>
@@ -351,7 +356,7 @@ feature). To preserve a valid spatial network structure,
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">poly</span>, border <span class="op">=</span> <span class="st">"red"</span>, lty <span class="op">=</span> <span class="fl">4</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">clipped</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-10-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-10-2.png" width="50%">
+<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-10-2.png" class="r-plt" alt="" width="50%">
 Note: Neither of the clipping function currently works well with
 undirected networks!</p>
 </div>
@@ -417,7 +422,7 @@ postal code areas for the Roxel dataset.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/text.html" class="external-link">text</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html" class="external-link">st_coordinates</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_centroid</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">codes</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="va">codes</span><span class="op">$</span><span class="va">post_code</span>, cex <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">joined</span>, <span class="st">"edges"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">joined</span>, <span class="st">"nodes"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">20</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-11-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-11-2.png" width="50%"></p>
+<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-11-2.png" class="r-plt" alt="" width="50%"></p>
 <p>In the example above, the polygons are spatially distinct. Hence,
 each node can only intersect with a single polygon. But what would
 happen if we do a join with polygons that overlap? The attributes from
@@ -549,7 +554,7 @@ nearest node in the network for each POI, you can use the sf function
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pois</span>, pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">snapped_pois</span>, pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-13-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-13-2.png" width="50%"></p>
+<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-13-2.png" class="r-plt" alt="" width="50%"></p>
 <p>After snapping the POIs, we can use <code><a href="https://r-spatial.github.io/sf/reference/st_join.html" class="external-link">sf::st_join()</a></code> as
 expected. Do remember that if multiple POIs are snapped to the same
 node, only the information of the first one is joined into the
@@ -642,7 +647,7 @@ is an interior point in the linestring geometry of
 <span><span class="fu">plot_connections</span><span class="op">(</span><span class="va">pois</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pois</span>, pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">blended</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-15-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-15-2.png" width="50%"></p>
+<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-15-2.png" class="r-plt" alt="" width="50%"></p>
 <p>The <code><a href="../reference/st_network_blend.html">st_network_blend()</a></code> function has a
 <code>tolerance</code> parameter, which defines the maximum distance a
 POI can be from the network in order to be blended in. Hence, only the
@@ -665,7 +670,7 @@ units with <code><a href="https://r-quantities.github.io/units/reference/units.h
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">blended_with_tolerance</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="fu">plot_connections</span><span class="op">(</span><span class="va">pois</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pois</span>, pch <span class="op">=</span> <span class="fl">8</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-16-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-16-2.png" width="50%"></p>
+<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-16-2.png" class="r-plt" alt="" width="50%"></p>
 <p>There are a few important details to be aware of when using
 <code><a href="../reference/st_network_blend.html">st_network_blend()</a></code>. Firstly: when multiple POIs have the
 same <em>nearest location on the nearest edge</em>, only the first of
@@ -729,7 +734,7 @@ better set the tolerance to a very small number instead of zero.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">l1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">l2</span>, col <span class="op">=</span> <span class="st">"grey"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="../reference/st_network_blend.html">st_network_blend</a></span><span class="op">(</span><span class="va">net</span>, <span class="va">p</span>, tolerance <span class="op">=</span> <span class="fl">1e-10</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fl">2</span>, cex <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-18-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-18-2.png" width="50%"></p>
+<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-18-2.png" class="r-plt" alt="" width="50%"></p>
 </div>
 <div class="section level3">
 <h3 id="joining-two-networks">Joining two networks<a class="anchor" aria-label="anchor" href="#joining-two-networks"></a>
@@ -787,7 +792,7 @@ the joined network.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, pch <span class="op">=</span> <span class="fl">15</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">other_net</span>, col <span class="op">=</span> <span class="st">"red"</span>, pch <span class="op">=</span> <span class="fl">18</span>, cex <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">joined</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-19-1.png" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-19-2.png" width="50%"></p>
+<p><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="" width="50%"><img src="sfn03_join_filter_files/figure-html/unnamed-chunk-19-2.png" class="r-plt" alt="" width="50%"></p>
 </div>
 </div>
   </div>
@@ -807,7 +812,7 @@ the joined network.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>

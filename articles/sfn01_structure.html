@@ -6,6 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>1. The sfnetwork data structure • sfnetworks</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="48x48" href="../favicon-48x48.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
@@ -32,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">sfnetworks</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.6.6</span>
       </span>
     </div>
 
@@ -91,9 +96,9 @@
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>1. The sfnetwork data structure</h1>
             
-            <h4 data-toc-skip class="date">2024-12-09</h4>
+            <h4 data-toc-skip class="date">2026-05-14</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/v0.6.5/vignettes/sfn01_structure.Rmd" class="external-link"><code>vignettes/sfn01_structure.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/luukvdmeer/sfnetworks/blob/HEAD/vignettes/sfn01_structure.Rmd" class="external-link"><code>vignettes/sfn01_structure.Rmd</code></a></small>
       <div class="hidden name"><code>sfn01_structure.Rmd</code></div>
 
     </div>
@@ -104,18 +109,19 @@
 PRE.fansi SPAN {padding-top: .25em; padding-bottom: .25em};
 </style>
 <p>The core of the sfnetworks package is the sfnetwork data structure.
-It inherits the tbl_graph class from the <a href="https://tidygraph.data-imaginist.com/index.html" class="external-link">tidygraph
-package</a>, which itself inherits the igraph class from the <a href="https://igraph.org/" class="external-link">igraph package</a>. Therefore, sfnetwork
-objects are recognized by all network analysis algorithms that
+It inherits the tbl_graph class from <code>tidygraph</code>, which
+itself inherits the igraph class from <code>igraph</code>. Therefore,
+sfnetwork objects are recognized by all network analysis algorithms that
 <code>igraph</code> offers (which are a lot, see <a href="https://igraph.org/r/doc/" class="external-link">here</a>) as well as by the tidy
 wrappers that <code>tidygraph</code> has built around them.</p>
-<p>It is possible to apply any function from the <a href="https://www.tidyverse.org/" class="external-link">tidyverse packages</a> for data
+<p>It is possible to apply any function from tidyverse packages for data
 science directly to a sfnetwork, as long as <code>tidygraph</code>
 implemented a network specific method for it. On top of that,
-<code>sfnetworks</code> added several methods for functions from the <a href="https://r-spatial.github.io/sf/" class="external-link">sf package</a> for spatial data
-science, such that you can also apply those directly to the network.
-This takes away the need to constantly switch between the tbl_graph,
-tbl_df and sf classes when working with geospatial networks.</p>
+<code>sfnetworks</code> added several methods for functions from the
+package <code>sf</code> for spatial data science, such that you can also
+apply those directly to the network. This takes away the need to
+constantly switch between the tbl_graph, tbl_df and sf classes when
+working with geospatial networks.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://luukvdmeer.github.io/sfnetworks/" class="external-link">sfnetworks</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
@@ -312,7 +318,7 @@ will draw a straight line between the endpoints of each edge.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, main <span class="op">=</span> <span class="st">"Original geometries"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">other_net</span>, cex <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, main <span class="op">=</span> <span class="st">"Straight lines"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn01_structure_files/figure-html/unnamed-chunk-5-1.png" width="50%"><img src="sfn01_structure_files/figure-html/unnamed-chunk-5-2.png" width="50%"></p>
+<p><img src="sfn01_structure_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="50%"><img src="sfn01_structure_files/figure-html/unnamed-chunk-5-2.png" class="r-plt" alt="" width="50%"></p>
 <p>A sfnetwork should have a <em>valid</em> spatial network structure.
 For the nodes, this currently means that their geometries should all be
 of type <em>POINT</em>. In the case of spatially explicit edges, edge
@@ -325,8 +331,9 @@ construction function will throw an error.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">edges</span><span class="op">)</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sfc.html" class="external-link">st_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">l2</span>, <span class="va">l3</span>, <span class="va">l1</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="../reference/sfnetwork.html">sfnetwork</a></span><span class="op">(</span><span class="va">nodes</span>, <span class="va">edges</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Checking if spatial network structure is valid...</span></span>
-<span><span class="co">#&gt; Error: Edge boundaries do not match their corresponding nodes</span></span></code></pre></div>
+<span><span class="co">#&gt; Checking if spatial network structure is valid...</span></span></code></pre></div>
+<pre class="fansi fansi-error"><code><span><span class="co">#&gt; Error:</span></span>
+<span><span class="co">#&gt; ! Edge boundaries do not match their corresponding nodes</span></span></code></pre>
 <p>You can skip the validity checks if you are already sure your input
 data meet the requirements, or if you don’t care that they don’t. To do
 so, set <code>force = TRUE</code>. However, remember that all functions
@@ -372,7 +379,7 @@ German city of Münster.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">net</span> <span class="op">=</span> <span class="fu"><a href="../reference/as_sfnetwork.html">as_sfnetwork</a></span><span class="op">(</span><span class="va">roxel</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn01_structure_files/figure-html/unnamed-chunk-7-1.png" width="480"></p>
+<p><img src="sfn01_structure_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="480"></p>
 <p>Other methods to convert ‘foreign’ objects into a sfnetwork exists as
 well, e.g. for SpatialLinesNetwork objects from <code>stplanr</code> and
 linnet objects from <code>spatstat</code>. See <a href="https://luukvdmeer.github.io/sfnetworks/reference/as_sfnetwork.html" class="external-link">here</a>
@@ -516,13 +523,13 @@ plot method is provided, which gives a quick view of how the network
 looks like.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn01_structure_files/figure-html/unnamed-chunk-11-1.png" width="480"></p>
+<p><img src="sfn01_structure_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="480"></p>
 <p>If you have <code>ggplot2</code> installed, you can also use
 <code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">ggplot2::autoplot()</a></code> to directly create a simple ggplot of
 the network.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/autoplot.html">autoplot</a></span><span class="op">(</span><span class="va">net</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Road network of Münster Roxel"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn01_structure_files/figure-html/unnamed-chunk-12-1.png" width="480"></p>
+<p><img src="sfn01_structure_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="480"></p>
 <p>For advanced visualization, we encourage to extract nodes and edges
 as <code>sf</code> objects, and use one of the many ways to map those in
 R, either statically or interactively. Think of sf’s default plot
@@ -537,7 +544,7 @@ method, <code><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class=
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"edges"</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"grey50"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html" class="external-link">st_as_sf</a></span><span class="op">(</span><span class="va">net</span>, <span class="st">"nodes"</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">bc</span>, size <span class="op">=</span> <span class="va">bc</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Betweenness centrality in Münster Roxel"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn01_structure_files/figure-html/unnamed-chunk-13-1.png" width="480"></p>
+<p><img src="sfn01_structure_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="480"></p>
 <p><em>Note: it would be great to see this change in the future, for
 example by good integration with <code>ggraph</code>. Contributions are
 very welcome regarding this!</em></p>
@@ -587,7 +594,7 @@ tbl_graph, losing the spatial structure.</p>
 <span>  <span class="fu"><a href="https://tidygraph.data-imaginist.com/reference/activate.html" class="external-link">activate</a></span><span class="op">(</span><span class="st">"nodes"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_set_geometry</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>vertex.color <span class="op">=</span> <span class="st">"black"</span>, main <span class="op">=</span> <span class="st">"Nodes without geometries"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn01_structure_files/figure-html/unnamed-chunk-15-1.png" width="50%"><img src="sfn01_structure_files/figure-html/unnamed-chunk-15-2.png" width="50%"></p>
+<p><img src="sfn01_structure_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="50%"><img src="sfn01_structure_files/figure-html/unnamed-chunk-15-2.png" class="r-plt" alt="" width="50%"></p>
 <p>Geometries can be replaced also by using <a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">geometry
 unary operations</a>, as long as they don’t break the valid spatial
 network structure. In practice this means that only
@@ -857,7 +864,7 @@ cetera.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">edge_bbox</span>, border <span class="op">=</span> <span class="st">"blue"</span>, lty <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">small_net</span>, lwd <span class="op">=</span> <span class="fl">2</span>, cex <span class="op">=</span> <span class="fl">4</span>, main <span class="op">=</span> <span class="st">"Network bounding box"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net_bbox</span>, border <span class="op">=</span> <span class="st">"red"</span>, lty <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">4</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sfn01_structure_files/figure-html/unnamed-chunk-25-1.png" width="50%"><img src="sfn01_structure_files/figure-html/unnamed-chunk-25-2.png" width="50%"></p>
+<p><img src="sfn01_structure_files/figure-html/unnamed-chunk-25-1.png" class="r-plt" alt="" width="50%"><img src="sfn01_structure_files/figure-html/unnamed-chunk-25-2.png" class="r-plt" alt="" width="50%"></p>
 </div>
 <div class="section level3">
 <h3 id="attribute-geometry-relationships">Attribute-geometry relationships<a class="anchor" aria-label="anchor" href="#attribute-geometry-relationships"></a>
@@ -905,7 +912,7 @@ tracker</a>.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>
