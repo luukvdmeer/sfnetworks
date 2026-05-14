@@ -34,9 +34,9 @@ old_hooks = fansi::set_knit_hooks(
 )
 ```
 
-The core of the sfnetworks package is the sfnetwork data structure. It inherits the tbl_graph class from the [tidygraph package](https://tidygraph.data-imaginist.com/index.html), which itself inherits the igraph class from the [igraph package](https://igraph.org/). Therefore, sfnetwork objects are recognized by all network analysis algorithms that `igraph` offers (which are a lot, see [here](https://igraph.org/r/doc/)) as well as by the tidy wrappers that `tidygraph` has built around them.
+The core of the sfnetworks package is the sfnetwork data structure. It inherits the tbl_graph class from `tidygraph`, which itself inherits the igraph class from `igraph`. Therefore, sfnetwork objects are recognized by all network analysis algorithms that `igraph` offers (which are a lot, see [here](https://igraph.org/r/doc/)) as well as by the tidy wrappers that `tidygraph` has built around them.
 
-It is possible to apply any function from the [tidyverse packages](https://www.tidyverse.org/) for data science directly to a sfnetwork, as long as `tidygraph` implemented a network specific method for it. On top of that, `sfnetworks` added several methods for functions from the [sf package](https://r-spatial.github.io/sf/) for spatial data science, such that you can also apply those directly to the network. This takes away the need to constantly switch between the tbl_graph, tbl_df and sf classes when working with geospatial networks.
+It is possible to apply any function from tidyverse packages for data science directly to a sfnetwork, as long as `tidygraph` implemented a network specific method for it. On top of that, `sfnetworks` added several methods for functions from the package `sf` for spatial data science, such that you can also apply those directly to the network. This takes away the need to constantly switch between the tbl_graph, tbl_df and sf classes when working with geospatial networks.
 
 ```{r, message=FALSE}
 library(sfnetworks)
