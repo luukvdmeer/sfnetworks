@@ -1,6 +1,7 @@
 In this release we have made the following changes:
 
 * The `st_network_paths()` function is now correctly aligned with the newest release of `igraph` by selecting only the first element when multiple from nodes are given. No changes in user behavior compared to previous releases of `sfnetworks`. This change fixes the present errors in the CRAN checks.
+* Updated outdated URLs in documentation: https://www.tidyverse.org/ moved to https://tidyverse.org/
 
 ## R CMD check results
 
